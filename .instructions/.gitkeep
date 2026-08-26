@@ -1,0 +1,4 @@
+Follow the instructions in ./.instructions/001.md.
+Whenever a decision depends on information contained in .instructions/001.md, read the relevant portion of that file directly before making the decision.
+Do not rely solely on remembered, summarized, or context-compacted versions of the specification when the source file can be consulted.
+.instructions/001.md is authoritative if it conflicts with your recollection of the task.
