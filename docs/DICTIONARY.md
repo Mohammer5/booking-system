@@ -5,8 +5,59 @@ for one concept and update this file when stable terminology changes.
 
 ## Repository Concepts
 
-No project-specific repository concept is defined by this template. Projects
-add concepts here only after their canonical docs establish them.
+The product concepts below are accepted specification truth but are not yet
+implemented.
+
+### Admin
+
+A role or capability that manages Courses, Groups, Modules, Course Assignments,
+Course access, and shared Course Invites without prescribing an authorization
+technology. See [Course access](product/course-access.md).
+
+### Course
+
+The primary booking-system container for Groups, Modules, Course Assignments,
+one Course timezone, and at most one current shared Course Invite. A Course is
+Active or Archived. See [the domain model](product/domain-model.md#course).
+
+### Course Assignment
+
+The Active or Revoked relationship stating that one Participant belongs to one
+Course. It governs Course access independently of Module participation. See
+[Course access](product/course-access.md#administrative-assignment).
+
+### Course Invite
+
+The Course-specific, person-independent shared invitation through which an
+authenticated Participant may explicitly attempt to join a Course. A Course
+has at most one current Invite. See
+[shared Course Invite](product/course-access.md#shared-course-invite).
+
+### Group
+
+A permanently Course-owned, Active or Archived attendance option whose
+identity and logistical details apply Course-wide rather than per Module. See
+[Groups](product/course-structure.md#groups).
+
+### Module
+
+One non-recurring Scheduled or Cancelled occurrence in exactly one Course,
+with a date and time interpreted in that Course's timezone. See
+[Modules](product/course-structure.md#modules).
+
+### Module Selection
+
+The current-state relationship stating that one Participant intends to attend
+one Module using one Group. Its absence means non-participation, and it does not
+prove actual attendance. See
+[Module participation](product/module-participation.md).
+
+### Participant
+
+A booking-system identity that may belong to Courses and make Module
+Selections. It is conceptually separate from the external provider used to
+authenticate. See
+[authentication and identity](product/course-access.md#authentication-and-participant-identity).
 
 ## Meta And Internal Terms
 

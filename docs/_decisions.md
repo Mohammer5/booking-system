@@ -16,13 +16,13 @@ Current-state information and rationale change at different rates and for
 different reasons. Keeping them out of `README.md` reduces drift and makes it
 clearer where to update repository truth.
 
-## Keep The Template Product-Neutral
+## Add Product Truth Only From Accepted Requirements
 
-The reusable repository owns only its documentation process, architecture
-philosophy and enforcement, and Markplane development workflow. Product,
-domain, technology, research, workspace, and backlog content belongs to the
-project created from the template and is not represented by examples that
-could be mistaken for accepted truth.
+The repository began as a product-neutral template. Product or domain content
+is added only when concrete accepted requirements give it an owner and make it
+repository truth. The booking-system specification now meets that threshold;
+technology, research, workspace, and backlog content remain absent until
+similarly justified.
 
 ## Separate Conceptual Truth From Technology Choices
 

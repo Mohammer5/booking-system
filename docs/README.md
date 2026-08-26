@@ -1,11 +1,13 @@
 # Documentation
 
-This tree provides the reusable documentation process and architecture
-foundation for a new project. It intentionally contains no accepted product,
-domain, technology, or research truth.
+This tree contains the booking system's accepted product truth together with
+the reusable documentation process and architecture foundation. Product rules
+remain separate from implementation and technology choices.
 
 Start with:
 
+- [Product](product/README.md) for the booking-system domain, behavior,
+  lifecycle, permissions, and explicit non-goals.
 - [Process](process/README.md) for documentation and tracking workflow.
 - [Architecture](architecture/README.md) for architecture philosophy, source
   organization, and ESLint enforcement.

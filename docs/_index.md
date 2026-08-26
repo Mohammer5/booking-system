@@ -28,11 +28,19 @@ This repository uses an indexed global documentation system.
 
 ### Dictionary
 - Path: `docs/DICTIONARY.md`
-- Summary: Canonical definitions for the reusable repository architecture and
-  process terminology.
+- Summary: Canonical definitions for booking-system concepts and reusable
+  repository architecture and process terminology.
 - Read when: A task depends on stable terminology or introduces, changes, or
   removes a term.
 - Tags: docs, dictionary, terminology
+
+### Product
+- Path: `docs/product/_index.md`
+- Summary: Implementation-agnostic booking-system domain, behavior,
+  lifecycle, permissions, rationale, scenarios, and explicit non-goals.
+- Read when: A task affects Courses, Groups, Modules, Participants, membership,
+  invitations, bookings, product permissions, or product scope.
+- Tags: product, booking, domain, specification
 
 ### Process
 - Path: `docs/process/_index.md`
