@@ -20,10 +20,14 @@ development work is tracked and verified, and how releases are promoted.
 
 ### Process Decisions
 - Path: `docs/process/_decisions.md`
-- Summary: Rationale for separating routing, mental-model, status, rationale,
-  terminology, and planning responsibilities.
-- Read when: You need to understand why the process has its current structure.
-- Tags: docs, process, decisions, rationale
+- Summary: Rationale for documentation structure, canonical `pnpm check`,
+  layered tests, GitHub Actions CI/CD authority, tag-gated releases, and
+  deferred deployment automation.
+- Read when: You need to understand why process responsibilities are separated
+  or why verification, testing, CI ownership, release gates, merge/deployment
+  separation, or delayed automation have their current shape.
+- Tags: docs, process, decisions, rationale, verification, testing, ci-cd,
+  releases
 
 ### Conceptual Simplicity
 - Path: `docs/process/conceptual-simplicity.md`

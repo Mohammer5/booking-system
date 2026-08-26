@@ -15,18 +15,23 @@ ESLint-enforced dependency rules.
 
 ### Architecture Status
 - Path: `docs/architecture/_status.md`
-- Summary: Current product-neutral template baseline and deferred project
-  declarations.
-- Read when: You need present architecture state rather than future project
-  intent.
-- Tags: architecture, status, baseline, template
+- Summary: Current distinction between accepted Cloudflare, Vite, and D1
+  direction and the application and runtime surfaces still not implemented.
+- Read when: You need to distinguish decided architecture from current
+  implementation or identify which application, runtime, and persistence
+  surfaces do not yet exist.
+- Tags: architecture, status, cloudflare, workers, vite, d1, implementation
 
 ### Architecture Decisions
 - Path: `docs/architecture/_decisions.md`
-- Summary: Rationale for conceptual packages, application-owned technology,
-  late extraction, empty template inventory, and ESLint-only enforcement.
-- Read when: You need architecture tradeoffs or ownership rationale.
-- Tags: architecture, decisions, rationale
+- Summary: Rationale for conceptual packages and ESLint enforcement, one
+  same-origin Cloudflare Worker, D1 with SQLite semantics, Node/runtime
+  separation, and deferred runtime tooling.
+- Read when: You need to understand why the project chose Cloudflare, one
+  Worker, D1, a non-Node production runtime, explicit boundaries, or
+  real-application-triggered tooling.
+- Tags: architecture, decisions, cloudflare, workers, d1, nodejs, tooling,
+  eslint
 
 ### Architecture Principles
 - Path: `docs/architecture/principles.md`
