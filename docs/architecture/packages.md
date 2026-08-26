@@ -25,8 +25,10 @@ mechanics.
 - **Adjacent parts:** `apps/booking-system-web` and its private technical
   adapters.
 
-The package initially contains three focused conceptual responsibility modules:
+The package initially contains four focused conceptual responsibility modules:
 
+- `admin-access` for Admin User identity and lifecycle, Super Admin authority,
+  first Admin bootstrap, Admin Invites, and Admin onboarding policy;
 - `course-structure` for Course structure and lifecycle;
 - `course-access` for Course access and membership; and
 - `module-participation` for Module participation.
@@ -34,6 +36,10 @@ The package initially contains three focused conceptual responsibility modules:
 These are internal responsibility modules within one booking package, not
 separate workspace packages. Their distinct product-spec documents reflect
 distinct conceptual ownership without requiring separate packages.
+
+Authentication-provider SDK mechanics, Admin UI implementation, HTTP, Vite,
+Cloudflare, and D1 remain private to `apps/booking-system-web`; `admin-access`
+owns only product policy and conceptual outcomes.
 
 ## Definition Rule
 

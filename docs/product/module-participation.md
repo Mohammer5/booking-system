@@ -9,15 +9,15 @@ deadline; live and historical meaning; and concurrent Participant changes.
 ## Not Responsible For
 
 This document does not grant Course membership, manage Course, Group, Module,
-or user lifecycle, prove actual attendance, deliver notifications, maintain a
-complete audit history, or decide the unresolved Admin-assisted-booking
-policies.
+Participant, or Admin User lifecycle, prove actual attendance, deliver
+notifications, maintain a complete audit history, or decide the unresolved
+Admin-assisted-booking policies.
 
 ## Inputs
 
-- an authenticated Participant or Admin;
+- an authenticated Participant or Active Admin User;
 - the Participant's explicit choice to select, replace, or remove a Group, or
-  an Admin's accepted assisted-booking action;
+  an Admin User's accepted assisted-booking action;
 - current Course Assignment, Course, Module, and Group state; and
 - the Module's current `startsAt` in the Course timezone.
 
@@ -29,8 +29,9 @@ policies.
 ## Adjacent Parts
 
 Participation applies the [domain invariants](domain-model.md#hard-invariants),
-depends on [Course access](course-access.md), and reacts to
-[Course, Group, and Module lifecycle](course-structure.md).
+depends on [Course access](course-access.md), receives administrative authority
+from [Admin access](admin-access.md), and reacts to [Course, Group, and Module
+lifecycle](course-structure.md).
 
 ## Participation State
 
@@ -72,8 +73,8 @@ Creating the Selection is the Participant's explicit statement:
 The system MUST NOT choose a Group automatically from a previous selection,
 the first available Group, a preferred or default Group, or Course membership.
 Each Participant-created Module Selection results from an explicit Participant
-choice. An Admin may also create the same Module Selection through the accepted
-assisted-booking capability.
+choice. An Active Admin User may also create the same Module Selection through
+the accepted assisted-booking capability.
 
 ## Changing The Selected Group
 
@@ -118,24 +119,25 @@ participating.
 ## Admin-Assisted Booking
 
 Through [Admin-assisted booking](../DICTIONARY.md#admin-assisted-booking), an
-Admin MAY add an existing booking-system user to a Module and Group and MAY
-remove an existing Module Selection for a user. An Admin-created booking is the
-same Module Selection concept used by Participants; there is no parallel Admin
-booking entity or state.
+Active Admin User MAY add an existing Participant to a Module and Group and MAY
+remove an existing Module Selection for a Participant. A booking created by an
+Admin User is the same Module Selection concept used by Participants; there is
+no parallel administrative booking entity or state.
 
 The accepted capability does not yet decide:
 
-- whether an Admin may add, change, or remove a Selection at or after
+- whether an Admin User may add, change, or remove a Selection at or after
   `startsAt`;
-- whether the user must already have an Active Course Assignment;
+- whether the Participant must already have an Active Course Assignment;
 - whether adding a Selection when another Group is already selected for that
-  user and Module replaces the Selection or is refused; or
-- whether an Admin may explicitly change an existing Selection to another
+  Participant and Module replaces the Selection or is refused; or
+- whether an Admin User may explicitly change an existing Selection to another
   Group as a first-class action.
 
 Participant eligibility and deadline rules MUST NOT be assumed to govern Admin
-actions, and Admin override powers MUST NOT be inferred. These policy questions
-are tracked in [Product status](_status.md#deliberately-unspecified-details).
+User actions, and Admin User override powers MUST NOT be inferred. These policy
+questions are tracked in [Product
+status](_status.md#deliberately-unspecified-details).
 
 ## Scheduling Conflicts
 
@@ -155,10 +157,10 @@ if one device changes `Remote` to `Room A` and another changes `Remote` to
 `Room B`, whichever valid change is accepted last defines the current state.
 The product has no user-facing merge or conflict workflow.
 
-If an Admin revokes the Participant's Course Assignment concurrently with a
-Participant change, revocation blocks that Participant change and removes the
-future Selection under the Course-access rules. This does not decide whether a
-later Admin-assisted action requires an Active Course Assignment.
+If an Admin User revokes the Participant's Course Assignment concurrently with
+a Participant change, revocation blocks that Participant change and removes
+the future Selection under the Course-access rules. This does not decide
+whether a later Admin-assisted action requires an Active Course Assignment.
 
 ## Current State, History, And Attendance
 
@@ -178,8 +180,8 @@ based certification are separate future concerns.
 
 ## Notifications Do Not Define Correctness
 
-An Admin change, addition, or cancellation becomes authoritative according to
-the product rules regardless of whether a notification exists or succeeds.
-Email, push notifications, SMS, calendar invitations, and delivery tracking are
-not required for booking correctness and MAY be added only as separate
+An Admin User change, addition, or cancellation becomes authoritative according
+to the product rules regardless of whether a notification exists or succeeds.
+Email, push notifications, SMS, calendar invitations, and delivery tracking
+are not required for booking correctness and MAY be added only as separate
 communication concerns.

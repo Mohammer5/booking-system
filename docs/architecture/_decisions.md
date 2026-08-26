@@ -27,10 +27,12 @@ Vite, and D1 remain private technical mechanisms.
 ## Start With One Booking Domain Package
 
 `packages/booking` is the initial conceptual package. It owns booking-system
-language, rules, and contracts while Course structure, Course access, and Module
-participation remain distinct internal responsibility modules. Making each
-focused specification a workspace package would confuse documentation
-boundaries with deployment and package ownership.
+language, rules, and contracts while Admin access, Course structure, Course
+access, and Module participation remain distinct internal responsibility
+modules. Admin User and Admin Invite policy has its own change pressure from
+Participant Course access, but both responsibilities remain part of the same
+coherent booking domain. Making each focused specification a workspace package
+would confuse documentation boundaries with deployment and package ownership.
 
 ## Use Cloudflare As The Initial Runtime Boundary
 

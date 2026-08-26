@@ -68,7 +68,7 @@ ESLint-enforced dependency rules.
 ### Packages
 - Path: `docs/architecture/packages.md`
 - Summary: Defines conceptual package boundaries, the empty implemented
-  inventory, and `packages/booking` with three internal responsibility modules.
+  inventory, and `packages/booking` with four internal responsibility modules.
 - Read when: A task adds, removes, extracts, or changes a package boundary.
 - Tags: architecture, packages, domains, ownership
 

@@ -91,7 +91,7 @@ application composed from Vite/static assets, the Worker API, and an isolated
 local D1 database. Tests must start from deterministic state rather than a
 developer's database. Representative flows should eventually cover:
 
-- an Admin creating and configuring a Course;
+- an Admin User creating and configuring a Course;
 - a Participant joining and accessing a Course;
 - a Participant selecting a Module and Group, changing Group, and revoking
   future participation;
@@ -102,7 +102,8 @@ Detailed product invariants remain lower-level-test responsibilities.
 
 Routine E2E must not automate Google, Apple, Microsoft, or Facebook login UIs.
 When authentication is implemented, tests need an explicitly non-production
-way to establish identities such as Admin, Participant A, and Participant B.
+way to establish identities such as Admin User, Participant A, and Participant
+B.
 That mechanism must not create a hidden production bypass, and production must
 fail closed if test-only authentication is requested. Focused boundary tests
 own third-party OAuth/OIDC integration.

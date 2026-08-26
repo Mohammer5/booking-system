@@ -20,6 +20,7 @@ apps/
 
 packages/
   booking/
+    admin-access/
     course-structure/
     course-access/
     module-participation/
@@ -29,12 +30,12 @@ packages/
 composes the browser/Vite experience, static assets, Cloudflare Worker request
 handling, `/api/*`, private technical adapters, and the application composition
 root.
-`packages/booking` is the single initial conceptual domain package; the three
+`packages/booking` is the single initial conceptual domain package; the four
 folders shown beneath it are distinct responsibility modules, not separate
 workspace packages.
 
 This tree is a conceptual ownership view. When implementation is authorized,
-the standard workspace `src/` rule still applies and the three booking names
+the standard workspace `src/` rule still applies and the four booking names
 remain its first-level responsibility modules.
 
 This conceptual target, Worker-based runtime, Vite-built assets, and D1

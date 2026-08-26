@@ -16,20 +16,22 @@ domain and behavior.
 ### Product Status
 - Path: `docs/product/_status.md`
 - Summary: Current specification state, intentionally absent implementation,
-  and the remaining archival, Admin-assisted-booking, and user-management
-  policy questions.
+  and the remaining archival, Admin-assisted-booking, Participant-deletion,
+  and Admin User policy questions.
 - Read when: You need to know what product truth is accepted, implemented, or
   still unspecified.
 - Tags: product, status, current-state, gaps
 
 ### Product Decisions
 - Path: `docs/product/_decisions.md`
-- Summary: Rationale for the booking model's identity, access, scheduling,
+- Summary: Rationale for separate Participant/Admin User identity, Admin
+  onboarding and authorization, and the booking model's access, scheduling,
   lifecycle, participation, and simplicity boundaries.
 - Read when: You need rationale for identity, membership, visibility,
-  scheduling, Course archival, participation history, or excluded workflows.
-- Tags: product, decisions, identity, scheduling, lifecycle, simplicity,
-  rationale
+  Admin bootstrap and invitations, scheduling, Course archival, participation
+  history, or excluded workflows.
+- Tags: product, decisions, identity, admin, invitations, scheduling,
+  lifecycle, simplicity, rationale
 
 ### Domain Model
 - Path: `docs/product/domain-model.md`
@@ -39,14 +41,23 @@ domain and behavior.
   cardinality, or state definitions.
 - Tags: product, domain, invariants, identity, lifecycle
 
+### Admin Access
+- Path: `docs/product/admin-access.md`
+- Summary: Admin User identity and lifecycle, Super Admin authorization, first
+  Admin bootstrap, Admin Invites, onboarding, and required administration
+  views.
+- Read when: A task affects Admin User authentication or identity, Super Admin
+  authority, Admin User mutation or deletion, Admin bootstrap, Admin Invites,
+  Admin onboarding, or Admin User/Invite administration views.
+- Tags: product, admin, identity, authorization, onboarding, invite, ui
+
 ### Course Access
 - Path: `docs/product/course-access.md`
-- Summary: Authentication identity, Admin bootstrap and user management,
+- Summary: Participant authentication identity as relevant to Course access,
   Course Assignments, shared Course Invites, permissions, and visibility.
-- Read when: A task affects identity, Admin bootstrap, user administration,
-  joining, assignment, membership, revocation, authorization, or Course
-  information access.
-- Tags: product, access, authentication, assignment, invite, permissions
+- Read when: A task affects Participant Course access, joining, assignment,
+  membership, revocation, Course authorization, or Course information access.
+- Tags: product, access, participant, assignment, course-invite, permissions
 
 ### Course Structure And Lifecycle
 - Path: `docs/product/course-structure.md`

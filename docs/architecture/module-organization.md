@@ -3,10 +3,12 @@
 ## Accepted Initial Conceptual Target
 
 The planned `packages/booking` workspace contains focused responsibility modules
-named `course-structure`, `course-access`, and `module-participation`. They own
-distinct product concepts inside one domain package and MUST NOT become separate
-workspace packages merely because the product specification uses separate
-focused documents.
+named `admin-access`, `course-structure`, `course-access`, and
+`module-participation`. They own distinct product concepts inside one domain
+package and MUST NOT become separate workspace packages merely because the
+product specification uses separate focused documents. `admin-access` owns
+Admin User and Admin Invite product policy, not authentication-provider SDK or
+Admin UI mechanics.
 
 The planned `apps/booking-system-web` workspace is the single application
 composition boundary. No workspace or source directory has been created, and

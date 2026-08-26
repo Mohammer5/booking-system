@@ -7,15 +7,21 @@ implicit future design.
 
 ## Invitations And Accounts
 
-- person-specific invitations;
-- email-specific invitation claiming;
-- pending or unregistered Participant records;
+- person-specific Course Invites or Admin Invites;
+- email-specific Course Invite or Admin Invite claiming;
+- pending or unregistered Participant records created by a Course Invite;
+- pending Admin User records created merely by an Admin Invite;
 - pre-created Course Assignments for unknown users;
-- automatic Course Invite expiration;
+- automatic Course Invite or Admin Invite expiration;
 - multiple concurrently active, independently managed Course Invites;
+- reuse or reactivation of Claimed or Revoked Admin Invites;
+- Admin Invite deletion;
 - a password-based local identity system;
 - automatic account merging;
-- complex account-linking behavior; and
+- a current self-service external-identity-linking workflow;
+- Super Admin promotion, transfer, replacement, or additional-Super-Admin
+  workflows;
+- a complete Admin User mutation audit history; and
 - Participant self-service departure from a Course.
 
 ## Module And Group Modeling
@@ -60,5 +66,7 @@ implicit future design.
 - database design;
 - API design;
 - frontend design;
+- authentication-vendor or session design;
+- invite-token, secret-storage, or URL-format design;
 - infrastructure; and
 - technology or framework selection.

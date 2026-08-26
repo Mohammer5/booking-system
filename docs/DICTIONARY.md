@@ -8,21 +8,40 @@ for one concept and update this file when stable terminology changes.
 The product concepts below are accepted specification truth but are not yet
 implemented.
 
-### Admin
-
-The same booking-system Participant identity with Admin capability enabled. The
-capability defaults to false and permits user administration, Course access and
-structure management, and accepted assisted-booking actions without defining a
-separate Admin identity or prescribing authorization technology. See
-[Course access](product/course-access.md).
-
 ### Admin-Assisted Booking
 
-The Admin capability to add an existing booking-system user to a Module and
-Group or remove that user's Module Selection. It uses the same Module Selection
-as Participant booking, while its deadline, Course Assignment prerequisite,
-replacement behavior, and explicit change action remain unresolved. See
-[Module participation](product/module-participation.md#admin-assisted-booking).
+An accepted operation in which an Active Admin User adds an existing
+Participant to a Module and Group or removes that Participant's Module
+Selection. It uses the same Module Selection as Participant booking, while its
+deadline, Course Assignment prerequisite, replacement behavior, and explicit
+change action remain unresolved. See [Module
+participation](product/module-participation.md#admin-assisted-booking).
+
+### Admin Invite
+
+A non-Course-specific, one-time invitation through which a person may
+authenticate, supply a required real name, and create one ordinary Active Admin
+User. Multiple Active Admin Invites may coexist. Successful onboarding makes
+the Invite Claimed; an Active Admin User may instead Revoke it. Claimed and
+Revoked are terminal, and Admin Invites do not expire automatically. See
+[Admin access](product/admin-access.md#admin-invites).
+
+### Admin User
+
+A booking-system domain identity for a person authorized to operate the
+administration experience. It is distinct from Participant and has its own
+stable identity, required real name, Active or Disabled access state, ordinary
+Admin or Super Admin authority, and deletion rules. Being an Admin User does
+not make the person a Participant. See [Admin
+access](product/admin-access.md#admin-user-identity).
+
+### Admin User Real Name
+
+The single required human-readable name an Admin User explicitly supplies or
+confirms during onboarding. It is a booking-system property rather than trusted
+authentication-provider profile data and may later be edited by an authorized
+Admin User. See [real name and
+onboarding](product/admin-access.md#real-name-and-onboarding).
 
 ### Course
 
@@ -55,19 +74,19 @@ immutable once the first Module exists. See
 
 ### External Authentication Identity
 
-A provider-managed identity used to establish which Participant is acting. It
-is not the booking-system Participant identity; the relationship remains
-compatible with one Participant having multiple external authentication
-identities in the future. See
-[authentication and Participant identity](product/course-access.md#authentication-and-participant-identity).
+A provider-managed identity used to establish which booking-system domain
+identity is acting. It may independently back a Participant, an Admin User, or
+both without merging them, and the relationship remains compatible with a
+domain identity having multiple external identities in the future. See
+[the domain model](product/domain-model.md#external-authentication-identity).
 
-### First-User Admin Bootstrap
+### First Admin Bootstrap
 
-The empty-installation flow that offers `Register admin` only while no
-booking-system Participant exists. The first successful registration creates
-the first Participant with Admin capability, after which the flow closes. A
-later absence of Admin capability does not reopen it. See
-[Course access](product/course-access.md#first-user-admin-bootstrap).
+The one-time installation flow that offers `Register admin` while no Admin User
+has ever been created, regardless of whether Participants exist. The first
+successful registrant authenticates, supplies a required real name, and becomes
+the first Admin User and Super Admin. See [Admin
+access](product/admin-access.md#first-admin-bootstrap).
 
 ### Group
 
@@ -91,11 +110,20 @@ derived from surrounding state, and it does not prove actual attendance. See
 
 ### Participant
 
-A booking-system user identity that may belong to Courses, make Module
-Selections, and have Admin capability. It is conceptually separate from the
-external identities used to authenticate and may support more than one such
-identity in the future. See
-[authentication and identity](product/course-access.md#authentication-and-participant-identity).
+A booking-system domain identity for a person in participant-facing booking. A
+Participant may belong to Courses through Course Assignments, access those
+Courses, and make Module Selections. It is distinct from Admin User even when
+the same external authentication identity backs both. See [the domain
+model](product/domain-model.md#participant).
+
+### Super Admin
+
+The broader Admin User authority assigned to the first Admin User created by
+bootstrap. It is an authorization classification on that Admin User, not a
+separate identity entity. Ordinary Admin Users cannot mutate the Super Admin;
+the Super Admin has broader mutation authority subject to explicit
+self-protection. See [Admin
+access](product/admin-access.md#super-admin-authority-and-protection).
 
 ## Meta And Internal Terms
 
@@ -107,9 +135,9 @@ behavior with private technical implementations at an explicit runtime edge.
 ### Booking Package
 
 The planned conceptual domain package at `packages/booking`. It owns booking
-language, rules, and contracts through distinct `course-structure`,
-`course-access`, and `module-participation` responsibility modules; it is not
-yet implemented. See
+language, rules, and contracts through distinct `admin-access`,
+`course-structure`, `course-access`, and `module-participation` responsibility
+modules; it is not yet implemented. See
 [Packages](architecture/packages.md#accepted-initial-package).
 
 ### Booking-System Web Application

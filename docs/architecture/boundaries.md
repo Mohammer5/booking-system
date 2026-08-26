@@ -14,10 +14,10 @@ package dependency edges. The accepted `apps/booking-system-web` and
 
 ## Current Responsibility Modules
 
-`course-structure`, `course-access`, and `module-participation` are accepted as
-conceptual responsibility modules within the planned booking package. No source
-module, dependency edge, boundary-map entry, or composition file exists yet;
-those permissions require the concrete implementation change.
+`admin-access`, `course-structure`, `course-access`, and `module-participation`
+are accepted as conceptual responsibility modules within the planned booking
+package. No source module, dependency edge, boundary-map entry, or composition
+file exists yet; those permissions require the concrete implementation change.
 
 ## Map Shape
 

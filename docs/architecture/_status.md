@@ -11,8 +11,9 @@
   `/api/*` handling, private technical adapters, and its composition root; no
   separate `apps/api` application is planned initially.
 - `packages/booking` is the intended initial conceptual domain package, with
-  `course-structure`, `course-access`, and `module-participation` as distinct
-  internal responsibility modules rather than separate workspaces.
+  `admin-access`, `course-structure`, `course-access`, and
+  `module-participation` as distinct internal responsibility modules rather
+  than separate workspaces.
 - Deployed relational persistence uses D1 with SQLite-compatible SQL semantics.
 - Local/test, staging, and production persistence are isolated; staging and
   production use separate D1 databases.

@@ -13,7 +13,7 @@ or user-interface design.
 
 ## Inputs
 
-- Admin actions that create or modify a Course, Group, or Module;
+- Active Admin User actions that create or modify a Course, Group, or Module;
 - current Course, Group, Module, and Module Selection state;
 - a Module's `startsAt` and `endsAt`; and
 - the Course timezone.
@@ -26,15 +26,16 @@ or user-interface design.
 
 ## Adjacent Parts
 
-Structure follows the [domain model](domain-model.md), determines eligibility
-for [Module participation](module-participation.md), and constrains
-[Course access](course-access.md) when a Course is Archived.
+Structure follows the [domain model](domain-model.md), receives administrative
+authority from [Admin access](admin-access.md), determines eligibility for
+[Module participation](module-participation.md), and constrains [Course
+access](course-access.md) when a Course is Archived.
 
 ## Course Structure
 
 A [Course](../DICTIONARY.md#course) is the permanent container for its Groups,
-Modules, Course Assignments, and shared Course Invite. An Admin MAY create and
-modify Courses subject to the rules below.
+Modules, Course Assignments, and shared Course Invite. An Active Admin User MAY
+create and modify Courses subject to the rules below.
 
 Renaming or changing descriptive Course information MUST NOT change Course
 identity or break any relationship. Course names need not be globally unique,
@@ -48,10 +49,10 @@ and times MUST be defined and interpreted in that timezone. Individual Modules
 MUST NOT have separate business timezones. Daylight-saving-time behavior
 follows the Course timezone.
 
-An Admin MAY change the timezone while the Course has no Modules. Once the
-first Module has been created in the Course, the timezone MUST NOT change. The
-product does not reinterpret Module times, migrate schedules, or automatically
-reschedule Modules as a consequence of a timezone change.
+An Active Admin User MAY change the timezone while the Course has no Modules.
+Once the first Module has been created in the Course, the timezone MUST NOT
+change. The product does not reinterpret Module times, migrate schedules, or
+automatically reschedule Modules as a consequence of a timezone change.
 
 Displaying an equivalent time in a Participant's local timezone MAY be a
 future presentation concern but is not core booking behavior. The initial
@@ -67,8 +68,8 @@ Active Group is available to every otherwise eligible future Scheduled Module
 in its Course. The initial model MUST NOT make a Group available for only
 selected Modules.
 
-An Admin MAY create a Group within exactly one Course. The Group remains
-permanently owned by that Course.
+An Active Admin User MAY create a Group within exactly one Course. The Group
+remains permanently owned by that Course.
 
 A Group MAY contain Course-wide logistical details such as a physical
 location, room, meeting link, access instructions, or other human-readable
@@ -95,9 +96,10 @@ added to this model.
 
 ### Editing And Naming
 
-An Admin MAY change a Group's name or details. The edit MUST preserve Group
-identity and existing Module Selections. If `Online` is renamed to `Remote`,
-Participants previously selected into that Group are shown with the new name.
+An Active Admin User MAY change a Group's name or details. The edit MUST
+preserve Group identity and existing Module Selections. If `Online` is renamed
+to `Remote`, Participants previously selected into that Group are shown with
+the new name.
 
 Active Groups in one Course MUST remain distinguishable to Participants. Group
 names SHOULD therefore be unique within the Course. Names are not domain
@@ -111,7 +113,8 @@ usage permits and recreated in the correct Course.
 
 ### Deletion And Archival
 
-- An Admin MAY delete or Archive a Group only under the conditions below.
+- An Active Admin User MAY delete or Archive a Group only under the conditions
+  below.
 - A Group that has never been referenced by a Module Selection MAY be
   permanently deleted.
 - A Group with meaningful historical participation MUST NOT be hard-deleted in
@@ -138,8 +141,9 @@ value rather than a reservation competition.
 ### Scheduling
 
 A [Module](../DICTIONARY.md#module) is exactly one non-recurring scheduled
-occurrence in a Course. An Admin MAY add a Module to an existing Active Course,
-including after Participants have joined or earlier Modules have occurred.
+occurrence in a Course. An Active Admin User MAY add a Module to an existing
+Active Course, including after Participants have joined or earlier Modules
+have occurred.
 
 Every Module has a `startsAt` and `endsAt`, both interpreted in the Course
 timezone, and MUST satisfy `endsAt > startsAt`.
@@ -154,12 +158,12 @@ Modules are not supported, and duration is not a separate domain concept.
 
 ### Editing
 
-An Admin MAY change a Module's title or name, description, and instructions
-where the product rules otherwise permit those edits.
+An Active Admin User MAY change a Module's title or name, description, and
+instructions where the product rules otherwise permit those edits.
 
 - Descriptive edits MUST NOT affect existing Module Selections.
-- Before `startsAt`, an Admin MAY change `startsAt`, `endsAt`, or both, provided
-  the resulting interval satisfies all normal validity rules.
+- Before `startsAt`, an Active Admin User MAY change `startsAt`, `endsAt`, or
+  both, provided the resulting interval satisfies all normal validity rules.
 - An allowed schedule edit MUST preserve the Module's identity and existing
   Module Selections.
 - Participant eligibility to modify a Selection MUST immediately follow the
@@ -182,7 +186,8 @@ accordance with its usage and recreated in the intended Course.
 
 ### Deletion And Cancellation
 
-- An Admin MAY delete or Cancel a Module only under the conditions below.
+- An Active Admin User MAY delete or Cancel a Module only under the conditions
+  below.
 - A Module that has never had Module Selections and has no meaningful
   participation history MAY be permanently deleted.
 - A Module that has or had Module Selections MUST NOT be hard-deleted in a way
@@ -208,9 +213,9 @@ Selections.
 
 ### No Permanent Deletion
 
-An Admin MUST NOT permanently delete a Course, including an unused or
-accidentally created Course. Archival is the only Course removal mechanism and
-preserves the Course and its history.
+An Active Admin User MUST NOT permanently delete a Course, including an unused
+or accidentally created Course. Archival is the only Course removal mechanism
+and preserves the Course and its history.
 
 ### Archival
 
@@ -224,18 +229,19 @@ either of the following remains:
 
 Before archival, all future Modules MUST be resolved under the existing Module
 lifecycle rules, and all active future Module Selections MUST no longer remain
-as live bookings. For example, an Admin MAY cancel affected future Modules
-where appropriate, Participants MAY remove their own eligible future Module
-Selections, or an Admin MAY use an allowed assisted-removal action. Cancelling a
-Module preserves its Selections historically while making them no longer live.
+as live bookings. For example, an Active Admin User MAY cancel affected future
+Modules where appropriate, Participants MAY remove their own eligible future
+Module Selections, or an Active Admin User MAY use an allowed assisted-removal
+action. Cancelling a Module preserves its Selections historically while making
+them no longer live.
 
 Archival itself MUST NOT delete or otherwise mutate future Module Selections,
 cancel Modules, or move Participants between Groups. The preconditions MUST be
 satisfied before the Course changes state; no additional Course lifecycle state
 is introduced.
 
-Only after these preconditions are satisfied MAY an Admin Archive the Course.
-Once the Course is Archived, its state MUST:
+Only after these preconditions are satisfied MAY an Active Admin User Archive
+the Course. Once the Course is Archived, its state MUST:
 
 - prevent new Participants from joining;
 - prevent creation of new Course Assignments;
@@ -244,9 +250,9 @@ Once the Course is Archived, its state MUST:
 - prevent Participant modification of Module Selections; and
 - preserve historical context.
 
-An Archived Course MUST remain visible and manageable to Admins. It MUST NOT
-return to Active state, and the product has no restore, unarchive, or equivalent
-Course action.
+An Archived Course MUST remain visible and manageable to Active Admin Users. It
+MUST NOT return to Active state, and the product has no restore, unarchive, or
+equivalent Course action.
 
 Whether a Course may be Archived while a Scheduled Module is between its
 `startsAt` and `endsAt` is deliberately unspecified in

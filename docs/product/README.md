@@ -11,12 +11,17 @@ The system manages [Courses](../DICTIONARY.md#course) whose
 [Participants](../DICTIONARY.md#participant) decide independently whether and
 how to participate in each non-recurring [Module](../DICTIONARY.md#module).
 
-Admins MUST be able to manage booking-system users and Admin capability,
-Courses, Groups, Modules, Course Assignments, Course access, shared Course
-Invites, and the accepted assisted-booking actions. Participants MUST be able
-to authenticate, join eligible Courses, access Courses to which they are
-assigned, and manage their own eligible Module Selections before each Module's
-`startsAt`.
+[Admin Users](../DICTIONARY.md#admin-user) MUST be able to administer Courses,
+Groups, Modules, Participants, Course Assignments, Course Invites, other Admin
+Users and Admin Invites within their authority, and the accepted
+Admin-assisted booking actions. Participants MUST be able to authenticate,
+join eligible Courses, access Courses to which they are assigned, and manage
+their own eligible Module Selections before each Module's `startsAt`.
+
+Participant and Admin User are separate domain identities with separate
+responsibilities and lifecycles. The same external authentication identity MAY
+back both independently, but neither identity implies or merges into the
+other.
 
 ## Core Mental Model
 
@@ -40,7 +45,10 @@ Participant ← Course Assignment → Course
 Course → Groups
 Course → Modules
 Participant + Module → selected Group
-Course → shared Invite
+Course → shared Course Invite
+External authentication identity → Participant
+External authentication identity → Admin User
+Admin Invite → ordinary Admin User
 ```
 
 Every Module Selection links a Participant, Module, and Group through the same
@@ -55,8 +63,11 @@ The product model is composed from distinct responsibilities:
 
 - [Domain model](domain-model.md) owns vocabulary, relationships, invariants,
   identity, and the minimal state model.
-- [Course access](course-access.md) owns authentication identity, first-user
-  Admin bootstrap, user administration, Course Assignments, Course Invites,
+- [Admin access](admin-access.md) owns Admin User identity, Super Admin
+  authority, Admin User lifecycle, first Admin bootstrap, Admin Invites,
+  onboarding, and Admin User/Admin Invite administration views.
+- [Course access](course-access.md) owns Participant authentication identity as
+  relevant to Course access, Course Assignments, Course Invites, membership,
   permissions, and visibility.
 - [Course structure and lifecycle](course-structure.md) owns Course archival
   and Course, Group, and Module structure, scheduling, editing, deletion, and

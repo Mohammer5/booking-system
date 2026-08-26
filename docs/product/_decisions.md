@@ -31,17 +31,18 @@ whether joining succeeds.
 
 ## Retain Revoked Course Assignments
 
-A revoked Course Assignment is retained so an Admin's removal remains
-effective even while the Course's generic shared invite is usable. Only an
-Admin may reactivate the assignment, and only while the Course is Active.
+A revoked Course Assignment is retained so an Active Admin User's removal
+remains effective even while the Course's generic shared invite is usable.
+Only an Active Admin User may reactivate the assignment, and only while the
+Course is Active.
 
 ## Keep Course Visibility Private By Default
 
-The product has no public Course catalogue. Admin authority, Active Course
-membership, or possession of a valid active Invite is required to discover a
-Course. A valid Invite may expose the Course name as minimal join-flow context
-without exposing rosters, Selections, access instructions, or administrative
-information.
+The product has no public Course catalogue. Current Admin User access, Active
+Course membership, or possession of a valid active Invite is required to
+discover a Course. A valid Invite may expose the Course name as minimal
+join-flow context without exposing rosters, Selections, access instructions,
+or administrative information.
 
 ## Freeze The Course Timezone Once Scheduling Begins
 
@@ -63,40 +64,76 @@ Courses are never hard-deleted, even when unused or created accidentally.
 Active and Archived are the complete lifecycle: archival preserves the Course
 and its history, remains administratively manageable, and cannot be reversed.
 
-## Keep One Booking-System Identity
+## Separate Participant And Admin User Identities
 
-Participant is the booking-system user identity. Admin is an additional
-capability on that same identity, defaulting to false, rather than a separate
-account type. This keeps Course membership, booking participation, and
-administrative authority attached to one user model.
+Participant and Admin User are distinct booking-system domain entities because
+Course membership and Module participation have different responsibilities and
+lifecycles from administrative access. Neither identity implies the other, and
+Admin access is not a capability or `isAdmin` property on Participant.
 
-## Bootstrap Only The First Booking-System User
+## Keep External Identities Separate From Domain Identities
 
-An empty installation exposes `Register admin` at the Admin authentication
-entry point. Only the first successfully registered booking-system user gains
-Admin capability through bootstrap; the flow closes once any user exists and
-does not reopen merely because no Admin remains.
+An authentication-provider identity may establish access to a Participant, an
+Admin User, or both independently, but it is neither domain identity. Allowing
+the same provider identity to back both preserves a person's convenient access
+without merging Participant membership with Admin authorization. Automatic
+personal-data merging and a current self-service linking workflow remain
+excluded.
 
-## Keep External Identities Separate
+## Bootstrap Only The First-Ever Admin User
 
-Authentication-provider identities establish access to a booking-system user
-but are not that user. The relationship remains compatible with multiple
-external identities for one user in the future while automatic personal-data
-merging and a current self-service linking workflow remain excluded.
+The administration entry point exposes `Register admin` until the first Admin
+User has ever been created, regardless of whether Participants exist. The
+first successful registrant supplies a real name and becomes the Super Admin.
+Tying bootstrap to Admin User creation history keeps Participant onboarding
+independent and prevents bootstrap from reopening after later Admin User
+disabling or deletion.
+
+## Distinguish Super Admin By Authority
+
+Super Admin is broader authorization on the first Admin User, not another
+identity entity. Ordinary Admin Users may administer other ordinary Admin
+Users but cannot mutate the Super Admin; the Super Admin may administer Admin
+Users subject to explicit self-protection. This encodes the required protection
+without inventing a general role-promotion system.
+
+## Keep Admin User Disabling And Deletion Distinct
+
+A Disabled Admin User remains identifiable but has no administrative access.
+Deletion of an ordinary Admin User is a separate accepted operation, not a
+synonym for Disabled and not a decision about Participant deletion. Keeping
+the concepts separate avoids inventing audit retention or cross-identity
+lifecycle coupling.
+
+## Use Separate One-Time Admin Invites
+
+Course Invites and Admin Invites grant access to different responsibilities.
+Course Invites remain Course-specific and reusable, while independently
+created Admin Invites create ordinary Admin Users and become terminal when
+Claimed or Revoked. Admin Invites do not expire automatically, so manual
+Revocation is the only way to invalidate an unused Invite.
+
+## Require Explicit Admin User Onboarding
+
+Every Admin User supplies one real-name field during bootstrap or invited
+onboarding. Provider profile data may assist the UI but is not authoritative.
+An Admin Invite is consumed only after Admin User creation succeeds so opening
+an Invite, starting authentication, or abandoning onboarding cannot waste it.
 
 ## Use One Module Selection For Assisted Booking
 
-An Admin may add an existing user to a Module and Group or remove an existing
-Selection. The action uses the same Module Selection as Participant booking,
-avoiding a parallel Admin-booking entity while the remaining deadline,
+An Admin User may add an existing Participant to a Module and Group or remove
+an existing Selection. The action uses the same Module Selection as Participant
+booking, avoiding a parallel Admin-booking entity while the remaining deadline,
 eligibility, replacement, and change-action policies stay explicitly open.
 
-## Require User Administration Without Inventing Deletion
+## Require Focused Admin User And Admin Invite Views
 
-Admins need to inspect and manage booking-system users and Admin capability.
-That requirement does not imply hard deletion, complete CRUD, historical
-reference handling, or last-Admin demotion rules before those policies are
-accepted.
+Admin Users and Admin Invites each need a data-table list view because their
+accepted states and actions must be administrable. Specifying the required
+information and operations preserves the product behavior without selecting a
+component library, pagination model, API, persistence schema, or Invite-secret
+representation.
 
 ## Exclude Workflow-Heavy Booking Features
 
