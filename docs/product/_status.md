@@ -15,7 +15,9 @@ The accepted requirements do not define:
 
 - whether or how an existing Course's timezone may change after Modules exist;
 - a more precise test for whether Course history is "meaningful" beyond the
-  explicit protections for historical Module Selections; or
+  explicit protections for historical Module Selections;
+- whether an existing Revoked Course Assignment may be reactivated while its
+  Course is Archived; or
 - whether Course names are non-sensitive and may therefore appear before an
   invite recipient authenticates and joins.
 

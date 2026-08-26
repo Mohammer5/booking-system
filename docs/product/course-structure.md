@@ -200,17 +200,32 @@ No broader deletion policy may be inferred.
 
 ### Archival
 
-An Admin MAY Archive a Course. A Course with meaningful participation or
-history SHOULD be Archived instead of hard-deleted. Archiving MUST:
+An Active Course MAY contain future Scheduled Modules and active future Module
+Selections during normal operation. It MUST NOT transition to Archived while
+either of the following remains:
+
+- an unresolved future Module, including any future Scheduled Module; or
+- an active Module Selection for a future Module.
+
+Before archival, all future Modules MUST be resolved under the existing Module
+lifecycle rules, and all active future Module Selections MUST no longer remain
+as live bookings. For example, an Admin MAY cancel affected future Modules
+where appropriate, or Participants MAY remove their own eligible future Module
+Selections under the normal participation rules.
+
+Archival itself MUST NOT delete or otherwise mutate future Module Selections,
+cancel Modules, or move Participants between Groups. An Admin MUST NOT create
+or change a Participant's Module Selection on their behalf. The preconditions
+MUST be satisfied before the Course changes state; no additional Course
+lifecycle state is introduced.
+
+Only after these preconditions are satisfied MAY an Admin Archive the Course.
+A Course with meaningful participation or history SHOULD be Archived instead
+of hard-deleted. Once the Course is Archived, its state MUST:
 
 - prevent new Participants from joining;
+- prevent creation of new Course Assignments;
 - make the shared Invite unusable;
 - prevent new Module Selections;
 - prevent Participant modification of Module Selections; and
 - preserve historical context.
-
-Future Modules and Selections SHOULD be resolved before archiving so that
-upcoming participation does not silently become ambiguous history. For
-example, an Admin MAY cancel affected Modules, or Participants MAY remove their
-own eligible future Selections. An Admin MUST NOT create or change a
-Participant's Module Selection on their behalf.

@@ -77,3 +77,23 @@ prevention.
 Alice joins a Course after Modules 1 and 2 have started or finished. She cannot
 select Modules 1 or 2. She may select an Active Group for future Scheduled
 Module 3 when all other eligibility rules are satisfied.
+
+## L. Admin Assignment To Archived Course
+
+Course A is Archived, and Alice has never had a Course Assignment to it. An
+Admin attempts to assign Alice to Course A. The assignment is refused because
+new Course Assignments cannot be created for an Archived Course.
+
+## M. Archival Blocked By Future Module
+
+Course A is Active and contains a Scheduled Module next week. An Admin attempts
+to Archive Course A. Archival is refused because the unresolved future Module
+remains. After the Module is resolved under the existing Module lifecycle rules
+and no active future Module Selections remain, the Course may be Archived.
+
+## N. Archival Blocked By Future Selection
+
+Alice has an active Module Selection for a future Module in Course A. An Admin
+attempts to Archive the Course without resolving that future participation.
+Archival is refused. The Course may be Archived only after the future Module
+and Selection state is resolved under the existing rules.

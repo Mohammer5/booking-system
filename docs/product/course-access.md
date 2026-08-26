@@ -73,14 +73,17 @@ precedence or conflict rules between Admin and Participant choices.
 
 ## Administrative Assignment
 
-An Admin MAY directly assign an existing registered Participant to a Course.
-The result is an Active
-[Course Assignment](../DICTIONARY.md#course-assignment).
+When an existing registered Participant has no Course Assignment to a Course,
+an Admin MAY directly assign them only if the target Course is Active. The
+result is an Active [Course Assignment](../DICTIONARY.md#course-assignment). A
+new Course Assignment MUST NOT be created for an Archived Course.
 
 - Assigning a Participant who already has an Active Assignment MUST be
   idempotent and MUST NOT create a duplicate.
-- Assigning a Participant whose Assignment is Revoked MUST reactivate that
-  Assignment.
+- For an Active Course, assigning a Participant whose Assignment is Revoked
+  MUST reactivate that Assignment. Whether reactivation is permitted while the
+  Course is Archived is deliberately unspecified in
+  [Product status](_status.md#deliberately-unspecified-details).
 - Reactivation MUST NOT automatically restore previously removed future Module
   Selections. The Participant chooses eligible future Modules and Groups again.
 - An Admin MUST NOT create a pending Participant or pre-created Course
@@ -140,8 +143,8 @@ belongs to this Course," after which the Participant MAY proceed to the Course.
 
 ### Refused Join Attempts
 
-An Invite MUST NOT create membership when it is disabled, replaced, unknown,
-otherwise invalid, or associated with an Archived Course.
+An Invite MUST NOT create a Course Assignment when it is disabled, replaced,
+unknown, otherwise invalid, or associated with an Archived Course.
 
 A Participant with a Revoked Course Assignment MUST NOT reactivate themselves
 through the generic Invite, even when that Invite remains valid for other
@@ -175,8 +178,9 @@ An Admin MAY revoke an Active Course Assignment. Revocation MUST:
 - preserve historically meaningful participation information.
 
 The system MUST NOT retain a future active booking for a Participant who lacks
-an Active Course Assignment. An Admin MAY later reactivate the Assignment, but
-future Module Selections MUST NOT be restored automatically.
+an Active Course Assignment. When an Admin reactivates the Assignment where
+reactivation is permitted, future Module Selections MUST NOT be restored
+automatically.
 
 Participants do not have a self-service leave-Course capability in the initial
 scope. A Participant may remain assigned while having no Module Selections.

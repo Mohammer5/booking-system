@@ -134,24 +134,28 @@ resolve through the same Course according to the invariants below.
 1. A Group MUST belong to exactly one Course.
 2. A Module MUST belong to exactly one Course.
 3. A Participant MUST have at most one Course Assignment to a given Course.
-4. A Participant MUST have at most one Module Selection for a given Module.
-5. Every Module Selection MUST reference exactly one Participant, one Module,
+4. A new Course Assignment MUST NOT be created for an Archived Course, whether
+   by an Admin or a shared Course Invite.
+5. A Participant MUST have at most one Module Selection for a given Module.
+6. Every Module Selection MUST reference exactly one Participant, one Module,
    and one Group.
-6. A Module Selection's Group and Module MUST belong to the same Course.
-7. A Participant MUST have an Active Course Assignment to that Course when
+7. A Module Selection's Group and Module MUST belong to the same Course.
+8. A Participant MUST have an Active Course Assignment to that Course when
    creating or changing a Module Selection.
-8. A Participant MUST NOT create or change a Module Selection at or after the
+9. A Participant MUST NOT create or change a Module Selection at or after the
    Module's start time.
-9. A Participant MUST NOT select an Archived Group.
-10. A Participant MUST NOT select a Cancelled Module.
-11. Course membership MUST NOT automatically assign a Participant to a Module
+10. A Participant MUST NOT select an Archived Group.
+11. A Participant MUST NOT select a Cancelled Module.
+12. Course membership MUST NOT automatically assign a Participant to a Module
     or Group.
-12. No Module Selection MUST mean non-participation in that Module.
-13. Group choice MUST be per Module. A Participant MAY use different Groups for
+13. No Module Selection MUST mean non-participation in that Module.
+14. Group choice MUST be per Module. A Participant MAY use different Groups for
     different Modules in the same Course.
-14. Group identity and details MUST be Course-wide, not Module-specific.
-15. Human-readable Course, Group, and Module names MUST NOT be their domain
+15. Group identity and details MUST be Course-wide, not Module-specific.
+16. Human-readable Course, Group, and Module names MUST NOT be their domain
     identity. Renaming MUST preserve existing relationships.
+17. A Course MUST NOT transition from Active to Archived while it contains an
+    unresolved future Module or an active Module Selection for a future Module.
 
 ## Minimal State Model
 
