@@ -42,6 +42,13 @@ Authentication-provider SDK mechanics, Admin UI implementation, HTTP, Vite,
 Cloudflare, and D1 remain private to `apps/booking-system-web`; `admin-access`
 owns only product policy and conceptual outcomes.
 
+The same prohibition covers Better Auth, OAuth/provider SDKs, cookies,
+sessions, Cloudflare authentication integration, and non-production
+test-authentication machinery. The package receives only the stable external
+principal and application-context operation expressed through its conceptual
+interfaces, then evaluates domain identity and authorization against current
+state.
+
 When created, `packages/booking` will have one package manifest for the whole
 conceptual package. Its dependencies must remain consistent with booking-domain
 responsibility and must not pull browser, HTTP, Worker, Vite, Cloudflare, D1,

@@ -36,13 +36,20 @@ participation.
 
 ## Notes
 
-The first deployable behavior establishes the authentication and identity
-boundary through the explicitly non-production mechanism required for
-deterministic browser testing. Routine tests do not automate third-party
-provider login UIs, test identities remain deterministic, production exposes
-no hidden test-authentication bypass, and production fails closed when
-test-only authentication is requested. Real Google, Apple, Microsoft, and
-Facebook authentication-provider integration is deferred.
+The first deployable behavior uses the accepted Better Auth boundary inside
+`apps/booking-system-web`: deterministic named test identities establish
+normal D1-backed opaque application sessions through an explicitly
+non-production composition. Routine tests do not automate third-party provider
+login UIs or bypass booking-domain authorization. Production exposes no
+activatable test-authentication mechanism and fails closed when test-only
+authentication is requested. Real Google, Apple, Microsoft, and Facebook
+authentication-provider integration is deferred.
+
+One session establishes only the stable external principal. Participant and
+Admin User remain independent domain identities, selected by application
+context and resolved with their authorization from authoritative current state
+on every request. No selected role, domain authority, Course Assignment, or
+other booking authorization is stored in the session.
 
 The following concerns are intentionally deferred beyond this epic:
 

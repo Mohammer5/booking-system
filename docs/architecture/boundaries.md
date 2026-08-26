@@ -44,6 +44,13 @@ and composition receives only the permissions needed to join them. Exact
 application module names, composition files, and dependency edges remain
 undeclared.
 
+That map must also declare the narrow edges through which application-owned
+authentication and session behavior is consumed and composed. Better Auth,
+OAuth/provider SDKs, cookie/session mechanics, Cloudflare authentication
+integration, and non-production test-authentication code must remain outside
+`packages/booking`. The accepted responsibility does not pre-authorize an
+import or select an application module name before the map exists.
+
 ## Map Shape
 
 Each map explicitly declares:

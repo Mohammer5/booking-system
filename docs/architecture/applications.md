@@ -20,18 +20,27 @@ it owns technical composition for the complete same-origin application.
 - **Responsibility:** Compose and serve the browser-facing application,
   Vite-built frontend/static assets, Cloudflare Worker request handling,
   Worker/API-facing `/api/*` HTTP handling, private technical adapters, runtime
-  integration, and the application composition root as one deployable
-  boundary.
+  integration, authentication and session establishment, and the application
+  composition root as one deployable boundary.
 - **Not responsible for:** Owning product rules or turning runtime and storage
-  providers into product concepts.
-- **Inputs:** Browser navigation, static-asset requests, API requests, and
-  booking capabilities supplied by the conceptual package.
-- **Outputs:** Frontend/static-asset responses and same-origin API responses.
+  or authentication providers into product concepts.
+- **Inputs:** Browser navigation, static-asset requests, API and authentication
+  requests, session cookies, and booking capabilities supplied by the
+  conceptual package.
+- **Outputs:** Frontend/static-asset responses, same-origin API responses, and
+  authenticated external-principal context for application operations.
 - **Adjacent parts:** The planned `packages/booking` domain package, private
-  Worker/Vite composition, and D1 persistence.
+  Worker/Vite/Better Auth composition, and D1 persistence.
 
 The browser reaches backend behavior through the same-origin API, such as
 `/api/*`.
+
+Better Auth remains private to this application and resolves a request to one
+stable external principal. The application then uses participant or
+administration context to resolve the relevant current domain identity and
+authorization through `packages/booking`; the authentication session is not a
+domain role selector. See [authentication and
+sessions](authentication-and-sessions.md).
 
 When created, the workspace's one manifest may declare browser runtime
 dependencies, Worker/API runtime dependencies, application build and

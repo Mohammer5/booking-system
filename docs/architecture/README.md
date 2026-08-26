@@ -29,7 +29,9 @@ packages/
 `apps/booking-system-web` is the single same-origin deployable application. It
 composes the browser/Vite experience, static assets, Cloudflare Worker request
 handling, `/api/*`, private technical adapters, and the application composition
-root.
+root. Better Auth is the accepted application-private authentication layer,
+using D1-backed opaque sessions while booking authorization remains resolved
+from current domain state.
 `packages/booking` is the single initial conceptual domain package; the four
 folders shown beneath it are distinct responsibility modules, not separate
 workspace packages.
@@ -42,15 +44,18 @@ source/build graphs determine what reaches each output. Read
 [applications.md](applications.md), [module-organization.md](module-organization.md),
 [boundaries.md](boundaries.md), and
 [runtime-and-hosting.md](runtime-and-hosting.md) for those distinctions.
+Read [authentication and sessions](authentication-and-sessions.md) for the
+technical-principal, session, contextual domain-resolution, and non-production
+authentication contracts.
 
 This tree is a conceptual ownership view. When implementation is authorized,
 the standard workspace `src/` rule still applies and the four booking names
 remain its first-level responsibility modules.
 
-This conceptual target, Worker-based runtime, Vite-built assets, and D1
-persistence are accepted but not implemented. No workspace, dependency edge,
-boundary map, composition file, package export, or exact internal file layout
-exists yet. Read
+This conceptual target, Worker-based runtime, Vite-built assets, D1
+persistence, and Better Auth session architecture are accepted but not
+implemented. No workspace, dependency edge, boundary map, composition file,
+package export, or exact internal file layout exists yet. Read
 [principles.md](principles.md) for the philosophy,
 [module-organization.md](module-organization.md) for source shape, and
 [boundaries.md](boundaries.md) for the executable dependency model. Read

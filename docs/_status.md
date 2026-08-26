@@ -19,6 +19,9 @@ The repository has accepted an architecture and delivery direction:
   responsibility modules;
 - Vite-built frontend assets and same-origin API composition;
 - D1 persistence with SQLite-compatible semantics and isolated environments;
+- Better Auth inside the Worker with D1-backed opaque sessions, one stable
+  external principal per session, context-specific domain identity resolution,
+  and no session-cached booking authorization;
 - GitHub Actions CI/CD, Vitest, the Workers Vitest integration, and Playwright;
   and
 - release-tag production promotion after real Cloudflare staging verification.
@@ -28,7 +31,8 @@ The accepted direction is not yet product implementation:
 - no product source code or runtime dependency exists;
 - no application or package workspace has been created or implemented;
 - no Vite frontend, Worker, D1 schema, product test suite, Playwright suite,
-  release workflow, or production deployment exists;
+  Better Auth/session implementation, release workflow, or production
+  deployment exists;
 - no workspace boundary map is registered yet;
 - the first project-specific delivery sequence exists only as non-active
   Markplane planning state; and

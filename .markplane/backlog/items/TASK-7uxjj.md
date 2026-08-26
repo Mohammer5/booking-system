@@ -23,17 +23,21 @@ updated: 2026-08-27
 
 ## Description
 
-Allow a new person to authenticate in Participant context and complete
-mandatory booking-system onboarding. Successful onboarding must create the
-separate Active Participant identity required for Course membership and later
-Module participation without requiring an Invite or pre-existing Assignment.
+Allow a new person with a normal Better Auth application session to enter
+Participant context and complete mandatory booking-system onboarding.
+Successful onboarding must create the separate Active Participant identity
+required for Course membership and later Module participation without
+requiring an Invite or pre-existing Assignment.
 
 ## Acceptance Criteria
 
-- [ ] A new external authentication identity can enter Participant onboarding
-      without a Course Invite or existing Course Assignment; Participant
-      remains a separate domain identity from any Admin User backed by the
-      same external principal.
+- [ ] Participant context resolves the session's stable external principal to
+      the current Participant from authoritative state; a principal with no
+      Participant can enter onboarding without a Course Invite or existing
+      Course Assignment.
+- [ ] Participant remains a separate domain identity from any Admin User backed
+      by the same external principal; one authentication session can support
+      either context without persisting a selected role.
 - [ ] Onboarding requires the person to explicitly supply or confirm a
       booking-system name and email; the name is non-blank after trimming and
       authentication-provider profile data is not authoritative.
@@ -51,7 +55,9 @@ Module participation without requiring an Invite or pre-existing Assignment.
 ## Notes
 
 Participant profile editing, Participant Disable/Re-enable, and admin-side
-Participant profile mutation are outside this task.
+Participant profile mutation are outside this task. Authentication alone does
+not create a Participant or Course Assignment. Real production provider
+integration and identity/provider linking remain outside the epic.
 
 ## References
 
@@ -60,3 +66,5 @@ Participant profile mutation are outside this task.
 - `docs/product/course-access.md#participant-registration-and-onboarding`
 - `docs/product/course-access.md#participant-profile`
 - `docs/product/representative-scenarios.md#a-participant-onboarding-without-an-invite`
+- `docs/architecture/authentication-and-sessions.md#one-session-contextual-domain-resolution`
+- `docs/architecture/authentication-and-sessions.md#bootstrap-and-onboarding-composition`

@@ -28,7 +28,9 @@ constraints.
 [Runtime and hosting](runtime-and-hosting.md) owns the Worker application that
 uses persistence. [Verification](../process/verification.md) owns migration and
 integration tests. [Releases](../process/releases.md) owns safe promotion of
-schema and application changes.
+schema and application changes. [Authentication and
+sessions](authentication-and-sessions.md) owns the technical identity/session
+semantics stored through this persistence boundary.
 
 ## Database Direction
 
@@ -38,6 +40,12 @@ as `database.sqlite` cannot be treated as Worker storage.
 
 Local development and tests may use an isolated local SQLite/D1-compatible
 database through Cloudflare's local development and testing facilities.
+
+Better Auth technical user, account, and session records and booking-domain
+records use the application's D1 persistence boundary unless a future concrete
+need proves otherwise. Sharing D1 does not merge their ownership:
+authentication records remain application-owned technical persistence and
+booking records remain conceptually domain-owned.
 
 ## Environment Isolation
 
@@ -64,6 +72,11 @@ Once a schema exists:
 - deployed schema changes remain compatible with the application versions
   present during rollout; and
 - undocumented manual production schema changes are not a normal path.
+
+Better Auth schema and migrations participate in this same version-controlled,
+clean-state-tested, rollout-compatible discipline when introduced. Production
+regression tests never mutate production authentication, identity, session, or
+booking data.
 
 Application and schema rollout cannot be assumed to switch atomically.
 Destructive migrations are not routine; any future coordinated or destructive

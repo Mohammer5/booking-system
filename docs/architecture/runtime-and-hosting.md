@@ -86,6 +86,19 @@ Keep three concerns distinct:
 - Node-compatible packages may be used where the Worker supports them; and
 - the deployed application executes in the Workers runtime.
 
+### Authentication Runtime Compatibility
+
+The accepted Better Auth composition currently requires Worker-side
+`AsyncLocalStorage` support. When dependencies are introduced, verify the
+then-current Better Auth and Cloudflare requirements and enable the narrowest
+supported compatibility capability: prefer `nodejs_als` when sufficient and
+otherwise use `nodejs_compat`.
+
+This is a dependency-specific Worker setting, not permission for arbitrary
+Node-only application assumptions. Production remains a Cloudflare Worker, not
+a conventional Node server. See [authentication and
+sessions](authentication-and-sessions.md#worker-compatibility).
+
 ## Dependency Declaration And Runtime Graphs
 
 The planned `apps/booking-system-web` workspace has one package manifest for

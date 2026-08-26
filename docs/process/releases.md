@@ -96,6 +96,12 @@ hosted candidate must use:
 - a clearly separate staging environment and D1 database; and
 - non-sensitive test configuration and data.
 
+If hosted E2E uses the explicitly non-production Better Auth session
+establishment mechanism, staging or preview must additionally gate it with a
+CI-controlled secret or equivalently strong non-public control. The production
+composition must exclude or make that mechanism unavailable, and release
+verification must prove requests cannot activate it in production.
+
 Playwright then verifies the actual Cloudflare URL to expose routing, assets,
 bindings, runtime, and environment failures that local tests cannot prove.
 Preview URLs are not trusted with production secrets or production user data;
@@ -111,6 +117,11 @@ Staging and production use separate D1 databases. Destructive browser tests
 never target production. Production migration and application rollout must
 respect the migration-compatibility contract because schema and code cannot be
 assumed to switch atomically.
+
+Better Auth technical schema changes use the same version-controlled,
+clean-state-tested, rollout-compatible migration discipline as booking-domain
+schema changes. Production regression tests must not create or mutate
+production authentication identities or sessions.
 
 After deployment, only safe smoke checks run against production. They may
 confirm that the application, static entrypoint, readiness surface, or a
@@ -130,6 +141,12 @@ GitHub `staging` and `production` environments should hold environment-specific
 configuration where useful. The accepted automatic release path does not add a
 manual production-approval click unless a later requirement changes that
 policy.
+
+Real Google, Apple, Microsoft, and Facebook provider credentials remain
+deferred with those integrations. When introduced, their environment-specific
+secrets and callback configuration follow this same non-source, least-privilege
+release handling. Test-authentication secrets and session tokens must never be
+persisted in CI artifacts.
 
 Wrangler must be a project-pinned development dependency and CI must use the
 locked project version through repository scripts or `pnpm exec wrangler`.

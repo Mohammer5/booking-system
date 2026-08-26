@@ -75,6 +75,13 @@ folder names, entrypoint names, composition filenames, public exports, or
 dependency edges. Those remain deferred until the real application and its
 boundary map are introduced.
 
+Authentication and session establishment are application-owned technical
+responsibilities. The eventual application boundary map must make their
+allowed browser, Worker, composition, and booking-interface edges explicit,
+while preventing Better Auth, provider, cookie/session, Cloudflare-auth, and
+test-authentication implementation imports from entering `packages/booking`.
+This contract does not select an exact first-level application folder name.
+
 ## Vertical Slices
 
 Second-level folders name use cases or focused change paths. A slice may contain

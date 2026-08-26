@@ -69,6 +69,21 @@ while D1 provides durable storage in the Workers environment. Separate local,
 staging, and production data protects production from destructive regression
 tests and makes pre-production verification meaningful.
 
+## Use Better Auth With D1-Backed Opaque Sessions
+
+Better Auth will run inside `apps/booking-system-web` and use the application's
+D1 database. This fits the accepted Worker and D1 footprint without another
+identity service, while database-backed opaque sessions remain simple and
+revocable. The session establishes only one stable external principal;
+Participant/Admin resolution and every authorization decision use authoritative
+current booking-domain state instead of session claims.
+
+Implicit provider linking is disabled in v1 to avoid accidental identity
+merging. The first epic uses a separately composed, explicitly non-production
+Better Auth mechanism to establish normal sessions for deterministic fixture
+identities. Production must be structurally unable to activate that mechanism;
+real Google, Apple, Microsoft, and Facebook integration remains deferred.
+
 ## Keep Node Tooling Separate From The Worker Runtime
 
 Node.js remains the repository tooling, build, and CI runtime. Application

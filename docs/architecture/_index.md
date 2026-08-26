@@ -1,8 +1,8 @@
 # Architecture
 
 Architecture docs define conceptual-domain-first source organization, the
-accepted runtime and persistence direction, JavaScript conventions, and
-ESLint-enforced dependency rules.
+accepted runtime, persistence, and authentication direction, JavaScript
+conventions, and ESLint-enforced dependency rules.
 
 ## Documents
 
@@ -72,6 +72,19 @@ ESLint-enforced dependency rules.
 - Read when: A task affects databases, D1, SQL semantics, environment data,
   migrations, or persistence safety.
 - Tags: architecture, persistence, database, d1, sqlite, migrations
+
+### Authentication And Sessions
+- Path: `docs/architecture/authentication-and-sessions.md`
+- Summary: Defines Better Auth as the application-owned authentication layer,
+  D1-backed opaque sessions, stable-principal mapping, contextual domain
+  resolution, provider-linking policy, Invite continuation, and fail-closed
+  non-production authentication.
+- Read when: A task affects authentication, sessions, external principals,
+  provider integration or linking, Participant/Admin identity resolution,
+  Invite continuation through sign-in, test authentication, or auth-related
+  Worker and D1 integration.
+- Tags: architecture, authentication, better-auth, sessions, identity, oauth,
+  d1, testing
 
 ### Packages
 - Path: `docs/architecture/packages.md`

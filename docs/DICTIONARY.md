@@ -87,7 +87,8 @@ establish which booking-system domain identity is acting. Several sign-in
 methods may resolve to the same principal; different principals remain
 different and are not merged because profile data matches. One principal may
 independently back one Participant, one Admin User, or both. See [the domain
-model](product/domain-model.md#external-authentication-identity).
+model](product/domain-model.md#external-authentication-identity) and
+[authentication architecture](architecture/authentication-and-sessions.md#technical-principal-and-domain-identities).
 
 ### First Admin Bootstrap
 
@@ -179,6 +180,24 @@ v1, and every accepted mutation must leave at least one Active Super Admin. See
 An independently runnable or served workspace that composes conceptual
 behavior with private technical implementations at an explicit runtime edge.
 
+### Authentication Layer
+
+The application-owned technical responsibility that authenticates a request
+and establishes one stable [external authentication
+identity](#external-authentication-identity). It does not own Participant,
+Admin User, or booking authorization decisions. The accepted initial layer is
+planned but not implemented. See [Authentication and
+sessions](architecture/authentication-and-sessions.md#accepted-composition).
+
+### Authentication Session
+
+The application-owned technical relationship that keeps one external
+principal authenticated across requests. The accepted initial model is a
+planned database-backed opaque server-side session identified by a secure
+same-origin `HttpOnly` cookie; it contains no booking authorization snapshot.
+See [Session
+model](architecture/authentication-and-sessions.md#session-model).
+
 ### Booking Package
 
 The planned conceptual domain package at `packages/booking`. It owns booking
@@ -245,6 +264,14 @@ area `_index.md` files.
 The documentation model separating [global docs](#global-docs) from optional
 [co-located docs](#co-located-docs) and routing global docs through structured
 indexes.
+
+### Non-Production Authentication
+
+The separately composed test-only mechanism that establishes normal
+[authentication sessions](#authentication-session) for deterministic named
+fixture identities without automating third-party provider UIs or bypassing
+booking-domain authorization. It must be unavailable in production. See
+[Non-production authentication](architecture/authentication-and-sessions.md#non-production-authentication).
 
 ### Production
 

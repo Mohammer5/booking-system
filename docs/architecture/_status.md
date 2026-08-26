@@ -22,6 +22,15 @@
 - Deployed relational persistence uses D1 with SQLite-compatible SQL semantics.
 - Local/test, staging, and production persistence are isolated; staging and
   production use separate D1 databases.
+- Better Auth is the intended application-owned authentication layer inside
+  `apps/booking-system-web`, backed by the application's D1 database.
+- Authentication uses one database-backed opaque cookie session per stable
+  external principal. Each request resolves the context-relevant Participant
+  or Admin User and its authorization from authoritative current domain state;
+  domain role and permission snapshots do not enter the session.
+- Implicit provider linking is disabled in v1. Deterministic browser tests use
+  a separately composed, explicitly non-production Better Auth session
+  mechanism that must be structurally unavailable in production.
 - The initial infrastructure boundary is Worker, Workers Static Assets, and D1.
 
 ## Current Implementation
@@ -29,8 +38,9 @@
 - Neither accepted application/package workspace nor either workspace manifest
   has been created or implemented.
 - No product `src/` directory or product code exists.
-- No Vite frontend, Worker, D1 binding, database schema, migration, or
-  production deployment exists.
+- No Vite frontend, Worker, D1 binding, database schema, migration,
+  authentication/session implementation, test-authentication composition,
+  real provider integration, or production deployment exists.
 - The repository uses modern ESM JavaScript and pnpm workspace globs.
 - ESLint source-shape rules target future application and package source.
 - The boundary converter implements deny-by-default workspace and module
@@ -39,12 +49,14 @@
 - No application or package boundary map or exact browser-facing or
   Worker/API-facing responsibility-module name exists.
 - No architecture fitness function, secondary checker, inferred dependency
-  map, application framework, runtime dependency, or runtime dependency version
-  exists.
+  map, application framework, installed runtime dependency, or runtime
+  dependency version exists.
 
 The conceptual workspace identities and initial booking responsibility modules
 are declared. Exact application responsibility modules, dependency edges,
 entrypoints, composition-file names, package exports, optional application
 framework, exact internal source files, and runtime dependency versions remain
-undeclared until application implementation begins. Accepted direction must
-not be mistaken for implemented runtime code.
+undeclared until application implementation begins. Better Auth is selected,
+but exact session timing, schema and route names, provider configuration, and
+minimum supported Worker compatibility mode remain implementation choices.
+Accepted direction must not be mistaken for implemented runtime code.

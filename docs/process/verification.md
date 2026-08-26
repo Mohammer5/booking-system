@@ -101,12 +101,21 @@ developer's database. Representative flows should eventually cover:
 Detailed product invariants remain lower-level-test responsibilities.
 
 Routine E2E must not automate Google, Apple, Microsoft, or Facebook login UIs.
-When authentication is implemented, tests need an explicitly non-production
-way to establish identities such as Admin User, Participant A, and Participant
-B.
-That mechanism must not create a hidden production bypass, and production must
-fail closed if test-only authentication is requested. Focused boundary tests
-own third-party OAuth/OIDC integration.
+The accepted direction is an explicitly non-production Better Auth test-capable
+composition that establishes normal application sessions for deterministic
+named fixture identities such as Admin User, Participant A, and Participant B.
+Playwright then exercises the normal authenticated application and real
+booking-domain authorization; test authentication must not mock or bypass it or
+permit arbitrary-principal impersonation.
+
+Production composition must contain no activatable test-authentication route
+or bypass and must fail closed regardless of headers, queries, or cookies when
+test-only authentication is requested. A focused automated regression must
+prove this structural property. Hosted staging or preview test-authentication
+requires a CI-controlled secret or equivalently strong non-public gate. When
+real providers are later integrated, focused boundary tests own their
+third-party OAuth/OIDC behavior. See [authentication and
+sessions](../architecture/authentication-and-sessions.md#non-production-authentication).
 
 On browser-test failure, CI should retain short-lived useful diagnostics such
 as the Playwright report, traces, screenshots, and relevant logs. Artifacts
@@ -119,7 +128,8 @@ The release gate runs Playwright against a real Cloudflare staging or preview
 deployment. After production deployment, verification is limited to safe,
 non-destructive smoke checks such as serving the application entrypoint or a
 harmless readiness/read operation. Regression tests never create synthetic
-Courses, Participants, or bookings in production.
+Courses, Participants, bookings, authentication identities, or sessions in
+production.
 
 ## Canonical Repository Command
 

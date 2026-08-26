@@ -53,8 +53,10 @@ This repository uses an indexed global documentation system.
 ### Architecture
 - Path: `docs/architecture/_index.md`
 - Summary: Conceptual-domain-first source organization, JavaScript conventions,
-  accepted runtime and persistence direction, ESLint enforcement, and explicit
-  dependency boundaries.
+  accepted runtime, persistence, and authentication direction, ESLint
+  enforcement, and explicit dependency boundaries.
 - Read when: A task affects source layout, dependencies, modules, exports,
-  applications, packages, runtime, persistence, ESLint, or boundary maps.
-- Tags: architecture, modules, runtime, persistence, boundaries, eslint
+  applications, packages, runtime, persistence, authentication, sessions,
+  ESLint, or boundary maps.
+- Tags: architecture, modules, runtime, persistence, authentication, sessions,
+  boundaries, eslint
