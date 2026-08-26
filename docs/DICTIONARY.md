@@ -72,6 +72,11 @@ One workspace's explicit deny-by-default declaration of its package namespace,
 allowed workspace dependencies, responsibility-module edges, and
 composition-file permissions.
 
+### CI Gate
+
+The automated verification result that must succeed before a change may merge
+or advance toward release. The current GitHub status check is named `verify`.
+
 ### Co-Located Docs
 
 Optional Markdown files named `*.docs.md` that live next to one concrete source
@@ -90,6 +95,11 @@ A stable product responsibility with its own language, rules, and change
 pressure. Technical mechanisms implement conceptual domains but do not become
 peer domains by default.
 
+### Deployment
+
+Making one application version available in a specific runtime environment. A
+normal merge to `main` is not a production deployment in this repository.
+
 ### Development Backlog
 
 The repository-local `.markplane/` project containing development epics,
@@ -107,15 +117,34 @@ The documentation model separating [global docs](#global-docs) from optional
 [co-located docs](#co-located-docs) and routing global docs through structured
 indexes.
 
+### Production
+
+The live application environment and its dedicated D1 database. Destructive
+regression tests never target production; only safe post-deployment smoke
+checks do.
+
 ### Public Interface
 
 The explicit named exports a source directory or conceptual package permits
 other owners to use. It contains no hidden implementation access.
 
+### Release
+
+The accepted tag-triggered process that re-verifies a commit already contained
+in `main`, validates it in a real staging or preview environment, and then
+promotes that same commit to production. Release automation is planned but not
+yet implemented.
+
 ### Responsibility Module
 
 A first-level `src/` module named for one conceptual responsibility or explicit
 application role and governed by its workspace's [boundary map](#boundary-map).
+
+### Staging
+
+The isolated pre-production environment used to verify a release version in
+the real hosting runtime before production promotion. It uses non-production
+test data and a D1 database separate from production.
 
 ### Technical Mechanism
 

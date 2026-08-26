@@ -1,7 +1,7 @@
 # Process
 
-Process docs define how repository documentation is structured, routed, and
-maintained, and how development work is tracked.
+Process docs define how repository documentation is maintained, how
+development work is tracked and verified, and how releases are promoted.
 
 ## Documents
 
@@ -40,6 +40,24 @@ maintained, and how development work is tracked.
 - Read when: A task creates, selects, sequences, updates, completes, or commits
   tracked project work.
 - Tags: process, planning, backlog, markplane, commits
+
+### Verification
+- Path: `docs/process/verification.md`
+- Summary: Defines the layered regression harness, canonical `pnpm check`
+  contract, pull-request CI, browser-test policy, and external branch
+  protection requirement.
+- Read when: A task affects tests, CI, required checks, test environments,
+  browser automation, verification commands, or failure artifacts.
+- Tags: process, verification, testing, ci, vitest, playwright
+
+### Releases
+- Path: `docs/process/releases.md`
+- Summary: Defines tag-gated releases, main-containment validation, hosted
+  staging verification, production promotion, deployment authority, and
+  secret handling.
+- Read when: A task affects release tags, deployment, staging, production,
+  Cloudflare credentials, migrations during rollout, or smoke checks.
+- Tags: process, release, deployment, staging, production, github-actions
 
 ### Docs Routing
 - Path: `docs/process/docs-routing.md`

@@ -14,8 +14,8 @@ This repository uses an indexed global documentation system.
 
 ### Docs Status
 - Path: `docs/_status.md`
-- Summary: Present template state and the intentionally absent project-specific
-  surfaces.
+- Summary: Present accepted product and technical direction, live repository
+  tooling, and intentionally absent product implementation surfaces.
 - Read when: You need the current documentation or repository baseline.
 - Tags: docs, status, template
 
@@ -23,7 +23,7 @@ This repository uses an indexed global documentation system.
 - Path: `docs/_decisions.md`
 - Summary: Rationale for the documentation structure and template boundary.
 - Read when: You need to understand why documentation roles are separated or
-  why project-specific content is absent.
+  why accepted technology stays outside product-domain specifications.
 - Tags: docs, decisions, rationale, template
 
 ### Dictionary
@@ -44,16 +44,17 @@ This repository uses an indexed global documentation system.
 
 ### Process
 - Path: `docs/process/_index.md`
-- Summary: Documentation workflow, Markplane tracking, routing, and maintenance
-  rules.
-- Read when: A task affects documentation, Markplane, routing, indexes, or
-  terminology maintenance.
-- Tags: process, docs, tracking, markplane
+- Summary: Documentation workflow, Markplane tracking, verification, CI, and
+  release rules.
+- Read when: A task affects documentation, Markplane, tests, CI, releases,
+  routing, indexes, or terminology maintenance.
+- Tags: process, docs, tracking, verification, ci, release
 
 ### Architecture
 - Path: `docs/architecture/_index.md`
 - Summary: Conceptual-domain-first source organization, JavaScript conventions,
-  ESLint enforcement, and explicit dependency boundaries.
+  accepted runtime and persistence direction, ESLint enforcement, and explicit
+  dependency boundaries.
 - Read when: A task affects source layout, dependencies, modules, exports,
-  applications, packages, ESLint, or boundary maps.
-- Tags: architecture, modules, boundaries, eslint
+  applications, packages, runtime, persistence, ESLint, or boundary maps.
+- Tags: architecture, modules, runtime, persistence, boundaries, eslint

@@ -6,8 +6,28 @@ roles, while their internal technical mechanisms remain private.
 
 ## Current Inventory
 
-The template defines no application. A future project adds an application only
-after its product model establishes one independently deployable responsibility.
+No application workspace or runtime implementation exists.
+
+## Accepted Initial Boundary
+
+The first application will be one booking-system web application rather than
+separate frontend and API deployments. Its eventual workspace name must express
+that conceptual product-facing role, not a provider or mechanism such as
+Cloudflare, Worker, Vite, or D1.
+
+- **Responsibility:** Serve the browser booking experience and its same-origin
+  API as one deployable boundary.
+- **Not responsible for:** Owning product rules or turning runtime and storage
+  providers into product concepts.
+- **Inputs:** Browser navigation, static-asset requests, API requests, and
+  conceptual capabilities supplied at composition.
+- **Outputs:** Frontend assets and API responses.
+- **Adjacent parts:** Future conceptual packages, private Worker/Vite
+  composition, and D1 persistence.
+
+See [runtime and hosting](runtime-and-hosting.md) for the accepted deployment
+shape. This target description does not declare a workspace or claim that the
+application is already runnable.
 
 ## Definition Rule
 

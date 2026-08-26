@@ -52,3 +52,37 @@ existing `*.docs.md` files but creates new ones only on explicit request.
 Markplane records work, order, status, plans, and notes. Canonical docs record
 accepted repository truth. A tracked item can point to a doc, but neither a
 task nor its implementation plan may redefine that truth by itself.
+
+## Keep One Canonical Verification Entry Point
+
+`pnpm check` composes all non-deployment verification so local work, pull
+requests, and releases rely on the same evidence. Existing Node tests retain
+ownership of ESLint tooling; future application layers extend the composition
+instead of replacing those tests or adding a competing check-everything path.
+
+## Layer Tests By Responsibility
+
+Fast product tests, Workers/D1 integration tests, local browser tests, hosted
+staging browser tests, and production smoke checks answer different questions.
+Keeping those layers distinct avoids both browser-only coverage and duplicated
+assertions at every level.
+
+## Use GitHub Actions As The CI/CD Authority
+
+One authority should decide whether production may change. GitHub Actions owns
+the normal verification and release gates; Cloudflare supplies the runtime and
+deployment target but does not independently auto-deploy `main`.
+
+## Separate Merge Verification From Production Release
+
+Pull requests and pushes to `main` establish merge confidence but never deploy
+production. A release tag initiates a fresh full gate, proves the tagged commit
+is contained in `main`, verifies a real Cloudflare pre-production version, and
+only then promotes that same commit.
+
+## Add Deployment Automation Only When It Can Deploy Reality
+
+The repository gains useful CI immediately because lint and architecture
+tooling tests already exist. Application test configuration and the release
+workflow wait for the first real application so no empty suite or fictional
+deployment can report misleading success.

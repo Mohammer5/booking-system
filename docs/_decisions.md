@@ -21,11 +21,14 @@ clearer where to update repository truth.
 The repository began as a product-neutral template. Product or domain content
 is added only when concrete accepted requirements give it an owner and make it
 repository truth. The booking-system specification now meets that threshold;
-technology, research, workspace, and backlog content remain absent until
-similarly justified.
+the accepted hosting, persistence, verification, and release direction now
+meets it as well. Workspaces and runtime implementation remain absent until an
+authorized implementation change justifies them.
 
 ## Separate Conceptual Truth From Technology Choices
 
-Future product and domain docs should use product language. Concrete providers
-and runtime mechanisms should live behind architecture boundaries and in a
-separate technology area when the project has actually selected them.
+Product and domain docs use product language. Selected providers, runtime
+mechanisms, testing tools, and delivery policy live in the architecture and
+process areas, behind product-facing application boundaries. This keeps the
+product specification implementation-agnostic even after technology decisions
+have been accepted.

@@ -5,9 +5,10 @@ defines the complete initial domain scope for Courses, Groups, Modules,
 Participants, Course Assignments, Module Selections, Course Invites, and Admin
 capabilities.
 
-The repository currently contains product specifications only. It has no
-product implementation, application workspace, technology selection, database
-design, API design, frontend design, or infrastructure design.
+This product area contains specifications only. The repository has no product
+implementation or application workspace. Accepted technology, persistence,
+API, frontend, and infrastructure direction remains outside the product
+specification and does not alter its implementation-agnostic behavior.
 
 ## Deliberately Unspecified Details
 

@@ -1,7 +1,8 @@
 # Architecture
 
-Architecture docs define conceptual-domain-first source organization,
-JavaScript conventions, and ESLint-enforced dependency rules.
+Architecture docs define conceptual-domain-first source organization, the
+accepted runtime and persistence direction, JavaScript conventions, and
+ESLint-enforced dependency rules.
 
 ## Documents
 
@@ -37,9 +38,27 @@ JavaScript conventions, and ESLint-enforced dependency rules.
 
 ### Applications
 - Path: `docs/architecture/applications.md`
-- Summary: Defines application boundaries and the currently empty inventory.
+- Summary: Defines application boundaries, the empty implemented inventory,
+  and the accepted initial booking-system web application boundary.
 - Read when: A task adds, removes, deploys, or changes an application boundary.
 - Tags: architecture, applications, deployment, composition
+
+### Runtime And Hosting
+- Path: `docs/architecture/runtime-and-hosting.md`
+- Summary: Defines the intended Cloudflare Worker deployment, Vite static
+  assets, same-origin composition, runtime distinction, and minimal hosting
+  footprint.
+- Read when: A task affects hosting, frontend/backend deployment shape, Worker
+  runtime behavior, Vite delivery, routes, or infrastructure selection.
+- Tags: architecture, cloudflare, workers, vite, hosting, runtime
+
+### Persistence
+- Path: `docs/architecture/persistence.md`
+- Summary: Defines SQLite-compatible semantics, D1 persistence, environment
+  isolation, migration constraints, and current unimplemented state.
+- Read when: A task affects databases, D1, SQL semantics, environment data,
+  migrations, or persistence safety.
+- Tags: architecture, persistence, database, d1, sqlite, migrations
 
 ### Packages
 - Path: `docs/architecture/packages.md`

@@ -13,6 +13,36 @@ provider, persistence, and runtime mechanics into conceptual capabilities and
 inject those capabilities at composition roots. Domain packages do not import
 provider SDKs.
 
+## Deploy One Same-Origin Worker Application Initially
+
+One application will compose Vite-built frontend assets and `/api/*` handling
+inside a Cloudflare Worker deployment. This avoids an unproven frontend/API
+deployment boundary and its independent release and CORS coordination. The
+application keeps a product-facing identity; Cloudflare, Vite, and D1 remain
+private technical mechanisms.
+
+## Use Cloudflare As The Initial Runtime Boundary
+
+Cloudflare Workers, Workers Static Assets, and D1 form the smallest accepted
+hosting footprint. Designing for small-scale use within Cloudflare's free
+hosting and database quotas constrains unnecessary infrastructure without
+turning changeable quota numbers or unrelated external costs into correctness
+rules.
+
+## Use D1 With SQLite Semantics For Deployed Persistence
+
+SQLite-compatible SQL gives the relational model one clear semantic basis,
+while D1 provides durable storage in the Workers environment. Separate local,
+staging, and production data protects production from destructive regression
+tests and makes pre-production verification meaningful.
+
+## Keep Node Tooling Separate From The Worker Runtime
+
+Node.js remains the repository tooling, build, and CI runtime. Application
+JavaScript may use Node-compatible packages when justified, but production is
+not modeled as a conventional long-running Node server. This prevents local
+Node execution from being mistaken for proof of Workers-runtime behavior.
+
 ## Keep Contracts With Their Concepts
 
 Each conceptual package owns the schemas, commands, results, and events that
@@ -37,6 +67,13 @@ Example applications, packages, or domain names can look authoritative after a
 template is copied. The template therefore keeps the workspace inventory empty
 and tests enforcement with synthetic names. A project declares only the
 workspaces justified by its accepted product model.
+
+## Introduce Runtime Tooling With A Real Application
+
+Runtime and test dependencies, bindings, migrations, and deployment workflows
+arrive with code and tests that use them. Deferring empty scaffolding keeps the
+current repository honest while requiring the first deployable application to
+bring its applicable verification and release infrastructure with it.
 
 ## Use ESLint As The Sole Enforcement Surface
 

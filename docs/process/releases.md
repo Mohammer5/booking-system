@@ -1,0 +1,148 @@
+# Releases
+
+## Responsibility
+
+This document owns the normal [release](../DICTIONARY.md#release) path from a
+tag through repeated verification, Cloudflare
+[staging](../DICTIONARY.md#staging) validation,
+[production](../DICTIONARY.md#production) promotion, and a safe
+post-[deployment](../DICTIONARY.md#deployment) smoke check.
+
+## Not Responsible For
+
+This document does not define product behavior, the application runtime
+boundary, individual test assertions, or an emergency manual-deployment
+procedure.
+
+## Inputs
+
+- a release tag matching the initial `v*` convention;
+- a tagged commit already contained in `main`;
+- the complete canonical verification surfaces; and
+- environment-scoped Cloudflare configuration and credentials.
+
+## Outputs
+
+- a verified pre-production Worker version;
+- a production deployment of that same release commit; and
+- a non-destructive production smoke-test result.
+
+## Adjacent Parts
+
+[Verification](verification.md) owns the test layers and canonical check.
+[Runtime and hosting](../architecture/runtime-and-hosting.md) owns the deployed
+application shape, while [persistence](../architecture/persistence.md) owns D1
+isolation and migration compatibility.
+
+## Trigger And Main Containment
+
+A normal push or merge to `main` never deploys production. Production release
+starts when a release tag matching `v*` is pushed. That convention does not by
+itself impose a broader semantic-version policy.
+
+A tag points to a commit, not a branch. Before any deployment, release CI must
+fetch `main` and prove that the tagged commit is an ancestor of `origin/main`.
+The commit does not have to be the current tip of `main`, but it must already
+have landed there. Failure of this containment check stops the release.
+
+## Release Gate
+
+```text
+release tag
+   |
+   v
+tag commit is contained in main
+   |
+   v
+deterministic install and full verification
+   |
+   +-- lint and repository tests
+   +-- unit tests
+   +-- Worker/API/D1 and migration tests
+   +-- production build
+   +-- local browser tests
+   |
+   v
+deploy same commit to Cloudflare staging/preview
+   |
+   v
+Playwright against the hosted pre-production version
+   |
+   v
+all green? -- no --> stop; production remains unchanged
+   |
+  yes
+   |
+   v
+production migration and deployment
+   |
+   v
+safe production smoke test
+```
+
+The release reruns the full regression gate rather than trusting historical PR
+evidence. Every stage depends on all earlier stages; production is unchanged
+when any containment, verification, build, staging deployment, or hosted E2E
+step fails.
+
+## Staging And Preview Contract
+
+Before production promotion, release CI deploys the release commit through
+Cloudflare's then-current supported Worker-version or preview mechanism. The
+hosted candidate must use:
+
+- the exact commit and production-style Vite output intended for production;
+- the real Workers runtime;
+- a clearly separate staging environment and D1 database; and
+- non-sensitive test configuration and data.
+
+Playwright then verifies the actual Cloudflare URL to expose routing, assets,
+bindings, runtime, and environment failures that local tests cannot prove.
+Preview URLs are not trusted with production secrets or production user data;
+explicit access control may be added later if a concrete security need arises.
+
+Release workflows must be serialized, or provide equivalent deterministic
+ownership of shared staging state. A newer tag must not automatically cancel
+an in-progress production release.
+
+## Production Promotion And Data Safety
+
+Staging and production use separate D1 databases. Destructive browser tests
+never target production. Production migration and application rollout must
+respect the migration-compatibility contract because schema and code cannot be
+assumed to switch atomically.
+
+After deployment, only safe smoke checks run against production. They may
+confirm that the application, static entrypoint, readiness surface, or a
+harmless read operation responds. They must not create synthetic product data.
+
+## Deployment Authority And Secrets
+
+GitHub Actions is the normal authority that decides whether production may be
+deployed. Cloudflare Git integration or Workers Builds must not independently
+auto-deploy pushes to `main`; Cloudflare is the runtime target, not a second
+release gate. Manual emergency deployment may remain operationally possible
+outside this normal path.
+
+Cloudflare account identification and a least-privilege deployment API token
+belong in GitHub secrets or environment configuration, never source. Separate
+GitHub `staging` and `production` environments should hold environment-specific
+configuration where useful. The accepted automatic release path does not add a
+manual production-approval click unless a later requirement changes that
+policy.
+
+Wrangler must be a project-pinned development dependency and CI must use the
+locked project version through repository scripts or `pnpm exec wrangler`.
+Vite, Vitest, Playwright, and Cloudflare integration versions follow the same
+reproducibility rule.
+
+## Current State And Implementation Trigger
+
+No deployable application, Cloudflare environment, or release workflow exists
+today, so the repository does not contain a workflow that pretends to deploy.
+The change introducing the first deployable application must also introduce
+the real tag-triggered GitHub release workflow, staging and production
+Cloudflare environments, and separate staging/production D1 configuration
+needed to execute this contract. This requirement composes with the linked
+runtime, persistence, and verification implementation triggers; those
+applicable surfaces cannot be deferred after product runtime code lands.
