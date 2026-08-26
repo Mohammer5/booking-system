@@ -55,6 +55,7 @@
 
 ### Commits
 
+* Every commit message must be a valid semantic commit message
 * After completing and verifying authorized work, commit it automatically
   unless the user explicitly asks otherwise.
 * Keep each commit to one conceptual change.
