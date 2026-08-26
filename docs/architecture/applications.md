@@ -11,15 +11,17 @@ application target is `apps/booking-system-web`.
 
 ## Accepted Initial Boundary
 
-The first application will be `apps/booking-system-web`, one booking-system web
-application rather than separate frontend and API deployments. It is not only
-the Vite frontend; it owns technical composition for the complete same-origin
-application.
+The first application will be `apps/booking-system-web`, one
+[workspace](../DICTIONARY.md#workspace) with one application package manifest
+and one independently runnable and deployable booking-system boundary. It is
+not only the Vite frontend and is not split into frontend and API workspaces;
+it owns technical composition for the complete same-origin application.
 
-- **Responsibility:** Compose and serve the browser/Vite experience, frontend
-  static assets, Cloudflare Worker request handling, `/api/*` HTTP handling,
-  private technical adapters, and the application composition root as one
-  deployable boundary.
+- **Responsibility:** Compose and serve the browser-facing application,
+  Vite-built frontend/static assets, Cloudflare Worker request handling,
+  Worker/API-facing `/api/*` HTTP handling, private technical adapters, runtime
+  integration, and the application composition root as one deployable
+  boundary.
 - **Not responsible for:** Owning product rules or turning runtime and storage
   providers into product concepts.
 - **Inputs:** Browser navigation, static-asset requests, API requests, and
@@ -31,13 +33,22 @@ application.
 The browser reaches backend behavior through the same-origin API, such as
 `/api/*`.
 
+When created, the workspace's one manifest may declare browser runtime
+dependencies, Worker/API runtime dependencies, application build and
+development tooling, and the dependency on `packages/booking`. Sharing that
+manifest does not make each dependency architecturally available to every
+source responsibility or include it in every runtime output.
+
 ### No Separate API Application
 
-The initial architecture has no `apps/api`. Such a workspace would define a
-second independently runnable and deployable application boundary, which the
-accepted one-application model does not justify. A separate API application may
-be reconsidered only when a future concrete requirement needs an independent
-deployment or runtime boundary.
+The initial architecture has neither `apps/api` nor a separate frontend
+application workspace. Different source responsibilities or technical
+dependency sets do not justify another application or manifest. Such a
+workspace would define a second independently runnable and deployable
+application boundary, which the accepted one-application model does not
+justify. A separate application may be reconsidered only when a future
+concrete requirement needs an independent deployment, runtime, or application
+boundary.
 
 See [runtime and hosting](runtime-and-hosting.md) for the accepted deployment
 shape. This target description names the planned workspace but does not create

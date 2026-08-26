@@ -24,6 +24,26 @@ unproven `apps/api` deployment boundary and its independent release and CORS
 coordination. The application keeps a product-facing identity; Cloudflare,
 Vite, and D1 remain private technical mechanisms.
 
+## Align Package Manifests With Workspace Boundaries
+
+One workspace owns one package manifest. Internal responsibility modules do
+not receive separate manifests merely because they use different technical
+dependencies. The root manifest owns repository-wide tooling and orchestration;
+the planned `apps/booking-system-web` manifest will own dependencies for the
+whole deployable application; and the planned `packages/booking` manifest will
+own only dependencies consistent with the booking domain package.
+
+Browser and Worker/API dependencies may therefore coexist in the one
+application manifest. That shared declaration means only that the workspace's
+build, runtime, and tooling environment can resolve them. It neither permits
+every source module to import them nor places them in every output: the
+workspace boundary map will grant architectural import permission, while the
+source/build graph rooted at each runtime determines output inclusion.
+Dependency segregation by itself does not justify frontend, API, browser,
+server, or other technical workspaces; application extraction requires an
+independent runtime or deployment boundary, and package extraction remains
+driven by stable conceptual ownership and change pressure.
+
 ## Start With One Booking Domain Package
 
 `packages/booking` is the initial conceptual package. It owns booking-system
@@ -66,7 +86,8 @@ domains and make serialization concerns appear architecturally primary.
 
 Shared technical helpers remain local until repeated concrete use proves one
 owner and change pressure. `shared`, `core`, `utils`, and provider-named
-packages are not default escape hatches.
+packages are not default escape hatches. A crowded manifest or differing
+technical dependency sets are not evidence of an independent package owner.
 
 ## Keep Boundary Maps Local, Explicit, And Deny-By-Default
 

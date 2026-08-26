@@ -34,6 +34,15 @@ root.
 folders shown beneath it are distinct responsibility modules, not separate
 workspace packages.
 
+One application workspace does not mean one undifferentiated runtime or
+dependency graph. Browser-facing and Worker/API-facing code remain distinct
+internal responsibilities: the workspace manifest declares dependency
+availability, explicit boundaries permit source imports, and separate
+source/build graphs determine what reaches each output. Read
+[applications.md](applications.md), [module-organization.md](module-organization.md),
+[boundaries.md](boundaries.md), and
+[runtime-and-hosting.md](runtime-and-hosting.md) for those distinctions.
+
 This tree is a conceptual ownership view. When implementation is authorized,
 the standard workspace `src/` rule still applies and the four booking names
 remain its first-level responsibility modules.

@@ -41,6 +41,12 @@ Authentication-provider SDK mechanics, Admin UI implementation, HTTP, Vite,
 Cloudflare, and D1 remain private to `apps/booking-system-web`; `admin-access`
 owns only product policy and conceptual outcomes.
 
+When created, `packages/booking` will have one package manifest for the whole
+conceptual package. Its dependencies must remain consistent with booking-domain
+responsibility and must not pull browser, HTTP, Worker, Vite, Cloudflare, D1,
+authentication-provider, or other application/runtime concerns into the
+package.
+
 ## Definition Rule
 
 Document every conceptual package here when it is introduced. Give it a name
@@ -48,5 +54,10 @@ from product language and define its `Responsibility`, `Not responsible for`,
 `Inputs`, `Outputs`, and adjacent parts.
 
 Reuse, file count, provider use, or convenience is not sufficient evidence for
-a package. Do not create default `shared`, `core`, `utils`, provider, database,
-transport, `api`, `contracts`, or all-contracts packages.
+a package. Technical dependency segregation and a crowded or mixed-looking
+manifest are also insufficient: do not create default `frontend`, `backend`,
+`browser`, `server`, `api`, or `database` packages merely to give libraries
+separate dependency lists. Do not create default `shared`, `core`, `utils`,
+provider, transport, `contracts`, or all-contracts packages either. Extract a
+package only when a stable conceptual owner and independent change pressure
+justify the workspace boundary.

@@ -86,6 +86,38 @@ Keep three concerns distinct:
 - Node-compatible packages may be used where the Worker supports them; and
 - the deployed application executes in the Workers runtime.
 
+## Dependency Declaration And Runtime Graphs
+
+The planned `apps/booking-system-web` workspace has one package manifest for
+the complete application. That manifest declares which dependencies are
+available to the workspace's build, runtime, and tooling environment; it does
+not define one universal runtime graph.
+
+```text
+apps/booking-system-web/package.json
+                |
+        declares dependencies
+                |
+          +-----+-----+
+          |           |
+   browser graph   Worker graph
+          |           |
+   browser output  Worker output
+```
+
+The source/build graph rooted at the relevant entrypoint and configuration
+determines inclusion in each output. A browser-only dependency is not included
+in the Worker output merely because the same application manifest declares it,
+provided Worker/API-facing source does not import it. Likewise, a Worker/API
+dependency does not become a browser dependency merely because the manifest is
+shared. Exact entrypoints, build configuration, and bundler integration remain
+deferred until the application is implemented.
+
+[Dependency boundaries](boundaries.md) separately determine which source
+responsibilities may import declared dependencies. Manifest availability,
+architectural permission, and runtime output inclusion are independent
+questions.
+
 ## Infrastructure Boundary
 
 The accepted initial hosting footprint is deliberately small:

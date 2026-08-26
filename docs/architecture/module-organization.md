@@ -21,6 +21,29 @@ Production code lives under each [workspace's](../DICTIONARY.md#workspace)
 `src/` directory. Package manifests, boundary maps, and build configuration
 remain at the workspace root.
 
+One workspace has one package manifest. Internal responsibility modules do not
+receive separate `package.json` files merely because their technical
+dependencies differ. The intended ownership shape, once implementation creates
+the accepted workspaces, is:
+
+```text
+/
+  package.json                    # repository tooling and orchestration
+apps/
+  booking-system-web/
+    package.json                  # the complete deployable application
+packages/
+  booking/
+    package.json                  # the conceptual booking package
+```
+
+The root manifest is not the normal owner of application-specific runtime
+dependencies or dependencies owned only by the booking domain package. The
+current root manifest follows this direction by owning repository-wide tooling
+and orchestration only. The current `apps/*` and `packages/*` workspace globs
+already admit the planned direct-child workspaces; they do not create those
+workspaces or their manifests.
+
 ## Conceptual Packages
 
 Code that expresses product language, policy, invariants, commands, events,
@@ -38,6 +61,19 @@ responsibility they implement or behind the application's composition root.
 
 Do not organize first by `controllers`, `services`, `helpers`, `utils`,
 `models`, `views`, `common`, `core`, `infrastructure`, or provider name.
+
+Within `apps/booking-system-web`, browser-facing code and Worker/API-facing
+code are distinct internal application responsibilities. Browser-facing code
+MUST NOT import Worker/API implementation details, and Worker/API-facing code
+MUST NOT import browser or UI implementation details. Both may depend inward
+on the appropriate conceptual interfaces from `packages/booking` when the
+eventual boundary map explicitly permits those imports. Application
+composition may join the responsibilities only where required.
+
+This separation is a durable responsibility rule, not a decision about exact
+folder names, entrypoint names, composition filenames, public exports, or
+dependency edges. Those remain deferred until the real application and its
+boundary map are introduced.
 
 ## Vertical Slices
 

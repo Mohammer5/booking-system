@@ -250,5 +250,9 @@ around one use case rather than a horizontal technical layer.
 
 ### Workspace
 
-One application or conceptual package directory with its own package manifest
-and [boundary map](#boundary-map).
+One application or conceptual package directory. Each workspace owns one
+package manifest and one [boundary map](#boundary-map); internal
+[responsibility modules](#responsibility-module) share those workspace-level
+artifacts unless an accepted independent boundary later extracts them into
+actual workspaces. A manifest declares dependency availability but does not
+grant architectural import permission.
