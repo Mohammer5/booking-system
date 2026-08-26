@@ -2,8 +2,8 @@
 
 ## Responsibility
 
-This document owns the containment, scheduling, editing, naming, deletion,
-cancellation, and archival rules for Courses, Groups, and Modules.
+This document owns the data, containment, scheduling, editing, naming,
+deletion, cancellation, and archival rules for Courses, Groups, and Modules.
 
 ## Not Responsible For
 
@@ -14,15 +14,16 @@ or user-interface design.
 ## Inputs
 
 - Active Admin User actions that create or modify a Course, Group, or Module;
-- current Course, Group, Module, and Module Selection state;
-- a Module's `startsAt` and `endsAt`; and
-- the Course timezone.
+- authoritative current Course, Group, Module, and retained Module Selection
+  state;
+- a Module's `startsAt` and `endsAt` interpreted in the Course timezone; and
+- the definite current instant.
 
 ## Outputs
 
-- valid Course, Group, and Module state;
-- preserved or removed historical references according to usage; and
-- the Course-wide Groups and Scheduled Modules eligible for participation.
+- valid Course, Group, and Module data and state;
+- preserved or removed structures according to retained references; and
+- Course-wide Groups and Scheduled Modules eligible for participation.
 
 ## Adjacent Parts
 
@@ -34,232 +35,286 @@ access](course-access.md) when a Course is Archived.
 ## Course Structure
 
 A [Course](../DICTIONARY.md#course) is the permanent container for its Groups,
-Modules, Course Assignments, and shared Course Invite. An Active Admin User MAY
-create and modify Courses subject to the rules below.
+Modules, Course Assignments, and current shared Course Invite. It has:
 
-Renaming or changing descriptive Course information MUST NOT change Course
-identity or break any relationship. Course names need not be globally unique,
-and sophisticated duplicate detection is not a domain rule.
+- required `name`;
+- optional `description`; and
+- required `timezone`.
+
+Course name MUST be non-blank after trimming. Course names are non-unique and
+are not domain identity. Editing name or description in an Active Course
+preserves Course identity and all relationships.
+
+### New Course State
+
+A newly created Course starts with:
+
+- Active state;
+- zero Groups;
+- zero Modules;
+- zero Course Assignments;
+- no Course Invite; and
+- `Europe/Berlin` timezone unless the Admin User selects another valid
+  timezone.
+
+Creating a Course MUST NOT implicitly create another business object.
 
 ### Course Timezone
 
-Each Course MUST have exactly one
-[Course timezone](../DICTIONARY.md#course-timezone). All of its Module dates
-and times MUST be defined and interpreted in that timezone. Individual Modules
-MUST NOT have separate business timezones. Daylight-saving-time behavior
-follows the Course timezone.
+Each Course has exactly one
+[Course timezone](../DICTIONARY.md#course-timezone), represented by a valid
+IANA/TZDB timezone identifier such as `Europe/Berlin`. A fixed UTC offset such
+as `+01:00` is not a valid substitute. Modules have no separate business
+timezone.
 
-An Active Admin User MAY change the timezone while the Course has no Modules.
-Once the first Module has been created in the Course, the timezone MUST NOT
-change. The product does not reinterpret Module times, migrate schedules, or
-automatically reschedule Modules as a consequence of a timezone change.
+An Active Admin User MAY change the timezone while the Active Course has no
+Modules. Once its first Module exists, the Course timezone is immutable. The
+product does not reinterpret times, migrate schedules, or automatically
+reschedule Modules after a timezone change.
 
-Displaying an equivalent time in a Participant's local timezone MAY be a
-future presentation concern but is not core booking behavior. The initial
-product adds no special daylight-saving-time workflow beyond interpreting the
-interval in the Course timezone.
+Module schedule input is entered or interpreted in the Course timezone but
+MUST resolve to definite `startsAt` and `endsAt` instants:
+
+- a local wall-clock time that does not exist during a daylight-saving forward
+  transition MUST be rejected rather than shifted; and
+- a local wall-clock time that occurs twice during a daylight-saving backward
+  transition MUST require explicit selection of the intended occurrence or
+  offset.
+
+Once resolved, all comparisons with `now`, `startsAt`, and `endsAt` compare
+definite instants. Presentation in another timezone is outside core booking
+behavior.
 
 ## Groups
 
-### Course-Wide Attendance Choices
+### Data Contract And Course-Wide Meaning
 
-A [Group](../DICTIONARY.md#group) is a Course-wide attendance option. Every
-Active Group is available to every otherwise eligible future Scheduled Module
-in its Course. The initial model MUST NOT make a Group available for only
-selected Modules.
+A [Group](../DICTIONARY.md#group) has:
 
-An Active Admin User MAY create a Group within exactly one Course. The Group
-remains permanently owned by that Course.
+- required `name`; and
+- optional single free-text `details`.
 
-A Group MAY contain Course-wide logistical details such as a physical
-location, room, meeting link, access instructions, or other human-readable
-information. Names and details express distinctions such as `Room A`, `Room B`,
-or `Remote`; these labels MUST NOT imply special business types or behavior.
+Group name MUST be non-blank after trimming. Name and details may express
+`Room A`, `Remote`, a location, meeting URL, or access instructions, but the
+product has no structured room, location, URL, meeting-provider,
+physical/remote/hybrid type, or access-instruction subobject.
 
-For example:
+A Group is permanently owned by exactly one Course and is available
+Course-wide. Every Active Group is available to every otherwise eligible future
+Scheduled Module in that Course. Groups MUST NOT be moved between Courses or
+made Module-specific.
 
-- `Room A` may have details `Building B, second floor, room 201`.
-- `Remote` may have details `Join using the provided meeting link`.
+### Editing And Active Name Uniqueness
 
-### Course-Wide Details Limitation
+While the Course is Active, an Active Admin User MAY edit an Active or Archived
+Group's name or details. The edit preserves Group identity and every retained
+Selection.
 
-Group identity and logistical details MUST be Course-wide, not Module-specific.
-The initial model therefore does not express:
+Active Group names MUST be unique within one Course after trimming and
+case-insensitive comparison. Two Active Groups therefore cannot differ only by
+casing or outer whitespace. Archived Groups MAY share a normalized name with
+an Active or another Archived Group. Courses and Modules have no equivalent
+name-uniqueness invariant.
 
-- one Group using different rooms for different Modules;
-- one Group using a different meeting link for each Module; or
-- one Group existing for one Module but not another.
+An edit to an Active Group MUST preserve the uniqueness rule. An Archived
+Group with a conflict may be renamed before reactivation.
 
-If a concrete future requirement needs such behavior, the domain relationship
-must be reconsidered explicitly. Ad hoc Module-specific exceptions MUST NOT be
-added to this model.
+### Active And Archived Lifecycle
 
-### Editing And Naming
+While the parent Course is Active, the Group lifecycle is:
 
-An Active Admin User MAY change a Group's name or details. The edit MUST
-preserve Group identity and existing Module Selections. If `Online` is renamed
-to `Remote`, Participants previously selected into that Group are shown with
-the new name.
+```text
+Active <-> Archived
+```
 
-Active Groups in one Course MUST remain distinguishable to Participants. Group
-names SHOULD therefore be unique within the Course. Names are not domain
-identity.
+Archival is blocked only when a currently retained Module Selection references
+the Group for an upcoming Scheduled Module where `now < startsAt`. Retained
+Selections for in-progress or ended Scheduled Modules and Cancelled Modules do
+not block Group archival.
 
-### Course Ownership
+Archival MUST NOT remove or rewrite a retained Selection. At or after
+`startsAt`, the Selection continues to identify the same Group and expose its
+details for current or historical meaning as determined by the surrounding
+state. The Archived Group is unavailable for new future Selections.
 
-A Group belongs permanently to exactly one Course and MUST NOT be moved to
-another. A Group created in the wrong Course must be deleted or Archived as its
-usage permits and recreated in the correct Course.
+Reactivation:
 
-### Deletion And Archival
+- preserves Group identity and details;
+- does not restore removed Selections;
+- makes the Group eligible for future otherwise valid Selections; and
+- MUST satisfy Active Group name uniqueness.
 
-- An Active Admin User MAY delete or Archive a Group only under the conditions
-  below.
-- A Group that has never been referenced by a Module Selection MAY be
-  permanently deleted.
-- A Group with meaningful historical participation MUST NOT be hard-deleted in
-  a way that destroys that history. It SHOULD be Archived, and historical
-  Module Selections MAY continue to identify it.
-- A Group with active future Module Selections MUST NOT be Archived until those
-  selections no longer reference it. The Group MUST NOT simply disappear and
-  Participants MUST NOT be silently moved to another Group.
+No Group lifecycle mutation is allowed after its Course is Archived.
 
-Future references must be resolved through an allowed Participant or
-Admin-assisted Selection action, or through the Module lifecycle rules, before
-the Group is Archived. Admin-assisted Selection actions follow the same
-eligibility and `startsAt` deadline defined in [Module
-participation](module-participation.md#admin-assisted-booking).
+### Hard Deletion
+
+A Group may be hard-deleted only when:
+
+- its Course is Active; and
+- no currently retained Module Selection references it.
+
+Every retained reference blocks deletion, whether associated with an upcoming,
+in-progress, ended, or Cancelled Module. A pre-start Selection that was removed
+or replaced and no longer exists does not block deletion. The product does not
+require a complete change log merely to establish that a Group was once
+selected.
 
 ### No Capacity
 
-Groups have no capacity. The domain MUST NOT introduce maximum sizes, full
-Groups, overbooking prevention, waiting lists, reservations, capacity locks,
-fairness rules, or fallback Groups. Selecting a Group remains the choice of one
-value rather than a reservation competition.
+Groups have no capacity. The domain has no maximum sizes, full Groups,
+overbooking prevention, waiting lists, reservations, capacity locks, fairness
+rules, or fallback Groups.
 
 ## Modules
 
-### Scheduling
+### Data Contract
 
-A [Module](../DICTIONARY.md#module) is exactly one non-recurring scheduled
-occurrence in a Course. An Active Admin User MAY add a Module to an existing
-Active Course, including after Participants have joined or earlier Modules
-have occurred.
+A [Module](../DICTIONARY.md#module) has:
 
-Every Module has a `startsAt` and `endsAt`, both interpreted in the Course
-timezone, and MUST satisfy `endsAt > startsAt`.
+- required `title`;
+- optional `description`;
+- optional `instructions`;
+- required `startsAt`; and
+- required `endsAt`.
 
-Adding a Module MUST NOT automatically create Module Selections. It becomes
-available for eligible Participants under the normal selection rules.
+Title MUST be non-blank after trimming. Module titles are non-unique and are
+not domain identity. A Module belongs permanently to exactly one Course and
+MUST NOT be moved.
 
-A Scheduled Module's upcoming, started, or ended position is derived from its
-`startsAt` and `endsAt`. At the exact `startsAt` instant, it has started. These
-temporal descriptions MUST NOT become additional lifecycle states. Recurring
-Modules are not supported, and duration is not a separate domain concept.
+### Creation And Temporal Meaning
 
-### Editing
+An Active Admin User MAY create a Module only in an Active Course and only when
+its definite instants satisfy:
 
-An Active Admin User MAY change a Module's title or name, description, and
-instructions where the product rules otherwise permit those edits.
+```text
+startsAt > now
+endsAt > startsAt
+```
 
-- Descriptive edits MUST NOT affect existing Module Selections.
-- Before `startsAt`, an Active Admin User MAY change `startsAt`, `endsAt`, or
-  both, provided the resulting interval satisfies all normal validity rules.
-- An allowed schedule edit MUST preserve the Module's identity and existing
-  Module Selections.
-- Participant eligibility to modify a Selection MUST immediately follow the
-  edited `startsAt`.
-- At or after `startsAt`, the Module schedule MUST NOT change: neither
-  `startsAt` nor `endsAt` may be edited.
-- The booking domain does not require a history of every previous schedule.
+A new Module therefore begins in the future. Creation MUST NOT automatically
+create any Module Selection.
 
-For example, before a Module starts, changing its interval from
-`Monday 10:00–11:00` to `Tuesday 15:00–16:30` leaves every existing Group
-selection attached to that same Module. Once a Module reaches its then-current
-`startsAt`, its schedule cannot be changed, including to move it back into the
+A Scheduled Module's upcoming, in-progress, or ended position is derived from
+its interval. At exact `startsAt` it has started; at exact `endsAt` it has
+ended. These descriptions are not lifecycle states. Modules do not recur and
+duration is not a separate concept.
+
+### Descriptive Edits
+
+While the Course is Active, an Active Admin User MAY edit `title`,
+`description`, and `instructions` at any time, including after `startsAt`,
+after `endsAt`, and after cancellation. These edits preserve Module identity
+and every retained Selection.
+
+### Schedule Edits
+
+A Scheduled Module may be rescheduled only before its current `startsAt`. The
+resulting interval MUST satisfy:
+
+```text
+newStartsAt > now
+newEndsAt > newStartsAt
+```
+
+The edit preserves Module identity and retained Selections, and Selection
+deadlines immediately follow the new `startsAt`. A reschedule cannot make the
+Module already started. At or after its current `startsAt`, both schedule
+values are immutable, including an attempt to move the Module back into the
 future.
 
-### Course Ownership
+A Cancelled Module's `startsAt` and `endsAt` are immutable. An Archived Course
+freezes every Module edit regardless of Module or temporal state.
 
-A Module belongs permanently to exactly one Course and MUST NOT be moved to
-another. A Module created in the wrong Course must be removed or Cancelled in
-accordance with its usage and recreated in the intended Course.
+### Cancellation
 
-### Deletion And Cancellation
+An Active Admin User MAY Cancel a Scheduled Module only when:
 
-- An Active Admin User MAY delete or Cancel a Module only under the conditions
-  below.
-- A Module that has never had Module Selections and has no meaningful
-  participation history MAY be permanently deleted.
-- A Module that has or had Module Selections MUST NOT be hard-deleted in a way
-  that destroys their historical meaning. It SHOULD be Cancelled.
+- its Course is Active; and
+- `now < endsAt`.
 
-A Cancelled Module MUST remain historically identifiable, MUST NOT accept new
-Module Selections, MUST NOT be modifiable by Participants, and MUST be shown as
-Cancelled wherever historical context is shown. Cancellation MUST NOT delete
-existing Module Selections merely because the Module was Cancelled. Those
-Selections remain historical records but no longer represent active or live
-bookings. This derived distinction requires no cancelled-booking state or
-additional Module lifecycle state.
+An upcoming or in-progress Module may therefore be Cancelled. At exact
+`endsAt`, cancellation is refused. Cancellation is terminal:
+
+```text
+Scheduled -> Cancelled
+```
+
+There is no uncancel or reactivation workflow. Cancellation preserves all
+retained Selections, which become historical, and accepts no new Selection.
+
+### Hard Deletion
+
+A Module may be hard-deleted only when:
+
+- its Course is Active; and
+- no currently retained Module Selection references it.
+
+Deletion may therefore be permitted for a never-booked future Module, a Module
+whose pre-start Selections were all removed, an ended Module with zero retained
+Selections, or a Cancelled Module with zero retained Selections. Every retained
+current or historical Selection blocks deletion. The product does not preserve
+empty schedule history merely because a Module once existed.
 
 ## Course Lifecycle
 
-The complete Course lifecycle is Active or Archived.
+The complete Course lifecycle is:
+
+```text
+Active -> Archived
+```
 
 ### Active Course
 
-Subject to all other eligibility rules, an Active Course MAY receive
-Participants, have a usable Invite, contain future Modules, and allow Module
-Selections.
+Subject to all other rules, an Active Course may receive Participants, manage
+its current Invite, create and modify Groups and Modules, and permit eligible
+Module Selections.
 
-### No Permanent Deletion
+### No Hard Deletion Or Reactivation
 
-An Active Admin User MUST NOT permanently delete a Course, including an unused
-or accidentally created Course. Archival is the only Course removal mechanism
-and preserves the Course and its history.
+A Course MUST NOT be hard-deleted, including when unused or created
+accidentally. Once Archived, it MUST NOT return to Active.
 
-### Archival
+### Archival Preconditions
 
-An Active Course MAY contain Scheduled Modules that have not yet ended and
-their live Module Selections during normal operation. The Course MUST NOT
-transition to Archived while it contains any Scheduled Module whose `endsAt`
-is still in the future.
+An Active Course MUST NOT transition to Archived while it contains a Scheduled
+Module where `now < endsAt`. This includes both an upcoming Module and an
+in-progress Module. At exact `endsAt`, a Scheduled Module no longer blocks
+archival on temporal grounds.
 
-The blocker includes both:
+A not-yet-ended Scheduled Module must reach `endsAt` or be explicitly
+Cancelled under its normal lifecycle before archival. Removing its Selections
+does not resolve the blocker. A Cancelled Module does not block archival merely
+because its original `endsAt` is in the future.
 
-- an upcoming Scheduled Module where `now < startsAt < endsAt`; and
-- an in-progress Scheduled Module where `startsAt <= now < endsAt`.
+Archival itself MUST NOT Cancel a Module, remove or rewrite a Selection, move a
+Participant between Groups, or otherwise mutate the retained Course structure.
 
-At the exact `endsAt` instant, the Scheduled Module has ended and no longer
-blocks Course archival on temporal grounds. An ended Scheduled Module does not
-block archival merely because it and its historical Selections still exist.
-These positions remain derived temporal descriptions; no InProgress Module
-lifecycle state is introduced.
+### Structurally Read-Only Archived Course
 
-Before archival, every Scheduled Module that has not yet ended MUST be resolved
-under the existing Module lifecycle rules. It may reach `endsAt`, or an Active
-Admin User MAY explicitly Cancel it where the normal cancellation rules permit,
-including when it is upcoming or in progress. Cancellation preserves the
-Module and its Module Selections as historical records, makes those Selections
-no longer live bookings, and removes the archival blocker even when the
-Module's original `endsAt` remains in the future. Merely removing every
-Selection does not resolve a not-yet-ended Scheduled Module.
+After archival, the Course structure is frozen. An Active Admin User may
+inspect it but MUST NOT:
 
-Archival itself MUST NOT Cancel a Module, delete or otherwise mutate Module
-Selections, or move Participants between Groups. The lifecycle preconditions
-MUST be satisfied before the Course changes state; no additional Course
-lifecycle state is introduced.
+- edit Course name, description, or timezone;
+- create or delete a Group;
+- Archive, reactivate, rename, or edit a Group;
+- create or delete a Module;
+- Cancel a Module;
+- edit Module title, description, instructions, `startsAt`, or `endsAt`;
+- enable, disable, regenerate, or replace the current Course Invite;
+- create a Course Assignment;
+- reactivate a Revoked Course Assignment; or
+- perform Participant or Admin-assisted Module Selection mutation.
 
-Only after these preconditions are satisfied MAY an Active Admin User Archive
-the Course. Once the Course is Archived, its state MUST:
+The current Course Invite is unusable for Join. An Active Admin User MAY still
+revoke an existing Active Assignment because that removes access rather than
+changing Course structure. An Active Participant with an Active Assignment may
+retain the read-only historical access defined in [Course
+access](course-access.md#archived-course).
 
-- prevent new Participants from joining;
-- prevent creation of new Course Assignments;
-- make the shared Invite unusable;
-- prevent new Module Selections;
-- prevent Participant modification of Module Selections; and
-- preserve historical context.
+## Authoritative Current State
 
-An Archived Course MUST remain visible and manageable to Active Admin Users. It
-MUST NOT return to Active state, and the product has no restore, unarchive, or
-equivalent Course action.
+Every structural edit, timezone change, Group lifecycle or deletion action,
+Module creation, reschedule, cancellation or deletion, and Course archival
+MUST be validated against authoritative current state and definite instants
+when accepted. A stale form cannot preserve an earlier deadline, actor
+authority, lifecycle state, uniqueness condition, or retained-reference view.

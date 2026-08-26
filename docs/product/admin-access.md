@@ -8,25 +8,26 @@ lifecycle, and the required Admin User and Admin Invite administration views.
 
 ## Not Responsible For
 
-This document does not define Participant Course membership, Course Invite
-behavior, Course structure, Module Selection policy, authentication-provider
+This document does not define Participant profile or Course membership, Course
+Invite behavior, Course structure, Module Selection policy, authentication
 technology, persistence, APIs, or user-interface implementation.
 
 ## Inputs
 
-- an external authentication identity used in the administration context;
+- a stable external authentication principal used in administration context;
 - first Admin bootstrap or an Active Admin Invite;
-- the registering Admin User's explicitly supplied real name;
-- an authorized Admin User mutation or Admin Invite action; and
-- current Admin User and Admin Invite state.
+- the registering Admin User's explicitly supplied required name;
+- an authorized Admin User mutation, promotion, or Admin Invite action; and
+- authoritative current Admin User and Admin Invite state.
 
 ## Outputs
 
 - a distinct Admin User identity with ordinary or Super Admin authority;
 - Active, Disabled, or deleted Admin User disposition;
+- authorized promotion from ordinary Admin to Super Admin;
 - an Active, Claimed, or Revoked Admin Invite;
 - authorization or refusal for an administrative action; and
-- Admin User and Admin Invite data-table views with the accepted actions.
+- Admin User and Admin Invite list representations with the accepted actions.
 
 ## Adjacent Parts
 
@@ -41,94 +42,162 @@ composition to the planned booking-system web application.
 An [Admin User](../DICTIONARY.md#admin-user) is a booking-system domain entity
 for a person authorized to access and operate the administration experience.
 It is distinct from a [Participant](../DICTIONARY.md#participant), with its own
-stable domain identity, real name, administrative access state, authority, and
-lifecycle.
+stable domain identity, required name, administrative access state, authority,
+and lifecycle.
 
 Being an Admin User MUST NOT automatically make that person a Participant.
 Being a Participant MUST NOT automatically make that person an Admin User.
 Admin access MUST NOT be represented as an `isAdmin` property or equivalent
 capability on Participant.
 
-While Active, an Admin User may administer:
+While Active and authorized for the specific action, an Admin User may
+administer:
 
 - Courses, Groups, and Modules;
 - Participants and Course Assignments;
 - Course Invites;
 - accepted Admin-assisted booking operations on Participants' Module
   Selections;
-- other Admin Users according to the authorization rules below; and
+- other Admin Users; and
 - Admin Invites.
 
 ### External Authentication Identity
 
-An [external authentication identity](../DICTIONARY.md#external-authentication-identity)
-may establish access to an Admin User independently of any Participant
-identity. The same provider identity MAY simultaneously back one Participant
-and one Admin User without merging those domain entities. The administration
-context determines that the Admin User identity and authority are being used.
+An [external authentication
+identity](../DICTIONARY.md#external-authentication-identity) is the stable
+principal presented by the authentication layer. It may establish access to an
+Admin User independently of any Participant identity. The same principal MAY
+back one Participant and one Admin User without merging their state or history.
+The administration context selects the Admin User identity and authority.
 
-External provider profile data is not authoritative Admin User data. In
-particular, an Admin User's provider display name, email address, or other
-personal data MUST NOT automatically become or merge a booking-system
-identity. Current self-service identity linking and merging remain outside the
-initial product.
+Several sign-in methods resolved by the authentication layer to the same
+stable principal reach the same current Admin User. Different principals remain
+different prospective identities even when personal data matches. The booking
+system does not link or merge them and does not attempt to determine whether
+they belong to the same real-world human.
 
-## Real Name And Onboarding
+Authentication-provider profile data is not authoritative Admin User data. A
+provider display-name change MUST NOT automatically change the booking-system
+Admin User name or merge identities.
 
-Every Admin User MUST explicitly supply one required, human-readable
-[Admin User real name](../DICTIONARY.md#admin-user-real-name) while completing
-onboarding. Separate first name, last name, title, organization, and profile
-metadata fields are not required.
+## Name And Onboarding
 
-The real name is a booking-system property and need not equal a display name
-from Google, Microsoft, Apple, Facebook, or another authentication provider.
-Provider data MAY eventually prefill the field as a convenience, but the Admin
-User MUST explicitly supply or confirm the real name. An authorized Admin User
-MAY edit it later under the mutation rules below.
+Every Admin User MUST explicitly supply or confirm one required human-readable
+[Admin User name](../DICTIONARY.md#admin-user-name) during bootstrap or invited
+onboarding. Surrounding whitespace is trimmed for validation, and a blank value
+after trimming is invalid. Separate first name, last name, title, organization,
+and other profile fields are not required.
+
+The name is a booking-system property. Authentication-provider profile data
+MAY prefill it as a presentation convenience but is not authoritative. An
+authorized Active Admin User MAY later edit the name under the mutation rules
+below without changing Admin User identity, state, or authority.
+
+## Admission To Administration
+
+After first Admin bootstrap has completed, authentication alone MUST NOT create
+an Admin User. An external principal without a current Admin User may create an
+Admin User only through:
+
+- the first-ever bootstrap flow while it remains legitimately available; or
+- a valid Active Admin Invite.
+
+Otherwise administration access is refused. A current Disabled Admin User is
+not a new candidate and receives no access until explicitly Re-enabled.
 
 ## Authority And Lifecycle
 
 Every existing Admin User has ordinary Admin or
-[Super Admin](../DICTIONARY.md#super-admin) authority. Super Admin is a broader
-authorization classification on an Admin User, not a separate identity entity.
+[Super Admin](../DICTIONARY.md#super-admin) authority and is Active or Disabled.
+A legitimately authorized deletion removes that Admin User and is distinct
+from Disabled.
 
-An ordinary Admin User may be:
-
-- Active;
-- Disabled; or
-- deleted.
-
-A Disabled Admin User remains an Admin User but MUST NOT have administrative
-access while Disabled. An authorized Admin User MAY re-enable a Disabled
-ordinary Admin User. Deleting an ordinary Admin User is a distinct accepted
-operation and MUST NOT be treated as another name for Disabled. Admin User
-deletion MUST NOT imply Participant deletion, even when the same external
-authentication identity backs both entities.
+A Disabled Admin User remains identifiable but MUST NOT have administrative
+access or perform any administrative mutation. Re-enabling preserves Admin
+User identity and authority. Disabling or deleting an Admin User MUST NOT imply
+Participant Disable or deletion, even when the same external authentication
+identity backs both domain entities.
 
 ### Ordinary Admin User Authority
 
-An ordinary Active Admin User MAY mutate any other ordinary Admin User by:
+An ordinary Active Admin User MAY edit their own name. They MUST NOT:
 
-- editing their real name;
-- disabling them;
-- re-enabling them; or
+- Disable themselves;
+- delete themselves;
+- promote themselves; or
+- otherwise alter their own authority.
+
+An ordinary Active Admin User MAY administer another ordinary Admin User by:
+
+- editing their name;
+- Disabling them;
+- Re-enabling them; or
 - deleting them.
 
-An ordinary Admin User MUST NOT mutate a Super Admin. In particular, they MUST
-NOT edit the Super Admin's real name, disable or delete the Super Admin, or
-alter Super Admin authority.
+An ordinary Admin User MUST NOT mutate any Super Admin. In particular, they
+MUST NOT edit, Disable, Re-enable, delete, demote, or otherwise alter a Super
+Admin, and MUST NOT promote any Admin User.
 
-### Super Admin Authority And Protection
+### Super Admin Promotion
 
-A Super Admin MAY mutate Admin Users regardless of the target Admin User's
-ordinary administrative role, subject to the explicit self-protection rules.
-The Super Admin MAY edit their own real name but MUST NOT disable themselves.
-Whether the Super Admin may hard-delete themselves is deliberately
-unspecified.
+The first successfully bootstrap-created Admin User receives Super Admin
+authority automatically. Additionally, any Active Super Admin MAY promote an
+Active ordinary Admin User:
 
-The initial product does not define promotion, transfer, replacement, or
-additional-Super-Admin workflows. The only Super Admin that MUST exist is the
-first Admin User created through bootstrap.
+```text
+Active ordinary Admin User -> Active Super Admin
+```
+
+Promotion is an explicit administration action. It preserves Admin User
+identity and every existing relationship; it does not create another Admin
+User. A Disabled ordinary Admin User MUST be Re-enabled before promotion. An
+Admin Invite always creates an ordinary Active Admin User and never grants
+Super Admin authority directly.
+
+Multiple Super Admins MAY coexist. Promotion is one-way in v1: there is no
+Super Admin demotion action. An Admin User, including a Super Admin, MUST NOT
+demote themselves or anyone else.
+
+### Super Admin Administration And Self-Protection
+
+An Active Super Admin MAY administer another Admin User, including another
+Super Admin. Subject to the last-Active-Super-Admin invariant, they MAY:
+
+- edit another Admin User's name;
+- Disable another Admin User;
+- Re-enable another Disabled Admin User;
+- delete another Admin User; and
+- promote an Active ordinary Admin User.
+
+A Super Admin MAY edit their own name but MUST NOT Disable or delete themselves
+or alter their own authority. Self-protection remains in force even when
+several Super Admins exist.
+
+### At Least One Active Super Admin
+
+No accepted Admin User mutation may leave the installation with zero Active
+Super Admins. This invariant applies to Disable and delete actions and MUST be
+evaluated against authoritative current state when the mutation is accepted.
+A stale or concurrent action that would remove the last remaining Active Super
+Admin MUST be refused.
+
+Disabling or deleting one Super Admin is permitted only when another Active
+Super Admin remains. A Disabled Super Admin retains Super Admin authority and
+may be Re-enabled by another Active Super Admin, but does not satisfy the
+Active-Super-Admin invariant while Disabled.
+
+### No Cascades
+
+Disabling or deleting an Admin User MUST NOT automatically change:
+
+- Courses, Groups, or Modules;
+- Participants;
+- Course Assignments or Module Selections;
+- Course Invites; or
+- Admin Invites previously created by that Admin User.
+
+Previously accepted legitimate actions remain authoritative. No complete
+product-level Admin mutation audit log is required in v1.
 
 ## First Admin Bootstrap
 
@@ -137,69 +206,72 @@ exactly when no Admin User has ever yet been created for the installation. It
 does not depend on whether Participants already exist.
 
 Before any Admin User has been created, visiting the administration
-authentication entry point MUST replace the normal Admin login experience with
-`Register admin`. The first person who successfully completes that flow:
+authentication entry point MUST replace normal Admin login with
+`Register admin`. The first person who successfully completes the flow:
 
-1. authenticates through the accepted external authentication mechanism;
-2. enters their required real name;
-3. becomes the first Admin User; and
-4. becomes the Super Admin.
+1. authenticates through the chosen authentication layer;
+2. supplies their required Admin User name;
+3. becomes the first Active Admin User; and
+4. receives Super Admin authority.
 
-Only the first successfully completed bootstrap registration receives the
-initial Super Admin authority. Bootstrap MUST NOT reopen merely because
-ordinary Admin Users are later Disabled or deleted. It MUST NOT introduce
-password-based local authentication. Implementation-level concurrency
-mechanics remain outside this specification.
+Bootstrap MUST NOT reopen merely because Admin Users are later Disabled or
+deleted. Competing bootstrap completions are validated against authoritative
+current state; only the first successfully accepted Admin User creation may use
+bootstrap. The flow MUST NOT introduce password-based local authentication.
 
 ## Admin Invites
 
 An [Admin Invite](../DICTIONARY.md#admin-invite) is a security-sensitive path
-toward creating one ordinary Admin User. It is not Course-specific and MUST
-remain distinct from the reusable, Course-specific Course Invite.
+toward creating one ordinary Active Admin User. It is not Course-specific and
+MUST remain distinct from the reusable Course Invite.
 
 ### Independent Creation And Lifecycle
 
-Any Active Admin User, ordinary or Super Admin, MAY create a new Admin Invite.
-Multiple independently Active Admin Invites MAY coexist. Admin Invites do not
-use the Course rule of at most one current Invite.
-
-The complete Admin Invite lifecycle is:
+Any Active Admin User MAY create a new Admin Invite. Multiple independently
+Active Admin Invites MAY coexist. An Admin Invite is:
 
 - Active;
-- Claimed; or
-- Revoked.
+- terminal Claimed; or
+- terminal Revoked.
 
-An Active Admin Invite may be successfully claimed at most once. Successful
-Admin User creation through that Invite permanently transitions it:
+Successful ordinary Admin User creation transitions the Invite:
 
 ```text
 Active -> Claimed
 ```
 
-A Claimed Admin Invite MUST NOT be used again.
-
-### Revocation
-
-Any Active Admin User MAY Revoke any Active Admin Invite, regardless of who
-created it. Revocation permanently transitions it:
+Any Active Admin User MAY Revoke any Active Admin Invite, regardless of its
+creator:
 
 ```text
 Active -> Revoked
 ```
 
-A Revoked Admin Invite MUST NOT be used, re-enabled, or reactivated. If another
-invitation is needed, an Active Admin User creates a new Admin Invite.
+Claimed and Revoked Invites MUST NOT be reused, re-enabled, or reactivated. An
+Admin Invite has no automatic expiration, TTL, or cleanup deadline.
 
-### No Automatic Expiration
+### URL Visibility And Loss
 
-An Admin Invite has no automatic expiration in the initial product. An Active
-Admin Invite remains Active until it is successfully Claimed or manually
-Revoked. The product has no expiration date, TTL, automatic cleanup, or timed
-validity window for Admin Invites.
+The complete Admin Invite URL or secret MUST be shown and copyable when the
+Invite is created. It MUST NOT be recoverable afterwards. Later Invite
+administration retains the creation time, state, and authorized Revoke action,
+but not the complete URL.
+
+If an Active Invite URL is lost, the intended recovery is to Revoke that Invite
+and create a new one. The product does not require recoverable Invite secrets.
+
+### Pre-Onboarding Visibility
+
+Before successful onboarding, a valid Active Admin Invite may reveal only that
+it is an available Admin registration invitation. It MUST NOT reveal Admin User
+lists, creator identity or details, internal administration information,
+Course data, or other Admin Invite information. An unknown, Claimed, Revoked,
+or otherwise invalid Invite receives an unavailable result without exposing
+administrative state.
 
 ### Claiming And Invited Onboarding
 
-Invited Admin User onboarding follows this conceptual flow:
+Invited Admin onboarding follows this conceptual flow:
 
 ```text
 Open Active Admin Invite
@@ -208,53 +280,91 @@ Open Active Admin Invite
 Authenticate
         |
         v
-Enter required real name
+Supply required Admin User name
         |
         v
-Confirm/complete Admin registration
+Revalidate Invite and external principal
         |
         +--> ordinary Active Admin User created
         |
         +--> Admin Invite becomes Claimed
         |
         v
-Access Admin UI
+Access administration
 ```
 
-Opening an Admin Invite, starting authentication, or partially completing
-onboarding MUST NOT consume the Invite. It becomes Claimed only when Admin User
-creation and onboarding succeed. An abandoned browser session or failed
-authentication attempt therefore leaves the Invite Active.
+Opening the Invite, starting authentication, or abandoning onboarding MUST NOT
+consume it or create a pending Admin User. Final creation MUST validate the
+Invite, external principal, and all other authoritative state together.
 
-Admin Invites are not person-specific or email-specific. An Invite MUST NOT
-create a pending Admin User merely because it exists. What happens when an
-external authentication identity already associated with an Admin User
-attempts to claim another Admin Invite remains deliberately unspecified.
+If the Invite became Claimed by another successful claimant or Revoked before
+acceptance, Admin User creation MUST fail and no partial Admin User may remain.
+Starting earlier grants no precedence. Exactly one claimant may consume an
+Active Invite.
+
+### Existing And Deleted Admin Users
+
+If the external authentication identity already backs a current Active or
+Disabled Admin User, claiming another Active Admin Invite MUST be refused. The
+attempt MUST NOT:
+
+- create another Admin User;
+- Re-enable the existing Admin User;
+- consume the Invite; or
+- change the Invite from Active.
+
+This rule includes current Super Admins. Re-enabling is a separate authorized
+administration action.
+
+A legitimately deleted Admin User's former external principal MAY later use a
+new Active Admin Invite. Successful onboarding creates a new ordinary Active
+Admin User with a new domain identity and newly supplied name. It does not
+restore the deleted identity, state, or authority. Later Super Admin authority
+requires a separate valid promotion.
+
+A different unlinked external principal is a different prospective Admin
+identity, even if the product user is the same real-world human. Possession of
+a valid Active Admin Invite may therefore create an ordinary Admin User for
+that principal; the booking system performs no name- or email-based identity
+matching.
 
 ## Administration Views
 
 ### Admin User View
 
-The administration experience MUST include a data-table list view representing
-all current Admin Users. At minimum, the table MUST expose each Admin User's:
+The administration experience MUST include a list representing every current
+Admin User. At minimum it exposes:
 
-- real name;
+- name;
 - ordinary Admin or Super Admin authority; and
 - Active or Disabled state.
 
-The view MUST expose edit, Disable, Re-enable, and delete operations where the
-acting Admin User has authority. Deleted Admin Users do not need to remain in
-the current table unless a future historical or audit requirement requires it.
+It exposes edit, Disable, Re-enable, and delete actions where the actor has
+authority and the requested mutation preserves every invariant. It exposes
+promotion only when the actor is an Active Super Admin and the target is an
+Active ordinary Admin User. No demotion action exists. Deleted Admin Users do
+not need to remain in the current list.
 
 ### Admin Invite View
 
-The administration experience MUST include a data-table list view representing
-Admin Invites across Active, Claimed, and Revoked states. It MUST provide
-actions to create a new Admin Invite and Revoke an Active Admin Invite. Claimed
-and Revoked Invites are terminal and MUST NOT expose reactivation. The product
-does not define Admin Invite deletion.
+The administration experience MUST include a list of Admin Invites across
+Active, Claimed, and Revoked states. At minimum it exposes:
+
+- creation time;
+- current state; and
+- Revoke for an Active Invite where authorized.
+
+It also provides creation of a new Invite, with the complete URL shown only in
+the creation result. Claimed and Revoked Invites expose no reactivation.
 
 These view requirements do not prescribe a frontend framework, component
-library, visual style, pagination approach, table package, API, persistence
-structure, invite-token representation, or whether a complete Invite URL can
-be recovered later.
+library, visual style, pagination, API, persistence structure, Invite-token
+representation, or technical logging.
+
+## Authoritative Current State
+
+Every Admin mutation, promotion, bootstrap completion, and Invite claim MUST be
+authorized and validated against authoritative current state when accepted. A
+page or form loaded by a previously Active Admin User grants no authority after
+that actor becomes Disabled, and stale state cannot bypass target authority,
+Invite state, or the at-least-one-Active-Super-Admin invariant.

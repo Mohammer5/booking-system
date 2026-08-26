@@ -30,7 +30,8 @@ The package initially contains four focused conceptual responsibility modules:
 - `admin-access` for Admin User identity and lifecycle, Super Admin authority,
   first Admin bootstrap, Admin Invites, and Admin onboarding policy;
 - `course-structure` for Course structure and lifecycle;
-- `course-access` for Course access and membership; and
+- `course-access` for Participant identity, profile and global access policy,
+  Course access, and membership; and
 - `module-participation` for Module participation.
 
 These are internal responsibility modules within one booking package, not

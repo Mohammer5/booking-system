@@ -2,110 +2,246 @@
 
 ## Responsibility
 
-This document owns Participant authentication identity as relevant to Course
-access, Course membership through Course Assignments, shared Course Invite
-behavior, assignment revocation and reactivation, Course-access permissions,
-and Course information visibility.
+This document owns Participant registration, onboarding, profile, global
+access state, and external authentication identity as relevant to participant
+access. It also owns Course membership through Course Assignments, shared
+Course Invite behavior, Assignment revocation and reactivation, Participant
+administration requirements, Course-access permissions, and Course visibility.
 
 ## Not Responsible For
 
 This document does not define Admin User identity or lifecycle, Super Admin
-authority, Admin bootstrap, Admin Invites, Module Selection behavior after
-access is granted, Course content lifecycle, authentication technology, or
-user-interface implementation.
+authority, Admin bootstrap, Admin Invites, detailed Module Selection actions,
+Course content lifecycle, authentication technology, or user-interface
+implementation.
 
 ## Inputs
 
-- an external authentication identity used in the participant context;
-- an Active Admin User's assignment, revocation, reactivation, or Course
-  Invite-management action;
+- a stable external authentication principal used in participant context;
+- a new person's required Participant name and email;
+- an Active Participant's profile, access, or Join action;
+- an Active Admin User's Participant, Assignment, or Course Invite action;
 - an otherwise eligible Admin-assisted set-Selection action for an existing
-  Participant;
-- a Participant's explicit join confirmation; and
-- current Participant, Course, Course Assignment, and Course Invite state.
+  Active Participant; and
+- authoritative current Participant, Course, Assignment, and Invite state.
 
 ## Outputs
 
-- the acting Participant identity;
+- a fully registered Participant identity with required profile and Active or
+  Disabled global state;
 - an unchanged, Active, or Revoked Course Assignment;
-- authorization or refusal to join or access a Course; and
-- the Course information visible to the actor.
+- authorization or refusal to join or access a Course;
+- the Course and Participant information visible to the actor; and
+- the minimum Participant administration representation and actions.
 
 ## Adjacent Parts
 
 Access applies the [domain model](domain-model.md), receives administrative
-authority from [Admin access](admin-access.md), gates
-[Module participation](module-participation.md), and respects [Course
+authority from [Admin access](admin-access.md), gates [Module
+participation](module-participation.md), and respects [Course
 lifecycle](course-structure.md#course-lifecycle).
 
-## Authentication And Participant Identity
+## External Authentication And Participant Identity
 
-The [domain model](domain-model.md#external-authentication-identity) defines the
-supported external identity direction without prescribing an authentication
-product. In the participant-facing context, an
-[external authentication identity](../DICTIONARY.md#external-authentication-identity)
-helps establish which [Participant](../DICTIONARY.md#participant) is acting; it
-is not itself the Participant identity and does not grant Course access.
+An [external authentication
+identity](../DICTIONARY.md#external-authentication-identity) is the stable
+principal presented by the authentication layer. In participant context it
+establishes which [Participant](../DICTIONARY.md#participant) is acting; it is
+not itself Participant identity and grants no Course access.
 
-Course membership attaches to the booking-system Participant identity, not to
-one provider. A provider-visible display name, email address, or other profile
-change MUST NOT automatically remove Course membership.
+If several sign-in methods resolve to the same stable external principal, the
+booking system sees the same external authentication identity and reaches the
+same current Participant. Different external principals remain different even
+when name, email, or other personal data matches. The product does not infer
+that they belong to the same real-world human and MUST NOT automatically merge
+them.
 
-The relationship remains compatible with one Participant having multiple
-external authentication identities in the future. The initial product has no
-self-service identity-linking workflow and MUST NOT automatically merge
-Participant identities merely because email, display name, or other personal
-data matches. The same external identity may separately back an Admin User
-without changing the Participant's Course membership or Module Selections.
+The same external authentication identity MAY independently back one
+Participant and one Admin User. Their domain identities, profiles, state,
+Course membership, Selections, authority, and history remain independent. The
+product remains compatible with authentication-layer linking behind one stable
+principal but does not provide Participant or Admin identity linking, merge,
+recovery, or transfer in v1.
 
-## Responsibility Boundary
+## Participant Registration And Onboarding
 
-An Active [Admin User](../DICTIONARY.md#admin-user) controls:
+A person MUST be able to register for participant-facing access without a
+Course Invite and without an existing Course Assignment. A Course Invite is a
+path to joining one Course, not a prerequisite for Participant registration.
 
-- Courses;
-- Groups;
-- Modules;
-- Course Invites;
-- Course Assignments;
-- Course membership and revocation; and
-- assisted creation and removal of Module Selections for existing
-  Participants.
+After first successful authentication in participant context, a person with no
+current Participant MUST complete mandatory
+[Participant onboarding](../DICTIONARY.md#participant-onboarding):
 
-A Participant manages their own eligible Module Selections and selected Group
-for each Module. An Active Admin User may also perform the accepted
-assisted-booking actions defined in [Module
-participation](module-participation.md#admin-assisted-booking) without creating
-a separate booking concept.
+```text
+Authenticate in participant context
+        |
+        v
+Supply required name and email
+        |
+        v
+Participant registration completes
+        |
+        v
+Active Participant with zero or more later Course memberships
+```
+
+Before both values are valid and registration succeeds, normal participant
+application access MUST NOT be granted. The person MUST be directed back to
+onboarding and MUST NOT join a Course, access Course information, or create or
+modify a Module Selection. Authentication, onboarding, and signing out may
+remain available.
+
+The Participant domain identity becomes fully registered when onboarding
+succeeds and starts Active. Incomplete or abandoned onboarding is not a
+Participant lifecycle state and MUST NOT create a pending Participant, Course
+Assignment, Module Selection, or other booking-domain record.
+
+A Course Invite opened before authentication or onboarding MAY be resumed
+after onboarding. Completion does not Join the Course: the Invite, Course,
+Participant, and Assignment state MUST be revalidated at a later explicit Join
+confirmation.
+
+## Participant Profile
+
+Every registered Participant has:
+
+- one required human-readable [Participant
+  name](../DICTIONARY.md#participant-name); and
+- one required [Participant email](../DICTIONARY.md#participant-email).
+
+Surrounding whitespace is trimmed for required-text validation; blank values
+after trimming are invalid. No separate first name, last name, salutation,
+organization, address, phone, or broader profile is required.
+
+Participant name is non-unique and not domain identity. Participant email MUST
+be a valid address and unique among registered Participants after normal
+trimming/normalization suitable for email comparison and a case-insensitive
+comparison. Email is still neither domain identity nor evidence that two
+external principals identify the same human.
+
+Authentication-provider profile data MAY prefill name or email as a
+presentation convenience, but the Participant MUST explicitly supply or
+confirm both booking-system values during onboarding. Provider display name or
+email changes MUST NOT automatically mutate the Participant profile. Changing
+the booking-system email MUST NOT imply changing provider data.
+
+### Profile Editing
+
+An Active Participant MAY edit their own name or email. Any Active Admin User
+MAY edit any Active or Disabled Participant's name or email. An edit preserves
+Participant identity, state, Course Assignments, Module Selections, and every
+historical relationship.
+
+If a Participant or Admin User attempts to assign an email already held by a
+different registered Participant under the accepted comparison rule, the
+change MUST be refused and the target Participant's existing data left
+unchanged. A Disabled Participant has no participant-side profile access.
+
+## Participant Global Access State
+
+The complete Participant lifecycle is:
+
+```text
+Active <-> Disabled
+```
+
+Only an Active Admin User may Disable or Re-enable a Participant. Participants
+MUST NOT Disable or Re-enable themselves. Participant hard deletion is not
+supported in v1.
+
+Participant state is global participant-facing access control. It is separate
+from the Active or Revoked Course Assignment that records Course-specific
+membership.
+
+### Disable
+
+When a Participant becomes Disabled:
+
+- participant application access is limited to authentication, signing out,
+  and an appropriate unavailable or disabled-account state;
+- Join through a Course Invite is refused;
+- participant-side profile edits and Module Selection mutations are refused;
+- all Course Assignments remain stored in their existing Active or Revoked
+  state;
+- Selections for Scheduled Modules where `now < startsAt` are removed across
+  all Courses;
+- Selections for Scheduled Modules where `startsAt <= now` are retained;
+- Selections for Cancelled Modules are retained; and
+- every retained Selection is historical while the Participant is Disabled.
+
+Disable MUST preserve historical booking information and MUST NOT mutate or
+delete Courses, Groups, Modules, Course Invites, or Admin User identities,
+including an Admin User backed by the same external authentication identity.
+
+### Re-enable
+
+Re-enabling preserves the same Participant identity and every Course
+Assignment state. It does not restore future Selections removed on Disable.
+Where an Active Assignment otherwise grants access, participant-facing access
+becomes available again.
+
+If a retained Selection belongs to a currently in-progress Scheduled Module
+in an Active Course with an Active Assignment, that Selection becomes live
+again on Re-enable. This is retained participation, not a late booking.
+
+### Administration While Disabled
+
+An Active Admin User MAY inspect a Disabled Participant, edit their profile,
+administer their Course Assignments, and Re-enable them. Direct Assignment
+administration remains independent of Participant state: an Admin User MAY
+establish, revoke, or reactivate Course membership for a Disabled Participant
+where the Course rules permit, but that Participant receives no
+participant-facing Course access until Re-enabled.
+
+Admin-assisted Selection creation or replacement requires an Active target
+Participant. A Disabled Participant MUST be Re-enabled before a new assisted
+booking may be accepted.
+
+## Participant Administration
+
+Active Admin Users MUST be able to discover every fully registered Participant,
+including Participants with zero Course Assignments. The minimum Participant
+administration representation exposes:
+
+- Participant name;
+- Participant email; and
+- Active or Disabled state.
+
+It exposes authorized actions to edit name, edit email, Disable, and Re-enable.
+Course-specific Assignment and Selection administration remains governed by
+the focused membership and Module participation rules. This requirement does
+not prescribe table technology, layout, pagination, API, or persistence.
+
+Participants MUST NOT receive a global Participant directory or another
+Participant's email or profile merely because they share a Course.
 
 ## Administrative Assignment
 
-When an existing registered Participant has no Course Assignment to a Course,
-an Active Admin User MAY directly assign them only if the target Course is
-Active. The result is an Active
-[Course Assignment](../DICTIONARY.md#course-assignment). A
-new Course Assignment MUST NOT be created for an Archived Course.
+When a fully registered Participant has no Assignment to an Active Course, an
+Active Admin User MAY directly assign them. This is allowed whether the
+Participant is Active or Disabled; global access still requires Active
+Participant state. A new Assignment MUST NOT be created for an Archived Course.
 
-- Assigning a Participant who already has an Active Assignment MUST be
-  idempotent and MUST NOT create a duplicate.
+- Assigning a Participant who already has an Active Assignment is a successful
+  no-op and MUST NOT create a duplicate.
 - For an Active Course, assigning a Participant whose Assignment is Revoked
-  MUST reactivate that Assignment.
+  MUST reactivate that same Assignment.
+- Revoking an already-Revoked Assignment is a successful no-op.
 - A Revoked Assignment MUST NOT be reactivated while its Course is Archived.
-- Reactivation MUST NOT automatically restore previously removed future Module
-  Selections. The Participant chooses eligible future Modules and Groups again.
-- An Active Admin User MUST NOT create a pending Participant or pre-created
-  Course Assignment for an unknown or unregistered person. The shared Invite
-  is the onboarding mechanism for that person.
+- Reactivation MUST NOT restore removed future Module Selections.
+- No pending Participant or Assignment may be created for an unknown or
+  incompletely registered person.
 
-Administrative assignment and Invite-based joining MUST have identical
-membership meaning. Assignment origin MUST NOT create a separate access state.
+Administrative assignment and Invite Join have identical membership meaning.
+Origin creates no separate Assignment state.
 
 ## Course Assignment Through Admin-Assisted Booking
 
-An Active Admin User may set an existing Participant's Module Selection
-without requiring an Active Course Assignment before the operation begins.
-When the Course and requested Module-and-Group assignment satisfy the normal
-eligibility rules in [Module participation](module-participation.md#admin-assisted-booking),
-the successful outcome is:
+An Active Admin User may set an existing Active Participant's Module Selection
+without requiring an Active Assignment before the operation begins. When all
+normal eligibility rules in [Module
+participation](module-participation.md#admin-assisted-booking) are satisfied:
 
 ```text
 no Course Assignment
@@ -118,163 +254,166 @@ Revoked Course Assignment
   -> reactivated Active Course Assignment + set Module Selection
 ```
 
-The operation MUST preserve the one-Assignment-per-Participant-and-Course
-invariant and MUST NOT create a duplicate. A Revoked Assignment may be
-reactivated through this path only while its Course is Active, exactly as for
-direct reactivation.
+The outcome preserves one Assignment per Participant and Course. The Course
+must be Active, and booking validity MUST be established against authoritative
+current state before the combined outcome is accepted. Refusal leaves no newly
+created or reactivated Assignment. Admin-assisted removal does not create or
+reactivate membership.
 
-The membership change and set-Selection result form one coherent product
-outcome. Booking validity MUST be established before the outcome is accepted;
-if the requested Selection is refused, the attempt MUST NOT leave a newly
-created or reactivated Course Assignment behind. This rule defines product
-behavior, not an implementation transaction mechanism.
-
-This path applies only to an existing Participant. It MUST NOT turn an Admin
-User into a Participant, create a Participant for an unknown person, or create
-a pending Participant. Admin-assisted removal of a Selection does not itself
-create or reactivate Course membership.
-
-Direct Course Assignment administration remains available under
-[Administrative assignment](#administrative-assignment). Membership created
-or reactivated through either path is the same ordinary Course Assignment;
-origin MUST NOT change its behavior.
+This path MUST NOT create a Participant for an unknown or incompletely
+registered person, operate on a Disabled Participant, or turn an Admin User
+into a Participant.
 
 ## Shared Course Invite
 
-### One Current Invite
+### Exact Current-Invite Lifecycle
 
 Each Course has at most one current shared
-[Course Invite](../DICTIONARY.md#course-invite). An Active Admin User MAY make
-it available for sharing, disable it, or regenerate and replace it. Replacement
-MUST invalidate the previous Invite. The product MUST NOT support multiple
-independently managed, concurrently active Invites for one Course.
+[Course Invite](../DICTIONARY.md#course-invite). While the Course is Active, an
+Active Admin User MAY apply these transitions:
 
-An Invite does not expire automatically. It remains usable until disabled,
-replaced, or made unusable by Course lifecycle changes.
+```text
+no Invite
+  -> enabled current Invite
+
+enabled current Invite
+  -> disabled current Invite
+
+disabled current Invite
+  -> enabled current Invite
+
+enabled or disabled current Invite
+  -> replacement enabled current Invite
+```
+
+Replacement permanently invalidates the predecessor for Join. A Course Invite
+does not expire automatically. The current Course Invite URL MAY be retrieved
+and copied later while managing an Active Course; copying MUST NOT require
+replacement and therefore does not invalidate distributed links. Archived
+Course structure is frozen, so its Invite cannot be enabled or replaced.
 
 ### Reuse And Forwarding
 
 The Invite is Course-specific and intentionally not person-specific. Multiple
-Participants MAY use the same valid Invite. A recipient MAY forward it, and the
-new recipient MAY also join when otherwise eligible.
-
-This is an explicit product and security tradeoff: shared onboarding is simpler
-than fine-grained invitation control, but possession of the link is not
-restricted to the intended first recipient.
+Participants MAY use the same enabled current Invite, and recipients may
+forward it. Possession authorizes only an explicit attempt to Join under
+authoritative current rules.
 
 ### Join Flow
 
-Joining through an Invite MUST follow this conceptual sequence:
+Joining follows this conceptual sequence:
 
-1. The person opens the Course Invite.
-2. The person authenticates if necessary.
-3. The authenticated Participant receives an explicit action to join.
-4. On confirmation, an Active Course Assignment is created if joining is
-   allowed.
-5. The Participant may then access the Course.
+1. A person opens a recognized Course Invite.
+2. They authenticate if necessary.
+3. A new person completes mandatory Participant onboarding.
+4. The Active Participant receives an explicit Join action.
+5. At confirmation, current Invite, Course, Participant, and Assignment state
+   is revalidated.
+6. When allowed, the Participant receives one Active Course Assignment and may
+   access the Course.
 
-Opening the URL alone MUST NOT create Course membership. Explicit confirmation
-is required.
+Opening the URL, authenticating, or completing onboarding alone MUST NOT create
+Course membership. An existing Active Assignment makes repeat Join a
+successful no-op. A Disabled Participant cannot Join. A Revoked Assignment
+prevents self-reactivation through the shared Invite; only an Active Admin User
+may reactivate it while the Course is Active.
 
-An unregistered recipient MUST NOT cause a pending Participant or pre-created
-Course Assignment. They authenticate or register, become a Participant,
-continue or return to the Invite flow, and explicitly join. An existing
-Participant follows the same explicit join rule.
+A page opened earlier preserves no authority. If the Invite becomes Disabled
+or is replaced, the Course becomes Archived, the Participant becomes Disabled,
+or the Participant's Assignment becomes Revoked before confirmation, the
+authoritative current state governs and no stale page grants membership.
 
-### Idempotent Repeat Use
+### Recognized Invite Visibility
 
-If the Participant already has an Active Course Assignment, using the Invite
-again MUST NOT create a duplicate. The outcome is equivalent to "already
-belongs to this Course," after which the Participant MAY proceed to the Course.
+A recognized Invite token or path that can still be associated with its Course
+MAY reveal:
 
-### Refused Join Attempts
+- the Course name; and
+- whether Join is available or unavailable.
 
-An Invite MUST NOT create a Course Assignment when it is disabled, replaced,
-unknown, otherwise invalid, or associated with an Archived Course.
+The Course-name allowance applies even when the Invite is Disabled, replaced,
+or attached to an Archived Course. It MUST NOT expose any other Course-private
+information, including rosters, Module Selections, private meeting links or
+access instructions, Participant profiles, or administrative information.
 
-A Participant with a Revoked Course Assignment MUST NOT reactivate themselves
-through the generic Invite, even when that Invite remains valid for other
-people. Only an Active Admin User may reactivate that Participant's Assignment.
+A truly unknown or malformed Invite that cannot be associated with a Course
+MUST NOT reveal a Course name or any other Course information.
 
-### Information Before Joining
+## Assignment Revocation And Reactivation
 
-Possession of a valid active Invite MAY expose the minimal information needed
-to identify the join target, including the Course name or title. The Course
-name is considered safe for this limited pre-join use.
+An Active Admin User MAY revoke an Active Assignment in either an Active or
+Archived Course. Revocation is access removal and MUST:
 
-Possession of an Invite MUST NOT expose Course-private information, including:
-
-- the Participant roster;
-- Participants' Module Selections;
-- private meeting links;
-- sensitive room or access instructions; or
-- administrative information.
-
-An invalid, disabled, replaced, or otherwise unusable Invite grants no such
-visibility.
-
-## Revocation And Reactivation
-
-An Active Admin User MAY revoke an Active Course Assignment. Revocation MUST:
-
-- change the Assignment to Revoked;
-- prevent the Participant from accessing and participating in that Course;
-- prevent creation or change of Module Selections in that Course;
+- transition the Assignment to Revoked;
+- block participant-facing Course access and Selection mutation;
 - prevent self-reactivation through the shared Invite;
-- remove the Participant's future Module Selections from authoritative current
-  booking state; and
-- preserve historically meaningful participation information.
+- remove Selections for Scheduled Modules where `now < startsAt`;
+- retain Selections for Scheduled Modules where `startsAt <= now`; and
+- retain all Selections for Cancelled Modules.
 
-Revocation MUST NOT retain future live bookings that existed under the revoked
-Assignment. When an Active Admin User reactivates the Assignment where
-reactivation is permitted, future Module Selections MUST NOT be restored
-automatically. A later valid Admin-assisted set-Selection may reactivate the
-Assignment as part of setting one chosen Module Selection, but it does not
-restore any other removed Selection.
+Retained Selections are historical while the Assignment is Revoked. Future
+Selections removed on revocation do not return on later reactivation. In an
+Active Course, reactivating a retained Assignment may make an in-progress
+Selection live again when the Participant is Active and every other live
+predicate holds. A Revoked Assignment in an Archived Course cannot reactivate.
 
-Participants do not have a self-service leave-Course capability in the initial
-scope. A Participant may remain assigned while having no Module Selections.
+Participants have no self-service leave-Course capability in v1. A Participant
+may remain assigned while having no Selections.
 
-## Visibility
+## Course Access And Visibility
 
-### Participant Visibility
+### Active Course
 
-A Participant with an Active Course Assignment MAY see the information needed
-to participate, including:
+Participant-facing Course access requires both:
 
-- their assigned Courses;
-- the Course's Modules;
-- available Groups;
-- their own Module Selections; and
-- Course, Module, and Group details relevant to participation.
+- Active Participant state; and
+- an Active Course Assignment.
 
-Course access MUST NOT automatically expose the full Participant roster, other
-Participants' Module Selections or personal information, or administrative
-data. Participant-visible rosters and Group counts are outside the initial
-scope.
+For an Active Course, those conditions grant normal access to participation
+information and otherwise eligible Selection mutation. The Participant may see
+the Course's Modules, Active Groups and relevant Group details, their own
+Selections, and Course information needed for participation.
+
+### Archived Course
+
+An Active Participant with an Active Assignment MAY retain read-only access to
+an Archived Course. They may view appropriate historical Course information,
+Modules, relevant Group information, and their own Selections but MUST NOT
+mutate any booking state. Archival does not revoke Assignments. A later Admin
+revocation removes that Participant's access, and the Revoked Assignment cannot
+reactivate while the Course remains Archived.
+
+### Participant Privacy
+
+Course access MUST NOT expose the full Participant roster, other Participants'
+Selections, email addresses or profiles, or administrative data. Participant
+rosters and Group counts remain outside v1.
 
 ### Admin User Visibility
 
-An Active Admin User MAY discover and view Courses as needed for
-administration, including Courses with zero members, Courses without an active
-Invite, and Archived Courses. Administrative Course information includes:
-
-- Course Participants;
-- Course Assignment state;
-- Modules;
-- Groups; and
-- Participants' Module Selections.
-
-This permission rule does not prescribe any user-interface layout.
+An Active Admin User MAY discover and view Active and Archived Courses as
+needed for administration, including Courses with zero members or no enabled
+Invite. Administrative Course information includes Course Participants,
+Assignment state, Modules, Groups, and Participants' Selections, subject to the
+accepted action rules.
 
 ### No Public Discovery
 
-A person without current Admin User access, an Active Course Assignment, or a
-valid active Invite MUST NOT otherwise discover or view the Course. The product
-has no public Course catalogue or directory.
+The product has no public Course catalogue or directory. Outside the deliberate
+recognized-Invite Course-name exception, a person without current Admin access
+or Active Participant plus Active Assignment access MUST NOT discover or view
+a Course.
 
 ## Multiple Courses
 
-A Participant MAY have independent Course Assignments to multiple Courses.
-Revocation from one Course MUST NOT affect another Course. A Course Invite
-applies only to its Course, and Module Selections MUST NOT span Courses.
+A Participant MAY have independent Assignments to several Courses. Revocation
+from one Course MUST NOT affect another Course. Participant Disable applies
+globally without changing those Assignment states. A Course Invite applies only
+to its Course, and Module Selections MUST NOT span Courses.
+
+## Authoritative Current State
+
+Every onboarding completion, profile edit, Participant state change, Assignment
+operation, Course Invite action, Join confirmation, access check, and related
+state-changing operation MUST be validated against authoritative current state
+when accepted. Stale forms and Invite pages confer no continuing authority.

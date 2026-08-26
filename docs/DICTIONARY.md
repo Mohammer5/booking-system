@@ -10,129 +10,162 @@ implemented.
 
 ### Admin-Assisted Booking
 
-An accepted operation in which an Active Admin User adds an existing
+An accepted operation in which an Active Admin User adds an existing Active
 Participant to a Module and Group, changes the selected Group, or removes that
-Participant's Module Selection. Setting a Group uses the normal booking
-eligibility and `startsAt` deadline, may establish or reactivate the ordinary
-Active Course Assignment as part of the same successful product outcome, and
-is idempotent for the same Group while replacing a different Group. Removal
-uses the same deadline and lifecycle constraints. The operation grants no
-Admin override and creates no separate membership, booking entity, or Selection
-state. See [Module
+Participant's Module Selection. Setting a Group uses normal booking eligibility
+and the `startsAt` deadline and may establish or reactivate the ordinary Course
+Assignment in the same successful outcome. Refusal leaves no membership side
+effect. The operation creates no Admin-specific booking, Selection, or
+membership state. See [Module
 participation](product/module-participation.md#admin-assisted-booking).
 
 ### Admin Invite
 
 A non-Course-specific, one-time invitation through which a person may
-authenticate, supply a required real name, and create one ordinary Active Admin
-User. Multiple Active Admin Invites may coexist. Successful onboarding makes
-the Invite Claimed; an Active Admin User may instead Revoke it. Claimed and
-Revoked are terminal, and Admin Invites do not expire automatically. See
+authenticate, supply a required Admin User name, and create one ordinary Active
+Admin User. Successful onboarding makes the Invite Claimed; an Active Admin
+User may instead Revoke it. Claimed and Revoked are terminal, and Admin Invites
+do not expire automatically. The complete URL is shown only at creation. See
 [Admin access](product/admin-access.md#admin-invites).
 
 ### Admin User
 
 A booking-system domain identity for a person authorized to operate the
 administration experience. It is distinct from Participant and has its own
-stable identity, required real name, Active or Disabled access state, ordinary
-Admin or Super Admin authority, and deletion rules. Being an Admin User does
-not make the person a Participant. See [Admin
+stable identity, required name, Active or Disabled access state, ordinary Admin
+or Super Admin authority, and deletion rules. Being an Admin User does not make
+the person a Participant. See [Admin
 access](product/admin-access.md#admin-user-identity).
 
-### Admin User Real Name
+### Admin User Name
 
-The single required human-readable name an Admin User explicitly supplies or
-confirms during onboarding. It is a booking-system property rather than trusted
-authentication-provider profile data and may later be edited by an authorized
-Admin User. See [real name and
-onboarding](product/admin-access.md#real-name-and-onboarding).
+The one required human-readable name an Admin User explicitly supplies or
+confirms during onboarding. It is a booking-system profile property, not domain
+identity or authoritative authentication-provider data. An authorized Active
+Admin User may edit it without changing identity, state, or authority. See
+[name and onboarding](product/admin-access.md#name-and-onboarding).
 
 ### Course
 
 The primary booking-system container for Groups, Modules, Course Assignments,
-one Course timezone, and at most one current shared Course Invite. A Course is
-Active or permanently Archived; it is never hard-deleted or restored. A
-Scheduled Module whose `endsAt` is in the future blocks archival unless it is
-explicitly resolved through its lifecycle. See [the domain
-model](product/domain-model.md#course).
+one Course timezone, and at most one current shared Course Invite. It has
+required name and timezone plus optional description. A new Course is Active
+and empty; an Archived Course is permanent and structurally read-only. See [the
+domain model](product/domain-model.md#course).
 
 ### Course Assignment
 
 The Active or Revoked relationship stating that one Participant belongs to one
-Course. It governs Course access independently of Module participation. A
-Revoked Assignment may be reactivated only while its Course is Active. Direct
-administration, Invite joining, and Admin-assisted booking produce the same
-membership concept and behavior. See [Course access](product/course-access.md).
+Course. It is Course-specific membership and remains distinct from Participant
+global state and Module participation. Participant Course access requires both
+an Active Participant and an Active Assignment. See [Course
+access](product/course-access.md#administrative-assignment).
 
 ### Course Invite
 
 The Course-specific, person-independent shared invitation through which an
-authenticated Participant may explicitly attempt to join a Course. A Course
-has at most one current Invite. A valid active Invite may expose the Course
-name as minimal pre-join context but no Course-private information. See
-[shared Course Invite](product/course-access.md#shared-course-invite).
+Active Participant may explicitly attempt to Join a Course. A Course has at
+most one current Invite, which may be enabled, disabled, or replaced. A
+recognized unusable Invite may reveal only its Course name; an unknown Invite
+reveals no Course data. See [shared Course
+Invite](product/course-access.md#shared-course-invite).
 
 ### Course Timezone
 
-The single timezone in which one Course's Module `startsAt` and `endsAt` values
-are interpreted. It may change while the Course has no Modules and becomes
-immutable once the first Module exists. See
-[Course timezone](product/course-structure.md#course-timezone).
+The single IANA/TZDB timezone used to interpret one Course's Module schedule,
+defaulting to `Europe/Berlin`. It may change while the Active Course has no
+Modules and becomes immutable once the first Module exists. Local schedule
+input resolves through DST rules to definite instants. See [Course
+timezone](product/course-structure.md#course-timezone).
 
 ### External Authentication Identity
 
-A provider-managed identity used to establish which booking-system domain
-identity is acting. It may independently back a Participant, an Admin User, or
-both without merging them, and the relationship remains compatible with a
-domain identity having multiple external identities in the future. See
-[the domain model](product/domain-model.md#external-authentication-identity).
+The stable external principal presented by the chosen authentication layer to
+establish which booking-system domain identity is acting. Several sign-in
+methods may resolve to the same principal; different principals remain
+different and are not merged because profile data matches. One principal may
+independently back one Participant, one Admin User, or both. See [the domain
+model](product/domain-model.md#external-authentication-identity).
 
 ### First Admin Bootstrap
 
-The one-time installation flow that offers `Register admin` while no Admin User
-has ever been created, regardless of whether Participants exist. The first
-successful registrant authenticates, supplies a required real name, and becomes
-the first Admin User and Super Admin. See [Admin
+The one-time installation flow available while no Admin User has ever been
+created, regardless of whether Participants exist. The first successfully
+accepted registrant authenticates, supplies a required Admin User name, and
+becomes an Active Super Admin. See [Admin
 access](product/admin-access.md#first-admin-bootstrap).
 
 ### Group
 
-A permanently Course-owned, Active or Archived attendance option whose
-identity and logistical details apply Course-wide rather than per Module. See
-[Groups](product/course-structure.md#groups).
+A permanently Course-owned, Active or Archived attendance option with required
+name and optional free-text details. It applies Course-wide rather than per
+Module. Active Group names are unique within one Course after normalized,
+case-insensitive comparison. See [Groups](product/course-structure.md#groups).
 
 ### Module
 
-One non-recurring Scheduled or Cancelled occurrence in exactly one Course. Its
-schedule is `startsAt` and `endsAt`, both interpreted in the Course timezone,
-with `endsAt > startsAt`; upcoming, in-progress, and ended are derived temporal
-descriptions rather than lifecycle states. See
+One non-recurring Scheduled or terminal Cancelled occurrence in exactly one
+Course. It has required title, `startsAt`, and `endsAt`, optional description
+and instructions, and no separate timezone. Its definite interval determines
+upcoming, in-progress, and ended descriptions. See
 [Modules](product/course-structure.md#modules).
 
 ### Module Selection
 
 The relationship recording that one Participant intends to attend one Module
-using one Group. It may be created by the Participant or through Admin-assisted
-booking. Its absence means non-participation; its live or historical meaning is
-derived from surrounding state, and it does not prove actual attendance. See
-[Module participation](product/module-participation.md).
+using one Group. Absence means non-participation. A retained Selection is live
+only while Participant, Course, and Assignment are Active, the Module is
+Scheduled, and `now < endsAt`; otherwise it is historical. It does not prove
+attendance. See [Module participation](product/module-participation.md).
 
 ### Participant
 
-A booking-system domain identity for a person in participant-facing booking. A
-Participant may belong to Courses through Course Assignments, access those
-Courses, and make Module Selections. It is distinct from Admin User even when
-the same external authentication identity backs both. See [the domain
+A fully registered booking-system domain identity for a person in
+participant-facing booking. A Participant has required name and unique email,
+Active or Disabled global state, zero or more Course Assignments, and zero or
+more Module Selections. It remains distinct from Admin User even when one
+external authentication identity backs both. See [the domain
 model](product/domain-model.md#participant).
+
+### Participant Disabled State
+
+The reversible global state that removes normal participant-facing access
+without deleting Participant identity or changing Course Assignment states.
+Disable removes future Scheduled-Module Selections and retains in-progress,
+ended, and Cancelled-Module Selections as history. See [Participant global
+access state](product/course-access.md#participant-global-access-state).
+
+### Participant Email
+
+The required valid email profile property of a registered Participant. It is
+unique after normal trimming/normalization and case-insensitive comparison but
+is neither Participant identity nor a basis for merging external principals or
+Participants. See [Participant profile](product/course-access.md#participant-profile).
+
+### Participant Name
+
+The required human-readable profile property of a registered Participant. It
+is non-unique, may match another Participant's name, and is neither Participant
+identity nor proof that two external principals belong to one person. See
+[Participant profile](product/course-access.md#participant-profile).
+
+### Participant Onboarding
+
+The mandatory participant registration step after a new external principal
+authenticates in participant context. Valid Participant name and email complete
+registration and create an Active Participant. Incomplete onboarding is not a
+Participant lifecycle state and grants no normal application or Course access.
+See [Participant registration and
+onboarding](product/course-access.md#participant-registration-and-onboarding).
 
 ### Super Admin
 
-The broader Admin User authority assigned to the first Admin User created by
-bootstrap. It is an authorization classification on that Admin User, not a
-separate identity entity. Ordinary Admin Users cannot mutate the Super Admin;
-the Super Admin has broader mutation authority subject to explicit
-self-protection. See [Admin
-access](product/admin-access.md#super-admin-authority-and-protection).
+The broader Admin User authority automatically assigned to the first
+successfully bootstrap-created Admin User and later available through explicit
+promotion of an Active ordinary Admin User by an Active Super Admin. Several
+Super Admins may coexist. Promotion preserves identity, no demotion exists in
+v1, and every accepted mutation must leave at least one Active Super Admin. See
+[Admin access](product/admin-access.md#super-admin-promotion).
 
 ## Meta And Internal Terms
 

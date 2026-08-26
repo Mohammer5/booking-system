@@ -9,16 +9,18 @@ states, and valid empty states.
 ## Not Responsible For
 
 This document does not define authentication and access flows, Course content
-lifecycle operations, participant booking actions, implementation
-architecture, or technology.
+lifecycle operations, Participant booking actions, implementation architecture,
+or technology.
 
 ## Inputs
 
-- an authenticated Participant or Admin User identity;
+- an authenticated external principal used in participant or administration
+  context;
 - Admin User and Participant actions governed by the focused product rules;
-- Course-local Module intervals interpreted in the Course timezone; and
-- current Course, Group, Module, Course Assignment, Course Invite, Admin Invite,
-  and Module Selection state.
+- Course-local Module intervals resolved through the Course timezone to
+  definite instants; and
+- authoritative current Participant, Admin User, Course, Group, Module,
+  Assignment, Invite, and Selection state.
 
 ## Outputs
 
@@ -29,90 +31,119 @@ architecture, or technology.
 ## Adjacent Parts
 
 The model composes with [Admin access](admin-access.md),
-[Course access](course-access.md), [Course structure and lifecycle](course-structure.md),
-and [Module participation](module-participation.md).
+[Course access](course-access.md), [Course structure and
+lifecycle](course-structure.md), and [Module
+participation](module-participation.md).
 
 ## Canonical Vocabulary
 
 ### External Authentication Identity
 
-An [external authentication identity](../DICTIONARY.md#external-authentication-identity)
-is a provider-managed identity used to establish which booking-system domain
-identity is acting. The system MUST support external identities including
-Google, Apple, Microsoft, and Facebook without prescribing an authentication
-product.
+An [external authentication
+identity](../DICTIONARY.md#external-authentication-identity) is the stable
+external principal presented by the chosen authentication layer. The booking
+system trusts that principal to establish which booking-system domain identity
+is acting without prescribing an authentication vendor or provider-specific
+principal representation.
 
-An external authentication identity may establish access to a Participant, an
-Admin User, or both independently. The same provider identity MAY
-simultaneously back one Participant and one Admin User, but MUST NOT merge them
-into one domain entity. The surrounding participant or administration context
-determines which identity and authority is being used.
+Several sign-in methods that the authentication layer resolves to the same
+stable principal represent the same external authentication identity. Two
+different external principals remain different external identities, even when
+their names, email addresses, or other personal data match. The booking system
+MUST NOT automatically merge them or attempt to determine whether they belong
+to the same real-world human.
 
-The relationship MUST remain compatible with a Participant or Admin User
-having multiple external authentication identities in the future. The initial
-product does not require self-service identity linking and MUST NOT
-automatically merge domain identities merely because email, display name, or
-other personal data matches.
+One external authentication identity MAY independently back one Participant,
+one Admin User, or both. Participant and Admin User remain separate domain
+entities with independent state and history. The product remains compatible
+with authentication-layer provider linking behind one stable principal, but
+does not provide principal linking, merging, recovery, or transfer in v1.
 
 ### Participant
 
 A [Participant](../DICTIONARY.md#participant) is the domain identity for a
-person in participant-facing booking. A Participant may belong to zero, one,
-or multiple Courses and make Module Selections. Participant Course membership,
-Course Assignments, Module Selections, and Course access remain independent of
-any Admin User identity backed by the same external authentication identity.
+fully registered person in participant-facing booking. A Participant has:
+
+- one required human-readable `name`;
+- one required `email`, unique among registered Participants after normal
+  trimming/normalization and case-insensitive comparison; and
+- Active or Disabled global access state.
+
+Required profile text MUST be non-blank after trimming, and `email` MUST be a
+valid email address. Neither name nor email is Participant identity or evidence
+that two external principals belong to the same person. A Participant may
+belong to zero, one, or multiple Courses and may have Module Selections. Course
+Assignments, Selections, profile values, and global state remain independent
+of any Admin User backed by the same external authentication identity.
+
+### Participant Onboarding
+
+[Participant onboarding](../DICTIONARY.md#participant-onboarding) is the
+mandatory registration step after a new external principal authenticates in
+participant context. The Participant becomes a fully registered Active domain
+identity only after valid name and email are supplied. Incomplete onboarding
+is not an additional Participant lifecycle state and creates no Course
+Assignment, Module Selection, or other booking-domain record.
 
 ### Admin User
 
 An [Admin User](../DICTIONARY.md#admin-user) is the distinct domain identity
-for a person authorized to operate the administration side of the booking
-system. It has a stable identity, required real name, current administrative
-access state, and ordinary Admin or Super Admin authority. Admin access MUST
-NOT be modeled as a property on Participant, and neither entity's existence
-MUST imply the other's.
+for a person authorized to operate the administration side. It has a stable
+identity, one required human-readable `name`, Active or Disabled administrative
+access state, and ordinary Admin or Super Admin authority. Required name is a
+booking-system property and MUST be non-blank after trimming. Admin access MUST
+NOT be modeled as a property on Participant, and neither entity's existence,
+state, or history implies the other's.
 
 ### Super Admin
 
-A [Super Admin](../DICTIONARY.md#super-admin) is the first bootstrap-created
-Admin User with broader authorization over Admin Users. Super Admin is an
-authority classification, not a separate identity entity. Admin Invites create
-ordinary Admin Users and MUST NOT grant Super Admin authority by default.
+A [Super Admin](../DICTIONARY.md#super-admin) is an Admin User with broader
+authorization over Admin Users. The first successfully bootstrap-created Admin
+User receives this authority automatically. An Active Super Admin MAY promote
+an Active ordinary Admin User, so multiple Super Admins may coexist. Promotion
+preserves Admin User identity and is one-way in v1. Admin Invites always create
+ordinary Admin Users.
 
 ### Course
 
 A [Course](../DICTIONARY.md#course) is the primary container. It has:
 
+- one required non-blank `name`;
+- one optional `description`;
+- one required IANA/TZDB timezone, defaulting to `Europe/Berlin`;
 - zero or more Groups;
 - zero or more Modules;
 - zero or more Course Assignments;
-- at most one current shared Course Invite;
-- exactly one Course timezone; and
-- either Active or Archived state.
+- at most one current shared Course Invite; and
+- Active or permanently Archived state.
 
-A Participant may be assigned to multiple Courses. Course names do not need to
-be globally unique.
+Course names need not be unique and are not identity. A new Course is Active
+and creates no Group, Module, Assignment, or Invite implicitly.
 
 ### Group
 
-A [Group](../DICTIONARY.md#group) is one attendance option within exactly one
-Course. It may have a human-readable name and Course-wide logistical details,
-such as a physical location, room, meeting link, or access instructions. It has
-no special physical, remote, hybrid, provider, or platform type.
+A [Group](../DICTIONARY.md#group) is one Course-wide attendance option within
+exactly one Course. It has one required non-blank `name`, one optional
+free-text `details` value, and Active or Archived state. It has no structured
+room, location, URL, meeting-provider, physical/remote/hybrid, or access-data
+subobjects.
 
-A Group belongs permanently to one Course and is either Active or Archived.
-Active Groups in one Course MUST be distinguishable to Participants; their
-names SHOULD therefore be unique within that Course. Groups are Course-wide,
-not Module-specific.
+Group identity and details are permanently Course-owned rather than
+Module-specific. Active Group names MUST be unique within one Course after
+trimming and case-insensitive comparison. Archived Groups may share names with
+Active Groups; reactivation must restore the Active-name invariant.
 
 ### Module
 
-A [Module](../DICTIONARY.md#module) is one non-recurring scheduled occurrence
-within exactly one Course. Its schedule is the interval from `startsAt` to
-`endsAt`, both interpreted in the Course timezone, and `endsAt` MUST be later
-than `startsAt`. A Module is either Scheduled or Cancelled. Upcoming, started,
-and ended descriptions are derived from the interval rather than lifecycle
-states. At the exact `startsAt` instant, the Module has started; at the exact
-`endsAt` instant, it has ended. A Module belongs permanently to its Course.
+A [Module](../DICTIONARY.md#module) is one non-recurring occurrence within
+exactly one Course. It has one required non-blank `title`, optional
+`description`, optional `instructions`, and required `startsAt` and `endsAt`
+definite instants with `endsAt > startsAt`. Module titles need not be unique and
+are not identity.
+
+A Module is Scheduled or Cancelled. Upcoming, in-progress, and ended are
+derived temporal descriptions. At exact `startsAt` it has started; at exact
+`endsAt` it has ended. Modules have no separate business timezone.
 
 ### Course Assignment
 
@@ -120,16 +151,17 @@ A [Course Assignment](../DICTIONARY.md#course-assignment) represents:
 
 > Participant belongs to Course.
 
-A Participant has at most one Course Assignment for a given Course. The
-Assignment is Active or Revoked. Active grants Course access and permits
-otherwise eligible Module Selections; Revoked prevents access and participation
-under the access rules.
+A Participant has at most one Assignment for a given Course. The Assignment is
+Active or Revoked. Course-specific membership is distinct from Participant
+global state: participant-facing Course access requires both an Active
+Participant and an Active Assignment. The Course lifecycle then determines
+whether access is mutable Active-Course access or read-only Archived-Course
+access.
 
-Direct administrative assignment, invite-based joining, and membership created
-or reactivated through Admin-assisted booking MUST produce the same Course
-Assignment concept. Origin MUST NOT create behavioral states such as invited,
-manually assigned, booking-created, or self-enrolled. Origin MAY later be audit
-metadata, but it MUST NOT affect Participant behavior.
+Direct administrative assignment, Invite joining, and membership established
+or reactivated through Admin-assisted booking produce the same Assignment
+concept. Origin creates no invited, manual, booking-created, or self-enrolled
+state.
 
 ### Module Selection
 
@@ -137,164 +169,225 @@ A [Module Selection](../DICTIONARY.md#module-selection) represents:
 
 > Participant P intends to participate in Module M using Group G.
 
-For one Participant and Module, at most one Module Selection may exist. Absence
-means the Participant is not participating. A Module Selection records booking
-intent, not proof of attendance. Whether an existing Selection is an active
-booking or a historical record is derived from the surrounding Course, Module,
-and Course Assignment state. The Selection has no unanswered, declined,
-requested, pending, approved, waitlisted, or cancelled-booking state.
+For one Participant and Module, at most one Selection may exist. Absence means
+non-participation. A Selection records booking intent, not attendance, and has
+no RSVP or cancelled-booking lifecycle.
+
+A retained Selection is live only when all of these are true:
+
+- Participant is Active;
+- Course is Active;
+- Course Assignment is Active;
+- Module is Scheduled; and
+- `now < endsAt`.
+
+Within live state, `now < startsAt` is upcoming and
+`startsAt <= now < endsAt` is in progress. Otherwise the retained Selection is
+historical. Live/historical is derived from authoritative surrounding state,
+not a separate Selection status.
 
 ### Course Invite
 
 A [Course Invite](../DICTIONARY.md#course-invite) is a Course-specific,
 person-independent shared invitation. A Course has at most one current Invite.
-Possession authorizes a person to attempt to join, subject to authentication,
-explicit confirmation, Course state, Invite state, and prior revocation. One
-Invite may intentionally be used by multiple people.
+The current Invite may be enabled or disabled; replacement permanently
+invalidates its predecessor. An enabled current Invite authorizes an Active
+Participant to attempt explicit Join, subject to authoritative Course,
+Assignment, Invite, and Participant state.
+
+A recognized token that can still be associated with a Course may reveal only
+that Course's name even when it is disabled, replaced, or attached to an
+Archived Course. An unknown token reveals no Course data.
 
 ### Admin Invite
 
 An [Admin Invite](../DICTIONARY.md#admin-invite) is a non-Course-specific,
-one-time path toward creating an ordinary Admin User. Multiple Active Admin
-Invites may coexist independently. It is Active until successfully Claimed or
-manually Revoked and does not expire automatically.
+one-time path toward creating one ordinary Active Admin User. Multiple Active
+Invites may coexist. It remains Active until successfully Claimed or manually
+Revoked and does not expire automatically. Claimed and Revoked are terminal.
 
 ## Conceptual Relationships
 
 ```text
-Participant ← Course Assignment → Course
-Course → Groups
-Course → Modules
-Participant + Module → selected Group
-Course → shared Invite
-External authentication identity → Participant
-External authentication identity → Admin User
-Admin Invite → ordinary Admin User
-Admin User → administration actions
+External authentication identity -> Participant
+External authentication identity -> Admin User
+Participant <- Course Assignment -> Course
+Course -> Groups
+Course -> Modules
+Participant + Module -> selected Group
+Course -> current shared Course Invite
+Admin Invite -> ordinary Admin User
+Super Admin authority -> promotion of ordinary Admin User
 ```
 
-A Module Selection is valid only when its Participant, Module, and Group all
+A Module Selection is valid only when its Participant, Module, and Group
 resolve through the same Course according to the invariants below.
 
 ## Hard Invariants
 
-1. A Group MUST belong to exactly one Course.
-2. A Module MUST belong to exactly one Course.
-3. A Participant MUST have at most one Course Assignment to a given Course.
-4. A new Course Assignment MUST NOT be created for an Archived Course, whether
-   by direct administration, a shared Course Invite, or Admin-assisted booking.
-5. A Revoked Course Assignment MUST NOT be reactivated while its Course is
-   Archived.
-6. A Participant MUST have at most one Module Selection for a given Module.
-7. Every Module Selection MUST reference exactly one Participant, one Module,
-   and one Group.
-8. A Module Selection's Group and Module MUST belong to the same Course.
-9. A Participant MUST have an Active Course Assignment to that Course when
-   creating or changing their own Module Selection.
-10. An Admin-assisted set-Selection operation MUST target an existing
-    Participant. It MAY create or reactivate that Participant's Active Course
-    Assignment only as part of the same successful product operation that sets
-    the Module Selection; an already-Active Assignment MUST remain Active and
-    no duplicate Assignment may be created.
-11. Any Participant-created or Admin-assisted creation or replacement of a
-    Module Selection MUST require an Active Course, a Scheduled Module whose
-    `startsAt` is still in the future, and an Active Group in that Module's
-    Course.
-12. A refused Admin-assisted set-Selection operation MUST NOT leave behind a
-    newly created or reactivated Course Assignment.
-13. Setting the selected Group to the already-selected Group MUST be
-    idempotent. Setting another eligible Group MUST replace the existing
-    Selection rather than create a second Selection.
-14. Admin-assisted removal MUST require an Active Course and a Scheduled
-    Module whose `startsAt` is still in the future. Successful removal MUST
-    result in no Module Selection and MUST NOT create an Admin-specific
-    cancellation state.
-15. Course membership MUST NOT automatically assign a Participant to a Module
-    or Group.
-16. No Module Selection MUST mean non-participation in that Module.
-17. Group choice MUST be per Module. A Participant MAY use different Groups for
-    different Modules in the same Course.
-18. Group identity and details MUST be Course-wide, not Module-specific.
-19. Human-readable Course, Group, and Module names MUST NOT be their domain
-    identity. Renaming MUST preserve existing relationships.
-20. Every Module MUST satisfy `endsAt > startsAt`.
-21. Before `startsAt`, an Active Admin User MAY change a Module's `startsAt` or
-    `endsAt` only while the resulting interval remains valid. At or after
-    `startsAt`, neither value may change.
-22. A Course timezone MAY change only while the Course has no Modules. Once the
-    first Module exists, the Course timezone MUST NOT change.
-23. A Course MUST NOT transition from Active to Archived while it contains a
-    Scheduled Module whose `endsAt` is in the future. This includes upcoming
-    and in-progress Scheduled Modules; at the exact `endsAt` instant, the
-    Module has ended and no longer blocks archival on temporal grounds.
-24. A Cancelled Module MUST NOT block Course archival merely because its
-    original `endsAt` is in the future. Course archival MUST NOT itself Cancel
-    a Module or mutate Module Selections.
-25. A Course MUST NOT be hard-deleted or transition from Archived back to
-    Active.
-26. Cancelling a Module MUST preserve its existing Module Selections as
-    historical records, but those Selections MUST NOT remain active bookings.
-27. Participant and Admin User MUST remain distinct domain entities with
-    independent responsibilities and lifecycles.
-28. Being a Participant MUST NOT automatically make a person an Admin User,
-    and being an Admin User MUST NOT automatically make a person a Participant.
-29. One external authentication identity MAY back both one Participant and one
-    Admin User without merging them.
-30. A Disabled Admin User MUST NOT have administrative access.
-31. Only the first-ever successfully created Admin User MUST receive the
-    initial Super Admin authority through bootstrap.
-32. An Active Admin Invite MUST transition permanently to Claimed only after
-    successful Admin User creation, or to Revoked after manual Revocation.
-33. A Claimed or Revoked Admin Invite MUST NOT become usable again.
+### Identity And Profile
+
+1. Participant and Admin User MUST remain distinct domain entities with
+   independent state and history, even when one external authentication
+   identity backs both.
+2. Matching names, Participant emails, or other personal data MUST NOT merge
+   domain identities or distinct external principals.
+3. Every registered Participant MUST have valid required name and email, and
+   Participant email MUST be unique by the accepted comparison rule.
+4. Every Admin User MUST have one valid required name.
+5. Profile edits MUST preserve domain identity and every existing relationship.
+
+### Structure And Membership
+
+6. A Group and a Module MUST each belong permanently to exactly one Course.
+7. Active Group names MUST be unique within one Course after trimming and
+   case-insensitive comparison.
+8. A Participant MUST have at most one Course Assignment to a given Course.
+9. A new Course Assignment MUST NOT be created for an Archived Course by any
+   path, and a Revoked Assignment MUST NOT be reactivated there.
+10. An Active Assignment alone MUST NOT grant participant-facing Course access;
+    the Participant MUST also be Active.
+11. Course membership MUST NOT automatically create a Module Selection.
+12. Revoking an already-Revoked Assignment and assigning or reactivating an
+    already-Active Assignment MUST be successful no-ops.
+
+### Selection Validity And History
+
+13. A Participant MUST have at most one Module Selection for a given Module.
+14. Every Selection MUST reference one Participant, one Module, and one Group,
+    and the Group and Module MUST belong to the same Course.
+15. Participant-created Selection creation or change requires an Active
+    Participant, Active Assignment, Active Course, Active Group, and Scheduled
+    Module where `now < startsAt`.
+16. Admin-assisted creation or replacement requires an Active Admin User and
+    an existing Active Participant, plus the same Course, Group, Module, and
+    deadline validity. It MAY establish or reactivate the ordinary Assignment
+    only as part of the same successful outcome.
+17. A refused Admin-assisted set-Selection MUST NOT leave a newly created or
+    reactivated Assignment.
+18. Setting the already-selected Group MUST be idempotent; setting another
+    eligible Group MUST replace the current Selection.
+19. Successful pre-start removal produces no Selection and no cancellation or
+    audit record. Removed or replaced values do not remain merely as change
+    history.
+20. Assignment revocation and Participant Disable MUST remove Selections for
+    Scheduled Modules where `now < startsAt`, retain Scheduled-Module
+    Selections where `startsAt <= now`, and retain Cancelled-Module Selections.
+21. Cancellation MUST retain existing Module Selections as historical records.
+22. Re-enabling a Participant or reactivating an Assignment MUST NOT restore
+    removed future Selections. A legitimately retained in-progress Selection
+    MAY become live again when every live predicate becomes true.
+
+### Time And Lifecycle
+
+23. Module schedule input in the Course timezone MUST resolve to definite
+    instants. Nonexistent local times are invalid and ambiguous local times
+    require explicit disambiguation.
+24. Every Module MUST satisfy `endsAt > startsAt`; creation also requires
+    `startsAt > now`.
+25. A Scheduled Module may be rescheduled only before its current `startsAt`,
+    and the result MUST satisfy `newStartsAt > now` and
+    `newEndsAt > newStartsAt`.
+26. At or after `startsAt`, a Scheduled Module's interval is immutable. A
+    Cancelled Module's interval is always immutable.
+27. A Scheduled Module may be Cancelled only in an Active Course while
+    `now < endsAt`. Cancellation is terminal.
+28. A Course timezone may change only while the Active Course has no Modules.
+29. A Course MUST NOT be Archived while it contains a Scheduled Module where
+    `now < endsAt`. Archival MUST NOT cancel Modules or mutate Selections.
+30. An Archived Course MUST remain Archived and MUST NOT be hard-deleted.
+31. An Archived Course is structurally read-only. Assignment revocation is the
+    only accepted remaining Course-specific access mutation; no Assignment may
+    be added or reactivated and no Selection may be mutated.
+32. A Group may move Active to Archived only when its Course is Active and no
+    retained Selection references it for a Scheduled Module where
+    `now < startsAt`. It may reactivate only in an Active Course and subject to
+    Active-name uniqueness.
+33. A Group or Module may be hard-deleted only in an Active Course when no
+    currently retained Module Selection references it.
+
+### Administration And Invitations
+
+34. A Disabled Participant MUST have no normal participant-facing access and
+    MUST NOT mutate their profile, join, or mutate Selections.
+35. A Disabled Admin User MUST have no administrative access.
+36. Authentication alone MUST NOT create an Admin User after bootstrap has
+    completed; a new Admin User then requires an Active Admin Invite.
+37. Only the first successfully bootstrap-created Admin User receives Super
+    Admin authority automatically.
+38. Only an Active Super Admin may promote an Active ordinary Admin User.
+    Promotion preserves identity and Super Admin demotion is unsupported.
+39. An Admin User MUST NOT disable or delete themselves or alter their own
+    authority. Ordinary Admin Users MUST NOT mutate Super Admins.
+40. No accepted Admin User mutation may leave zero Active Super Admins.
+41. A current Admin User's attempted Admin Invite claim MUST be refused without
+    creating or re-enabling an Admin User or consuming the Invite.
+42. A deleted Admin User's former external principal may create a new ordinary
+    Active Admin User only through a new Active Admin Invite; the old Admin
+    identity, state, and authority are not restored.
+43. Successful Admin User creation MUST permanently transition its Active
+    Invite to Claimed. Manual Revocation MUST transition Active to terminal
+    Revoked.
+44. Disabling or deleting an Admin User MUST NOT cascade into booking-domain
+    content or previously created Invites.
+45. A recognized but unusable Course Invite MAY reveal only its Course name;
+    an unknown Invite MUST reveal no Course information.
+
+### Authoritative Acceptance
+
+46. Every state-changing operation MUST be authorized and validated against
+    authoritative current state when accepted, including actor state and
+    authority, lifecycle state, Invite state, Assignment state, temporal
+    deadlines, and invariants.
 
 ## Minimal State Model
 
 | Concept | Complete state model |
 | --- | --- |
-| Course | Active or Archived |
-| Group | Active or Archived |
-| Module | Scheduled or Cancelled |
+| Participant registration | No Participant until mandatory onboarding succeeds; incomplete onboarding is not a Participant lifecycle state |
+| Participant | Active or Disabled; hard deletion is unsupported |
+| Course | Active or permanently Archived |
+| Group | Active or Archived while its Course is Active; Archived Course freezes state |
+| Module | Scheduled or terminal Cancelled |
 | Course Assignment | Active or Revoked |
-| Module Selection | Exists with exactly one selected Group, or does not exist; when it exists, live or historical meaning is derived from surrounding state |
-| Course Invite | When present, current and enabled, or disabled and non-usable; replacement invalidates the predecessor |
-| Admin User | Exists as Active or Disabled; an ordinary Admin User may instead be deleted, which is distinct from Disabled |
-| Admin User authority | Ordinary Admin or Super Admin; no promotion, transfer, replacement, or additional Super Admin lifecycle is currently defined |
+| Module Selection | Exists with one selected Group or does not exist; live/historical meaning is derived |
+| Course Invite | No current Invite, or current enabled/disabled Invite; replacement invalidates the predecessor |
+| Admin User | Existing as Active or Disabled, or legitimately deleted under Admin User rules |
+| Admin User authority | Ordinary Admin or Super Admin; Active ordinary Admin may be promoted, and no demotion exists |
 | Admin Invite | Active, Claimed, or Revoked; Claimed and Revoked are terminal |
 
-For a Scheduled Module, upcoming, started or in-progress, and ended descriptions
-are derived from `startsAt` and `endsAt`; the Module is ended at the exact
-`endsAt` instant. A Course MAY have no Course Invite. Further lifecycle states
-MUST NOT be introduced without an explicit requirement.
+Further lifecycle states MUST NOT be introduced without an explicit
+requirement.
 
 ## Identity And Naming
 
-Renaming a Course, Group, or Module MUST preserve the same domain object and
-all existing relationships. Similar names do not imply duplicate identity:
+Name, title, and Participant email are properties rather than domain identity.
+Changing one preserves the same object and all relationships. Similar names do
+not imply duplicate identity:
 
-- two Courses MAY have the same or similar name;
-- two Modules MAY have the same or similar name, `startsAt`, `endsAt`, or
-  description;
-  and
-- active Group choices in one Course MUST remain distinguishable, so Group
-  names SHOULD be unique within that Course.
+- Participants MAY share a name;
+- Courses and Modules MAY share names or titles;
+- Archived Groups MAY share a name with an Active Group; and
+- Active Groups in one Course MUST have distinct normalized names.
 
-Sophisticated duplicate detection is not a domain invariant. A future
-administration experience MAY warn about suspicious duplicates without
-changing identity rules.
+Participant email uniqueness prevents two registered profiles from holding the
+same normalized address, but MUST NOT be used to merge identities. A refused
+duplicate-email edit leaves the existing Participant data unchanged.
 
 ## Normal Empty And Partial States
 
 All of the following are valid and MUST NOT require placeholder data:
 
-- an Active Course with zero Participants;
+- a newly created Active Course with `Europe/Berlin` timezone and zero Groups,
+  Modules, Assignments, or Invite;
+- an Active Participant with zero Course Assignments;
 - an installation with Participants but no Admin User ever created;
-- an Active Course with zero Modules;
-- an Active Course with zero Groups;
+- an Active Course with zero Participants, Modules, or Groups;
 - a Participant assigned to a Course with zero Module Selections;
 - a Module with zero Participants;
-- a Group with zero selections;
-- a new Module added after a Course has already started;
-- a Participant joining after some Course Modules are in the past; and
+- a Group with zero retained Selections;
+- a new future Module added after earlier Course Modules have occurred;
+- a Participant joining after some Course Modules have reached `startsAt`; and
 - multiple independently Active Admin Invites.
 
 If an Active Course has no Active Groups, no valid Module Selection can be

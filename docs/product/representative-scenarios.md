@@ -4,259 +4,257 @@ These scenarios demonstrate how the normative product rules compose. They do
 not define an implementation test suite or add behavior beyond the focused
 specifications.
 
-## A. Normal Participation
+## A. Participant Onboarding Without An Invite
 
-A Course has Group A, Group B, Remote, and three Modules with valid `startsAt`
-and `endsAt` intervals. An assigned Participant chooses:
+A new person authenticates in participant context without a Course Invite.
+They must supply valid name and unique email before normal application access.
+Until onboarding succeeds they can only authenticate, continue onboarding, or
+sign out; they cannot access or Join a Course or mutate a Selection. Successful
+completion creates one Active Participant with zero Course Assignments.
 
-- Module 1 → Group A;
-- Module 2 → Remote; and
-- Module 3 → no selection.
+## B. Course Invite Continues Through Onboarding
 
-Before Module 2's `startsAt`, the Participant changes its Selection to Group B.
-The result is one Selection for Group B; the previous Remote choice is
-replaced. This is valid.
+A new person opens a Course Invite, authenticates, and completes mandatory
+Participant onboarding. The Invite is then resumed, but no Assignment exists
+yet. The Invite, Course, Participant, and Assignment are revalidated, and the
+new Active Participant must still explicitly confirm Join.
 
-## B. Shared Invite And Minimal Visibility
+## C. Participant Profile Editing
 
-Alice and Bob receive the same valid active Course Invite. Before joining, the
-Invite may show the Course name so each person can identify the target, but it
-does not expose the roster, Module Selections, private access instructions, or
-administrative information. Each authenticates as a separate Participant and
-explicitly confirms joining. Each receives an independent Active Course
-Assignment. Reuse of the shared Invite is expected.
+An Active Participant changes their own name and email. Later an Active Admin
+User edits both fields. Participant identity, state, Assignments, Selections,
+and history remain unchanged. An attempted email change to an address held by
+another Participant is refused and leaves the existing profile unchanged.
 
-A person without current Admin User access, Active membership, or a valid
-active Invite cannot otherwise discover the Course; no public Course catalogue
-exists.
+## D. External Authentication Principals
 
-## C. Repeated Invite
+Several sign-in methods resolved by the authentication layer to the same
+stable principal reach the same current Participant or Admin User. A different
+external principal remains different and is not merged merely because name or
+email matches. The same principal may independently reach one Participant in
+participant context and one Admin User in administration context.
 
-Alice already has an Active Course Assignment and follows the same Invite
-again. No duplicate Assignment is created, and she may proceed to the Course.
+## E. Normal Participation
 
-## D. Revoked Participant
+An Active Participant with an Active Assignment chooses Group A for Module 1,
+Remote for Module 2, and no Selection for Module 3. Before Module 2's
+`startsAt`, they replace Remote with Group B. Group B is the sole current
+Selection; no prior-choice history is retained merely for audit.
 
-An Active Admin User removes Alice. Her Course Assignment becomes Revoked, and
-her future Module Selections are removed from live booking state. Alice follows
-the still-valid shared Invite but cannot reactivate herself. While the Course
-is Active, an Active Admin User may reactivate her Assignment, but reactivation
-does not restore the removed Selections.
+## F. Participant Disable
 
-## E. Module Interval And Participant Deadline
+An Active Participant has Selections for a future Scheduled Module, an
+in-progress Scheduled Module, an ended Module, and a Cancelled Module. An
+Active Admin User Disables them. The future Selection is removed; the
+in-progress, ended, and Cancelled Selections remain but are historical. Every
+Assignment retains its Active or Revoked state, and participant-facing access
+and actions are refused globally.
 
-Module 1 has `startsAt` Monday 10:00 and `endsAt` Monday 11:30 in the Course
-timezone, so its interval is valid. Alice has selected Module 1 → Remote. At
-exactly Monday 10:00 the Module has started and she can no longer create,
-change, or revoke a Selection through normal Participant booking behavior.
+## G. Participant Re-enable
 
-## F. Pre-Start Module Rescheduling
+The same Participant is Re-enabled. Removed future Selections do not return.
+Active Assignments grant access again. If the retained in-progress Selection's
+Course and Assignment are Active and its Module remains Scheduled before
+`endsAt`, that Selection becomes live again.
 
-Alice has selected Module 2 → Room A. Before Module 2's `startsAt`, an Active
-Admin User changes both `startsAt` and `endsAt`, preserving `endsAt > startsAt`.
-Alice remains selected for Room A on the same Module, and her Participant
-deadline follows the edited `startsAt`.
+## H. Shared Invite And Minimal Visibility
 
-## G. Started Module Schedule Is Immutable
+Alice and Bob receive the same enabled current Course Invite. It may show the
+Course name but no roster, Participant profile, Selection, private access
+detail, or administration information. Each Active Participant explicitly
+confirms Join and receives an independent Active Assignment. Reuse and
+forwarding are expected.
 
-Module 2 reaches its `startsAt`. An Active Admin User then attempts to change
-either `startsAt` or `endsAt`, including an attempt to move the Module into the
-future. The schedule change is refused. A descriptive edit may still be
-accepted where the product rules otherwise permit it.
+## I. Recognized Unusable Course Invite
 
-## H. Course Timezone Becomes Immutable
+An old Invite is Disabled, replaced, or belongs to an Archived Course. Because
+the token remains recognizable and associated with its Course, the unavailable
+result may show that Course's name only. Join is refused and no private Course
+data is exposed. A malformed token with no Course association reveals no Course
+name.
 
-An Active Admin User may change a newly created Course's timezone while it has
-no Modules. After the first Module is created, a timezone change is refused;
-the system does not reinterpret Module intervals or automatically reschedule
-them.
+## J. Repeated And Revoked Invite Use
 
-## I. New Module Is Added
+An Active Participant who already has an Active Assignment follows the current
+Invite again; the outcome is a successful no-op with no duplicate Assignment.
+A Participant whose Assignment is Revoked follows the same Invite and cannot
+self-reactivate. Only an Active Admin User may reactivate the Assignment while
+the Course is Active.
 
-Participants already belong to a Course when an Active Admin User adds Module
-4 with a valid `startsAt` and `endsAt`. Nobody is automatically selected. Each
-eligible Participant may explicitly select an Active Group before Module 4's
-`startsAt`.
+## K. Assignment Revocation
 
-## J. Cancelled Module Retains Selections
+Alice's Active Assignment has a future Scheduled Selection, an in-progress
+Scheduled Selection, and a Cancelled-Module Selection. Revocation removes the
+future Selection and retains the in-progress and Cancelled Selections as
+history. Revoking the already-Revoked Assignment again is a successful no-op.
 
-Alice and Bob have Module Selections for a future Module. An Active Admin User
-Cancels the Module. The Module remains identifiable as Cancelled and both
-Selections remain historically recorded, but neither is a live booking. The
-Module accepts no new Selections, and normal Participant modification is
-unavailable. No separate cancelled-booking state is created.
+## L. Assignment Reactivation In Progress
 
-## K. Historically Used Group
+While the Course is Active and Alice is Active, an Admin User reactivates her
+Revoked Assignment before a retained in-progress Module reaches `endsAt`. The
+retained Selection becomes live again. Removed future Selections do not return.
 
-Room A has historical Module Selections. It must not be hard-deleted in a way
-that destroys those references. It should be Archived when its other lifecycle
-conditions permit.
+## M. New Course
 
-## L. Group With Future Use
+An Admin User creates a Course without selecting a timezone. It is Active,
+uses `Europe/Berlin`, and has zero Groups, Modules, Assignments, and Course
+Invite. No other business object is created implicitly.
 
-Remote has active future Module Selections. An Active Admin User cannot Archive
-it while those Selections still reference it, and the Participants cannot be
-silently moved to another Group.
+## N. Course Timezone And DST
 
-## M. Overlapping Module Intervals
+Before a Course has a Module, an Admin User may replace its valid IANA timezone.
+After the first Module exists, the timezone is immutable. A nonexistent
+`Europe/Berlin` local time during the spring-forward transition is rejected. An
+ambiguous fall-back local time requires the Admin User to choose the intended
+occurrence before it becomes a definite instant.
 
-A Participant selects two Modules whose `startsAt`/`endsAt` intervals overlap.
-The core booking domain allows both Selections and performs no automatic
-conflict prevention.
+## O. Backdated Module Refusal
 
-## N. Participant Joins Late
+Creating a Module with `startsAt <= now` is refused even if
+`endsAt > startsAt`. Before an existing Scheduled Module starts, a reschedule
+whose `newStartsAt <= now` is also refused. A valid creation or reschedule
+requires a future start and a later end.
 
-Alice joins a Course after Modules 1 and 2 have reached `startsAt`. She cannot
-select Modules 1 or 2. She may select an Active Group for future Scheduled
-Module 3 when all other eligibility rules are satisfied.
+## P. Module Deadline And Schedule Immutability
 
-## O. Archived Course Rejects Assignment Reactivation
+Alice has selected a Module. At exact `startsAt`, Participant and Admin-assisted
+Selection creation, replacement, and removal are refused. The Module's schedule
+also becomes immutable. Descriptive edits may still be accepted while the
+Course is Active.
 
-Course A is Archived. An Active Admin User cannot create a new Course Assignment
-for Alice and cannot reactivate Alice's existing Revoked Assignment. The Course
-therefore gains neither new nor reactivated membership.
+## Q. Module Cancellation Boundary
 
-## P. Course Archival Is Permanent
+An Active Admin User may Cancel an upcoming or in-progress Scheduled Module in
+an Active Course while `now < endsAt`. At exact `endsAt`, cancellation is
+refused. Cancellation is terminal and preserves every retained Selection as
+history.
 
-An unused Course created accidentally is not hard-deleted. Once its archival
-preconditions are satisfied, an Active Admin User Archives it. The Course
-remains visible and manageable in the administration experience, preserves its
-history, and cannot be restored, unarchived, or reactivated.
+## R. Module Deletion
 
-## Q. Archival Blocked By Future Work
+A future Module whose pre-start Selections were all removed and an ended Module
+with zero retained Selections may be eligible for deletion in an Active Course.
+A Module with any retained Selection, including a historical Selection or one
+for a Cancelled Module, cannot be deleted.
 
-Course A is Active and contains an upcoming Scheduled Module whose `startsAt`
-and `endsAt` are next week, with Alice selected into Room A. Archival is
-refused while the not-yet-ended Scheduled Module remains. Cancelling the Module
-retains Alice's Selection historically while ending its live-booking meaning;
-after all archival preconditions are satisfied, the Course may be Archived.
+## S. Group Archival During An In-Progress Module
 
-## R. Participant Exists Before First Admin
+A retained Selection references Group A for a Scheduled Module where
+`startsAt <= now < endsAt`. That Selection does not block Group archival. It
+continues identifying Group A and may remain live when every other live
+predicate holds, while Group A becomes unavailable for new future choices.
 
-A Participant already exists, but no Admin User has ever existed. The
-administration authentication entry point still offers `Register admin`. A
-person completes bootstrap and becomes the first Admin User and Super Admin
-without creating, changing, or merging the existing Participant.
+## T. Group Reactivation And Name Conflict
 
-## S. Same External Identity, Two Domain Identities
+An Archived Group may reactivate while its Course is Active. If its normalized
+name conflicts with an Active Group name, reactivation is refused. An Admin
+User may rename the Archived Group and retry; successful reactivation preserves
+identity and does not restore removed Selections.
 
-Alice's Google identity authenticates her existing Participant identity. The
-same Google identity also authenticates a separate Admin User identity in the
-administration context. Her Participant Course membership and Module
-Selections remain independent of her Admin User authority and lifecycle.
+## U. Group Deletion
 
-## T. Super Admin Bootstrap
+An Active-Course Group with no retained Selection may be deleted even if a
+pre-start Selection once referenced it but was removed. A retained historical
+Selection blocks deletion. No complete past-reference log is consulted.
 
-No Admin User has ever existed. The first successful Admin registration
-authenticates through the accepted external mechanism, enters a required real
-name, and creates the first Admin User with Super Admin authority. Later
-disabling or deletion of ordinary Admin Users does not reopen bootstrap.
+## V. Archived Course Is Read-Only
 
-## U. Admin Invite Claim
+After all not-yet-ended Scheduled Modules are resolved, an Admin User Archives
+a Course. Course, Invite, Group, Module, Assignment-addition/reactivation, and
+Selection structure is frozen. An Active Participant with an Active Assignment
+retains read-only access to Course information and their history. An Admin User
+may later revoke that Assignment to remove access, but it cannot reactivate in
+the Archived Course.
 
-An Active Admin User creates an Admin Invite. Bob opens it, authenticates,
-enters his real name, and completes onboarding. Bob becomes an ordinary Active
-Admin User and the Invite becomes Claimed. Following the same Invite again
-cannot create another Admin User.
+## W. Live And Historical Selection Transitions
 
-## V. Abandoned Onboarding Does Not Consume Invite
+With Active Participant, Course, and Assignment and a Scheduled Module, a
+retained Selection is live while upcoming and while in progress. It becomes
+historical at exact `endsAt`. It also becomes historical immediately if the
+Module is Cancelled, Assignment is Revoked, Participant is Disabled, or Course
+is Archived. These are derived meanings, not stored Selection states.
 
-A recipient opens an Active Admin Invite and starts onboarding but leaves
-before Admin User creation succeeds. The Invite remains Active and available
-for one successful claim.
+## X. First Admin Bootstrap
 
-## W. Admin Invite Revocation
+Participants may already exist while no Admin User has ever existed. The
+administration entry still offers `Register admin`. The first successfully
+accepted registrant supplies a required name and becomes an Active Super Admin.
+Authentication alone cannot create later Admin Users.
 
-Active Admin User A creates an Admin Invite. Active Admin User B Revokes it. The
-Invite becomes Revoked and cannot be claimed, re-enabled, or reactivated.
+## Y. Super Admin Promotion
 
-## X. Ordinary Admin User Administration
+The bootstrap Super Admin promotes an Active ordinary Admin User. Both remain
+the same domain identities and now have Super Admin authority. An ordinary
+Admin cannot promote anyone, and a Disabled ordinary Admin must be Re-enabled
+before promotion.
 
-Admin User A and Admin User B are ordinary Active Admin Users. Admin User A may
-edit Admin User B's real name, Disable or Re-enable Admin User B, or delete
-Admin User B.
+## Z. Super Admin Protection
 
-## Y. Super Admin Protection
+A Super Admin's attempt to Disable or delete themselves is refused. A mutation
+that would leave zero Active Super Admins is refused. When two Active Super
+Admins exist, one may validly edit, Disable, or delete the other as long as one
+Active Super Admin remains. No demotion action exists.
 
-An ordinary Active Admin User attempts to edit, disable, or delete the Super
-Admin. Each operation is refused, and the ordinary Admin User cannot alter
-Super Admin authority.
+## AA. Admin Invite Claim
 
-## Z. Super Admin Authority
+An Active Admin User creates an Admin Invite. Bob opens it, sees only that an
+Admin registration invitation is available, authenticates, supplies a required
+name, and completes onboarding. Bob becomes an ordinary Active Admin User and
+the Invite becomes terminal Claimed.
 
-The Super Admin administers an ordinary Admin User regardless of which Admin
-User created that account or its Admin Invite. The Super Admin may edit their
-own real name but cannot disable themselves.
+## AB. Existing Admin Claims Another Invite
 
-## AA. No Automatic Admin Invite Expiry
+An external principal already backing an Active Admin User attempts to claim an
+Active Invite; the claim is refused and the Invite remains Active. The same is
+true for a Disabled Admin User, who is not Re-enabled by the attempt.
 
-An unused Admin Invite remains Active until it is Claimed or manually Revoked.
-Elapsed time alone does not make it unusable.
+## AC. Deleted Admin Returns
 
-## AB. Admin-Assisted Booking Without Prior Membership
+A legitimately deleted Admin User's former external principal later uses a new
+Active Admin Invite. Successful onboarding creates a new ordinary Active Admin
+User identity with a newly supplied name. Deleted identity, state, and Super
+Admin authority are not restored.
 
-Alice is an existing Participant with no Course Assignment. An Active Admin
-User assigns her to Module 3 and Room A while the Course is Active, the Module
-is Scheduled and before `startsAt`, and Room A is an Active Group in the same
-Course:
+## AD. Admin Invite URL Loss
 
-```text
-Alice -> Module 3 -> Room A
-```
+The complete Admin Invite URL is shown and copied at creation. The later Invite
+list shows creation time and state but cannot reveal the URL. If the URL is
+lost while Active, an authorized Admin User Revokes the Invite and creates a
+new one.
 
-Alice receives one Active Course Assignment and one Module Selection. The
-Assignment and Selection are the ordinary product concepts; no assisted
-membership or Admin booking state is created.
+## AE. Concurrent Admin Invite Claim
 
-## AC. Admin-Assisted Booking After Revocation
+Two people begin onboarding through one Active Admin Invite. The first valid
+Admin User creation accepted against current state succeeds and makes the
+Invite Claimed. The second completion is refused and leaves no partial Admin
+User, despite having started earlier.
 
-Alice's Course Assignment is Revoked. The Course is Active, the Module is
-Scheduled and has not reached `startsAt`, and the selected Group is Active in
-the same Course. When an Active Admin User assigns Alice to that Module and
-Group, her Assignment becomes Active and the Module Selection is created. No
-other previously removed Selection is restored.
+## AF. Admin Disable Or Deletion Does Not Cascade
 
-## AD. Admin-Assisted Booking After The Deadline
+An authorized actor Disables or deletes an Admin User. Courses, Groups,
+Modules, Participants, Assignments, Selections, Course Invites, and Admin
+Invites created by that Admin User remain unchanged. Previously accepted
+actions remain authoritative.
 
-At or after a Module's `startsAt`, an Active Admin User attempts the same
-assignment for Alice. The operation is refused. If Alice had no Course
-Assignment or a Revoked Assignment, it remains respectively absent or Revoked;
-the failed booking attempt does not leave new or reactivated membership behind.
+## AG. Admin-Assisted Booking
 
-## AE. Admin Changes The Selected Group
+Alice is an existing Active Participant without an Assignment. Before a future
+Scheduled Module's `startsAt`, an Active Admin User selects an Active Group in
+the same Active Course. One ordinary Active Assignment and one Selection are
+created. Repeating the Group is idempotent; choosing another replaces it. At or
+after `startsAt`, or while Alice is Disabled, the action is refused without a
+membership side effect.
 
-Alice currently has:
+## AH. Stale Actions Lose To Current State
 
-```text
-Alice -> Module -> Room A
-```
+Alice opens an enabled Course Invite, but it is replaced before Join; her stale
+confirmation cannot create membership. Separately, Alice opens a booking form
+before `startsAt`, but the Module reaches `startsAt` or her Assignment is
+Revoked before acceptance; the change is refused. An Admin mutation opened by
+an Active Admin User is likewise refused if that actor becomes Disabled before
+acceptance.
 
-Before `startsAt`, an Active Admin User assigns her to Remote for the same
-Module. When the Course, Module, and Group remain eligible, the result is:
+## AI. Overlapping Modules
 
-```text
-Alice -> Module -> Remote
-```
-
-Remote is the sole current Selection. There is no second Selection and no
-separate first-class change-booking state.
-
-## AF. In-Progress Module Blocks Course Archival
-
-An Active Course contains a Scheduled Module where:
-
-```text
-startsAt <= now < endsAt
-```
-
-The Module is in progress, so Course archival is refused. At the exact
-`endsAt` instant, the Module has ended and no longer blocks archival on
-temporal grounds, assuming every other archival precondition is satisfied.
-
-## AG. Explicit Cancellation Resolves The Archival Blocker
-
-An Active Admin User explicitly Cancels an upcoming or in-progress Scheduled
-Module under the normal cancellation rules. Its Module Selections remain as
-historical records but are no longer live bookings. The Cancelled Module no
-longer blocks Course archival merely because its original `endsAt` has not
-arrived; archival itself did not Cancel the Module or mutate its Selections.
+An Active eligible Participant selects two Modules whose definite intervals
+overlap. Both Selections are valid because the core domain performs no
+automatic scheduling-conflict prevention.
