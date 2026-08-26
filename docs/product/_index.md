@@ -16,8 +16,8 @@ domain and behavior.
 ### Product Status
 - Path: `docs/product/_status.md`
 - Summary: Current specification state, intentionally absent implementation,
-  and the remaining archival, Admin-assisted-booking, Participant-deletion,
-  and Admin User policy questions.
+  and the remaining Participant-deletion, Admin User lifecycle, audit, and
+  external-identity policy questions.
 - Read when: You need to know what product truth is accepted, implemented, or
   still unspecified.
 - Tags: product, status, current-state, gaps
@@ -69,8 +69,9 @@ domain and behavior.
 
 ### Module Participation
 - Path: `docs/product/module-participation.md`
-- Summary: Participant and Admin-assisted Module Selection actions, Participant
-  deadlines, concurrency, and live-versus-historical meaning.
+- Summary: Participant and Admin-assisted Module Selection actions, their
+  shared modification deadline, concurrency, and live-versus-historical
+  meaning.
 - Read when: A task affects booking eligibility, selected Groups, Participant or
   Admin-assisted changes, `startsAt` locking, concurrency, or attendance
   meaning.

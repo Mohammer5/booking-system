@@ -11,10 +11,14 @@ implemented.
 ### Admin-Assisted Booking
 
 An accepted operation in which an Active Admin User adds an existing
-Participant to a Module and Group or removes that Participant's Module
-Selection. It uses the same Module Selection as Participant booking, while its
-deadline, Course Assignment prerequisite, replacement behavior, and explicit
-change action remain unresolved. See [Module
+Participant to a Module and Group, changes the selected Group, or removes that
+Participant's Module Selection. Setting a Group uses the normal booking
+eligibility and `startsAt` deadline, may establish or reactivate the ordinary
+Active Course Assignment as part of the same successful product outcome, and
+is idempotent for the same Group while replacing a different Group. Removal
+uses the same deadline and lifecycle constraints. The operation grants no
+Admin override and creates no separate membership, booking entity, or Selection
+state. See [Module
 participation](product/module-participation.md#admin-assisted-booking).
 
 ### Admin Invite
@@ -47,15 +51,18 @@ onboarding](product/admin-access.md#real-name-and-onboarding).
 
 The primary booking-system container for Groups, Modules, Course Assignments,
 one Course timezone, and at most one current shared Course Invite. A Course is
-Active or permanently Archived; it is never hard-deleted or restored. See
-[the domain model](product/domain-model.md#course).
+Active or permanently Archived; it is never hard-deleted or restored. A
+Scheduled Module whose `endsAt` is in the future blocks archival unless it is
+explicitly resolved through its lifecycle. See [the domain
+model](product/domain-model.md#course).
 
 ### Course Assignment
 
 The Active or Revoked relationship stating that one Participant belongs to one
 Course. It governs Course access independently of Module participation. A
-Revoked Assignment may be reactivated only while its Course is Active. See
-[Course access](product/course-access.md#administrative-assignment).
+Revoked Assignment may be reactivated only while its Course is Active. Direct
+administration, Invite joining, and Admin-assisted booking produce the same
+membership concept and behavior. See [Course access](product/course-access.md).
 
 ### Course Invite
 
@@ -98,7 +105,9 @@ identity and logistical details apply Course-wide rather than per Module. See
 
 One non-recurring Scheduled or Cancelled occurrence in exactly one Course. Its
 schedule is `startsAt` and `endsAt`, both interpreted in the Course timezone,
-with `endsAt > startsAt`. See [Modules](product/course-structure.md#modules).
+with `endsAt > startsAt`; upcoming, in-progress, and ended are derived temporal
+descriptions rather than lifecycle states. See
+[Modules](product/course-structure.md#modules).
 
 ### Module Selection
 

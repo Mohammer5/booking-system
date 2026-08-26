@@ -4,7 +4,8 @@ The booking-system product specification is accepted repository truth. It
 defines the accepted initial domain scope for Courses, Groups, Modules,
 Participants, Course Assignments, Module Selections, Course Invites, Admin
 Users, Super Admin authority, and Admin Invites while identifying the remaining
-policy questions below. Participant and Admin User are separate domain
+Participant deletion, Super Admin/Admin User lifecycle, audit, and external
+identity questions below. Participant and Admin User are separate domain
 identities, and ordinary Admin User deletion is accepted under the documented
 authorization rules.
 
@@ -17,16 +18,6 @@ specification and does not alter its implementation-agnostic behavior.
 
 The accepted requirements do not define:
 
-- whether a Course may be Archived while a Scheduled Module is between its
-  `startsAt` and `endsAt`;
-- whether an Admin User may add, change, or remove a Module Selection at or
-  after `startsAt`;
-- whether Admin-assisted booking requires the Participant to already have an
-  Active Course Assignment;
-- whether an Admin User add operation replaces an existing Selection for
-  another Group in the same Module or is refused;
-- whether an Admin User may explicitly change an existing Selection to another
-  Group as a first-class action;
 - whether Participants, including Participants with Course or Module history,
   may be hard-deleted and what happens to their historical Course Assignments
   and Module Selections;

@@ -3,15 +3,16 @@
 ## Responsibility
 
 This document owns Participant Module Selection creation, replacement, and
-removal; Admin-assisted creation and removal; the Participant `startsAt`
-deadline; live and historical meaning; and concurrent Participant changes.
+removal; Admin-assisted set-Selection and removal; the shared `startsAt`
+modification deadline; live and historical meaning; and concurrent Participant
+changes.
 
 ## Not Responsible For
 
-This document does not grant Course membership, manage Course, Group, Module,
-Participant, or Admin User lifecycle, prove actual attendance, deliver
-notifications, maintain a complete audit history, or decide the unresolved
-Admin-assisted-booking policies.
+This document does not own Course membership outside the Course Assignment
+composition explicitly used by Admin-assisted booking, manage Course, Group,
+Module, Participant, or Admin User lifecycle, prove actual attendance, deliver
+notifications, or maintain a complete audit history.
 
 ## Inputs
 
@@ -52,7 +53,7 @@ if the Module is Cancelled, the Selection remains historically recorded but is
 no longer live. That distinction is derived rather than represented by a
 cancelled-booking state.
 
-## Eligibility
+## Participant Booking Eligibility
 
 A Participant MAY create a Module Selection only when all of the following are
 true:
@@ -119,25 +120,92 @@ participating.
 ## Admin-Assisted Booking
 
 Through [Admin-assisted booking](../DICTIONARY.md#admin-assisted-booking), an
-Active Admin User MAY add an existing Participant to a Module and Group and MAY
-remove an existing Module Selection for a Participant. A booking created by an
-Admin User is the same Module Selection concept used by Participants; there is
-no parallel administrative booking entity or state.
+Active Admin User MAY set an existing Participant's Module Selection for one
+Module to a chosen Group and MAY remove an existing Selection. These operations
+use the same Module Selection and absence semantics as Participant booking;
+there is no parallel Admin booking entity, state, or workflow.
 
-The accepted capability does not yet decide:
+### Existing Participant And Course Membership
 
-- whether an Admin User may add, change, or remove a Selection at or after
-  `startsAt`;
-- whether the Participant must already have an Active Course Assignment;
-- whether adding a Selection when another Group is already selected for that
-  Participant and Module replaces the Selection or is refused; or
-- whether an Admin User may explicitly change an existing Selection to another
-  Group as a first-class action.
+The target MUST already be a Participant. An Admin User who has no Participant
+identity MUST NOT automatically become one, and an attempted assignment MUST
+NOT create a Participant, pending Participant, or pre-created record for an
+unknown or unregistered person.
 
-Participant eligibility and deadline rules MUST NOT be assumed to govern Admin
-User actions, and Admin User override powers MUST NOT be inferred. These policy
-questions are tracked in [Product
-status](_status.md#deliberately-unspecified-details).
+The existing Participant need not have an Active Course Assignment before an
+Admin-assisted set-Selection operation begins. A successful operation MUST
+ensure an Active Course Assignment to the Module's Course:
+
+- if no Assignment exists, create one as Active;
+- if an Active Assignment exists, leave it Active; and
+- if a Revoked Assignment exists, reactivate it.
+
+The operation MUST NOT create a duplicate Assignment. Reactivation remains
+permitted only for an Active Course. The resulting Assignment is the ordinary
+Course Assignment described in [Course access](course-access.md#course-assignment-through-admin-assisted-booking),
+with no assisted, temporary, booking-created, or Admin-assigned membership
+state. Course membership and Module participation remain distinct even though
+this operation may establish both in one successful outcome.
+
+### Eligibility And Deadline
+
+Apart from not requiring an Active Course Assignment before the operation
+begins, an Admin-assisted set-Selection MUST satisfy the same booking validity
+rules as a Participant-created Selection. It may succeed only when:
+
+- the Course is Active;
+- the Module is Scheduled;
+- the current instant is strictly before the Module's `startsAt`;
+- the selected Group is Active;
+- the selected Group and Module belong to the same Course; and
+- every other structural invariant for a Module Selection holds.
+
+At the exact `startsAt` instant, Admin-assisted creation or replacement is no
+longer permitted. An Admin User has no late-booking, Archived-Course,
+Cancelled-Module, or Archived-Group override. Capacity, waiting lists,
+scheduling-conflict prevention, and approval rules remain absent; the product
+introduces no additional Admin-only eligibility rule.
+
+### Set Selected Group Semantics
+
+The Admin-assisted action sets the Participant's one current selected Group for
+the Module:
+
+```text
+no Selection -> selected Group G
+Group G      -> Group G
+Group A      -> Group B
+```
+
+With no existing Selection, the operation creates one. Setting the same Group
+is idempotent and MUST NOT create a duplicate. Setting another eligible Group
+replaces the previous Group, leaving only the new Selection. The replacement
+has the same meaning as a Participant self-service Group change; a separate
+first-class Admin change action or workflow-heavy change-booking state is not
+part of the product model.
+
+### Removal
+
+An Active Admin User MAY remove an existing Module Selection only while the
+Course is Active, the Module is Scheduled, and the current instant is strictly
+before `startsAt`. At or after `startsAt`, normal Admin-assisted removal is
+refused. An Archived Course and a Cancelled Module permit no Admin-assisted
+Selection mutation, and a Cancelled Module's retained historical Selections
+MUST NOT be removed merely to rewrite history.
+
+Successful removal produces no Module Selection, meaning non-participation. It
+MUST NOT create an Admin-cancelled-booking state and does not create or
+reactivate a Course Assignment.
+
+### Coherent Refusal
+
+The requested Module Selection MUST be validated before a Course Assignment
+and Selection outcome is accepted. If any booking rule fails, including because
+the Course is Archived, the Module is Cancelled or has reached `startsAt`, the
+Group is Archived, or the Group and Module belong to different Courses, the
+entire assisted set-Selection operation MUST be refused. Refusal MUST NOT leave
+behind a newly created or reactivated Course Assignment. This is an atomic
+product-level outcome and does not prescribe a database transaction mechanism.
 
 ## Scheduling Conflicts
 
@@ -159,8 +227,7 @@ The product has no user-facing merge or conflict workflow.
 
 If an Admin User revokes the Participant's Course Assignment concurrently with
 a Participant change, revocation blocks that Participant change and removes
-the future Selection under the Course-access rules. This does not decide
-whether a later Admin-assisted action requires an Active Course Assignment.
+the future Selection under the Course-access rules.
 
 ## Current State, History, And Attendance
 

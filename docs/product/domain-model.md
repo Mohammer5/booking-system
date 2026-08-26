@@ -111,8 +111,8 @@ within exactly one Course. Its schedule is the interval from `startsAt` to
 `endsAt`, both interpreted in the Course timezone, and `endsAt` MUST be later
 than `startsAt`. A Module is either Scheduled or Cancelled. Upcoming, started,
 and ended descriptions are derived from the interval rather than lifecycle
-states. At the exact `startsAt` instant, the Module has started. A Module
-belongs permanently to its Course.
+states. At the exact `startsAt` instant, the Module has started; at the exact
+`endsAt` instant, it has ended. A Module belongs permanently to its Course.
 
 ### Course Assignment
 
@@ -125,9 +125,10 @@ Assignment is Active or Revoked. Active grants Course access and permits
 otherwise eligible Module Selections; Revoked prevents access and participation
 under the access rules.
 
-Administrative assignment and invite-based joining MUST produce the same
-Course Assignment concept. Origin MUST NOT create behavioral states such as
-invited, manually assigned, or self-enrolled. Origin MAY later be audit
+Direct administrative assignment, invite-based joining, and membership created
+or reactivated through Admin-assisted booking MUST produce the same Course
+Assignment concept. Origin MUST NOT create behavioral states such as invited,
+manually assigned, booking-created, or self-enrolled. Origin MAY later be audit
 metadata, but it MUST NOT affect Participant behavior.
 
 ### Module Selection
@@ -181,7 +182,7 @@ resolve through the same Course according to the invariants below.
 2. A Module MUST belong to exactly one Course.
 3. A Participant MUST have at most one Course Assignment to a given Course.
 4. A new Course Assignment MUST NOT be created for an Archived Course, whether
-   by an Admin User or a shared Course Invite.
+   by direct administration, a shared Course Invite, or Admin-assisted booking.
 5. A Revoked Course Assignment MUST NOT be reactivated while its Course is
    Archived.
 6. A Participant MUST have at most one Module Selection for a given Module.
@@ -190,43 +191,61 @@ resolve through the same Course according to the invariants below.
 8. A Module Selection's Group and Module MUST belong to the same Course.
 9. A Participant MUST have an Active Course Assignment to that Course when
    creating or changing their own Module Selection.
-10. A Participant MUST NOT create or change a Module Selection at or after the
-    Module's `startsAt`.
-11. A Participant MUST NOT select an Archived Group.
-12. A Participant MUST NOT select a Cancelled Module.
-13. Course membership MUST NOT automatically assign a Participant to a Module
+10. An Admin-assisted set-Selection operation MUST target an existing
+    Participant. It MAY create or reactivate that Participant's Active Course
+    Assignment only as part of the same successful product operation that sets
+    the Module Selection; an already-Active Assignment MUST remain Active and
+    no duplicate Assignment may be created.
+11. Any Participant-created or Admin-assisted creation or replacement of a
+    Module Selection MUST require an Active Course, a Scheduled Module whose
+    `startsAt` is still in the future, and an Active Group in that Module's
+    Course.
+12. A refused Admin-assisted set-Selection operation MUST NOT leave behind a
+    newly created or reactivated Course Assignment.
+13. Setting the selected Group to the already-selected Group MUST be
+    idempotent. Setting another eligible Group MUST replace the existing
+    Selection rather than create a second Selection.
+14. Admin-assisted removal MUST require an Active Course and a Scheduled
+    Module whose `startsAt` is still in the future. Successful removal MUST
+    result in no Module Selection and MUST NOT create an Admin-specific
+    cancellation state.
+15. Course membership MUST NOT automatically assign a Participant to a Module
     or Group.
-14. No Module Selection MUST mean non-participation in that Module.
-15. Group choice MUST be per Module. A Participant MAY use different Groups for
+16. No Module Selection MUST mean non-participation in that Module.
+17. Group choice MUST be per Module. A Participant MAY use different Groups for
     different Modules in the same Course.
-16. Group identity and details MUST be Course-wide, not Module-specific.
-17. Human-readable Course, Group, and Module names MUST NOT be their domain
+18. Group identity and details MUST be Course-wide, not Module-specific.
+19. Human-readable Course, Group, and Module names MUST NOT be their domain
     identity. Renaming MUST preserve existing relationships.
-18. Every Module MUST satisfy `endsAt > startsAt`.
-19. Before `startsAt`, an Active Admin User MAY change a Module's `startsAt` or
+20. Every Module MUST satisfy `endsAt > startsAt`.
+21. Before `startsAt`, an Active Admin User MAY change a Module's `startsAt` or
     `endsAt` only while the resulting interval remains valid. At or after
     `startsAt`, neither value may change.
-20. A Course timezone MAY change only while the Course has no Modules. Once the
+22. A Course timezone MAY change only while the Course has no Modules. Once the
     first Module exists, the Course timezone MUST NOT change.
-21. A Course MUST NOT transition from Active to Archived while it contains an
-    unresolved Module whose `startsAt` is in the future or an active Module
-    Selection for such a Module.
-22. A Course MUST NOT be hard-deleted or transition from Archived back to
+23. A Course MUST NOT transition from Active to Archived while it contains a
+    Scheduled Module whose `endsAt` is in the future. This includes upcoming
+    and in-progress Scheduled Modules; at the exact `endsAt` instant, the
+    Module has ended and no longer blocks archival on temporal grounds.
+24. A Cancelled Module MUST NOT block Course archival merely because its
+    original `endsAt` is in the future. Course archival MUST NOT itself Cancel
+    a Module or mutate Module Selections.
+25. A Course MUST NOT be hard-deleted or transition from Archived back to
     Active.
-23. Cancelling a Module MUST preserve its existing Module Selections as
+26. Cancelling a Module MUST preserve its existing Module Selections as
     historical records, but those Selections MUST NOT remain active bookings.
-24. Participant and Admin User MUST remain distinct domain entities with
+27. Participant and Admin User MUST remain distinct domain entities with
     independent responsibilities and lifecycles.
-25. Being a Participant MUST NOT automatically make a person an Admin User,
+28. Being a Participant MUST NOT automatically make a person an Admin User,
     and being an Admin User MUST NOT automatically make a person a Participant.
-26. One external authentication identity MAY back both one Participant and one
+29. One external authentication identity MAY back both one Participant and one
     Admin User without merging them.
-27. A Disabled Admin User MUST NOT have administrative access.
-28. Only the first-ever successfully created Admin User MUST receive the
+30. A Disabled Admin User MUST NOT have administrative access.
+31. Only the first-ever successfully created Admin User MUST receive the
     initial Super Admin authority through bootstrap.
-29. An Active Admin Invite MUST transition permanently to Claimed only after
+32. An Active Admin Invite MUST transition permanently to Claimed only after
     successful Admin User creation, or to Revoked after manual Revocation.
-30. A Claimed or Revoked Admin Invite MUST NOT become usable again.
+33. A Claimed or Revoked Admin Invite MUST NOT become usable again.
 
 ## Minimal State Model
 
@@ -242,9 +261,10 @@ resolve through the same Course according to the invariants below.
 | Admin User authority | Ordinary Admin or Super Admin; no promotion, transfer, replacement, or additional Super Admin lifecycle is currently defined |
 | Admin Invite | Active, Claimed, or Revoked; Claimed and Revoked are terminal |
 
-For a Scheduled Module, upcoming, started, and ended descriptions are derived
-from `startsAt` and `endsAt`. A Course MAY have no Course Invite. Further
-lifecycle states MUST NOT be introduced without an explicit requirement.
+For a Scheduled Module, upcoming, started or in-progress, and ended descriptions
+are derived from `startsAt` and `endsAt`; the Module is ended at the exact
+`endsAt` instant. A Course MAY have no Course Invite. Further lifecycle states
+MUST NOT be introduced without an explicit requirement.
 
 ## Identity And Naming
 

@@ -54,9 +54,21 @@ rescheduling rules.
 ## Represent Module Scheduling As An Interval
 
 Each Module has `startsAt` and `endsAt`, interpreted in the Course timezone,
-with `endsAt > startsAt`. Participant booking closes at `startsAt`, and schedule
-changes are allowed only before that instant. The end time adds useful schedule
-meaning without adding a duration concept or lifecycle states.
+with `endsAt > startsAt`. Participant and Admin-assisted Module Selection
+modification closes at `startsAt`, and schedule changes are allowed only before
+that instant. The end time adds useful schedule meaning without adding a
+duration concept or lifecycle states.
+
+## Block Course Archival Until Scheduled Modules End
+
+A Scheduled Module remains unresolved for Course archival while its `endsAt`
+is in the future, whether the Module is upcoming or already in progress. At
+the exact `endsAt` instant, it has ended and no longer blocks archival merely
+because it exists. Explicit cancellation may resolve a not-yet-ended Module
+under the normal Module lifecycle rules while preserving its Selections as
+history and ending their live-booking meaning. Archival never implicitly
+cancels Modules or mutates Selections, and no additional Module or Course state
+is needed to express these temporal facts.
 
 ## Preserve Courses Through Permanent Archival
 
@@ -122,10 +134,23 @@ an Invite, starting authentication, or abandoning onboarding cannot waste it.
 
 ## Use One Module Selection For Assisted Booking
 
-An Admin User may add an existing Participant to a Module and Group or remove
-an existing Selection. The action uses the same Module Selection as Participant
-booking, avoiding a parallel Admin-booking entity while the remaining deadline,
-eligibility, replacement, and change-action policies stay explicitly open.
+An Active Admin User may set an existing Participant's Module Selection to an
+eligible Group or remove the Selection under the normal booking modification
+deadline and lifecycle rules. The Participant need not already have a Course
+Assignment: a successful set-Selection operation creates an Active Assignment,
+leaves an existing Active Assignment unchanged, or reactivates a Revoked
+Assignment while the Course is Active. Booking eligibility is validated before
+that membership and Selection outcome is accepted, so refusal leaves no newly
+created or reactivated membership behind.
+
+The operation uses the same Module Selection as Participant booking. Setting
+the selected Group to its current value is idempotent, and setting another
+eligible Group replaces the current Selection because only one Selection may
+exist for a Participant and Module. Admin-assisted booking grants no deadline,
+Course, Module, or Group lifecycle override and introduces no parallel
+Admin-booking entity, assisted-membership state, or first-class change
+workflow. Direct Course Assignment administration remains available and uses
+the same membership semantics.
 
 ## Require Focused Admin User And Admin Invite Views
 

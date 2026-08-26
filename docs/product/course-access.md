@@ -19,6 +19,8 @@ user-interface implementation.
 - an external authentication identity used in the participant context;
 - an Active Admin User's assignment, revocation, reactivation, or Course
   Invite-management action;
+- an otherwise eligible Admin-assisted set-Selection action for an existing
+  Participant;
 - a Participant's explicit join confirmation; and
 - current Participant, Course, Course Assignment, and Course Invite state.
 
@@ -96,6 +98,46 @@ new Course Assignment MUST NOT be created for an Archived Course.
 
 Administrative assignment and Invite-based joining MUST have identical
 membership meaning. Assignment origin MUST NOT create a separate access state.
+
+## Course Assignment Through Admin-Assisted Booking
+
+An Active Admin User may set an existing Participant's Module Selection
+without requiring an Active Course Assignment before the operation begins.
+When the Course and requested Module-and-Group assignment satisfy the normal
+eligibility rules in [Module participation](module-participation.md#admin-assisted-booking),
+the successful outcome is:
+
+```text
+no Course Assignment
+  -> Active Course Assignment + set Module Selection
+
+Active Course Assignment
+  -> unchanged Active Course Assignment + set Module Selection
+
+Revoked Course Assignment
+  -> reactivated Active Course Assignment + set Module Selection
+```
+
+The operation MUST preserve the one-Assignment-per-Participant-and-Course
+invariant and MUST NOT create a duplicate. A Revoked Assignment may be
+reactivated through this path only while its Course is Active, exactly as for
+direct reactivation.
+
+The membership change and set-Selection result form one coherent product
+outcome. Booking validity MUST be established before the outcome is accepted;
+if the requested Selection is refused, the attempt MUST NOT leave a newly
+created or reactivated Course Assignment behind. This rule defines product
+behavior, not an implementation transaction mechanism.
+
+This path applies only to an existing Participant. It MUST NOT turn an Admin
+User into a Participant, create a Participant for an unknown person, or create
+a pending Participant. Admin-assisted removal of a Selection does not itself
+create or reactivate Course membership.
+
+Direct Course Assignment administration remains available under
+[Administrative assignment](#administrative-assignment). Membership created
+or reactivated through either path is the same ordinary Course Assignment;
+origin MUST NOT change its behavior.
 
 ## Shared Course Invite
 
@@ -186,8 +228,9 @@ An Active Admin User MAY revoke an Active Course Assignment. Revocation MUST:
 Revocation MUST NOT retain future live bookings that existed under the revoked
 Assignment. When an Active Admin User reactivates the Assignment where
 reactivation is permitted, future Module Selections MUST NOT be restored
-automatically. Whether an Admin User may subsequently create a Selection
-without an Active Assignment is deliberately unspecified.
+automatically. A later valid Admin-assisted set-Selection may reactivate the
+Assignment as part of setting one chosen Module Selection, but it does not
+restore any other removed Selection.
 
 Participants do not have a self-service leave-Course capability in the initial
 scope. A Participant may remain assigned while having no Module Selections.

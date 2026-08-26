@@ -125,11 +125,11 @@ history, and cannot be restored, unarchived, or reactivated.
 
 ## Q. Archival Blocked By Future Work
 
-Course A is Active and contains a Scheduled Module whose `startsAt` is next
-week, with Alice selected into Room A. Archival is refused while the unresolved
-future Module and live future Selection remain. Cancelling the Module retains
-Alice's Selection historically while ending its live-booking meaning; after all
-archival preconditions are satisfied, the Course may be Archived.
+Course A is Active and contains an upcoming Scheduled Module whose `startsAt`
+and `endsAt` are next week, with Alice selected into Room A. Archival is
+refused while the not-yet-ended Scheduled Module remains. Cancelling the Module
+retains Alice's Selection historically while ending its live-booking meaning;
+after all archival preconditions are satisfied, the Course may be Archived.
 
 ## R. Participant Exists Before First Admin
 
@@ -193,11 +193,70 @@ own real name but cannot disable themselves.
 An unused Admin Invite remains Active until it is Claimed or manually Revoked.
 Elapsed time alone does not make it unusable.
 
-## AB. Admin-Assisted Booking
+## AB. Admin-Assisted Booking Without Prior Membership
 
-An existing Participant cannot conveniently book a Module. An Active Admin
-User adds that Participant to the Module and Room A, creating the same Module
-Selection concept used by Participant booking. The Admin User may later remove
-the Selection. This scenario does not decide the Admin User deadline, Course
-Assignment prerequisite, replacement behavior when another Group is already
-selected, or whether changing Group is a first-class Admin-assisted action.
+Alice is an existing Participant with no Course Assignment. An Active Admin
+User assigns her to Module 3 and Room A while the Course is Active, the Module
+is Scheduled and before `startsAt`, and Room A is an Active Group in the same
+Course:
+
+```text
+Alice -> Module 3 -> Room A
+```
+
+Alice receives one Active Course Assignment and one Module Selection. The
+Assignment and Selection are the ordinary product concepts; no assisted
+membership or Admin booking state is created.
+
+## AC. Admin-Assisted Booking After Revocation
+
+Alice's Course Assignment is Revoked. The Course is Active, the Module is
+Scheduled and has not reached `startsAt`, and the selected Group is Active in
+the same Course. When an Active Admin User assigns Alice to that Module and
+Group, her Assignment becomes Active and the Module Selection is created. No
+other previously removed Selection is restored.
+
+## AD. Admin-Assisted Booking After The Deadline
+
+At or after a Module's `startsAt`, an Active Admin User attempts the same
+assignment for Alice. The operation is refused. If Alice had no Course
+Assignment or a Revoked Assignment, it remains respectively absent or Revoked;
+the failed booking attempt does not leave new or reactivated membership behind.
+
+## AE. Admin Changes The Selected Group
+
+Alice currently has:
+
+```text
+Alice -> Module -> Room A
+```
+
+Before `startsAt`, an Active Admin User assigns her to Remote for the same
+Module. When the Course, Module, and Group remain eligible, the result is:
+
+```text
+Alice -> Module -> Remote
+```
+
+Remote is the sole current Selection. There is no second Selection and no
+separate first-class change-booking state.
+
+## AF. In-Progress Module Blocks Course Archival
+
+An Active Course contains a Scheduled Module where:
+
+```text
+startsAt <= now < endsAt
+```
+
+The Module is in progress, so Course archival is refused. At the exact
+`endsAt` instant, the Module has ended and no longer blocks archival on
+temporal grounds, assuming every other archival precondition is satisfied.
+
+## AG. Explicit Cancellation Resolves The Archival Blocker
+
+An Active Admin User explicitly Cancels an upcoming or in-progress Scheduled
+Module under the normal cancellation rules. Its Module Selections remain as
+historical records but are no longer live bookings. The Cancelled Module no
+longer blocks Course archival merely because its original `endsAt` has not
+arrived; archival itself did not Cancel the Module or mutate its Selections.

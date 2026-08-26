@@ -48,6 +48,11 @@ implicit future design.
 - automatic reuse of a Participant's previous Group;
 - automatic restoration of future Module Selections after Course Assignment
   reactivation;
+- assisted, temporary, booking-created, or Admin-assigned Course membership
+  states;
+- a parallel Admin booking entity or Admin-specific Module Selection state;
+- Admin-only late-booking or Course, Module, or Group lifecycle overrides;
+- a separate workflow-heavy Admin change-booking state machine;
 - complete booking change or audit history as part of the booking model; and
 - complex Course lifecycle or status workflows.
 

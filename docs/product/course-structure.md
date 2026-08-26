@@ -126,8 +126,9 @@ usage permits and recreated in the correct Course.
 
 Future references must be resolved through an allowed Participant or
 Admin-assisted Selection action, or through the Module lifecycle rules, before
-the Group is Archived. The unresolved Admin-assisted-booking policies remain
-outside this structure rule.
+the Group is Archived. Admin-assisted Selection actions follow the same
+eligibility and `startsAt` deadline defined in [Module
+participation](module-participation.md#admin-assisted-booking).
 
 ### No Capacity
 
@@ -219,26 +220,35 @@ and preserves the Course and its history.
 
 ### Archival
 
-An Active Course MAY contain future Scheduled Modules and active future Module
-Selections during normal operation. It MUST NOT transition to Archived while
-either of the following remains:
+An Active Course MAY contain Scheduled Modules that have not yet ended and
+their live Module Selections during normal operation. The Course MUST NOT
+transition to Archived while it contains any Scheduled Module whose `endsAt`
+is still in the future.
 
-- an unresolved future Module, including any Scheduled Module whose `startsAt`
-  is in the future; or
-- an active Module Selection for a Module whose `startsAt` is in the future.
+The blocker includes both:
 
-Before archival, all future Modules MUST be resolved under the existing Module
-lifecycle rules, and all active future Module Selections MUST no longer remain
-as live bookings. For example, an Active Admin User MAY cancel affected future
-Modules where appropriate, Participants MAY remove their own eligible future
-Module Selections, or an Active Admin User MAY use an allowed assisted-removal
-action. Cancelling a Module preserves its Selections historically while making
-them no longer live.
+- an upcoming Scheduled Module where `now < startsAt < endsAt`; and
+- an in-progress Scheduled Module where `startsAt <= now < endsAt`.
 
-Archival itself MUST NOT delete or otherwise mutate future Module Selections,
-cancel Modules, or move Participants between Groups. The preconditions MUST be
-satisfied before the Course changes state; no additional Course lifecycle state
-is introduced.
+At the exact `endsAt` instant, the Scheduled Module has ended and no longer
+blocks Course archival on temporal grounds. An ended Scheduled Module does not
+block archival merely because it and its historical Selections still exist.
+These positions remain derived temporal descriptions; no InProgress Module
+lifecycle state is introduced.
+
+Before archival, every Scheduled Module that has not yet ended MUST be resolved
+under the existing Module lifecycle rules. It may reach `endsAt`, or an Active
+Admin User MAY explicitly Cancel it where the normal cancellation rules permit,
+including when it is upcoming or in progress. Cancellation preserves the
+Module and its Module Selections as historical records, makes those Selections
+no longer live bookings, and removes the archival blocker even when the
+Module's original `endsAt` remains in the future. Merely removing every
+Selection does not resolve a not-yet-ended Scheduled Module.
+
+Archival itself MUST NOT Cancel a Module, delete or otherwise mutate Module
+Selections, or move Participants between Groups. The lifecycle preconditions
+MUST be satisfied before the Course changes state; no additional Course
+lifecycle state is introduced.
 
 Only after these preconditions are satisfied MAY an Active Admin User Archive
 the Course. Once the Course is Archived, its state MUST:
@@ -253,8 +263,3 @@ the Course. Once the Course is Archived, its state MUST:
 An Archived Course MUST remain visible and manageable to Active Admin Users. It
 MUST NOT return to Active state, and the product has no restore, unarchive, or
 equivalent Course action.
-
-Whether a Course may be Archived while a Scheduled Module is between its
-`startsAt` and `endsAt` is deliberately unspecified in
-[Product status](_status.md#deliberately-unspecified-details). No behavior for
-that interval may be inferred.

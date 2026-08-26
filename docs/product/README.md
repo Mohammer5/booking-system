@@ -53,9 +53,13 @@ Admin Invite → ordinary Admin User
 
 Every Module Selection links a Participant, Module, and Group through the same
 Course. A Participant needs an Active Course Assignment when creating or
-changing their own Selection; whether Admin-assisted booking has the same
-prerequisite remains deliberately unspecified. The complete cross-concept rules
-are defined in [the domain model](domain-model.md).
+changing their own Selection. [Admin-assisted
+booking](../DICTIONARY.md#admin-assisted-booking) may instead establish or
+reactivate the existing Participant's Active Course Assignment as part of one
+successful, otherwise normally eligible Module-and-Group assignment. Course
+membership and Module participation remain distinct concepts regardless of
+which accepted path established the membership. The complete cross-concept
+rules are defined in [the domain model](domain-model.md).
 
 ## Specification Composition
 
