@@ -1,7 +1,7 @@
 ---
 id: EPIC-m22qh
 title: Core booking happy path
-status: later
+status: next
 priority: medium
 started: null
 target: null
