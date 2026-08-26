@@ -102,11 +102,15 @@ Invite. No other business object is created implicitly.
 
 ## N. Course Timezone And DST
 
-Before a Course has a Module, an Admin User may replace its valid IANA timezone.
-After the first Module exists, the timezone is immutable. A nonexistent
-`Europe/Berlin` local time during the spring-forward transition is rejected. An
-ambiguous fall-back local time requires the Admin User to choose the intended
-occurrence before it becomes a definite instant.
+Before any Module has ever been successfully created in a Course, an Admin User
+may replace its valid IANA timezone. A Course begins with `Europe/Berlin`; an
+Admin User creates a future Module, permanently freezing the timezone. The
+Module is eligible for hard deletion and is deleted, leaving zero current
+Modules, but a later timezone change is still refused.
+
+A nonexistent `Europe/Berlin` local time during the spring-forward transition
+is rejected. An ambiguous fall-back local time requires the Admin User to
+choose the intended occurrence before it becomes a definite instant.
 
 ## O. Backdated Module Refusal
 

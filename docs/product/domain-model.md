@@ -65,8 +65,10 @@ A [Participant](../DICTIONARY.md#participant) is the domain identity for a
 fully registered person in participant-facing booking. A Participant has:
 
 - one required human-readable `name`;
-- one required `email`, unique among registered Participants after normal
-  trimming/normalization and case-insensitive comparison; and
+- one required `email`, retained after surrounding whitespace is trimmed and
+  the resulting complete string is validated as an email address, and unique
+  among registered Participants by case-insensitive comparison of that
+  complete trimmed address; and
 - Active or Disabled global access state.
 
 Required profile text MUST be non-blank after trimming, and `email` MUST be a
@@ -232,8 +234,10 @@ resolve through the same Course according to the invariants below.
    identity backs both.
 2. Matching names, Participant emails, or other personal data MUST NOT merge
    domain identities or distinct external principals.
-3. Every registered Participant MUST have valid required name and email, and
-   Participant email MUST be unique by the accepted comparison rule.
+3. Every registered Participant MUST have valid required name and email.
+   Participant email MUST be retained after trimming surrounding whitespace
+   and validating the resulting complete string, and MUST be unique by
+   case-insensitive comparison of the complete trimmed address.
 4. Every Admin User MUST have one valid required name.
 5. Profile edits MUST preserve domain identity and every existing relationship.
 
@@ -292,7 +296,10 @@ resolve through the same Course according to the invariants below.
     Cancelled Module's interval is always immutable.
 27. A Scheduled Module may be Cancelled only in an Active Course while
     `now < endsAt`. Cancellation is terminal.
-28. A Course timezone may change only while the Active Course has no Modules.
+28. A Course timezone MAY change only while the Course is Active and no Module
+    has ever been successfully created in it. Successful creation of the first
+    Module permanently freezes the timezone; later Module deletion MUST NOT
+    restore editability.
 29. A Course MUST NOT be Archived while it contains a Scheduled Module where
     `now < endsAt`. Archival MUST NOT cancel Modules or mutate Selections.
 30. An Archived Course MUST remain Archived and MUST NOT be hard-deleted.
@@ -371,8 +378,11 @@ not imply duplicate identity:
 - Active Groups in one Course MUST have distinct normalized names.
 
 Participant email uniqueness prevents two registered profiles from holding the
-same normalized address, but MUST NOT be used to merge identities. A refused
-duplicate-email edit leaves the existing Participant data unchanged.
+same complete trimmed address under case-insensitive comparison. No
+provider-specific transformation, alias inference, or mailbox-equivalence rule
+participates in this comparison. Participant email MUST NOT be used to merge
+identities. A refused duplicate-email edit leaves the existing Participant data
+unchanged.
 
 ## Normal Empty And Partial States
 
@@ -389,6 +399,11 @@ All of the following are valid and MUST NOT require placeholder data:
 - a new future Module added after earlier Course Modules have occurred;
 - a Participant joining after some Course Modules have reached `startsAt`; and
 - multiple independently Active Admin Invites.
+
+An Active Course with zero current Modules may never have had a Module, in
+which case its timezone remains mutable, or it may have had Modules that were
+later hard-deleted, in which case its timezone remains permanently immutable.
+This historical distinction does not introduce another Course lifecycle state.
 
 If an Active Course has no Active Groups, no valid Module Selection can be
 created until at least one Active Group exists.

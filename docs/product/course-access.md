@@ -114,11 +114,27 @@ Surrounding whitespace is trimmed for required-text validation; blank values
 after trimming are invalid. No separate first name, last name, salutation,
 organization, address, phone, or broader profile is required.
 
-Participant name is non-unique and not domain identity. Participant email MUST
-be a valid address and unique among registered Participants after normal
-trimming/normalization suitable for email comparison and a case-insensitive
-comparison. Email is still neither domain identity nor evidence that two
-external principals identify the same human.
+Participant name is non-unique and not domain identity. When Participant email
+is stored or updated, surrounding whitespace MUST be trimmed, the resulting
+complete string MUST be validated as an email address, and that resulting value
+MUST be retained as the Participant's booking-system profile value. Participant
+email MUST be unique among registered Participants by case-insensitive
+comparison of the complete trimmed address.
+
+No provider-specific email-address transformation participates in storage or
+uniqueness comparison. The booking system MUST NOT remove dots from the local
+part, strip `+tag` suffixes, infer aliases, apply Gmail- or Microsoft-specific
+canonicalization, perform MX- or domain-provider-specific rewriting, or treat
+syntactically different addresses as equal merely because a provider might
+deliver them to one mailbox. For example, ` Alice@example.com` and
+`alice@example.com` compare equal, while `alice+course@example.com` and
+`alice@example.com` remain distinct, as do `first.last@gmail.com` and
+`firstlast@gmail.com`.
+
+Email uniqueness gives Admin Users a deterministic way to distinguish
+Participant profiles. Email is still neither Participant identity nor evidence
+that two external principals identify the same human, and matching email MUST
+NOT merge external authentication identities or Participants.
 
 Authentication-provider profile data MAY prefill name or email as a
 presentation convenience, but the Participant MUST explicitly supply or

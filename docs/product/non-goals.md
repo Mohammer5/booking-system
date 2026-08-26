@@ -8,6 +8,7 @@ reconsidered only through a concrete future requirement.
 
 - Participant hard deletion;
 - Participant self-disable or self-Re-enable;
+- Participant self-service departure from a Course;
 - automatic account or domain-identity merging;
 - product-level matching of real-world humans across different external
   authentication principals;

@@ -67,10 +67,13 @@ IANA/TZDB timezone identifier such as `Europe/Berlin`. A fixed UTC offset such
 as `+01:00` is not a valid substitute. Modules have no separate business
 timezone.
 
-An Active Admin User MAY change the timezone while the Active Course has no
-Modules. Once its first Module exists, the Course timezone is immutable. The
-product does not reinterpret times, migrate schedules, or automatically
-reschedule Modules after a timezone change.
+An Active Admin User MAY change the timezone only while the Course is Active
+and no Module has ever been successfully created in it. Successful creation of
+the first Module permanently freezes the Course timezone. Deleting that first
+Module, the last remaining Module, or every Module MUST NOT make the timezone
+editable again. Course archival also MUST NOT unlock it. The product does not
+reinterpret times, migrate schedules, or automatically reschedule Modules
+after a timezone change.
 
 Module schedule input is entered or interpreted in the Course timezone but
 MUST resolve to definite `startsAt` and `endsAt` instants:

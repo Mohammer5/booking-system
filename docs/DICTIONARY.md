@@ -73,9 +73,11 @@ Invite](product/course-access.md#shared-course-invite).
 ### Course Timezone
 
 The single IANA/TZDB timezone used to interpret one Course's Module schedule,
-defaulting to `Europe/Berlin`. It may change while the Active Course has no
-Modules and becomes immutable once the first Module exists. Local schedule
-input resolves through DST rules to definite instants. See [Course
+defaulting to `Europe/Berlin`. It may change only while the Course is Active
+and no Module has ever been successfully created in it. Successful creation of
+the first Module permanently freezes it; deleting the first, last, or every
+Module does not restore editability. Local schedule input resolves through DST
+rules to definite instants. See [Course
 timezone](product/course-structure.md#course-timezone).
 
 ### External Authentication Identity
@@ -138,9 +140,12 @@ access state](product/course-access.md#participant-global-access-state).
 ### Participant Email
 
 The required valid email profile property of a registered Participant. It is
-unique after normal trimming/normalization and case-insensitive comparison but
-is neither Participant identity nor a basis for merging external principals or
-Participants. See [Participant profile](product/course-access.md#participant-profile).
+retained after surrounding whitespace is trimmed and the resulting complete
+string is validated, and is unique by case-insensitive comparison of the
+complete trimmed address. No provider-specific transformation or alias
+inference applies. It is neither Participant identity nor a basis for merging
+external principals or Participants. See [Participant
+profile](product/course-access.md#participant-profile).
 
 ### Participant Name
 

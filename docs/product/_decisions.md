@@ -103,11 +103,15 @@ without a general merge or conflict-resolution workflow.
 
 ## Use IANA Course Timezones And Definite Instants
 
-Every Course has one IANA/TZDB timezone, defaulting to `Europe/Berlin`, and the
-first Module freezes it. Module local schedule input must resolve to definite
-instants: nonexistent daylight-saving local times are rejected and ambiguous
-times require an explicit occurrence. All lifecycle comparisons use the
-resolved instants.
+Every Course has one IANA/TZDB timezone, defaulting to `Europe/Berlin`, and
+successful creation of the first Module permanently freezes it. The one-way
+lock preserves stable interpretation of scheduling history and avoids implicit
+reinterpretation. Hard-deleting a Module does not erase the fact that Course
+scheduling has begun, so deleting the first, last remaining, or every Module
+cannot restore timezone editability. Module local schedule input must resolve to
+definite instants: nonexistent daylight-saving local times are rejected and
+ambiguous times require an explicit occurrence. All lifecycle comparisons use
+the resolved instants.
 
 ## Keep Module Scheduling Future-Facing
 
