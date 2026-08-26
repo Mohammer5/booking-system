@@ -2,9 +2,11 @@
 
 ## Make Conceptual Domains First-Class
 
-Top-level packages represent stable product responsibilities. They own domain
-language, rules, and contracts. Technical mechanisms do not become peer
-packages merely because several callers use them.
+Conceptual packages represent stable product areas and own their domain
+language, rules, and contracts. Distinct responsibilities within one coherent
+area remain focused internal modules when separate workspace boundaries would
+add no independent ownership. Technical mechanisms do not become peer packages
+merely because several callers use them.
 
 ## Let Applications Own Technical Composition
 
@@ -15,11 +17,20 @@ provider SDKs.
 
 ## Deploy One Same-Origin Worker Application Initially
 
-One application will compose Vite-built frontend assets and `/api/*` handling
-inside a Cloudflare Worker deployment. This avoids an unproven frontend/API
-deployment boundary and its independent release and CORS coordination. The
-application keeps a product-facing identity; Cloudflare, Vite, and D1 remain
-private technical mechanisms.
+`apps/booking-system-web` will compose the browser/Vite experience, frontend
+assets, Worker request handling, `/api/*`, technical adapters, and the
+composition root inside one Cloudflare Worker deployment. This avoids an
+unproven `apps/api` deployment boundary and its independent release and CORS
+coordination. The application keeps a product-facing identity; Cloudflare,
+Vite, and D1 remain private technical mechanisms.
+
+## Start With One Booking Domain Package
+
+`packages/booking` is the initial conceptual package. It owns booking-system
+language, rules, and contracts while Course structure, Course access, and Module
+participation remain distinct internal responsibility modules. Making each
+focused specification a workspace package would confuse documentation
+boundaries with deployment and package ownership.
 
 ## Use Cloudflare As The Initial Runtime Boundary
 
@@ -61,12 +72,14 @@ Each workspace owns an allow-list and explicitly declares the package namespace
 whose undeclared imports it rejects. Package manifests and folders never grant
 an architectural edge. Composition files receive explicit permissions.
 
-## Keep The Template Free Of Example Workspaces
+## Declare Workspaces Only From Accepted Product Boundaries
 
-Example applications, packages, or domain names can look authoritative after a
-template is copied. The template therefore keeps the workspace inventory empty
-and tests enforcement with synthetic names. A project declares only the
-workspaces justified by its accepted product model.
+Example applications, packages, or domain names can look authoritative before
+a product boundary is accepted. The repository therefore kept its implemented
+workspace inventory empty and tests enforcement with synthetic names. The now
+accepted `apps/booking-system-web` and `packages/booking` targets are documented
+without creating scaffolding; implementation still requires explicit
+authorization.
 
 ## Introduce Runtime Tooling With A Real Application
 

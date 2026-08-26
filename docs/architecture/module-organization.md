@@ -1,5 +1,18 @@
 # Module Organization
 
+## Accepted Initial Conceptual Target
+
+The planned `packages/booking` workspace contains focused responsibility modules
+named `course-structure`, `course-access`, and `module-participation`. They own
+distinct product concepts inside one domain package and MUST NOT become separate
+workspace packages merely because the product specification uses separate
+focused documents.
+
+The planned `apps/booking-system-web` workspace is the single application
+composition boundary. No workspace or source directory has been created, and
+the target does not yet declare dependency edges, composition-file names,
+public exports, or detailed internal files.
+
 ## Workspace Roots
 
 Production code lives under each [workspace's](../DICTIONARY.md#workspace)

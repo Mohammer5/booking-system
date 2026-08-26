@@ -6,28 +6,42 @@ roles, while their internal technical mechanisms remain private.
 
 ## Current Inventory
 
-No application workspace or runtime implementation exists.
+No application workspace or runtime implementation exists. The accepted first
+application target is `apps/booking-system-web`.
 
 ## Accepted Initial Boundary
 
-The first application will be one booking-system web application rather than
-separate frontend and API deployments. Its eventual workspace name must express
-that conceptual product-facing role, not a provider or mechanism such as
-Cloudflare, Worker, Vite, or D1.
+The first application will be `apps/booking-system-web`, one booking-system web
+application rather than separate frontend and API deployments. It is not only
+the Vite frontend; it owns technical composition for the complete same-origin
+application.
 
-- **Responsibility:** Serve the browser booking experience and its same-origin
-  API as one deployable boundary.
+- **Responsibility:** Compose and serve the browser/Vite experience, frontend
+  static assets, Cloudflare Worker request handling, `/api/*` HTTP handling,
+  private technical adapters, and the application composition root as one
+  deployable boundary.
 - **Not responsible for:** Owning product rules or turning runtime and storage
   providers into product concepts.
 - **Inputs:** Browser navigation, static-asset requests, API requests, and
-  conceptual capabilities supplied at composition.
-- **Outputs:** Frontend assets and API responses.
-- **Adjacent parts:** Future conceptual packages, private Worker/Vite
-  composition, and D1 persistence.
+  booking capabilities supplied by the conceptual package.
+- **Outputs:** Frontend/static-asset responses and same-origin API responses.
+- **Adjacent parts:** The planned `packages/booking` domain package, private
+  Worker/Vite composition, and D1 persistence.
+
+The browser reaches backend behavior through the same-origin API, such as
+`/api/*`.
+
+### No Separate API Application
+
+The initial architecture has no `apps/api`. Such a workspace would define a
+second independently runnable and deployable application boundary, which the
+accepted one-application model does not justify. A separate API application may
+be reconsidered only when a future concrete requirement needs an independent
+deployment or runtime boundary.
 
 See [runtime and hosting](runtime-and-hosting.md) for the accepted deployment
-shape. This target description does not declare a workspace or claim that the
-application is already runnable.
+shape. This target description names the planned workspace but does not create
+it or claim that the application is already runnable.
 
 ## Definition Rule
 

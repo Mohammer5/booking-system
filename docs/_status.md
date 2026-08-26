@@ -11,7 +11,11 @@ non-goals, and representative scenarios.
 
 The repository has accepted an architecture and delivery direction:
 
-- one Cloudflare Worker-based booking-system web application;
+- one Cloudflare Worker-based application at `apps/booking-system-web`, owning
+  the browser/Vite experience, static assets, `/api/*`, technical adapters, and
+  composition root;
+- one conceptual domain package at `packages/booking`, with Course structure,
+  Course access, and Module participation as internal responsibility modules;
 - Vite-built frontend assets and same-origin API composition;
 - D1 persistence with SQLite-compatible semantics and isolated environments;
 - GitHub Actions CI/CD, Vitest, the Workers Vitest integration, and Playwright;
@@ -21,7 +25,7 @@ The repository has accepted an architecture and delivery direction:
 The accepted direction is not yet product implementation:
 
 - no product source code or runtime dependency exists;
-- no application or package workspace is declared;
+- no application or package workspace has been created or implemented;
 - no Vite frontend, Worker, D1 schema, product test suite, Playwright suite,
   release workflow, or production deployment exists;
 - no workspace boundary map is registered yet;

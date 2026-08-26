@@ -10,28 +10,64 @@ implemented.
 
 ### Admin
 
-A role or capability that manages Courses, Groups, Modules, Course Assignments,
-Course access, and shared Course Invites without prescribing an authorization
-technology. See [Course access](product/course-access.md).
+The same booking-system Participant identity with Admin capability enabled. The
+capability defaults to false and permits user administration, Course access and
+structure management, and accepted assisted-booking actions without defining a
+separate Admin identity or prescribing authorization technology. See
+[Course access](product/course-access.md).
+
+### Admin-Assisted Booking
+
+The Admin capability to add an existing booking-system user to a Module and
+Group or remove that user's Module Selection. It uses the same Module Selection
+as Participant booking, while its deadline, Course Assignment prerequisite,
+replacement behavior, and explicit change action remain unresolved. See
+[Module participation](product/module-participation.md#admin-assisted-booking).
 
 ### Course
 
 The primary booking-system container for Groups, Modules, Course Assignments,
 one Course timezone, and at most one current shared Course Invite. A Course is
-Active or Archived. See [the domain model](product/domain-model.md#course).
+Active or permanently Archived; it is never hard-deleted or restored. See
+[the domain model](product/domain-model.md#course).
 
 ### Course Assignment
 
 The Active or Revoked relationship stating that one Participant belongs to one
-Course. It governs Course access independently of Module participation. See
+Course. It governs Course access independently of Module participation. A
+Revoked Assignment may be reactivated only while its Course is Active. See
 [Course access](product/course-access.md#administrative-assignment).
 
 ### Course Invite
 
 The Course-specific, person-independent shared invitation through which an
 authenticated Participant may explicitly attempt to join a Course. A Course
-has at most one current Invite. See
+has at most one current Invite. A valid active Invite may expose the Course
+name as minimal pre-join context but no Course-private information. See
 [shared Course Invite](product/course-access.md#shared-course-invite).
+
+### Course Timezone
+
+The single timezone in which one Course's Module `startsAt` and `endsAt` values
+are interpreted. It may change while the Course has no Modules and becomes
+immutable once the first Module exists. See
+[Course timezone](product/course-structure.md#course-timezone).
+
+### External Authentication Identity
+
+A provider-managed identity used to establish which Participant is acting. It
+is not the booking-system Participant identity; the relationship remains
+compatible with one Participant having multiple external authentication
+identities in the future. See
+[authentication and Participant identity](product/course-access.md#authentication-and-participant-identity).
+
+### First-User Admin Bootstrap
+
+The empty-installation flow that offers `Register admin` only while no
+booking-system Participant exists. The first successful registration creates
+the first Participant with Admin capability, after which the flow closes. A
+later absence of Admin capability does not reopen it. See
+[Course access](product/course-access.md#first-user-admin-bootstrap).
 
 ### Group
 
@@ -41,22 +77,24 @@ identity and logistical details apply Course-wide rather than per Module. See
 
 ### Module
 
-One non-recurring Scheduled or Cancelled occurrence in exactly one Course,
-with a date and time interpreted in that Course's timezone. See
-[Modules](product/course-structure.md#modules).
+One non-recurring Scheduled or Cancelled occurrence in exactly one Course. Its
+schedule is `startsAt` and `endsAt`, both interpreted in the Course timezone,
+with `endsAt > startsAt`. See [Modules](product/course-structure.md#modules).
 
 ### Module Selection
 
-The current-state relationship stating that one Participant intends to attend
-one Module using one Group. Its absence means non-participation, and it does not
-prove actual attendance. See
+The relationship recording that one Participant intends to attend one Module
+using one Group. It may be created by the Participant or through Admin-assisted
+booking. Its absence means non-participation; its live or historical meaning is
+derived from surrounding state, and it does not prove actual attendance. See
 [Module participation](product/module-participation.md).
 
 ### Participant
 
-A booking-system identity that may belong to Courses and make Module
-Selections. It is conceptually separate from the external provider used to
-authenticate. See
+A booking-system user identity that may belong to Courses, make Module
+Selections, and have Admin capability. It is conceptually separate from the
+external identities used to authenticate and may support more than one such
+identity in the future. See
 [authentication and identity](product/course-access.md#authentication-and-participant-identity).
 
 ## Meta And Internal Terms
@@ -65,6 +103,22 @@ authenticate. See
 
 An independently runnable or served workspace that composes conceptual
 behavior with private technical implementations at an explicit runtime edge.
+
+### Booking Package
+
+The planned conceptual domain package at `packages/booking`. It owns booking
+language, rules, and contracts through distinct `course-structure`,
+`course-access`, and `module-participation` responsibility modules; it is not
+yet implemented. See
+[Packages](architecture/packages.md#accepted-initial-package).
+
+### Booking-System Web Application
+
+The planned single deployable application at `apps/booking-system-web`. It owns
+the browser/Vite experience, frontend static assets, Cloudflare Worker and
+same-origin `/api/*` handling, private technical adapters, and the composition
+root; it is not yet implemented. See
+[Applications](architecture/applications.md#accepted-initial-boundary).
 
 ### Boundary Map
 

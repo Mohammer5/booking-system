@@ -16,7 +16,7 @@ architecture, or technology.
 
 - an authenticated booking-system Participant identity;
 - Admin and Participant actions governed by the focused product rules;
-- Course-local Module times interpreted in the Course timezone; and
+- Course-local Module intervals interpreted in the Course timezone; and
 - current Course, Group, Module, Assignment, Invite, and Selection state.
 
 ## Outputs
@@ -35,17 +35,23 @@ The model composes with [Course access](course-access.md),
 
 ### Participant
 
-A [Participant](../DICTIONARY.md#participant) is a booking-system user who may
-belong to zero, one, or multiple Courses and make Module Selections.
-Authentication establishes which Participant is acting. The Participant
-identity is conceptually separate from any external identity provider used to
-authenticate.
+A [Participant](../DICTIONARY.md#participant) is the booking-system user
+identity. A Participant may belong to zero, one, or multiple Courses and make
+Module Selections. Authentication establishes which Participant is acting, but
+external authentication identities remain conceptually separate from that
+booking-system identity. The identity relationship MUST remain compatible with
+one Participant having multiple external authentication identities in the
+future.
 
 ### Admin
 
-An [Admin](../DICTIONARY.md#admin) is a role or capability that manages Courses,
-Groups, Modules, Course Assignments, Course access, Participants' membership,
-and Course Invites. This role does not prescribe an authorization mechanism.
+An [Admin](../DICTIONARY.md#admin) is the same underlying Participant identity
+with Admin capability enabled. The capability defaults to false; it does not
+define a separate Admin account or identity type. An Admin manages users and
+their Admin capability, Courses, Groups, Modules, Course Assignments, Course
+access, Participants' membership, Course Invites, and the accepted
+Admin-assisted Module booking actions. This capability does not prescribe an
+authorization mechanism or storage field.
 
 ### Course
 
@@ -76,10 +82,12 @@ not Module-specific.
 ### Module
 
 A [Module](../DICTIONARY.md#module) is one non-recurring scheduled occurrence
-within exactly one Course. It occurs at a specific date and time interpreted in
-the Course timezone and is either Scheduled or Cancelled. Upcoming, starting,
-and past are derived from that date and time rather than lifecycle states. A
-Module belongs permanently to its Course.
+within exactly one Course. Its schedule is the interval from `startsAt` to
+`endsAt`, both interpreted in the Course timezone, and `endsAt` MUST be later
+than `startsAt`. A Module is either Scheduled or Cancelled. Upcoming, started,
+and ended descriptions are derived from the interval rather than lifecycle
+states. At the exact `startsAt` instant, the Module has started. A Module
+belongs permanently to its Course.
 
 ### Course Assignment
 
@@ -104,9 +112,11 @@ A [Module Selection](../DICTIONARY.md#module-selection) represents:
 > Participant P intends to participate in Module M using Group G.
 
 For one Participant and Module, at most one Module Selection may exist. Absence
-means the Participant is not participating. A Module Selection is authoritative
-current booking intent, not proof of attendance, and has no unanswered,
-declined, requested, pending, approved, waitlisted, or cancelled-booking state.
+means the Participant is not participating. A Module Selection records booking
+intent, not proof of attendance. Whether an existing Selection is an active
+booking or a historical record is derived from the surrounding Course, Module,
+and Course Assignment state. The Selection has no unanswered, declined,
+requested, pending, approved, waitlisted, or cancelled-booking state.
 
 ### Course Invite
 
@@ -136,26 +146,39 @@ resolve through the same Course according to the invariants below.
 3. A Participant MUST have at most one Course Assignment to a given Course.
 4. A new Course Assignment MUST NOT be created for an Archived Course, whether
    by an Admin or a shared Course Invite.
-5. A Participant MUST have at most one Module Selection for a given Module.
-6. Every Module Selection MUST reference exactly one Participant, one Module,
+5. A Revoked Course Assignment MUST NOT be reactivated while its Course is
+   Archived.
+6. A Participant MUST have at most one Module Selection for a given Module.
+7. Every Module Selection MUST reference exactly one Participant, one Module,
    and one Group.
-7. A Module Selection's Group and Module MUST belong to the same Course.
-8. A Participant MUST have an Active Course Assignment to that Course when
-   creating or changing a Module Selection.
-9. A Participant MUST NOT create or change a Module Selection at or after the
-   Module's start time.
-10. A Participant MUST NOT select an Archived Group.
-11. A Participant MUST NOT select a Cancelled Module.
-12. Course membership MUST NOT automatically assign a Participant to a Module
+8. A Module Selection's Group and Module MUST belong to the same Course.
+9. A Participant MUST have an Active Course Assignment to that Course when
+   creating or changing their own Module Selection.
+10. A Participant MUST NOT create or change a Module Selection at or after the
+    Module's `startsAt`.
+11. A Participant MUST NOT select an Archived Group.
+12. A Participant MUST NOT select a Cancelled Module.
+13. Course membership MUST NOT automatically assign a Participant to a Module
     or Group.
-13. No Module Selection MUST mean non-participation in that Module.
-14. Group choice MUST be per Module. A Participant MAY use different Groups for
+14. No Module Selection MUST mean non-participation in that Module.
+15. Group choice MUST be per Module. A Participant MAY use different Groups for
     different Modules in the same Course.
-15. Group identity and details MUST be Course-wide, not Module-specific.
-16. Human-readable Course, Group, and Module names MUST NOT be their domain
+16. Group identity and details MUST be Course-wide, not Module-specific.
+17. Human-readable Course, Group, and Module names MUST NOT be their domain
     identity. Renaming MUST preserve existing relationships.
-17. A Course MUST NOT transition from Active to Archived while it contains an
-    unresolved future Module or an active Module Selection for a future Module.
+18. Every Module MUST satisfy `endsAt > startsAt`.
+19. Before `startsAt`, an Admin MAY change a Module's `startsAt` or `endsAt`
+    only while the resulting interval remains valid. At or after `startsAt`,
+    neither value may change.
+20. A Course timezone MAY change only while the Course has no Modules. Once the
+    first Module exists, the Course timezone MUST NOT change.
+21. A Course MUST NOT transition from Active to Archived while it contains an
+    unresolved Module whose `startsAt` is in the future or an active Module
+    Selection for such a Module.
+22. A Course MUST NOT be hard-deleted or transition from Archived back to
+    Active.
+23. Cancelling a Module MUST preserve its existing Module Selections as
+    historical records, but those Selections MUST NOT remain active bookings.
 
 ## Minimal State Model
 
@@ -165,12 +188,12 @@ resolve through the same Course according to the invariants below.
 | Group | Active or Archived |
 | Module | Scheduled or Cancelled |
 | Course Assignment | Active or Revoked |
-| Module Selection | Exists with exactly one selected Group, or does not exist |
+| Module Selection | Exists with exactly one selected Group, or does not exist; when it exists, live or historical meaning is derived from surrounding state |
 | Course Invite | When present, current and enabled, or disabled and non-usable; replacement invalidates the predecessor |
 
-For a Scheduled Module, past and future are derived from its date and time.
-A Course MAY have no Course Invite. Further lifecycle states MUST NOT be
-introduced without an explicit requirement.
+For a Scheduled Module, upcoming, started, and ended descriptions are derived
+from `startsAt` and `endsAt`. A Course MAY have no Course Invite. Further
+lifecycle states MUST NOT be introduced without an explicit requirement.
 
 ## Identity And Naming
 
@@ -178,7 +201,8 @@ Renaming a Course, Group, or Module MUST preserve the same domain object and
 all existing relationships. Similar names do not imply duplicate identity:
 
 - two Courses MAY have the same or similar name;
-- two Modules MAY have the same or similar name, date and time, or description;
+- two Modules MAY have the same or similar name, `startsAt`, `endsAt`, or
+  description;
   and
 - active Group choices in one Course MUST remain distinguishable, so Group
   names SHOULD be unique within that Course.

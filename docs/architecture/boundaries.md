@@ -8,13 +8,16 @@ authority. Package manifests never grant architectural permission.
 
 ## Current Workspace Dependencies
 
-The template declares no workspace, so there are no package dependency edges.
-Conceptual adjacency in docs does not pre-authorize a JavaScript import.
+No workspace or local boundary map has been implemented, so there are no
+package dependency edges. The accepted `apps/booking-system-web` and
+`packages/booking` targets do not pre-authorize a JavaScript import.
 
 ## Current Responsibility Modules
 
-No responsibility module or composition file is declared. A future project
-adds them only when concrete source responsibilities exist.
+`course-structure`, `course-access`, and `module-participation` are accepted as
+conceptual responsibility modules within the planned booking package. No source
+module, dependency edge, boundary-map entry, or composition file exists yet;
+those permissions require the concrete implementation change.
 
 ## Map Shape
 

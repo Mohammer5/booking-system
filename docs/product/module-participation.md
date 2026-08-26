@@ -2,26 +2,28 @@
 
 ## Responsibility
 
-This document owns Participant-controlled Module Selection creation,
-replacement, and revocation; the Module-start deadline; current-state meaning;
-and concurrent-selection behavior.
+This document owns Participant Module Selection creation, replacement, and
+removal; Admin-assisted creation and removal; the Participant `startsAt`
+deadline; live and historical meaning; and concurrent Participant changes.
 
 ## Not Responsible For
 
-This document does not grant Course membership, manage Course, Group, or
-Module lifecycle, prove actual attendance, deliver notifications, maintain a
-complete audit history, or define an Admin booking workflow.
+This document does not grant Course membership, manage Course, Group, Module,
+or user lifecycle, prove actual attendance, deliver notifications, maintain a
+complete audit history, or decide the unresolved Admin-assisted-booking
+policies.
 
 ## Inputs
 
-- an authenticated Participant with current Course access;
-- the Participant's explicit choice to select, replace, or remove a Group;
+- an authenticated Participant or Admin;
+- the Participant's explicit choice to select, replace, or remove a Group, or
+  an Admin's accepted assisted-booking action;
 - current Course Assignment, Course, Module, and Group state; and
-- the Module's current start time in the Course timezone.
+- the Module's current `startsAt` in the Course timezone.
 
 ## Outputs
 
-- exactly one current Group selection for a Participant and Module; or
+- exactly one Group selection for a Participant and Module; or
 - no Module Selection, meaning non-participation in that Module.
 
 ## Adjacent Parts
@@ -32,16 +34,22 @@ depends on [Course access](course-access.md), and reacts to
 
 ## Participation State
 
-For each Participant and Module, exactly one of two conceptual states applies:
+For each Participant and Module, exactly one of two Selection states applies:
 
 1. no [Module Selection](../DICTIONARY.md#module-selection), meaning the
    Participant is not participating; or
-2. one Module Selection to exactly one Group, meaning the Participant intends
-   to participate using that Group.
+2. one Module Selection to exactly one Group, recording that the Participant
+   intended to participate using that Group.
 
 There is no separate booking workflow or RSVP lifecycle. Course membership
 does not require participation in every Module: an assigned Participant MAY
 select all, some, or no Modules.
+
+An existing Selection may be a live booking or a historical record according to
+the surrounding Course, Module, Assignment, and temporal state. In particular,
+if the Module is Cancelled, the Selection remains historically recorded but is
+no longer live. That distinction is derived rather than represented by a
+cancelled-booking state.
 
 ## Eligibility
 
@@ -50,7 +58,7 @@ true:
 
 - the Participant has an Active Course Assignment to the Course;
 - the Course is Active;
-- the Module is Scheduled and has not started;
+- the Module is Scheduled and the current instant is before `startsAt`;
 - the selected Group is Active; and
 - the selected Group and Module belong to that same Course.
 
@@ -63,15 +71,16 @@ Creating the Selection is the Participant's explicit statement:
 
 The system MUST NOT choose a Group automatically from a previous selection,
 the first available Group, a preferred or default Group, or Course membership.
-Each Module Selection results from an explicit Participant choice. Admin-created
-Module Selections are outside the initial scope.
+Each Participant-created Module Selection results from an explicit Participant
+choice. An Admin may also create the same Module Selection through the accepted
+assisted-booking capability.
 
 ## Changing The Selected Group
 
-Before the Module starts, an eligible Participant MAY replace the selected
-Group with another eligible Group in the same Course. Replacement MUST remove
-the previous current choice; two simultaneous Group selections for the same
-Participant and Module MUST NOT exist.
+Before `startsAt`, an eligible Participant MAY replace the selected Group with
+another eligible Group in the same Course. Replacement MUST remove the previous
+current choice; two simultaneous Group selections for the same Participant and
+Module MUST NOT exist.
 
 For example, changing `Remote` to `Room A` means `Room A` is the sole current
 choice. Selecting the already-selected Group MUST be idempotent and MUST NOT
@@ -87,24 +96,46 @@ example, all of the following may coexist:
 
 ## Revoking Participation
 
-Before the Module starts, a Participant with current Course access MAY remove
-their Module Selection. Removal makes the current booking state "no selection"
-and therefore non-participation. It MUST NOT create a Participant-visible
+Before `startsAt`, a Participant with current Course access MAY remove their
+Module Selection. Removal makes the current booking state "no selection" and
+therefore non-participation. It MUST NOT create a Participant-visible
 cancelled-booking state.
 
-## Start-Time Deadline
+## `startsAt` Deadline
 
 A Participant MAY create, change, or revoke a Module Selection only until the
-Module starts. At the exact start time, all normal Participant modification
-becomes unavailable.
+Module's `startsAt`. At the exact `startsAt` instant, the Module has started and
+all normal Participant modification becomes unavailable.
 
 The product MUST NOT introduce a configurable earlier deadline, registration
 close date, fixed advance window, or lock window.
 
-If a Participant joins after some Modules have started or finished, those
-Modules MUST NOT be selectable, while otherwise eligible future Modules remain
-selectable. If no Selection exists when a Module starts, the Participant is
-not participating.
+If a Participant joins after some Modules have reached `startsAt`, those Modules
+MUST NOT be selectable, while otherwise eligible future Modules remain
+selectable. If no Selection exists at `startsAt`, the Participant is not
+participating.
+
+## Admin-Assisted Booking
+
+Through [Admin-assisted booking](../DICTIONARY.md#admin-assisted-booking), an
+Admin MAY add an existing booking-system user to a Module and Group and MAY
+remove an existing Module Selection for a user. An Admin-created booking is the
+same Module Selection concept used by Participants; there is no parallel Admin
+booking entity or state.
+
+The accepted capability does not yet decide:
+
+- whether an Admin may add, change, or remove a Selection at or after
+  `startsAt`;
+- whether the user must already have an Active Course Assignment;
+- whether adding a Selection when another Group is already selected for that
+  user and Module replaces the Selection or is refused; or
+- whether an Admin may explicitly change an existing Selection to another
+  Group as a first-class action.
+
+Participant eligibility and deadline rules MUST NOT be assumed to govern Admin
+actions, and Admin override powers MUST NOT be inferred. These policy questions
+are tracked in [Product status](_status.md#deliberately-unspecified-details).
 
 ## Scheduling Conflicts
 
@@ -125,14 +156,17 @@ if one device changes `Remote` to `Room A` and another changes `Remote` to
 The product has no user-facing merge or conflict workflow.
 
 If an Admin revokes the Participant's Course Assignment concurrently with a
-Participant change, the Assignment invariant takes precedence. A future active
-Module Selection MUST NOT remain valid without an Active Course Assignment.
+Participant change, revocation blocks that Participant change and removes the
+future Selection under the Course-access rules. This does not decide whether a
+later Admin-assisted action requires an Active Course Assignment.
 
 ## Current State, History, And Attendance
 
-The initial booking model requires authoritative current state only. Revoking a
-future Selection produces no Selection. A complete change history or
-Participant-visible cancelled state is not required.
+The initial booking model requires authoritative current live state plus the
+historical Selection references required by lifecycle rules. Revoking a future
+Selection produces no Selection. Cancelling a Module preserves its existing
+Selections, but they cease to be live bookings. A complete change history or
+Participant-visible cancelled-booking state is not required.
 
 Lifecycle rules still preserve historically meaningful participation when an
 object has or had Selections. A future operational or legal audit history MAY

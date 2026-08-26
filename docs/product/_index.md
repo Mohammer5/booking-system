@@ -16,17 +16,20 @@ domain and behavior.
 ### Product Status
 - Path: `docs/product/_status.md`
 - Summary: Current specification state, intentionally absent implementation,
-  and unresolved product details.
+  and the remaining archival, Admin-assisted-booking, and user-management
+  policy questions.
 - Read when: You need to know what product truth is accepted, implemented, or
   still unspecified.
 - Tags: product, status, current-state, gaps
 
 ### Product Decisions
 - Path: `docs/product/_decisions.md`
-- Summary: Rationale for the booking model's central simplicity boundaries.
-- Read when: You need to understand why membership, participation, Groups,
-  invites, history, and excluded workflows are modeled separately.
-- Tags: product, decisions, simplicity, rationale
+- Summary: Rationale for the booking model's identity, access, scheduling,
+  lifecycle, participation, and simplicity boundaries.
+- Read when: You need rationale for identity, membership, visibility,
+  scheduling, Course archival, participation history, or excluded workflows.
+- Tags: product, decisions, identity, scheduling, lifecycle, simplicity,
+  rationale
 
 ### Domain Model
 - Path: `docs/product/domain-model.md`
@@ -38,26 +41,28 @@ domain and behavior.
 
 ### Course Access
 - Path: `docs/product/course-access.md`
-- Summary: Authentication, Course Assignments, shared Course Invites,
-  revocation, permissions, and visibility.
-- Read when: A task affects identity, joining, assignment, membership,
-  revocation, authorization, or Course information access.
+- Summary: Authentication identity, Admin bootstrap and user management,
+  Course Assignments, shared Course Invites, permissions, and visibility.
+- Read when: A task affects identity, Admin bootstrap, user administration,
+  joining, assignment, membership, revocation, authorization, or Course
+  information access.
 - Tags: product, access, authentication, assignment, invite, permissions
 
 ### Course Structure And Lifecycle
 - Path: `docs/product/course-structure.md`
 - Summary: Course containment, timezones, Group semantics, Module scheduling,
-  editing, deletion, cancellation, and archival behavior.
+  editing, Group/Module deletion, cancellation, and permanent Course archival.
 - Read when: A task affects Courses, Groups, Modules, scheduling, names,
   deletion, cancellation, archival, or historical references.
 - Tags: product, course, group, module, scheduling, lifecycle
 
 ### Module Participation
 - Path: `docs/product/module-participation.md`
-- Summary: Participant-controlled Module Selection creation, replacement,
-  revocation, deadlines, concurrency, and current-state meaning.
-- Read when: A task affects booking eligibility, selected Groups, participant
-  changes, start-time locking, concurrency, or attendance meaning.
+- Summary: Participant and Admin-assisted Module Selection actions, Participant
+  deadlines, concurrency, and live-versus-historical meaning.
+- Read when: A task affects booking eligibility, selected Groups, Participant or
+  Admin-assisted changes, `startsAt` locking, concurrency, or attendance
+  meaning.
 - Tags: product, booking, participation, selection, concurrency
 
 ### Non-Goals

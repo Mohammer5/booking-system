@@ -13,6 +13,7 @@ implicit future design.
 - pre-created Course Assignments for unknown users;
 - automatic Course Invite expiration;
 - multiple concurrently active, independently managed Course Invites;
+- a password-based local identity system;
 - automatic account merging;
 - complex account-linking behavior; and
 - Participant self-service departure from a Course.
@@ -35,13 +36,12 @@ implicit future design.
 - pending booking requests;
 - an explicit declined RSVP state;
 - a distinction between unanswered and declined;
-- configurable booking deadlines other than Module start;
+- configurable booking deadlines other than Module `startsAt`;
 - automatic Group assignment;
 - default or preferred Groups;
 - automatic reuse of a Participant's previous Group;
 - automatic restoration of future Module Selections after Course Assignment
   reactivation;
-- Admin-created Module Selections on behalf of Participants;
 - complete booking change or audit history as part of the booking model; and
 - complex Course lifecycle or status workflows.
 

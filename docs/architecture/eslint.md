@@ -28,9 +28,10 @@ The helper under `eslint-boundaries/` converts explicit maps into ESLint
 configuration. It never scans directories or manifests to invent nodes,
 dependencies, package permissions, package namespaces, or composition rights.
 
-For every workspace, import its local map in `eslint.config.mjs` and add one
-explicit `createWorkspaceBoundaryConfig` entry. With no workspaces, the template
-registers no boundary map.
+For every implemented workspace, import its local map in `eslint.config.mjs`
+and add one explicit `createWorkspaceBoundaryConfig` entry. With no implemented
+workspaces, the repository registers no boundary map; a documented conceptual
+target alone does not activate enforcement.
 
 ## Tests And Tooling
 

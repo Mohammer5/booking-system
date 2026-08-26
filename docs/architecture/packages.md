@@ -5,8 +5,35 @@ of technical reuse.
 
 ## Current Inventory
 
-The template defines no package. A future project adds a package only when a
-stable product concept has one clear owner and independent change pressure.
+No package workspace or product source exists. The accepted first conceptual
+package target is `packages/booking`.
+
+## Accepted Initial Package
+
+`packages/booking` owns booking-system product language, rules, and contracts
+that do not belong to HTTP, Vite, Cloudflare, D1, authentication-provider, or UI
+mechanics.
+
+- **Responsibility:** Express and preserve the booking system's domain
+  language, invariants, actions, and outcomes.
+- **Not responsible for:** Application composition, transport, user-interface,
+  persistence, runtime, or provider integration mechanics.
+- **Inputs:** Product actions and state expressed through booking-system
+  concepts.
+- **Outputs:** Conceptual booking rules, contracts, and outcomes for application
+  composition.
+- **Adjacent parts:** `apps/booking-system-web` and its private technical
+  adapters.
+
+The package initially contains three focused conceptual responsibility modules:
+
+- `course-structure` for Course structure and lifecycle;
+- `course-access` for Course access and membership; and
+- `module-participation` for Module participation.
+
+These are internal responsibility modules within one booking package, not
+separate workspace packages. Their distinct product-spec documents reflect
+distinct conceptual ownership without requiring separate packages.
 
 ## Definition Rule
 
@@ -16,4 +43,4 @@ from product language and define its `Responsibility`, `Not responsible for`,
 
 Reuse, file count, provider use, or convenience is not sufficient evidence for
 a package. Do not create default `shared`, `core`, `utils`, provider, database,
-transport, or all-contracts packages.
+transport, `api`, `contracts`, or all-contracts packages.

@@ -41,9 +41,9 @@ applications:
 Browser
   |
   v
-Cloudflare Worker
+booking-system-web / Cloudflare Worker
   |
-  +-- Vite-built SPA/static assets
+  +-- Vite-built frontend/static assets
   |
   +-- /api/* request handling
   |
@@ -62,6 +62,11 @@ The default routing model is same-origin:
 The exact routing implementation remains private to the application. A
 separate Cloudflare Pages deployment requires a future concrete reason to add
 another deployment boundary.
+
+There is no separate `apps/api` in the initial architecture. That would be a
+second independently runnable and deployable application rather than an
+internal HTTP responsibility. It may be reconsidered only if a future concrete
+requirement justifies an independent runtime boundary.
 
 ## Frontend And Worker Runtime
 

@@ -15,8 +15,8 @@ ESLint-enforced dependency rules.
 
 ### Architecture Status
 - Path: `docs/architecture/_status.md`
-- Summary: Current distinction between accepted Cloudflare, Vite, and D1
-  direction and the application and runtime surfaces still not implemented.
+- Summary: Current distinction between the accepted application/package target,
+  Cloudflare/Vite/D1 direction, and still-unimplemented workspaces and runtime.
 - Read when: You need to distinguish decided architecture from current
   implementation or identify which application, runtime, and persistence
   surfaces do not yet exist.
@@ -24,12 +24,12 @@ ESLint-enforced dependency rules.
 
 ### Architecture Decisions
 - Path: `docs/architecture/_decisions.md`
-- Summary: Rationale for conceptual packages and ESLint enforcement, one
+- Summary: Rationale for the booking application/package boundaries, one
   same-origin Cloudflare Worker, D1 with SQLite semantics, Node/runtime
-  separation, and deferred runtime tooling.
-- Read when: You need to understand why the project chose Cloudflare, one
-  Worker, D1, a non-Node production runtime, explicit boundaries, or
-  real-application-triggered tooling.
+  separation, explicit ESLint enforcement, and deferred runtime tooling.
+- Read when: You need to understand why the project chose one web application,
+  one booking domain package, Cloudflare, D1, a non-Node production runtime,
+  explicit boundaries, or real-application-triggered tooling.
 - Tags: architecture, decisions, cloudflare, workers, d1, nodejs, tooling,
   eslint
 
@@ -44,15 +44,15 @@ ESLint-enforced dependency rules.
 ### Applications
 - Path: `docs/architecture/applications.md`
 - Summary: Defines application boundaries, the empty implemented inventory,
-  and the accepted initial booking-system web application boundary.
+  and `apps/booking-system-web` as the complete initial same-origin application.
 - Read when: A task adds, removes, deploys, or changes an application boundary.
 - Tags: architecture, applications, deployment, composition
 
 ### Runtime And Hosting
 - Path: `docs/architecture/runtime-and-hosting.md`
-- Summary: Defines the intended Cloudflare Worker deployment, Vite static
-  assets, same-origin composition, runtime distinction, and minimal hosting
-  footprint.
+- Summary: Defines the intended `booking-system-web` Cloudflare Worker
+  deployment, Vite static assets, same-origin API composition, runtime
+  distinction, and minimal hosting footprint.
 - Read when: A task affects hosting, frontend/backend deployment shape, Worker
   runtime behavior, Vite delivery, routes, or infrastructure selection.
 - Tags: architecture, cloudflare, workers, vite, hosting, runtime
@@ -67,15 +67,16 @@ ESLint-enforced dependency rules.
 
 ### Packages
 - Path: `docs/architecture/packages.md`
-- Summary: Defines conceptual package boundaries and the currently empty
-  inventory.
+- Summary: Defines conceptual package boundaries, the empty implemented
+  inventory, and `packages/booking` with three internal responsibility modules.
 - Read when: A task adds, removes, extracts, or changes a package boundary.
 - Tags: architecture, packages, domains, ownership
 
 ### Module Organization
 - Path: `docs/architecture/module-organization.md`
-- Summary: Defines source roots, responsibility modules, vertical slices,
-  interfaces, entrypoints, adapters, and dependency direction.
+- Summary: Defines the accepted initial responsibility-module target, source
+  roots, vertical slices, interfaces, entrypoints, adapters, and dependency
+  direction.
 - Read when: A task affects source placement, modules, slices, imports,
   interfaces, or tests.
 - Tags: architecture, modules, source-layout
@@ -98,7 +99,8 @@ ESLint-enforced dependency rules.
 ### Dependency Boundaries
 - Path: `docs/architecture/boundaries.md`
 - Summary: Canonical human counterpart to explicit per-workspace
-  deny-by-default dependency maps.
+  deny-by-default dependency maps, including the distinction between accepted
+  conceptual targets and not-yet-created enforcement maps.
 - Read when: A task changes workspace dependencies, responsibility modules,
   composition permissions, namespaces, or package exports.
 - Tags: architecture, boundaries, dependencies
