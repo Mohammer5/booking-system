@@ -1,0 +1,25 @@
+{
+  "name": "project-template",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": "24.x"
+  },
+  "packageManager": "pnpm@11.17.0",
+  "scripts": {
+    "lint": "eslint . --max-warnings=0",
+    "lint:fix": "eslint . --fix",
+    "test": "pnpm run test:eslint-local-rules && pnpm run test:eslint-boundaries",
+    "test:eslint-boundaries": "node --test eslint-boundaries.test.js",
+    "test:eslint-local-rules": "node --test eslint-local-rules.test.js",
+    "check": "pnpm lint && pnpm test"
+  },
+  "devDependencies": {
+    "@eslint/js": "9.39.5",
+    "eslint": "9.39.5",
+    "eslint-plugin-boundaries": "7.1.0",
+    "eslint-plugin-import": "2.32.0",
+    "globals": "17.7.0"
+  }
+}

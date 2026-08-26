@@ -1,0 +1,4 @@
+[mcp_servers.markplane]
+command = "markplane"
+args = ["mcp"]
+default_tools_approval_mode = "writes"
