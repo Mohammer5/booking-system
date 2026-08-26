@@ -30,7 +30,8 @@ The accepted direction is not yet product implementation:
 - no Vite frontend, Worker, D1 schema, product test suite, Playwright suite,
   release workflow, or production deployment exists;
 - no workspace boundary map is registered yet;
-- no project-specific Markplane item or note exists; and
+- the first project-specific delivery sequence exists only as non-active
+  Markplane planning state; and
 - no co-located `*.docs.md` file exists.
 
 The architecture rule implementation and its Node tests are live. GitHub
