@@ -140,6 +140,12 @@ responsibilities may import declared dependencies. Manifest availability,
 architectural permission, and runtime output inclusion are independent
 questions.
 
+The current application manifest declares MUI Core and Emotion for the browser
+experience. Only `main.jsx` and browser-facing source import MUI, while neither
+Worker composition nor Worker/authentication source has a MUI or Emotion edge.
+The production build places the Material UI implementation in the client
+output; the built Worker graph contains no MUI or Emotion reference.
+
 ## Infrastructure Boundary
 
 The accepted initial hosting footprint is deliberately small:
@@ -165,6 +171,7 @@ The application workspace now includes the actual project configuration needed
 to build and exercise the first slice locally:
 
 - Vite;
+- MUI Core with one browser-owned theme and `CssBaseline`;
 - Cloudflare's then-current supported Vite/Workers integration;
 - project-pinned Wrangler;
 - Worker configuration used by local development, build, or tests;

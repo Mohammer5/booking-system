@@ -1,7 +1,7 @@
 ---
 id: PLAN-586hh
 title: MUI and accessible visual foundation
-status: draft
+status: done
 implements:
 - TASK-ic4fu
 related: []
@@ -134,9 +134,9 @@ unchanged. The task adds no new product capability.
 
 ### Phase 1: Dependencies, Theme, And Boundaries
 
-- [ ] Install/pin MUI, Emotion, and axe dependencies and update the lockfile.
-- [ ] Add the application theme and compose ThemeProvider/CssBaseline.
-- [ ] Update exact browser/main boundary permissions and focused enforcement
+- [x] Install/pin MUI, Emotion, and axe dependencies and update the lockfile.
+- [x] Add the application theme and compose ThemeProvider/CssBaseline.
+- [x] Update exact browser/main boundary permissions and focused enforcement
       evidence; leave Worker/authentication permissions unchanged.
 
 **Checkpoint**: the browser graph builds with one theme and lint proves no MUI
@@ -144,9 +144,9 @@ edge enters booking, Worker, persistence, or authentication source.
 
 ### Phase 2: Migrate The Existing Admin Experience
 
-- [ ] Convert every current `/admin` state/action to familiar direct MUI Core
+- [x] Convert every current `/admin` state/action to familiar direct MUI Core
       components without changing the state machine or remote contracts.
-- [ ] Add responsive layout, semantic/live-region behavior, visible focus,
+- [x] Add responsive layout, semantic/live-region behavior, visible focus,
       field/error association, and predictable result/error focus.
 
 **Checkpoint**: the existing German flow is behaviorally unchanged and usable
@@ -154,19 +154,19 @@ by keyboard at desktop and narrow widths.
 
 ### Phase 3: Browser And Accessibility Evidence
 
-- [ ] Extend Playwright across current states at desktop and 360px widths.
-- [ ] Integrate axe scans and explicit keyboard, focus, label/name,
+- [x] Extend Playwright across current states at desktop and 360px widths.
+- [x] Integrate axe scans and explicit keyboard, focus, label/name,
       error-association, direct-navigation, refresh, and overflow assertions.
-- [ ] Run focused lint/build/Playwright and existing Worker/D1/auth regressions.
+- [x] Run focused lint/build/Playwright and existing Worker/D1/auth regressions.
 
 **Checkpoint**: focused architecture, runtime, browser, and accessibility
 evidence passes without provider UI automation or real credentials.
 
 ### Phase 4: Documentation And Completion
 
-- [ ] Update canonical architecture/status/boundary/runtime/verification docs
+- [x] Update canonical architecture/status/boundary/runtime/verification docs
       and complete the dictionary/index coverage review.
-- [ ] Run `pnpm check`, `markplane sync`, `markplane check`, and
+- [x] Run `pnpm check`, `markplane sync`, `markplane check`, and
       `git diff --check`; record evidence, close the task/epic state as
       warranted, and commit one semantic implementation change ending in
       `TASK-ic4fu`.
@@ -199,21 +199,43 @@ dependency graph are restored together.
 
 ## Execution State
 
-- Current phase/checkpoint: planning complete; task-specific implementation
-  plan is grounded and validated, awaiting its planning commit.
-- Completed phase checkboxes: none; product code has not changed.
-- Next exact action: commit this attached plan as the planning change, then
-  start `TASK-ic4fu` and begin Phase 1 dependency installation.
+- Current phase/checkpoint: all implementation, documentation, verification,
+  and Markplane closure checkpoints are complete.
+- Completed phase checkboxes: all Phase 1-4 items.
+- Next exact action: create the semantic implementation commit ending in
+  `TASK-ic4fu`, verify a clean tree, then rehydrate and select the next task.
 - Persisted decisions: canonical MUI/browser/accessibility direction remains
   unchanged; exact stable versions and implementation choices are recorded in
   this plan and will be reflected in canonical docs during Phase 4.
-- Focused verification run: official MUI version/installation/v9 guidance,
-  npm package metadata, current source/tests/maps/manifests, and adjacent-doc
-  checks reviewed on 2026-08-27; `markplane sync`, `markplane check`, and
-  `git diff --check` pass.
-- Remaining verification: all Phase 1-4 focused checks and full regression.
-- Working tree: only Markplane task/plan attachment changes are expected before
-  the planning commit; `.instructions/` remains ignored and uncommitted.
+- Focused verification run: 13 boundary tests, migration lint/build, and the
+  pre-expansion real-session Playwright journey pass; production Worker output
+  remains UI-free. Direct browser preparation outside `nix develop` fails
+  because NixOS rejects pnpm's generic workerd, while the Nix shell supplies
+  the patched workerd and Chromium. Full lint passes with the expanded suite.
+  The first expanded run passed the real journey; both viewport matrices reach
+  every preceding state but time out at the final entry-query 500 because
+  TanStack Query correctly retries that request and leaves the loading state
+  visible during the assertion window. The corrected no-retry current-Admin
+  fixture then passes all 3 Playwright tests at both 1280px and 360px, including
+  axe, keyboard/focus, field-error, direct/refresh, and overflow assertions.
+  Repository tooling tests (9 local-rule + 13 boundary), 8 domain tests, and
+  17 Worker/D1/auth tests pass. Production build transforms 617 Worker and
+  1083 client modules; an output audit finds no MUI/Emotion marker in the
+  Worker graph.
+- Canonical docs now record the exact dependency/theme/boundary/runtime and
+  axe/explicit accessibility result; architecture/process/root indexes are
+  aligned. The dictionary coverage pass found no new or changed stable term,
+  so `docs/DICTIONARY.md` remains unchanged.
+- Canonical `pnpm check` passes: lint; 9 local-rule, 13 boundary, 8 domain, and
+  17 Worker/D1/auth tests; production Worker/client build; and all 3 Chromium
+  E2E tests. The build reports its existing client chunk-size warning without
+  failing.
+- `TASK-ic4fu` is done; epic KR1 and KR3 are checked while KR2 remains for
+  `TASK-dfq2k`. `markplane sync`, `markplane check`, and `git diff --check`
+  pass after task closure.
+- Remaining verification: none before commit.
+- Working tree: the complete task source, test, docs, dependency, and Markplane
+  changes are uncommitted; no unrelated changes are present.
 
 ## Pre-Approval Checklist
 

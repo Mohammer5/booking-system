@@ -16,7 +16,7 @@ JavaScript conventions, and ESLint-enforced dependency rules.
 ### Architecture Status
 - Path: `docs/architecture/_status.md`
 - Summary: Current implemented application/package foundation, React browser
-  slice and Google sign-in, accepted-but-unimplemented MUI foundation,
+  slice, Google sign-in, browser-private MUI theme and accessibility baseline,
   functional-composition direction,
   Cloudflare/Vite/D1 runtime, NixOS developer tooling, boundary enforcement,
   and still-deferred product and release surfaces.

@@ -20,3 +20,10 @@ minimumReleaseAgeExclude:
   - miniflare@5.20260826.0-alpha
   - wrangler@4.127.0
   - auth@1.7.2
+  - '@mui/core-downloads-tracker@9.4.0'
+  - '@mui/material@9.4.0'
+  - '@mui/private-theming@9.4.0'
+  - '@mui/styled-engine@9.4.0'
+  - '@mui/system@9.4.0'
+  - '@mui/types@9.4.0'
+  - '@mui/utils@9.4.0'

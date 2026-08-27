@@ -1,3 +1,5 @@
+import { Alert, Box, Chip, Stack, Typography } from "@mui/material";
+import { useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 
 import { AdminSignOutButton } from "./AdminSignOutButton.jsx";
@@ -17,28 +19,79 @@ export function AdministrationContext({
   signOutMutation,
 }) {
   const { t } = useTranslation();
+  const successRef = useRef(null);
+
+  useEffect(() => {
+    if (hasJustBootstrapped) {
+      successRef.current?.focus();
+    }
+  }, [hasJustBootstrapped]);
 
   return (
-    <section aria-labelledby="administration-context-title">
+    <Stack
+      aria-labelledby="administration-context-title"
+      component="section"
+      spacing={3}
+    >
       {hasJustBootstrapped ? (
-        <p role="status">{t("adminAccess.bootstrap.success")}</p>
+        <Alert
+          ref={successRef}
+          role="status"
+          severity="success"
+          tabIndex={-1}
+        >
+          {t("adminAccess.bootstrap.success")}
+        </Alert>
       ) : null}
-      <h1 id="administration-context-title">
+      <Typography component="h1" id="administration-context-title" variant="h1">
         {t("adminAccess.context.title")}
-      </h1>
-      <dl>
-        <dt>{t("adminAccess.context.name")}</dt>
-        <dd>{admin.name}</dd>
-        <dt>{t("adminAccess.context.state")}</dt>
-        <dd>{t("adminAccess.context.active")}</dd>
-        <dt>{t("adminAccess.context.authority")}</dt>
-        <dd>
-          {admin.authority === "super-admin"
-            ? t("adminAccess.context.superAdmin")
-            : t("adminAccess.context.admin")}
-        </dd>
-      </dl>
+      </Typography>
+      <AdministrationDetails admin={admin} translate={t} />
       <AdminSignOutButton signOutMutation={signOutMutation} />
-    </section>
+    </Stack>
+  );
+}
+
+/**
+ * Present the current Admin's booking-system identity and authority.
+ *
+ * @param {object} props Presentation properties.
+ * @returns {import("react").ReactElement} The semantic detail list.
+ */
+function AdministrationDetails({ admin, translate }) {
+  const authority =
+    admin.authority === "super-admin"
+      ? translate("adminAccess.context.superAdmin")
+      : translate("adminAccess.context.admin");
+
+  return (
+    <Box
+      component="dl"
+      sx={{
+        display: "grid",
+        gap: 1.5,
+        gridTemplateColumns: { xs: "1fr", sm: "minmax(8rem, 1fr) 2fr" },
+        m: 0,
+      }}
+    >
+      <Typography component="dt" fontWeight={700}>
+        {translate("adminAccess.context.name")}
+      </Typography>
+      <Typography component="dd" sx={{ m: 0 }}>
+        {admin.name}
+      </Typography>
+      <Typography component="dt" fontWeight={700}>
+        {translate("adminAccess.context.state")}
+      </Typography>
+      <Box component="dd" sx={{ m: 0 }}>
+        <Chip color="success" label={translate("adminAccess.context.active")} />
+      </Box>
+      <Typography component="dt" fontWeight={700}>
+        {translate("adminAccess.context.authority")}
+      </Typography>
+      <Box component="dd" sx={{ m: 0 }}>
+        <Chip color="primary" label={authority} variant="outlined" />
+      </Box>
+    </Box>
   );
 }

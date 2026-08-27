@@ -66,6 +66,12 @@ The first local application foundation is now implemented:
 - the `/admin` browser flow starts fixed-destination Google sign-in, requires
   authentication before the first-Admin name form, and supports Better Auth
   sign-out in every authenticated Admin-route outcome;
+- free MUI Core and Emotion are pinned for browser use; one application theme
+  and `CssBaseline` now style the complete `/admin` flow with responsive,
+  visible-focus, semantic-status, and non-color-only presentation;
+- Playwright scans critical Admin states with axe and explicitly verifies
+  desktop/narrow layout, keyboard activation, focus, labels/names,
+  field-error association, refresh, and overflow behavior;
 - both workspace boundary maps are registered in ESLint with exact module,
   workspace, composition, third-party, and test-only permissions;
 - the root Nix flake supplies NixOS developer-host tooling: Node, pnpm,
@@ -76,8 +82,7 @@ The first local application foundation is now implemented:
   build, and Chromium browser evidence.
 
 Apple, Microsoft, and Facebook providers, all later MVP product capabilities,
-the accepted MUI component/theme/accessibility foundation, remote Google
-credentials and production callback/domain configuration, remote
+remote Google credentials and production callback/domain configuration, remote
 Cloudflare staging/production resources, release automation, deployment
 credentials, and production deployment remain absent. The account-bound
 release surfaces are intentionally deferred until release hardening. No

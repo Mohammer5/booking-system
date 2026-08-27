@@ -6,6 +6,7 @@ import test, { after, before } from "node:test";
 import { ESLint } from "eslint";
 import boundariesPlugin from "eslint-plugin-boundaries";
 
+import { bookingSystemWebBoundaryMap } from "./apps/booking-system-web/boundaries.config.mjs";
 import { createWorkspaceBoundaryConfig } from "./eslint-boundaries/createWorkspaceBoundaryConfig.mjs";
 
 const workspacePath = "packages/example";
@@ -326,4 +327,48 @@ test("test-only dependencies are unavailable to production files", async () => {
 
   assert.equal(testResult.errorCount, 0);
   assert.equal(productionResult.errorCount, 1);
+});
+
+test("booking web MUI permissions are browser-only", () => {
+  const muiDependencies = ["@mui/material", "@mui/material/styles"];
+  const browserDependencies =
+    bookingSystemWebBoundaryMap.modules.browser.thirdPartyDependencies;
+  const mainDependencies =
+    bookingSystemWebBoundaryMap.compositionFiles["main.jsx"]
+      .thirdPartyDependencies;
+
+  assert.deepEqual(
+    browserDependencies.filter((dependency) => dependency.startsWith("@mui/")),
+    muiDependencies,
+  );
+  assert.deepEqual(
+    mainDependencies.filter((dependency) => dependency.startsWith("@mui/")),
+    ["@mui/material"],
+  );
+
+  for (const [name, responsibility] of Object.entries(
+    bookingSystemWebBoundaryMap.modules,
+  )) {
+    if (name !== "browser") {
+      assert.equal(
+        responsibility.thirdPartyDependencies.some((dependency) =>
+          dependency.startsWith("@mui/"),
+        ),
+        false,
+      );
+    }
+  }
+
+  for (const [name, composition] of Object.entries(
+    bookingSystemWebBoundaryMap.compositionFiles,
+  )) {
+    if (name !== "main.jsx") {
+      assert.equal(
+        composition.thirdPartyDependencies.some((dependency) =>
+          dependency.startsWith("@mui/"),
+        ),
+        false,
+      );
+    }
+  }
 });

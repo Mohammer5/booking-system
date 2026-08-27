@@ -12,9 +12,12 @@ export const bookingSystemWebBoundaryMap = {
     browser: {
       modules: [],
       thirdPartyDependencies: [
+        "@mui/material",
+        "@mui/material/styles",
         "@tanstack/react-query",
         "better-auth/react",
         "i18next",
+        "react",
         "react-hook-form",
         "react-i18next",
         "react-router",
@@ -36,6 +39,7 @@ export const bookingSystemWebBoundaryMap = {
     "main.jsx": {
       modules: ["browser"],
       thirdPartyDependencies: [
+        "@mui/material",
         "@tanstack/react-query",
         "react",
         "react-dom/client",

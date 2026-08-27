@@ -14,11 +14,11 @@ Two local maps are implemented and registered explicitly in root ESLint:
 - `@booking-system/booking-system-web` may import only the exact
   `@booking-system/booking` package root. Package subpaths remain denied.
 
-React, browser libraries, Better Auth, and test tooling are declared only in
-the manifest that uses them and permitted only from their owning source
-responsibility, composition file, or tests. Optional `classnames`, `debug`, and
-`ramda` are not installed or permitted because the first slice does not use
-them.
+React, MUI Core and its Emotion styling dependencies, browser libraries,
+Better Auth, and test tooling are declared only in the manifest that uses them
+and permitted only from their owning source responsibility, composition file,
+or tests. Optional `classnames`, `debug`, and `ramda` are not installed or
+permitted because current source does not use them.
 
 ## Three Dependency Layers
 
@@ -48,18 +48,25 @@ Worker/Cloudflare, D1, Better Auth, HTTP, or browser/UI implementation.
 The application map declares:
 
 - `browser` with no local or workspace edge and exact third-party permission
-  for TanStack Query, the `better-auth/react` browser client, i18next, React
-  Hook Form, react-i18next, and React Router;
+  for `@mui/material`, `@mui/material/styles`, TanStack Query, the
+  `better-auth/react` browser client, i18next, React, React Hook Form,
+  react-i18next, and React Router;
 - `worker -> authentication`, plus the exact `@booking-system/booking` root;
 - `authentication` with no local or booking edge and exact `better-auth` and
   `better-auth/plugins` permissions;
 - `src/index.js -> worker`;
-- `src/main.jsx -> browser`, with only its exact React/provider dependencies;
+- `src/main.jsx -> browser`, with only the MUI Core root and its exact
+  React/provider dependencies;
 - `src/productionWorker.js -> worker + authentication`;
 - `src/nonProductionWorker.js -> worker + authentication`, plus the exact
   nested `authentication/fixture-session/index.js` interface; and
 - test-only `vitest` and `cloudflare:test` permissions, with exact access to
   the two Worker composition files needed by the structural regression.
+
+Emotion is the selected MUI styling engine but current source does not import
+its packages directly, so the map grants no direct Emotion specifier. The
+`@axe-core/playwright` development dependency is used only by browser tests
+under `test/e2e`; it creates no production-source edge.
 
 Production composition has no edge to the fixture-session interface. Browser
 source cannot import Worker, the local `authentication` module, D1,

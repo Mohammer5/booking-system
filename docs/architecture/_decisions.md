@@ -92,8 +92,9 @@ presentation abstractions require repeated concrete use and one clear owner.
 MUI X Community components may be introduced only for a concrete browser need
 that MUI Core does not meet, such as accessible date/time entry. Pro, Premium,
 or other commercially licensed components are not accepted for the v1 local
-application. Exact dependencies and import permissions arrive with the first
-real MUI implementation task rather than being declared speculatively.
+application. The implemented foundation pins free MUI Core and its Emotion
+styling dependencies in the application manifest and grants exact MUI import
+permissions only to browser-facing source and the browser composition root.
 
 ## Build Internationalization Into The First Frontend Slice
 

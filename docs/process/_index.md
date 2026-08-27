@@ -49,12 +49,13 @@ development work is tracked and verified, and how releases are promoted.
 ### Verification
 - Path: `docs/process/verification.md`
 - Summary: Defines the layered regression harness, canonical `pnpm check`
-  contract, NixOS local browser provisioning, pull-request CI, browser-test
-  policy, and external branch protection requirement.
+  contract, NixOS local browser provisioning, pull-request CI, browser and
+  accessibility-test policy, and external branch protection requirement.
 - Read when: A task affects tests, CI, required checks, test environments,
   browser automation, local test-tool provisioning, verification commands, or
   failure artifacts.
-- Tags: process, verification, testing, ci, vitest, playwright, nixos
+- Tags: process, verification, testing, accessibility, axe, ci, vitest,
+  playwright, nixos
 
 ### Releases
 - Path: `docs/process/releases.md`

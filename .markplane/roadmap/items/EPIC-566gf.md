@@ -26,18 +26,18 @@ route-level Admin/Participant shells plus evidence-backed interaction states.
 
 ## Key Results
 
-- [ ] KR1: Free MUI Core, one application-owned theme, and explicit browser-only
+- [x] KR1: Free MUI Core, one application-owned theme, and explicit browser-only
       import boundaries replace the current unthemed Admin presentation.
 - [ ] KR2: Admin and Participant contexts have responsive, directly navigable
       shells and consistent German loading/empty/success/error/unavailable/
       destructive states without a generic design-system layer.
-- [ ] KR3: Automated accessibility scans plus explicit keyboard, focus,
+- [x] KR3: Automated accessibility scans plus explicit keyboard, focus,
       semantic-name, desktop, and narrow/mobile evidence pass in `pnpm check`.
 
 ## Notes
 
 This is the first implementation epic after the completed application and
-Google-authentication foundation. `TASK-ic4fu` is the first ready task. MUI is
-accepted but not implemented; exact stable versions are reverified at task
-execution. No product capability, paid MUI component, or remote infrastructure
-is authorized by this epic.
+Google-authentication foundation. `TASK-ic4fu` delivered the browser-private
+MUI theme and accessibility baseline; `TASK-dfq2k` remains the next shell and
+interaction-state task. No paid MUI component or remote infrastructure is
+authorized by this epic.

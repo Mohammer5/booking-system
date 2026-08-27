@@ -97,12 +97,13 @@
 - React Router serves the independently navigable `/admin` route. TanStack
   Query owns remote Admin state, React Hook Form owns the name form, and
   German-first i18next resources own all browser copy.
-- MUI is not yet implemented or declared in the application manifest or
-  browser boundary map. The current stable `@mui/material` 9.4.0 package
-  metadata accepts React 19, covering locked React 19.2.8. Planning infers Vite
-  8.2.2 compatibility from its modern ESM distribution and lack of a Vite peer
-  constraint; the implementation task will re-verify and pin the then-current
-  stable release.
+- Free MUI Core 9.4.0 and its Emotion styling dependencies are pinned in the
+  application manifest. One browser-owned theme and `CssBaseline` establish
+  typography, spacing, surfaces, responsive breakpoints, and visible focus;
+  the complete `/admin` experience now uses direct MUI Core components.
+- Browser-only boundary permissions and production-build graphs keep MUI and
+  Emotion out of booking, Worker, persistence, and authentication source and
+  out of the built Worker output.
 - Vite and the Cloudflare Vite plugin build the browser and Worker outputs;
   Workers Static Assets provides SPA fallback while `/api/*` runs Worker-first.
 - Better Auth 1.7.2 uses D1-backed normal sessions and crosses into booking
@@ -115,17 +116,18 @@
   converter denies undeclared third-party imports and supports exact test-only
   and composition-interface permissions.
 - Repository, domain, Worker/D1, migration, production-composition, build, and
-  Chromium E2E verification are integrated into `pnpm check` and CI.
+  Chromium E2E verification are integrated into `pnpm check` and CI. Critical
+  Admin states receive axe scans plus explicit desktop/narrow, keyboard,
+  focus, name/label, error-association, refresh, and overflow assertions.
 - The root flake supplies Node 24, pnpm 11.17.0, Git, Markplane, Chromium, and
   a Nix-patched official workerd 1.20260826.1 binary for x86_64-linux. It points
   Miniflare and Playwright at the Nix executables and supplies Miniflare with
   the Nixpkgs CA bundle for local outbound HTTPS, without patching the checkout
   or changing Cloudflare runtime semantics.
 
-The first slice deliberately does not declare MUI or optional `classnames`,
-`debug`, or `ramda` dependencies because it predates the accepted MUI adoption
-task and has no concrete use for the optional libraries. Apple, Microsoft, and
-Facebook integration, remote Google credentials and production callback/domain
+Optional `classnames`, `debug`, and `ramda` dependencies remain absent because
+current source has no concrete use for them. Apple, Microsoft, and Facebook
+integration, remote Google credentials and production callback/domain
 configuration, production deployment, remote Cloudflare environments and D1
 databases, deployment credentials, and release infrastructure remain absent.
 Release hardening and real staging verification remain mandatory before the

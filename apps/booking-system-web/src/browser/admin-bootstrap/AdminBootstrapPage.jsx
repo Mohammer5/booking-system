@@ -1,3 +1,12 @@
+import {
+  Alert,
+  CircularProgress,
+  Container,
+  Paper,
+  Stack,
+  Typography,
+} from "@mui/material";
+import { useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { useSearchParams } from "react-router";
 
@@ -18,30 +27,100 @@ export function AdminBootstrapPage() {
   const adminFlow = useAdminBootstrap();
   const isAuthenticationFailure =
     searchParams.get("authentication") === "failed";
+  const authenticationFailureRef = useRef(null);
+  const isLoading =
+    adminFlow.entryQuery.isPending || adminFlow.currentAdminQuery.isPending;
 
-  if (adminFlow.entryQuery.isPending || adminFlow.currentAdminQuery.isPending) {
-    return <p>{t("adminAccess.status.loading")}</p>;
+  useEffect(() => {
+    if (isAuthenticationFailure && !isLoading) {
+      authenticationFailureRef.current?.focus();
+    }
+  }, [isAuthenticationFailure, isLoading]);
+
+  return (
+    <Container
+      component="main"
+      maxWidth="sm"
+      sx={{
+        alignItems: "center",
+        display: "grid",
+        minHeight: "100vh",
+        px: { xs: 2, sm: 3 },
+        py: { xs: 3, sm: 6 },
+      }}
+    >
+      <Paper
+        elevation={3}
+        sx={{ overflowWrap: "anywhere", p: { xs: 3, sm: 5 }, width: "100%" }}
+      >
+        <Stack spacing={3}>
+          {isAuthenticationFailure && !isLoading ? (
+            <Alert
+              ref={authenticationFailureRef}
+              severity="error"
+              tabIndex={-1}
+            >
+              {t("adminAccess.authentication.failure")}
+            </Alert>
+          ) : null}
+          <AdminBootstrapContent
+            adminFlow={adminFlow}
+            isLoading={isLoading}
+            translate={t}
+          />
+        </Stack>
+      </Paper>
+    </Container>
+  );
+}
+
+/**
+ * Select the current presentation without changing the remote state machine.
+ *
+ * @param {object} props Presentation properties.
+ * @returns {import("react").ReactElement} The current route state.
+ */
+function AdminBootstrapContent({ adminFlow, isLoading, translate }) {
+  if (isLoading) {
+    return (
+      <Stack component="section" spacing={3}>
+        <Typography component="h1" variant="h1">
+          {translate("adminAccess.login.title")}
+        </Typography>
+        <Stack
+          aria-live="polite"
+          role="status"
+          spacing={2}
+          sx={{ alignItems: "center" }}
+        >
+          <CircularProgress aria-hidden="true" size={36} />
+          <Typography>{translate("adminAccess.status.loading")}</Typography>
+        </Stack>
+      </Stack>
+    );
   }
 
   if (
     adminFlow.entryQuery.isError ||
     isTechnicalCurrentAdminError(adminFlow.currentAdminQuery)
   ) {
-    return <p role="alert">{t("adminAccess.status.technicalError")}</p>;
+    return (
+      <Stack component="section" spacing={3}>
+        <Typography component="h1" variant="h1">
+          {translate("adminAccess.login.title")}
+        </Typography>
+        <Alert severity="error">
+          {translate("adminAccess.status.technicalError")}
+        </Alert>
+      </Stack>
+    );
   }
 
-  return (
-    <main>
-      {isAuthenticationFailure ? (
-        <p role="alert">{t("adminAccess.authentication.failure")}</p>
-      ) : null}
-      {adminFlow.entryQuery.data.mode === "register-admin" ? (
-        <FirstAdminEntry adminFlow={adminFlow} translate={t} />
-      ) : (
-        <CurrentAdministration adminFlow={adminFlow} translate={t} />
-      )}
-    </main>
-  );
+  if (adminFlow.entryQuery.data.mode === "register-admin") {
+    return <FirstAdminEntry adminFlow={adminFlow} translate={translate} />;
+  }
+
+  return <CurrentAdministration adminFlow={adminFlow} translate={translate} />;
 }
 
 /**
@@ -57,24 +136,32 @@ function FirstAdminEntry({ adminFlow, translate }) {
 
   if (adminFlow.currentAdminQuery.error.outcome === "unauthenticated") {
     return (
-      <section>
-        <h1>{translate("adminAccess.bootstrap.title")}</h1>
-        <p>{translate("adminAccess.bootstrap.authenticationDescription")}</p>
+      <Stack component="section" spacing={3}>
+        <Typography component="h1" variant="h1">
+          {translate("adminAccess.bootstrap.title")}
+        </Typography>
+        <Typography>
+          {translate("adminAccess.bootstrap.authenticationDescription")}
+        </Typography>
         <GoogleSignInButton signInMutation={adminFlow.signInMutation} />
-      </section>
+      </Stack>
     );
   }
 
   if (adminFlow.currentAdminQuery.error.outcome === "no-admin-user") {
     return (
-      <section>
-        <h1>{translate("adminAccess.bootstrap.title")}</h1>
-        <p>{translate("adminAccess.bootstrap.nameDescription")}</p>
+      <Stack component="section" spacing={3}>
+        <Typography component="h1" variant="h1">
+          {translate("adminAccess.bootstrap.title")}
+        </Typography>
+        <Typography>
+          {translate("adminAccess.bootstrap.nameDescription")}
+        </Typography>
         <AdminRegistrationForm
           bootstrapMutation={adminFlow.bootstrapMutation}
         />
         <AdminSignOutButton signOutMutation={adminFlow.signOutMutation} />
-      </section>
+      </Stack>
     );
   }
 
@@ -94,11 +181,15 @@ function CurrentAdministration({ adminFlow, translate }) {
 
   if (adminFlow.currentAdminQuery.error.outcome === "unauthenticated") {
     return (
-      <section>
-        <h1>{translate("adminAccess.login.title")}</h1>
-        <p>{translate("adminAccess.login.authenticationRequired")}</p>
+      <Stack component="section" spacing={3}>
+        <Typography component="h1" variant="h1">
+          {translate("adminAccess.login.title")}
+        </Typography>
+        <Typography>
+          {translate("adminAccess.login.authenticationRequired")}
+        </Typography>
         <GoogleSignInButton signInMutation={adminFlow.signInMutation} />
-      </section>
+      </Stack>
     );
   }
 
@@ -129,13 +220,15 @@ function ActiveAdministration({ adminFlow }) {
  */
 function RefusedAdministration({ adminFlow, translate }) {
   return (
-    <section>
-      <h1>{translate("adminAccess.login.title")}</h1>
-      <p role="alert">
+    <Stack component="section" spacing={3}>
+      <Typography component="h1" variant="h1">
+        {translate("adminAccess.login.title")}
+      </Typography>
+      <Alert severity="warning">
         {currentAdminErrorMessage(adminFlow.currentAdminQuery.error, translate)}
-      </p>
+      </Alert>
       <AdminSignOutButton signOutMutation={adminFlow.signOutMutation} />
-    </section>
+    </Stack>
   );
 }
 

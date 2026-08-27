@@ -139,6 +139,12 @@ Worker-test, and Playwright-server commands disable local `.env` loading so a
 developer's provider secrets cannot become automated-test inputs or generated
 preview artifacts.
 
+The browser harness declares `@axe-core/playwright` and scans each critical
+Admin state at normal desktop and 360px-wide viewports. Axe supplements rather
+than replaces assertions for landmarks/headings, control names, keyboard-only
+activation, visible focus, field/error association, result/error focus,
+direct navigation and refresh, and absence of horizontal overflow.
+
 On browser-test failure, CI should retain short-lived useful diagnostics such
 as the Playwright report, traces, screenshots, and relevant logs. Artifacts
 must exclude secrets, tokens, and sensitive production data and should not be

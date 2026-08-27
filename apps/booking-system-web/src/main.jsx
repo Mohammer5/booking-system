@@ -1,3 +1,4 @@
+import { CssBaseline, ThemeProvider } from "@mui/material";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import React from "react";
 import { createRoot } from "react-dom/client";
@@ -6,6 +7,7 @@ import { BrowserRouter } from "react-router";
 
 import {
   BrowserApplication,
+  applicationTheme,
   createAdminBootstrapI18n,
 } from "./browser/index.js";
 
@@ -22,12 +24,15 @@ document.title = i18n.t("adminAccess.documentTitle");
 
 createRoot(container).render(
   <React.StrictMode>
-    <I18nextProvider i18n={i18n}>
-      <QueryClientProvider client={queryClient}>
-        <BrowserRouter>
-          <BrowserApplication />
-        </BrowserRouter>
-      </QueryClientProvider>
-    </I18nextProvider>
+    <ThemeProvider theme={applicationTheme}>
+      <CssBaseline />
+      <I18nextProvider i18n={i18n}>
+        <QueryClientProvider client={queryClient}>
+          <BrowserRouter>
+            <BrowserApplication />
+          </BrowserRouter>
+        </QueryClientProvider>
+      </I18nextProvider>
+    </ThemeProvider>
   </React.StrictMode>,
 );

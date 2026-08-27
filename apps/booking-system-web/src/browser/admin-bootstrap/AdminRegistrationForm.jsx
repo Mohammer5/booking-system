@@ -1,3 +1,5 @@
+import { Alert, Button, Stack, TextField } from "@mui/material";
+import { useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 
@@ -17,29 +19,46 @@ export function AdminRegistrationForm({ bootstrapMutation }) {
   } = useForm({ defaultValues: { name: "" } });
   const submitName = handleSubmit(({ name }) => bootstrapMutation.mutate(name));
   const errorMessage = mutationErrorMessage(bootstrapMutation.error, t);
+  const mutationErrorRef = useRef(null);
+
+  useEffect(() => {
+    if (bootstrapMutation.isError) {
+      mutationErrorRef.current?.focus();
+    }
+  }, [bootstrapMutation.isError]);
 
   return (
-    <form onSubmit={submitName}>
-      <label htmlFor="admin-name">
-        {t("adminAccess.bootstrap.nameLabel")}
-      </label>
-      <input
+    <Stack component="form" onSubmit={submitName} spacing={2}>
+      <TextField
         id="admin-name"
         autoComplete="name"
+        error={Boolean(errors.name)}
+        fullWidth
+        helperText={errors.name?.message ?? " "}
+        label={t("adminAccess.bootstrap.nameLabel")}
         {...register("name", {
           validate: (name) =>
             name.trim().length > 0 ||
             t("adminAccess.bootstrap.nameRequired"),
         })}
       />
-      {errors.name ? <p role="alert">{errors.name.message}</p> : null}
-      {errorMessage ? <p role="alert">{errorMessage}</p> : null}
-      <button type="submit" disabled={bootstrapMutation.isPending}>
+      {errorMessage ? (
+        <Alert ref={mutationErrorRef} severity="error" tabIndex={-1}>
+          {errorMessage}
+        </Alert>
+      ) : null}
+      <Button
+        disabled={bootstrapMutation.isPending}
+        fullWidth
+        size="large"
+        type="submit"
+        variant="contained"
+      >
         {bootstrapMutation.isPending
           ? t("adminAccess.bootstrap.submitting")
           : t("adminAccess.bootstrap.submit")}
-      </button>
-    </form>
+      </Button>
+    </Stack>
   );
 }
 

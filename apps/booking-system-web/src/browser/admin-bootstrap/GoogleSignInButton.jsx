@@ -1,3 +1,5 @@
+import { Alert, Button, Stack } from "@mui/material";
+import { useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 
 /**
@@ -9,21 +11,33 @@ import { useTranslation } from "react-i18next";
  */
 export function GoogleSignInButton({ signInMutation }) {
   const { t } = useTranslation();
+  const errorRef = useRef(null);
+
+  useEffect(() => {
+    if (signInMutation.isError) {
+      errorRef.current?.focus();
+    }
+  }, [signInMutation.isError]);
 
   return (
-    <div>
+    <Stack spacing={2}>
       {signInMutation.isError ? (
-        <p role="alert">{t("adminAccess.authentication.failure")}</p>
+        <Alert ref={errorRef} severity="error" tabIndex={-1}>
+          {t("adminAccess.authentication.failure")}
+        </Alert>
       ) : null}
-      <button
+      <Button
         type="button"
         disabled={signInMutation.isPending}
+        fullWidth
         onClick={() => signInMutation.mutate()}
+        size="large"
+        variant="contained"
       >
         {signInMutation.isPending
           ? t("adminAccess.authentication.signingIn")
           : t("adminAccess.authentication.continueWithGoogle")}
-      </button>
-    </div>
+      </Button>
+    </Stack>
   );
 }

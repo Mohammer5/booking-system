@@ -15,8 +15,8 @@ This repository uses an indexed global documentation system.
 ### Docs Status
 - Path: `docs/_status.md`
 - Summary: Present accepted product and technical direction, the implemented
-  local application and Google authentication foundation, live tooling, and
-  intentionally deferred release surfaces.
+  local application, MUI accessibility foundation, Google authentication,
+  live tooling, and intentionally deferred release surfaces.
 - Read when: You need the current documentation or repository baseline.
 - Tags: docs, status, template
 

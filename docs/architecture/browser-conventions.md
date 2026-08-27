@@ -23,17 +23,18 @@ slice requires it:
 - `i18next`; and
 - `react-i18next`.
 
-The first Admin slice uses React, React DOM, React Router, TanStack Query, React
-Hook Form, i18next, react-i18next, and the application-owned Better Auth React
-client. It does not declare `classnames`, `debug`, or `ramda` because no current
-source needs them. Acceptance here grants neither an import edge nor inclusion
-in every application output: the application [boundary
+The current Admin slice uses React, React DOM, React Router, TanStack Query,
+React Hook Form, i18next, react-i18next, the application-owned Better Auth
+React client, and MUI Core with Emotion styling. It does not declare
+`classnames`, `debug`, or `ramda` because no current source needs them.
+Acceptance here grants neither an import edge nor inclusion in every
+application output: the application [boundary
 map](../DICTIONARY.md#boundary-map) and each runtime source/build graph remain
 authoritative.
 
-The current `main.jsx` composes i18next, one Query Client, React Router, and the
-browser application. Future slices evolve that composition only for concrete
-behavior.
+The current `main.jsx` composes the repository-owned MUI `ThemeProvider` and
+`CssBaseline`, i18next, one Query Client, React Router, and the browser
+application. Future slices evolve that composition only for concrete behavior.
 
 These libraries support the browser-facing responsibility of the one
 [booking-system web
@@ -54,27 +55,29 @@ the applicable boundary map permits it.
 ## Material UI And Accessible Interaction
 
 Material UI (MUI) is the accepted component library and visual foundation for
-the complete browser experience. It is accepted but not implemented: the
-current application manifest and browser boundary map do not yet declare it,
-and the existing Admin bootstrap/sign-in presentation still uses native HTML
-without a repository-owned MUI theme.
-
-At the 2026-08-27 planning baseline, the npm `latest` package metadata resolves
-`@mui/material` 9.4.0. Its declared peer range includes React and React DOM 19,
-which covers the repository's locked React 19.2.8. Compatibility with locked
-Vite 8.2.2 is a planning-time inference from the stable v9 package's modern ESM
-distribution and absence of a Vite peer constraint, not a separate MUI/Vite
-compatibility guarantee. The implementation task must re-check and pin the
-then-current stable compatible releases rather than relying indefinitely on
-this planning-time minor version. See the official [MUI versions](https://mui.com/material-ui/getting-started/versions/),
+the complete browser experience. The application manifest pins
+`@mui/material` 9.4.0, `@emotion/react` 11.14.0, and `@emotion/styled` 11.14.1.
+MUI's declared peer range covers the repository's React 19.2.8, and the locked
+Vite 8.2.2 production build verifies the current composition. See the official
+[MUI versions](https://mui.com/material-ui/getting-started/versions/),
 [installation and peer-dependency](https://mui.com/material-ui/getting-started/installation/),
 and [v9 migration](https://mui.com/material-ui/migration/upgrade-to-v9/)
 guidance.
 
-The first MUI slice establishes one application-owned theme, `CssBaseline`,
-typography, spacing, responsive layout, and visible-focus treatment, then
-migrates the existing Admin authentication/bootstrap experience without
-changing its behavior. Browser slices use free MUI Core components directly.
+`src/browser/applicationTheme.js` owns the single theme: system typography,
+eight-pixel spacing, explicit responsive breakpoints, application surfaces,
+and a high-contrast three-pixel visible-focus outline. `main.jsx` applies that
+theme and `CssBaseline` once. The existing Admin authentication/bootstrap,
+current-context, refusal, failure, and sign-out states use free MUI Core
+components directly without changing their browser, HTTP, authentication, or
+domain behavior.
+
+The local Playwright harness uses `@axe-core/playwright` 4.13.0 for automated
+scans of the critical Admin states at desktop and 360px widths. Explicit
+assertions separately cover landmarks and headings, accessible names,
+keyboard activation, visible focus, field/error association, result/error
+focus, direct navigation and refresh, and horizontal overflow.
+
 MUI X Community may be introduced only for a concrete need such as date/time
 input; its Community packages are MIT-licensed, while Pro and Premium packages
 are excluded. See the official [MUI X licensing
@@ -94,8 +97,9 @@ Do not build a parallel bespoke design system or a generic local wrapper for
 each MUI component. A shared presentation abstraction is justified only after
 repeated concrete use demonstrates that it represents one stable concept with
 one owner. MUI and its styling dependencies remain private to browser-facing
-source and must be permitted explicitly by the application boundary map when
-implemented.
+source. The application boundary map permits only the exact MUI entrypoints
+used by the browser responsibility and `main.jsx`; Worker, authentication,
+persistence, and booking-domain source have no such permission.
 
 ## Routing And Navigation
 
