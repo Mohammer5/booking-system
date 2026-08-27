@@ -26,13 +26,33 @@ The repository has accepted an architecture and delivery direction:
   and
 - release-tag production promotion after real Cloudflare staging verification.
 
+The accepted delivery sequence is:
+
+1. use the accepted Cloudflare Worker, Workers Static Assets, and D1
+   architecture;
+2. implement the MVP and validate it locally with Worker/D1-compatible
+   semantics;
+3. after local acceptance, complete [release
+   hardening](DICTIONARY.md#release-hardening) by provisioning account-bound
+   infrastructure, credentials, and the remote release path;
+4. validate the release candidate in real Cloudflare staging; and
+5. promote the same verified release to production.
+
+Remote Cloudflare environments and remote staging/production D1 databases are
+therefore not prerequisites for MVP implementation. The operational
+prerequisites for the first deployable application are resolved for
+pre-implementation planning, and planning may proceed to creation of the real
+implementation backlog in Markplane. Release hardening and hosted staging
+verification remain mandatory before the first production release.
+
 The accepted direction is not yet product implementation:
 
 - no product source code or runtime dependency exists;
 - no application or package workspace has been created or implemented;
 - no Vite frontend, Worker, D1 schema, product test suite, Playwright suite,
   Better Auth/session implementation, release workflow, or production
-  deployment exists;
+  deployment exists; the account-bound release surfaces are intentionally
+  deferred until release hardening;
 - no workspace boundary map is registered yet;
 - the first project-specific delivery sequence exists only as non-active
   Markplane planning state; and

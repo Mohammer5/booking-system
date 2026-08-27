@@ -153,13 +153,29 @@ locked project version through repository scripts or `pnpm exec wrangler`.
 Vite, Vitest, Playwright, and Cloudflare integration versions follow the same
 reproducibility rule.
 
-## Current State And Implementation Trigger
+## Current State And Release-Hardening Trigger
 
 No deployable application, Cloudflare environment, or release workflow exists
 today, so the repository does not contain a workflow that pretends to deploy.
-The change introducing the first deployable application must also introduce
-the real tag-triggered GitHub release workflow, staging and production
-Cloudflare environments, and separate staging/production D1 configuration
-needed to execute this contract. This requirement composes with the linked
-runtime, persistence, and verification implementation triggers; those
-applicable surfaces cannot be deferred after product runtime code lands.
+MVP implementation may begin and proceed through local acceptance without
+account-bound Cloudflare infrastructure or a remote release pipeline. Their
+absence before that point is intentional rather than an unresolved release
+gap.
+
+After the MVP is feature-complete and accepted locally, [release
+hardening](../DICTIONARY.md#release-hardening) begins. Before the first real
+release is possible, that phase must establish:
+
+- real Cloudflare staging or pre-production infrastructure;
+- real Cloudflare production infrastructure;
+- separate remote staging and production D1 databases;
+- environment-specific deployment configuration;
+- least-privilege deployment credentials and environment-scoped secrets;
+- the tag-triggered GitHub Actions release workflow;
+- hosted staging Playwright verification; and
+- the production promotion and safe smoke-test path.
+
+None of these surfaces may be omitted before the first production release.
+Once established, every release still traverses the full tag, main-containment,
+deterministic verification, real staging, hosted E2E, same-commit promotion,
+and production smoke gate defined above.

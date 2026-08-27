@@ -62,6 +62,24 @@ hosting and database quotas constrains unnecessary infrastructure without
 turning changeable quota numbers or unrelated external costs into correctness
 rules.
 
+## Defer Remote Infrastructure Provisioning Until Release Hardening
+
+Cloudflare Workers, Workers Static Assets, and D1 remain the accepted
+production architecture from the beginning of implementation. Real
+application work therefore uses the actual Worker/D1-compatible local
+toolchain, configuration, and semantics required by implemented behavior; it
+must not quietly become a conventional long-running Node server or use an
+unrelated persistence architecture.
+
+Account-bound Cloudflare resources are intentionally deferred until the MVP is
+feature-complete and accepted locally. That later [release-hardening
+phase](../DICTIONARY.md#release-hardening) provisions the remote deployment
+environments and configuration needed to exercise the already-compatible
+application in real staging and production infrastructure. This avoids
+premature operational work without blocking local product implementation or
+postponing architectural compatibility. The decision changes provisioning
+timing, not the accepted technology.
+
 ## Use D1 With SQLite Semantics For Deployed Persistence
 
 SQLite-compatible SQL gives the relational model one clear semantic basis,
@@ -140,10 +158,13 @@ authorization.
 
 ## Introduce Runtime Tooling With A Real Application
 
-Runtime and test dependencies, bindings, migrations, and deployment workflows
-arrive with code and tests that use them. Deferring empty scaffolding keeps the
-current repository honest while requiring the first deployable application to
-bring its applicable verification and release infrastructure with it.
+Runtime and test dependencies, local bindings, migrations, and project
+configuration arrive with code and tests that use them. Deferring empty
+scaffolding keeps the current repository honest while requiring application
+implementation to bring the applicable local Worker/D1-compatible runtime and
+verification surfaces with it. Account-bound resources and deployment
+automation arrive during release hardening, when they can deploy and verify a
+locally accepted MVP rather than fictional infrastructure.
 
 ## Use ESLint As The Sole Enforcement Surface
 

@@ -81,14 +81,13 @@ and Module Selection schema waits for the work that needs it.
 
 ## Environment Isolation
 
-Persistence must distinguish at least these environments when implementation
-begins:
+The persistence lifecycle must distinguish at least these environments:
 
 | Environment | Database responsibility |
 | --- | --- |
 | local/test | Disposable, deterministic state owned by local development or one test run. |
-| staging | Pre-production test data in a dedicated D1 database. |
-| production | Live data in a dedicated D1 database that regression tests never mutate. |
+| staging | Once provisioned during release hardening, pre-production test data in a dedicated remote D1 database. |
+| production | Once provisioned during release hardening, live data in a dedicated remote D1 database that regression tests never mutate. |
 
 Staging and production must never share a D1 database. Local or staging E2E
 tests must not point at production data.
@@ -114,10 +113,37 @@ Application and schema rollout cannot be assumed to switch atomically.
 Destructive migrations are not routine; any future coordinated or destructive
 change requires an explicit exceptional deployment decision.
 
-## Current State And Implementation Trigger
+## Current State And Persistence Lifecycle
 
-No D1 database, binding, schema, or migration exists today. Introduce the D1
-configuration, separate staging and production bindings, version-controlled
-migrations, and clean-state migration tests with the first real schema that
-uses them. Do not create an empty migration framework before that schema
-exists.
+No D1 database, binding, schema, or migration exists today.
+
+### When The First Real Schema Exists
+
+Introduce the following with the first real schema that uses them:
+
+- SQLite/D1-compatible schema design;
+- version-controlled migrations;
+- deterministic local/test persistence;
+- clean-state migration verification;
+- Worker/D1-compatible persistence integration; and
+- local/test database bindings and configuration needed by implemented
+  behavior.
+
+The first schema must already be designed for eventual D1 deployment. Do not
+create an empty migration framework before that schema exists. A remote staging
+or production D1 database is not required at this point; its absence during
+local MVP development is intentional.
+
+### During Release Hardening
+
+[Release hardening](../DICTIONARY.md#release-hardening) creates:
+
+- one dedicated remote staging D1 database;
+- one dedicated remote production D1 database;
+- their account-specific bindings and configuration; and
+- environment-specific deployment configuration.
+
+This later provisioning changes timing, not persistence technology or safety.
+D1 remains the deployed persistence target, staging and production never share
+a database, tests never mutate production, and the version-controlled and
+rollout-compatible migration contract remains unchanged.

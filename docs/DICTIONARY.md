@@ -291,6 +291,14 @@ in `main`, validates it in a real staging or preview environment, and then
 promotes that same commit to production. Release automation is planned but not
 yet implemented.
 
+### Release Hardening
+
+The planned delivery phase after the MVP is feature-complete and accepted
+locally in which account-bound deployment infrastructure, hosted staging
+verification, deployment credentials, and the production release path are
+established and validated. It must be complete before the first production
+release. See [Releases](process/releases.md#current-state-and-release-hardening-trigger).
+
 ### Responsibility Module
 
 A first-level `src/` module named for one conceptual responsibility or explicit

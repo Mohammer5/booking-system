@@ -352,5 +352,9 @@ composition, or UI exists yet.
 The first application implementation must verify then-current Better Auth and
 Cloudflare compatibility and select exact concrete module/map declarations,
 schema names, session lifetime and refresh values, authentication route names,
-and environment configuration. It must preserve every contract above without
-turning those implementation choices into product policy.
+and local/test environment configuration required by implemented behavior. It
+must preserve every contract above without turning those implementation
+choices into product policy. Remote provider and other account-bound production
+configuration is not a prerequisite for local MVP implementation; it follows
+the accepted provider-integration timing and [release-hardening
+lifecycle](../DICTIONARY.md#release-hardening).

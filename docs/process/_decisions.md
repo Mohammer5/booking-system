@@ -80,9 +80,16 @@ production. A release tag initiates a fresh full gate, proves the tagged commit
 is contained in `main`, verifies a real Cloudflare pre-production version, and
 only then promotes that same commit.
 
-## Add Deployment Automation Only When It Can Deploy Reality
+## Add Deployment Automation During Release Hardening
 
 The repository gains useful CI immediately because lint and architecture
-tooling tests already exist. Application test configuration and the release
-workflow wait for the first real application so no empty suite or fictional
-deployment can report misleading success.
+tooling tests already exist. Local application implementation and regression
+verification precede account-bound deployment setup. Once the MVP is
+feature-complete and accepted locally, a distinct [release-hardening
+phase](../DICTIONARY.md#release-hardening) adds the remote infrastructure and
+deployment automation because they can then deploy and validate a real
+application rather than report fictional success.
+
+Deferring those remote surfaces does not permit a production shortcut. Release
+hardening must establish the accepted staging verification, release workflow,
+and production gates before the first production release.

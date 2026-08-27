@@ -150,10 +150,40 @@ Durable Objects, KV, R2, Queues, Workflows, Containers, external databases,
 Redis, background workers, separate hosting providers, and other
 infrastructure require a concrete need and a separate architecture decision.
 
-## Implementation Trigger
+## Implementation-Time Local Runtime Requirements
 
-The direction above is accepted but not implemented. The change that
-introduces the first deployable application must also introduce the real Vite
-and Cloudflare Vite integration, project-pinned Wrangler, Worker configuration,
-and environment configuration that application uses. It must not precede them
-with placeholder runtime code or unused configuration.
+The direction above is accepted but not implemented. When real application
+code begins, introduce the actual project configuration needed to build and
+exercise the implemented behavior locally, as applicable:
+
+- Vite;
+- Cloudflare's then-current supported Vite/Workers integration;
+- project-pinned Wrangler;
+- Worker configuration used by local development, build, or tests;
+- Worker-compatible runtime assumptions; and
+- local environment and binding configuration used by implemented behavior.
+
+These surfaces arrive with code and tests that use them. Placeholder runtime
+code, empty infrastructure scaffolding, and unused configuration do not satisfy
+this contract. Local development and verification must exercise compatible
+Worker semantics rather than treating a conventional long-running Node server
+as proof of production-runtime behavior.
+
+## Release-Hardening Infrastructure
+
+After the MVP is feature-complete and accepted locally, [release
+hardening](../DICTIONARY.md#release-hardening) provisions the account-bound
+infrastructure required for actual deployment, as applicable:
+
+- Cloudflare account and project resources;
+- remote staging and production Worker environments;
+- environment-specific remote configuration;
+- staging and production URLs or domains;
+- deployment credentials and secrets; and
+- other account-bound deployment configuration.
+
+None of these remote resources needs to exist before MVP implementation starts
+or while the MVP is being completed locally. Their intentional absence does
+not change the accepted same-origin Worker and Workers Static Assets deployment
+shape. Release hardening must establish them before the first production
+release can pass the release contract.

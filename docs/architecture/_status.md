@@ -41,15 +41,29 @@
   current-context HTTP surface with browser input unable to select principal or
   authority.
 - The initial infrastructure boundary is Worker, Workers Static Assets, and D1.
+- MVP implementation and local acceptance use Worker/D1-compatible tooling,
+  configuration, and semantics from the beginning; a conventional
+  long-running Node server or unrelated database is not an interim
+  architecture.
+- Account-bound Cloudflare Worker environments, remote staging and production
+  D1 databases, deployment credentials, and release infrastructure are
+  intentionally deferred until [release
+  hardening](../DICTIONARY.md#release-hardening), after the MVP is
+  feature-complete and accepted locally.
 
 ## Current Implementation
 
 - Neither accepted application/package workspace nor either workspace manifest
   has been created or implemented.
 - No product `src/` directory or product code exists.
-- No Vite frontend, Worker, D1 binding, database schema, migration,
-  authentication/session implementation, test-authentication composition,
-  real provider integration, or production deployment exists.
+- No Vite frontend, Worker, local/test D1 binding, database schema, migration,
+  authentication/session implementation, test-authentication composition, or
+  real provider integration exists.
+- No production deployment, remote Cloudflare environment, remote staging or
+  production D1 database, provider production configuration, deployment
+  credential, or release infrastructure exists. These account-bound surfaces
+  are intentionally deferred until release hardening and do not block normal
+  local MVP implementation.
 - The repository uses modern ESM JavaScript and pnpm workspace globs.
 - ESLint source-shape rules target future application and package source.
 - The boundary converter implements deny-by-default workspace and module
@@ -70,4 +84,7 @@ composition-file names, package exports, optional application framework,
 internal helper files, schema names, runtime dependency versions, session
 timing, provider configuration, and minimum supported Worker compatibility mode
 remain implementation choices. Accepted and planned direction must not be
-mistaken for implemented runtime code.
+mistaken for implemented runtime code. The accepted application can be
+implemented and accepted locally without remote Cloudflare resources, but
+release hardening and real staging verification remain mandatory before the
+first production release.

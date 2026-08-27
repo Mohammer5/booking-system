@@ -17,12 +17,21 @@ Current reality:
   separate from canonical repository truth and product runtime data.
 - GitHub Actions runs the current canonical `pnpm check` gate for pull requests
   targeting `main` and pushes to `main` through the stable `verify` job.
-- The layered application verification and tag-gated release policies are
-  accepted but remain unimplemented because no application exists.
+- The layered local application verification and tag-gated release policies
+  are accepted but remain unimplemented because no application exists.
+- Account-bound Cloudflare infrastructure and the remote release pipeline are
+  intentionally deferred until [release
+  hardening](../DICTIONARY.md#release-hardening), after the MVP is
+  feature-complete and accepted locally.
 
 Known gaps:
 
 - Remote GitHub branch protection requiring `verify` cannot be proven by
-  repository files and still requires external configuration.
-- No Vitest, Workers integration, Playwright suite, Cloudflare staging or
-  production environment, or release workflow exists yet.
+  repository files and still requires separate external configuration; it is
+  not part of the Cloudflare operational-prerequisite decision.
+- No Vitest, Workers integration, or local Playwright suite exists yet; these
+  remain future implementation work that arrives with applicable application
+  behavior.
+- No Cloudflare staging or production environment or release workflow exists.
+  Their absence is intentional until release hardening and is not a
+  pre-implementation deficiency.
