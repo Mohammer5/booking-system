@@ -4,4 +4,9 @@ import { defineConfig } from "vite";
 
 export default defineConfig({
   plugins: [react(), cloudflare()],
+  server: {
+    host: "localhost",
+    port: 5173,
+    strictPort: true,
+  },
 });

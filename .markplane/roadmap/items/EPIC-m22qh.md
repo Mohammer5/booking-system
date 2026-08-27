@@ -42,8 +42,9 @@ normal D1-backed opaque application sessions through an explicitly
 non-production composition. Routine tests do not automate third-party provider
 login UIs or bypass booking-domain authorization. Production exposes no
 activatable test-authentication mechanism and fails closed when test-only
-authentication is requested. Real Google, Apple, Microsoft, and Facebook
-authentication-provider integration is deferred.
+authentication is requested. Google authentication was implemented separately
+under `TASK-t65sy` and remains outside this epic. Apple, Microsoft, and
+Facebook authentication-provider integration is deferred.
 
 One session establishes only the stable external principal. Participant and
 Admin User remain independent domain identities, selected by application
@@ -58,7 +59,8 @@ The following concerns are intentionally deferred beyond this epic:
 - Course, Group, and Module lifecycle operations beyond the creation
   capabilities included here;
 - Admin-assisted booking;
-- real production authentication-provider integration; and
+- remote production provider credentials and callback/domain configuration;
+  and
 - remaining production-readiness work not already triggered by the first
   deployable application.
 

@@ -162,7 +162,10 @@ Implicit provider linking is disabled in v1 to avoid accidental identity
 merging. The first epic uses a separately composed, explicitly non-production
 Better Auth mechanism to establish normal sessions for deterministic fixture
 identities. Production must be structurally unable to activate that mechanism;
-real Google, Apple, Microsoft, and Facebook integration remains deferred.
+Google is now the normal locally implemented provider outside that epic, while
+Apple, Microsoft, Facebook, remote production credentials, and production
+callback/domain configuration remain deferred. Both implicit and manual
+account linking are disabled explicitly in Better Auth configuration.
 Structural composition, rather than a production runtime flag, makes the
 fail-closed property independently verifiable and prevents a hidden test route
 from becoming an authentication bypass.

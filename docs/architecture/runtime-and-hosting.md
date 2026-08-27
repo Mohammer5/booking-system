@@ -178,6 +178,13 @@ Playwright exercise Cloudflare-compatible runtime and D1 semantics rather than
 a conventional long-running Node server. No remote Cloudflare resource is
 required for this local lifecycle.
 
+Normal manual Vite development binds strictly to `localhost:5173`; it fails
+instead of selecting another port when that port is occupied. This keeps the
+same-origin application aligned with the registered local Google origin and
+the one `http://localhost:5173/api/auth/callback/google` provider callback.
+The existing Playwright harness remains separately fixed to
+`127.0.0.1:4173` and uses explicit non-production composition.
+
 ## Release-Hardening Infrastructure
 
 After the MVP is feature-complete and accepted locally, [release

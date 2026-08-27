@@ -1,14 +1,21 @@
 import { useTranslation } from "react-i18next";
 
+import { AdminSignOutButton } from "./AdminSignOutButton.jsx";
+
 /**
  * Present the narrow current Active Admin context.
  *
  * @param {object} props Component properties.
  * @param {object} props.admin The current Admin representation.
  * @param {boolean} props.hasJustBootstrapped Whether bootstrap just succeeded.
+ * @param {object} props.signOutMutation The Better Auth sign-out mutation.
  * @returns {import("react").ReactElement} The administration context.
  */
-export function AdministrationContext({ admin, hasJustBootstrapped }) {
+export function AdministrationContext({
+  admin,
+  hasJustBootstrapped,
+  signOutMutation,
+}) {
   const { t } = useTranslation();
 
   return (
@@ -31,6 +38,7 @@ export function AdministrationContext({ admin, hasJustBootstrapped }) {
             : t("adminAccess.context.admin")}
         </dd>
       </dl>
+      <AdminSignOutButton signOutMutation={signOutMutation} />
     </section>
   );
 }

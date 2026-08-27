@@ -8,13 +8,15 @@ booking system. It currently includes:
 - an indexed, maintainable documentation process;
 - a conceptual-domain-first architecture philosophy with ESLint enforcement;
 - a locally runnable React/Vite and Cloudflare Worker application with D1;
-- the first-Admin bootstrap vertical slice and its booking-domain package;
+- real Google authentication, Admin sign-in/sign-out, and the first-Admin
+  bootstrap vertical slice with its booking-domain package;
 - GitHub Actions verification for pull requests and `main`; and
 - a repository-local Markplane development backlog.
 
-The implemented local foundation does not include production identity-provider
-integration, remote Cloudflare resources, a release workflow, or a production
-deployment. Those remain explicitly deferred; local acceptance is not release
+The local application implements the normal Google provider flow. Remote
+production provider credentials and callback/domain configuration, the other
+accepted providers, remote Cloudflare resources, a release workflow, and a
+production deployment remain deferred; local acceptance is not release
 approval.
 
 Start with [the product specification](docs/product/README.md) for accepted
@@ -25,18 +27,43 @@ The [architecture overview](docs/architecture/README.md) describes the accepted
 runtime direction, and [verification](docs/process/verification.md) and
 [releases](docs/process/releases.md) own CI and release policy.
 
-## Local Application
+## Real Local Google Authentication
 
-The explicit non-production composition can run with clean local D1 state:
+Create `apps/booking-system-web/.env` from the committed example. Keep its
+values local and supply a high-entropy `BETTER_AUTH_SECRET` of at least 32
+characters together with the Google Client ID and Client Secret. The normal
+local application uses exactly `http://localhost:5173`; startup fails if that
+port is occupied so the registered OAuth origin cannot drift.
+
+To prepare a clean local D1 database and start the normal application:
+
+```sh
+pnpm --filter @booking-system/booking-system-web run dev:prepare
+pnpm --filter @booking-system/booking-system-web run dev
+```
+
+Open `http://localhost:5173/admin`. Google must have
+`http://localhost:5173` as an authorized JavaScript origin and
+`http://localhost:5173/api/auth/callback/google` as its one local redirect URI.
+The preparation command intentionally resets only the application's generated
+local Wrangler state and applies all migrations; it provisions no remote
+Cloudflare resource.
+
+## Deterministic Fixture Authentication
+
+Routine browser tests and explicit fixture-based local work use the separate
+non-production composition:
 
 ```sh
 pnpm --filter @booking-system/booking-system-web run e2e:prepare
 pnpm --filter @booking-system/booking-system-web run dev:fixtures
 ```
 
-The preparation command intentionally resets only the application's generated
-local Wrangler state and applies all migrations. It does not provision or use
-remote Cloudflare resources.
+Its committed authentication values are visibly non-secret test-only values.
+It establishes only fixed normal Better Auth sessions and is structurally
+absent from production composition. Build and automated-test commands disable
+local `.env` loading; only the normal `dev` command consumes the real local
+provider and Better Auth secrets.
 
 ## Development Tracking
 

@@ -18,7 +18,15 @@ export function createWorkerApplication({
   });
 
   return async function handleWorkerRequest(request) {
-    const pathname = new URL(request.url).pathname;
+    const requestURL = new URL(request.url);
+    const pathname = requestURL.pathname;
+
+    if (
+      request.method === "GET" &&
+      pathname === "/api/auth/application-error"
+    ) {
+      return authenticationFailureRedirect(requestURL);
+    }
 
     if (pathname.startsWith("/api/auth/")) {
       return authentication.handleAuthRequest(request);
@@ -30,4 +38,22 @@ export function createWorkerApplication({
 
     return Response.json({ outcome: "not-found" }, { status: 404 });
   };
+}
+
+/**
+ * Remove provider callback details before returning to localized browser UI.
+ *
+ * @param {URL} requestURL The same-origin authentication failure request.
+ * @returns {Response} A fixed application redirect without provider payloads.
+ */
+function authenticationFailureRedirect(requestURL) {
+  const destination = new URL("/admin?authentication=failed", requestURL);
+
+  return new Response(null, {
+    status: 303,
+    headers: {
+      "cache-control": "no-store",
+      location: destination.toString(),
+    },
+  });
 }

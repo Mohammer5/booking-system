@@ -79,12 +79,14 @@ test-authentication implementation imports from entering `packages/booking`.
 The first slice uses `browser`, `worker`, and `authentication` as its initial
 first-level names, introduced together with real source and map declarations.
 
-The first Admin implementation separates three application roles: the
-browser Admin-bootstrap flow, Worker-side Admin-bootstrap/API handling, and
-application-private authentication. A thin composition entry may join only
-the roles required for its executable graph. The browser communicates with Worker
-behavior through same-origin HTTP rather than importing Worker implementation
-to share transport data.
+The first Admin implementation separates three application roles: the browser
+Admin sign-in/bootstrap flow, Worker-side Admin-bootstrap/API handling, and
+application-private authentication. The browser slice may use Better Auth's
+browser client for session initiation and termination while Google provider
+configuration stays in the authentication and Worker composition roles. A
+thin composition entry may join only the roles required for its executable
+graph. The browser communicates with Worker behavior through same-origin HTTP
+rather than importing Worker implementation to share transport data.
 
 ## Vertical Slices
 

@@ -16,8 +16,9 @@ JavaScript conventions, and ESLint-enforced dependency rules.
 ### Architecture Status
 - Path: `docs/architecture/_status.md`
 - Summary: Current implemented application/package foundation, React browser
-  slice, functional-composition direction, Cloudflare/Vite/D1 runtime, boundary
-  enforcement, and still-deferred product and release surfaces.
+  slice and Google sign-in, functional-composition direction,
+  Cloudflare/Vite/D1 runtime, boundary enforcement, and still-deferred product
+  and release surfaces.
 - Read when: You need to distinguish decided architecture from current
   implementation or identify which application, browser, runtime, and
   persistence surfaces do not yet exist.
@@ -77,9 +78,9 @@ JavaScript conventions, and ESLint-enforced dependency rules.
 ### Authentication And Sessions
 - Path: `docs/architecture/authentication-and-sessions.md`
 - Summary: Defines Better Auth as the application-owned authentication layer,
-  D1-backed opaque sessions, stable-principal mapping, contextual domain
-  resolution, provider-linking policy, Invite continuation, and fail-closed
-  non-production authentication.
+  the implemented Google provider, D1-backed opaque sessions, stable-principal
+  mapping, contextual domain resolution, provider-linking policy, Invite
+  continuation, and fail-closed non-production authentication.
 - Read when: A task affects authentication, sessions, external principals,
   provider integration or linking, Participant/Admin identity resolution,
   Invite continuation through sign-in, test authentication, or auth-related
@@ -117,13 +118,13 @@ JavaScript conventions, and ESLint-enforced dependency rules.
 ### Browser Conventions
 - Path: `docs/architecture/browser-conventions.md`
 - Summary: React-based browser ownership rules for React Router, TanStack Query,
-  React Hook Form, classnames, debug, i18next, localization, routes, and
-  vertical-slice placement.
+  React Hook Form, Better Auth session actions, classnames, debug, i18next,
+  localization, routes, and vertical-slice placement.
 - Read when: A task affects browser routing, navigation, server state, forms,
   frontend validation, conditional classes, diagnostics, localization, or
   browser dependency choices.
 - Tags: architecture, browser, react, react-dom, react-router, tanstack-query,
-  react-hook-form, i18n, debug
+  react-hook-form, better-auth, authentication, i18n, debug
 
 ### ESLint Enforcement
 - Path: `docs/architecture/eslint.md`

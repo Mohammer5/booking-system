@@ -142,11 +142,13 @@ configuration where useful. The accepted automatic release path does not add a
 manual production-approval click unless a later requirement changes that
 policy.
 
-Real Google, Apple, Microsoft, and Facebook provider credentials remain
-deferred with those integrations. When introduced, their environment-specific
-secrets and callback configuration follow this same non-source, least-privilege
-release handling. Test-authentication secrets and session tokens must never be
-persisted in CI artifacts.
+Google provider behavior is implemented locally, but remote staging and
+production Google credentials, domains, and callback configuration remain
+deferred to release hardening. Apple, Microsoft, and Facebook provider
+integrations remain wholly deferred. When remote provider configuration is
+introduced, its environment-specific secrets follow this same non-source,
+least-privilege release handling. Test-authentication secrets and session
+tokens must never be persisted in CI artifacts.
 
 Wrangler must be a project-pinned development dependency and CI must use the
 locked project version through repository scripts or `pnpm exec wrangler`.

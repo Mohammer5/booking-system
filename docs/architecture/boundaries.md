@@ -48,7 +48,8 @@ Worker/Cloudflare, D1, Better Auth, HTTP, or browser/UI implementation.
 The application map declares:
 
 - `browser` with no local or workspace edge and exact third-party permission
-  for TanStack Query, i18next, React Hook Form, react-i18next, and React Router;
+  for TanStack Query, the `better-auth/react` browser client, i18next, React
+  Hook Form, react-i18next, and React Router;
 - `worker -> authentication`, plus the exact `@booking-system/booking` root;
 - `authentication` with no local or booking edge and exact `better-auth` and
   `better-auth/plugins` permissions;
@@ -61,9 +62,11 @@ The application map declares:
   the two Worker composition files needed by the structural regression.
 
 Production composition has no edge to the fixture-session interface. Browser
-source cannot import Worker, authentication, D1, Cloudflare, or the booking
-package, while authentication cannot import booking policy or browser source.
-No generic shared or contracts package exists for the small HTTP shapes.
+source cannot import Worker, the local `authentication` module, D1,
+Cloudflare, or the booking package; its narrow Better Auth client import talks
+to the same-origin authentication HTTP surface rather than crossing a source
+module edge. Authentication cannot import booking policy or browser source. No
+generic shared or contracts package exists for the small HTTP shapes.
 
 ## Map Shape
 

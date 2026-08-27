@@ -5,8 +5,10 @@ export const adminBootstrapTranslations = {
         documentTitle: "Administration | Booking System",
         bootstrap: {
           title: "Erste Administration einrichten",
-          description:
-            "Authentifizieren Sie sich und legen Sie anschließend das erste Administrationskonto an.",
+          authenticationDescription:
+            "Melden Sie sich zuerst mit Google an. Anschließend legen Sie das erste Administrationskonto an.",
+          nameDescription:
+            "Geben Sie den Namen für das erste Administrationskonto ein.",
           nameLabel: "Name",
           nameRequired: "Bitte geben Sie einen Namen ein.",
           submit: "Administration einrichten",
@@ -23,6 +25,16 @@ export const adminBootstrapTranslations = {
             "Für diese Anmeldung existiert kein Administrationskonto.",
           disabledAdmin:
             "Dieses Administrationskonto ist deaktiviert.",
+        },
+        authentication: {
+          continueWithGoogle: "Weiter mit Google",
+          signingIn: "Anmeldung wird gestartet …",
+          signOut: "Abmelden",
+          signingOut: "Abmeldung läuft …",
+          failure:
+            "Die Anmeldung ist fehlgeschlagen. Bitte versuchen Sie es erneut.",
+          signOutFailure:
+            "Die Abmeldung ist fehlgeschlagen. Bitte versuchen Sie es erneut.",
         },
         context: {
           title: "Administrationsbereich",

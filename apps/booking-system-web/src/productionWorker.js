@@ -11,6 +11,8 @@ export default {
       database: environment.DB,
       baseURL,
       secret: environment.BETTER_AUTH_SECRET,
+      googleClientId: environment.GOOGLE_CLIENT_ID,
+      googleClientSecret: environment.GOOGLE_CLIENT_SECRET,
     });
     const handleWorkerRequest = createWorkerApplication({
       authentication,

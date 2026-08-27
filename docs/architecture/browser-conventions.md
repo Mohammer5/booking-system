@@ -23,11 +23,12 @@ slice requires it:
 - `react-i18next`.
 
 The first Admin slice uses React, React DOM, React Router, TanStack Query, React
-Hook Form, i18next, and react-i18next. It does not declare `classnames`, `debug`,
-or `ramda` because no current source needs them. Acceptance here grants neither
-an import edge nor inclusion in every application output: the application
-[boundary map](../DICTIONARY.md#boundary-map) and each runtime source/build
-graph remain authoritative.
+Hook Form, i18next, react-i18next, and the application-owned Better Auth React
+client. It does not declare `classnames`, `debug`, or `ramda` because no current
+source needs them. Acceptance here grants neither an import edge nor inclusion
+in every application output: the application [boundary
+map](../DICTIONARY.md#boundary-map) and each runtime source/build graph remain
+authoritative.
 
 The current `main.jsx` composes i18next, one Query Client, React Router, and the
 browser application. Future slices evolve that composition only for concrete
@@ -74,6 +75,26 @@ accepted same-origin Worker and static-assets deployment, while `/api/*`
 remains Worker/API-owned. [Runtime and hosting](runtime-and-hosting.md) owns the
 deployment and fallback behavior. The current independently navigable route is
 `/admin`.
+
+## Browser Authentication
+
+The Admin slice imports `createAuthClient` from the exact
+`better-auth/react` entry and uses only the normal same-origin Better Auth
+session. Google sign-in fixes its post-authentication application destination
+to `/admin` and its error destination to an application-owned same-origin
+sanitizer; browser callers cannot supply an external destination. Better Auth
+continues to own the one provider callback at `/api/auth/callback/google`.
+
+The same slice uses Better Auth sign-out for Active Admins, principals without
+an Admin User, and Disabled Admins. Successful sign-out invalidates or resets
+the existing TanStack Admin queries so `/admin` returns to the current public
+unauthenticated entry. The browser does not create another session concept or
+read provider tokens, profile data, session tokens, or cookies.
+
+Authentication initiation and callback failures are language-neutral
+application state mapped to localized copy. Raw provider error descriptions
+are discarded before returning to browser UI and security-sensitive OAuth or
+session material is never rendered.
 
 ## Server State
 

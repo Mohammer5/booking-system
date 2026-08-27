@@ -15,6 +15,10 @@ export default defineConfig({
         bindings: {
           BETTER_AUTH_SECRET:
             "local-worker-tests-only-not-a-production-secret-value",
+          GOOGLE_CLIENT_ID:
+            "local-worker-google-client-id-not-a-real-credential",
+          GOOGLE_CLIENT_SECRET:
+            "local-worker-google-client-secret-not-a-real-credential",
           TEST_MIGRATIONS: await readD1Migrations(
             new URL("./migrations", import.meta.url).pathname,
           ),

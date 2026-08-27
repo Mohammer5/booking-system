@@ -13,6 +13,7 @@ export const bookingSystemWebBoundaryMap = {
       modules: [],
       thirdPartyDependencies: [
         "@tanstack/react-query",
+        "better-auth/react",
         "i18next",
         "react-hook-form",
         "react-i18next",

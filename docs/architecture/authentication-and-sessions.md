@@ -43,7 +43,7 @@ and their relationships.
 
 [Better Auth](https://www.better-auth.com/) is the implemented initial
 [authentication layer](../DICTIONARY.md#authentication-layer). It runs
-inside the `apps/booking-system-web` Cloudflare Worker and use the
+inside the `apps/booking-system-web` Cloudflare Worker and uses the
 application's D1 database for its technical user, account, and session records.
 This fits the accepted Worker and D1 boundary without adding another identity
 service or infrastructure platform.
@@ -222,19 +222,37 @@ Active Participant created
 
 Authentication alone never creates a Participant or Course Assignment.
 
-## Production Providers And Linking
+## Providers And Linking
 
-The eventual production providers remain Google, Apple, Microsoft, and
-Facebook behind the same stable-principal contract. Their real integrations
-are deferred beyond `EPIC-m22qh` and `TASK-aeij8`. No local password
-authentication is introduced, and provider concepts must not leak into
-`packages/booking` when those integrations are later added.
+Google is the implemented normal provider inside
+`apps/booking-system-web`. Better Auth owns the one provider callback at
+`/api/auth/callback/google`; the Admin browser starts sign-in with `/admin` as
+its fixed application destination. Administration and future Participant
+contexts do not create provider-specific callback endpoints or separate
+sessions.
 
-For v1, Better Auth implicit account or provider linking is disabled. There is
-no manual product linking workflow, no matching or merging by email or name,
-and distinct external principals remain distinct. This does not prohibit a
-future explicit feature in which several sign-in methods map to one stable
-principal; it records only the conservative initial composition.
+Google Client ID, Google Client Secret, and `BETTER_AUTH_SECRET` values enter
+the Worker through environment configuration. They are absent from browser
+code, committed Wrangler production configuration, documentation, and test
+prerequisites. Missing normal authentication configuration fails closed rather
+than enabling fixture authentication or another sign-in method. Safe visibly
+test-only values satisfy structural configuration in automated tests; routine
+tests do not require real Google credentials. Build and automated-test commands
+disable local `.env` loading so those values do not enter build/preview
+artifacts or deterministic test processes.
+
+For v1, Better Auth account linking is disabled explicitly with both
+`accountLinking.enabled: false` and `disableImplicitLinking: true`. There is no
+manual product or technical linking flow, no matching or merging by email or
+name, and distinct external principals remain distinct. This does not prohibit
+a future explicitly designed feature in which several sign-in methods map to
+one stable principal; it records only the conservative current composition.
+
+Apple, Microsoft, and Facebook provider integration remains deferred. Remote
+Google credentials, production callback/domain configuration, and
+environment-scoped production secrets also remain deferred to release
+hardening. No local password authentication is introduced, and provider
+concepts remain outside `packages/booking`.
 
 ## Invite Continuation
 
@@ -318,6 +336,11 @@ identity, and request bodies, queries, headers, and cookies cannot supply a
 principal. Fixture session establishment supplies authentication only; it
 never creates booking identity, role, authority, or permissions.
 
+The explicit non-production composition may also provide visibly fake Google
+configuration so the normal Better Auth factory remains structurally complete
+without real provider credentials. Playwright still establishes named fixture
+sessions and never automates or contacts Google's hosted sign-in UI.
+
 ## Worker Compatibility
 
 Better Auth 1.7.2 requires Worker-side Node compatibility support for
@@ -356,8 +379,15 @@ non-production Worker separately imports the authentication-owned fixture
 interface. Automated Worker and browser tests exercise normal sessions and
 prove the production fixture path fails closed without establishing a session.
 
-Real Google, Apple, Microsoft, and Facebook providers, hosted non-production
-authentication, production secrets, and remote provider configuration remain
-deferred. Their absence does not block local MVP implementation; they follow
-the accepted provider timing and [release-hardening
-lifecycle](../DICTIONARY.md#release-hardening).
+Google is configured from environment-owned values, and the `/admin` browser
+uses Better Auth's supported client to start Google sign-in with fixed success
+and sanitized same-origin failure destinations and to terminate sessions on
+sign-out. Normal local Vite development is fixed to
+`http://localhost:5173`, matching the one local Google callback at
+`http://localhost:5173/api/auth/callback/google`.
+
+Apple, Microsoft, Facebook, hosted non-production authentication, remote
+Google credentials, production provider callback/domain configuration, and
+production secrets remain deferred. Their absence does not block local MVP
+implementation; they follow the accepted provider timing and
+[release-hardening lifecycle](../DICTIONARY.md#release-hardening).

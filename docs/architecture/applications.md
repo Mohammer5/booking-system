@@ -71,9 +71,11 @@ Admin success representations contain only `id`, `name`, `state`, and
 `authority`.
 
 The public entry read reveals only whether the browser should present first
-Admin registration or normal login. Bootstrap and current-Admin resolution
-use the stable external principal derived server-side from the normal
-application session. Browser-controlled bootstrap input contains the required
+Admin registration or normal login. The browser uses Better Auth directly for
+fixed-destination Google sign-in and sign-out; no redundant booking-facing
+session endpoint is added. Bootstrap and current-Admin resolution use the
+stable external principal derived server-side from the normal application
+session. Browser-controlled bootstrap input contains the required
 booking-system Admin User name, never an external principal, domain identity,
 state, authority, role, or permissions. Each current-Admin read resolves fresh
 booking state rather than trusting session claims. The application translates

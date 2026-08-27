@@ -31,7 +31,9 @@ composes the browser/Vite experience, static assets, Cloudflare Worker request
 handling, `/api/*`, private technical adapters, and the application composition
 root. Better Auth is the accepted application-private authentication layer,
 using D1-backed opaque sessions while booking authorization remains resolved
-from current domain state.
+from current domain state. Google is the implemented normal provider for the
+local application; its provider mechanics and environment-owned credentials
+remain inside the application boundary.
 `packages/booking` is the single initial conceptual domain package; the four
 folders shown beneath it are distinct responsibility modules, not separate
 workspace packages.
@@ -56,13 +58,12 @@ This tree is a conceptual ownership view. When implementation is authorized,
 the standard workspace `src/` rule still applies and the four booking names
 remain its first-level responsibility modules.
 
-This conceptual target, Worker-based runtime, Vite-built assets, D1
-persistence, and Better Auth session architecture are accepted but not
-implemented. No workspace, dependency edge, boundary map, composition file,
-package export, or exact internal file layout exists yet. Read
-[principles.md](principles.md) for the philosophy,
-[module-organization.md](module-organization.md) for source shape, and
-[boundaries.md](boundaries.md) for the executable dependency model. Read
-[runtime-and-hosting.md](runtime-and-hosting.md) and
-[persistence.md](persistence.md) for the accepted technical direction and the
-boundary between decisions and current implementation.
+The application and booking workspaces, Worker/Vite/D1 runtime, Better Auth
+session and Google sign-in composition, first-Admin vertical slice, explicit
+boundary maps, and verification surfaces are implemented locally. The later
+booking responsibility modules shown above remain accepted targets rather than
+source until their slices are delivered. Read [principles.md](principles.md)
+for the philosophy, [module-organization.md](module-organization.md) for the
+implemented source shape, and [boundaries.md](boundaries.md) for executable
+dependencies. [Architecture status](_status.md) distinguishes this local
+foundation from still-absent remote and release surfaces.

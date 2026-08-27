@@ -1,5 +1,10 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
+import {
+  continueWithGoogle,
+  signOutAdmin,
+} from "./adminAuthenticationClient.js";
+
 const entryQueryKey = ["admin-access", "entry"];
 const currentAdminQueryKey = ["admin-access", "current-admin"];
 
@@ -17,7 +22,6 @@ export function useAdminBootstrap() {
   const currentAdminQuery = useQuery({
     queryKey: currentAdminQueryKey,
     queryFn: fetchCurrentAdmin,
-    enabled: entryQuery.data?.mode === "login",
     retry: false,
   });
   const bootstrapMutation = useMutation({
@@ -35,11 +39,21 @@ export function useAdminBootstrap() {
       }
     },
   });
+  const signInMutation = useMutation({ mutationFn: continueWithGoogle });
+  const signOutMutation = useMutation({
+    mutationFn: signOutAdmin,
+    async onSuccess() {
+      await queryClient.invalidateQueries({ queryKey: entryQueryKey });
+      await queryClient.resetQueries({ queryKey: currentAdminQueryKey });
+    },
+  });
 
   return {
     entryQuery,
     currentAdminQuery,
     bootstrapMutation,
+    signInMutation,
+    signOutMutation,
   };
 }
 

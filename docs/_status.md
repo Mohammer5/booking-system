@@ -25,7 +25,8 @@ The repository has accepted an architecture and delivery direction:
 - D1 persistence with SQLite-compatible semantics and isolated environments;
 - Better Auth inside the Worker with D1-backed opaque sessions, one stable
   external principal per session, context-specific domain identity resolution,
-  and no session-cached booking authorization;
+  no session-cached booking authorization, and Google as the implemented
+  normal local provider with explicit no-linking configuration;
 - GitHub Actions CI/CD, Vitest, the Workers Vitest integration, and Playwright;
   and
 - release-tag production promotion after real Cloudflare staging verification.
@@ -60,16 +61,20 @@ The first local application foundation is now implemented:
   User persistence, and permanent first-bootstrap history;
 - production and explicit non-production Worker compositions structurally
   separate fixed fixture-session establishment from production;
+- the `/admin` browser flow starts fixed-destination Google sign-in, requires
+  authentication before the first-Admin name form, and supports Better Auth
+  sign-out in every authenticated Admin-route outcome;
 - both workspace boundary maps are registered in ESLint with exact module,
   workspace, composition, third-party, and test-only permissions; and
 - the canonical `pnpm check` now runs repository, domain, Worker/D1, migration,
   build, and Chromium browser evidence.
 
-Real Google, Apple, Microsoft, and Facebook providers, all later MVP product
-capabilities, remote Cloudflare staging/production resources, release
-automation, deployment credentials, and production deployment remain absent.
-The account-bound release surfaces are intentionally deferred until release
-hardening. No co-located `*.docs.md` file exists.
+Apple, Microsoft, and Facebook providers, all later MVP product capabilities,
+remote Google credentials and production callback/domain configuration, remote
+Cloudflare staging/production resources, release automation, deployment
+credentials, and production deployment remain absent. The account-bound
+release surfaces are intentionally deferred until release hardening. No
+co-located `*.docs.md` file exists.
 
 Further project-specific docs should be added only when accepted project truth
 gives them a concrete responsibility.

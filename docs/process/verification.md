@@ -120,10 +120,21 @@ Production composition must contain no activatable test-authentication route
 or bypass and must fail closed regardless of headers, queries, or cookies when
 test-only authentication is requested. A focused automated regression must
 prove this structural property. Hosted staging or preview test-authentication
-requires a CI-controlled secret or equivalently strong non-public gate. When
-real providers are later integrated, focused boundary tests own their
-third-party OAuth/OIDC behavior. See [authentication and
+requires a CI-controlled secret or equivalently strong non-public gate. The
+implemented Google provider has focused Worker-boundary evidence for
+environment wiring, the one callback, and external application-destination
+rejection without contacting Google's hosted UI. See [authentication and
 sessions](../architecture/authentication-and-sessions.md#non-production-authentication).
+
+The Admin browser flow uses fixed named fixture identities to prove the state
+after authentication: the first name form is absent before authentication,
+bootstrap still creates one Active Super Admin, later normal login resolves
+authoritative Admin state, and Better Auth sign-out terminates the session and
+returns to the unauthenticated entry. CI supplies only visibly fake test
+provider configuration and never requires real Google credentials. The build,
+Worker-test, and Playwright-server commands disable local `.env` loading so a
+developer's provider secrets cannot become automated-test inputs or generated
+preview artifacts.
 
 On browser-test failure, CI should retain short-lived useful diagnostics such
 as the Playwright report, traces, screenshots, and relevant logs. Artifacts

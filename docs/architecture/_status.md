@@ -55,11 +55,15 @@
 - Implicit provider linking is disabled in v1. Deterministic browser tests use
   a separately composed, explicitly non-production Better Auth session
   mechanism that must be structurally unavailable in production.
+- Google is the implemented normal provider for local development. Its Client
+  ID, Client Secret, and Better Auth secret enter only through Worker runtime
+  environment configuration; account linking is explicitly disabled.
 - First Admin bootstrap availability is permanent historical state independent
   of current Admin User rows, and consuming bootstrap plus creating the first
   Active Super Admin is one atomic persistence outcome.
-- The implemented first slice has a minimal same-origin Admin entry, bootstrap, and
-  current-context HTTP surface with browser input unable to select principal or
+- The implemented first slice has a same-origin Admin entry, Google sign-in and
+  Better Auth sign-out, bootstrap, and current-context HTTP surface with fixed
+  application destinations and browser input unable to select principal or
   authority.
 - The initial infrastructure boundary is Worker, Workers Static Assets, and D1.
 - MVP implementation and local acceptance use Worker/D1-compatible tooling,
@@ -88,8 +92,9 @@
 - Vite and the Cloudflare Vite plugin build the browser and Worker outputs;
   Workers Static Assets provides SPA fallback while `/api/*` runs Worker-first.
 - Better Auth 1.7.2 uses D1-backed normal sessions and crosses into booking
-  behavior only as `externalPrincipalId`. Fixed non-production fixture
-  identities use a separate executable composition.
+  behavior only as `externalPrincipalId`. Google sign-in uses the one normal
+  `/api/auth/callback/google` provider callback and returns to `/admin`. Fixed
+  non-production fixture identities use a separate executable composition.
 - A version-controlled D1 migration and atomic `D1Database.batch()` claim
   implement permanent first-bootstrap history and exactly-one creation.
 - Both explicit workspace boundary maps are registered in ESLint. The boundary
@@ -99,8 +104,9 @@
   Chromium E2E verification are integrated into `pnpm check` and CI.
 
 The first slice deliberately does not declare optional `classnames`, `debug`,
-or `ramda` dependencies because its source has no concrete use for them. No
-real provider integration, production deployment, remote Cloudflare
-environment, remote staging or production D1 database, deployment credential,
-or release infrastructure exists. Release hardening and real staging
-verification remain mandatory before the first production release.
+or `ramda` dependencies because its source has no concrete use for them. Apple,
+Microsoft, and Facebook integration, remote Google credentials and production
+callback/domain configuration, production deployment, remote Cloudflare
+environments and D1 databases, deployment credentials, and release
+infrastructure remain absent. Release hardening and real staging verification
+remain mandatory before the first production release.

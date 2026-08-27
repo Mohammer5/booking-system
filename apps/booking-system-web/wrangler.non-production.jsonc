@@ -5,7 +5,9 @@
   "compatibility_date": "2026-08-27",
   "compatibility_flags": ["nodejs_compat"],
   "vars": {
-    "BETTER_AUTH_SECRET": "local-e2e-only-not-a-production-secret-value"
+    "BETTER_AUTH_SECRET": "local-e2e-only-not-a-production-secret-value",
+    "GOOGLE_CLIENT_ID": "local-e2e-google-client-id-not-a-real-credential",
+    "GOOGLE_CLIENT_SECRET": "local-e2e-google-client-secret-not-a-real-credential"
   },
   "assets": {
     "not_found_handling": "single-page-application",
