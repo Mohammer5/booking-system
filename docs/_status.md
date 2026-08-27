@@ -68,8 +68,9 @@ The first local application foundation is now implemented:
 - both workspace boundary maps are registered in ESLint with exact module,
   workspace, composition, third-party, and test-only permissions;
 - the root Nix flake supplies NixOS developer-host tooling: Node, pnpm,
-  Chromium, Markplane, Git, and a patched lockfile-matched workerd, without
-  changing the application runtime or GitHub Actions environment; and
+  Chromium, Markplane, Git, a patched lockfile-matched workerd, and the CA
+  bundle used by Miniflare for local outbound HTTPS, without changing the
+  application runtime or GitHub Actions environment; and
 - the canonical `pnpm check` now runs repository, domain, Worker/D1, migration,
   build, and Chromium browser evidence.
 

@@ -192,8 +192,10 @@ workflow. It pins Node 24 and pnpm 11.17.0, supplies Chromium and Markplane, and
 packages the official lockfile-resolved workerd 1.20260826.1 Linux binary with
 Nix ELF patching. `MINIFLARE_WORKERD_PATH` selects that immutable runtime for
 Wrangler, Miniflare, Worker Vitest, Vite development, local D1 operations, and
-the Playwright application server; `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH`
-selects Nix Chromium.
+the Playwright application server. `NODE_EXTRA_CA_CERTS` supplies Miniflare
+with the Nixpkgs CA bundle so outbound HTTPS from the local workerd runtime
+does not depend on the host certificate-store layout.
+`PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH` selects Nix Chromium.
 
 The flake is not a second application runtime. Wrangler, Vite, Vitest, Better
 Auth, the Cloudflare plugins, React, and all other JavaScript dependencies

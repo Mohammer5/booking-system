@@ -89,6 +89,7 @@
         ];
 
         MINIFLARE_WORKERD_PATH = "${workerd}/bin/workerd";
+        NODE_EXTRA_CA_CERTS = "${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt";
         PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH = "${pkgs.chromium}/bin/chromium";
         PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD = "1";
 

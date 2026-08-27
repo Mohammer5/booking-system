@@ -107,7 +107,8 @@
   Chromium E2E verification are integrated into `pnpm check` and CI.
 - The root flake supplies Node 24, pnpm 11.17.0, Git, Markplane, Chromium, and
   a Nix-patched official workerd 1.20260826.1 binary for x86_64-linux. It points
-  Miniflare and Playwright at the Nix executables without patching the checkout
+  Miniflare and Playwright at the Nix executables and supplies Miniflare with
+  the Nixpkgs CA bundle for local outbound HTTPS, without patching the checkout
   or changing Cloudflare runtime semantics.
 
 The first slice deliberately does not declare optional `classnames`, `debug`,
