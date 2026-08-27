@@ -1,12 +1,12 @@
 ---
 id: TASK-6tfxd
 title: Create Groups and future Modules
-status: backlog
+status: in-progress
 priority: medium
 type: feature
 effort: medium
 epic: EPIC-m22qh
-plan: null
+plan: PLAN-7vmhd
 depends_on:
 - TASK-ubm2q
 blocks:
@@ -14,7 +14,7 @@ blocks:
 - TASK-7n2my
 - TASK-2u7z6
 related: []
-assignee: null
+assignee: gerkules
 tags:
 - group
 - module
@@ -22,7 +22,7 @@ tags:
 - ui
 position: c20
 created: 2026-08-27
-updated: 2026-08-27
+updated: 2026-08-28
 ---
 
 # Create Groups and future Modules
