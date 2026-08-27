@@ -70,17 +70,19 @@ under concurrent or stale attempts. No accepted state may record bootstrap as
 consumed without the first Admin User creation, and two requests must not both
 successfully create the first Admin User.
 
-The first slice exposes only narrow capabilities to read permanent bootstrap
-history, resolve a current Admin User by stable external principal, and claim
-the first Admin atomically. The claim uses one atomic D1 `batch()` containing
-the Admin insert and singleton-history insert; database constraints decide
-stale and concurrent losers and roll back the complete batch on failure. These
-capabilities do not justify a generic repository,
+The first Admin slice exposes only narrow capabilities to read permanent
+bootstrap history, resolve a current Admin User by stable external principal,
+and claim the first Admin atomically. The claim uses one atomic D1 `batch()`
+containing the Admin insert and singleton-history insert; database constraints
+decide stale and concurrent losers and roll back the complete batch on failure.
+These capabilities do not justify a generic repository,
 `DatabaseService`, unit of work, generic CRUD/data-access package, or shared
 infrastructure package. The initial booking schema is limited to the Admin User
 state, permanent bootstrap history, and integrity constraints required by this
-slice; future Course, Group, Module, Invite, Participant, Course Assignment,
-and Module Selection schema waits for the work that needs it.
+slice. The implemented Course slice separately owns narrow list, stable-detail,
+and guarded-create capabilities over `courses`; future Group, Module, Invite,
+Participant, Course Assignment, and Module Selection schema waits for the work
+that needs it.
 
 ## Environment Isolation
 
@@ -118,11 +120,13 @@ change requires an explicit exceptional deployment decision.
 
 ## Current State And Persistence Lifecycle
 
-The application has local/test D1 bindings and one version-controlled migration
-at `apps/booking-system-web/migrations/0001_first_admin_foundation.sql`. It
-creates the Better Auth `user`, `session`, `account`, and `verification`
-technical tables and indexes plus `admin_users` and
-`admin_bootstrap_history`. No remote D1 database exists.
+The application has local/test D1 bindings and two version-controlled
+migrations. `0001_first_admin_foundation.sql` creates the Better Auth `user`,
+`session`, `account`, and `verification` technical tables and indexes plus
+`admin_users` and `admin_bootstrap_history`. `0002_courses.sql` adds the
+booking-owned `courses` table with stable identity, required name/timezone,
+optional description, and constrained Active/Archived state. No remote D1
+database exists.
 
 ### Implemented First Schema
 
@@ -135,6 +139,12 @@ The first schema includes:
 - Worker/D1-compatible persistence integration; and
 - local/test database bindings and configuration needed by implemented
   behavior.
+
+The second additive migration preserves the first schema during upgrade. A
+single guarded `insert ... select ... where exists` accepts Course creation
+only while the acting Admin row is still Active; duplicate names have no
+uniqueness constraint and independent accepted submissions retain distinct
+Course identities.
 
 The full migration sequence is applied to clean isolated state in Worker tests
 and before browser E2E. The schema is designed for eventual D1 deployment. A

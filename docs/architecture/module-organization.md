@@ -2,13 +2,13 @@
 
 ## Accepted Initial Conceptual Target
 
-The `packages/booking` workspace currently contains the `admin-access`
-responsibility required by first Admin bootstrap. The accepted later package
-scope also names `course-structure`, `course-access`, and
+The `packages/booking` workspace currently contains `admin-access` for first
+Admin bootstrap and `course-structure` for minimal Course creation. The
+accepted later package scope also names `course-access` and
 `module-participation`; they do not exist until their product behavior is
 implemented. These concepts remain modules inside one domain package rather
-than separate workspaces. `admin-access` owns product policy, not
-authentication-provider SDK or Admin UI mechanics.
+than separate workspaces. Both implemented modules own product policy, not
+authentication-provider SDK, HTTP, D1, or Admin UI mechanics.
 
 The `apps/booking-system-web` workspace is the single application composition
 boundary. Its first-level source responsibilities are `browser`, `worker`, and
@@ -79,14 +79,15 @@ test-authentication implementation imports from entering `packages/booking`.
 The first slice uses `browser`, `worker`, and `authentication` as its initial
 first-level names, introduced together with real source and map declarations.
 
-The first Admin implementation separates three application roles: the browser
-Admin sign-in/bootstrap flow, Worker-side Admin-bootstrap/API handling, and
-application-private authentication. The browser slice may use Better Auth's
-browser client for session initiation and termination while Google provider
-configuration stays in the authentication and Worker composition roles. A
-thin composition entry may join only the roles required for its executable
-graph. The browser communicates with Worker behavior through same-origin HTTP
-rather than importing Worker implementation to share transport data.
+The implemented Admin and Course slices preserve three application roles: the
+browser sign-in/bootstrap and Course routes, Worker-side Admin/Course HTTP and
+D1 handling, and application-private authentication. The browser slice may use
+Better Auth's browser client for session initiation and termination while
+Google provider configuration stays in the authentication and Worker
+composition roles. A thin composition entry may join only the roles required
+for its executable graph. The browser communicates with Worker behavior
+through same-origin HTTP rather than importing Worker implementation to share
+transport data.
 
 ## Vertical Slices
 

@@ -1,4 +1,5 @@
 import { createAdminHttpHandler } from "./admin-bootstrap/index.js";
+import { createCourseHttpHandler } from "./course-structure/index.js";
 
 /**
  * Create the normal Worker request application around narrow capabilities.
@@ -9,12 +10,20 @@ import { createAdminHttpHandler } from "./admin-bootstrap/index.js";
 export function createWorkerApplication({
   authentication,
   createAdminUserId,
-  persistence,
+  createCourseId,
+  adminPersistence,
+  coursePersistence,
 }) {
   const handleAdminHttpRequest = createAdminHttpHandler({
     authenticate: authentication.authenticate,
     createAdminUserId,
-    persistence,
+    persistence: adminPersistence,
+  });
+  const handleCourseHttpRequest = createCourseHttpHandler({
+    authenticate: authentication.authenticate,
+    createCourseId,
+    adminPersistence,
+    coursePersistence,
   });
 
   return async function handleWorkerRequest(request) {
@@ -30,6 +39,13 @@ export function createWorkerApplication({
 
     if (pathname.startsWith("/api/auth/")) {
       return authentication.handleAuthRequest(request);
+    }
+
+    if (
+      pathname === "/api/admin/courses" ||
+      pathname.startsWith("/api/admin/courses/")
+    ) {
+      return handleCourseHttpRequest(request);
     }
 
     if (pathname.startsWith("/api/admin/")) {

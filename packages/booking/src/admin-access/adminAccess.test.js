@@ -108,11 +108,12 @@ describe("Admin context", () => {
 });
 
 describe("Public booking package interface", () => {
-  it("exports only the narrow Admin-access operation factories", async () => {
+  it("exports only the implemented booking operation factories", async () => {
     const publicInterface = await import("../index.js");
 
     expect(Object.keys(publicInterface).sort()).toEqual([
       "createBootstrapFirstAdmin",
+      "createCreateCourse",
       "createGetAdminAuthenticationEntry",
       "createResolveAdminContext",
     ]);

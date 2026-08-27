@@ -6,8 +6,9 @@ for one concept and update this file when stable terminology changes.
 ## Repository Concepts
 
 The product concepts below are accepted specification truth. The first Admin
-bootstrap subset is implemented; the remaining concepts and later lifecycle
-behavior are still specifications until their delivery tasks complete.
+bootstrap and Course create/view subsets are implemented; remaining concepts
+and later lifecycle behavior are still specifications until their delivery
+tasks complete.
 
 ### Admin-Assisted Booking
 
@@ -206,9 +207,10 @@ model](architecture/authentication-and-sessions.md#session-model).
 ### Booking Package
 
 The conceptual domain package `@booking-system/booking` at `packages/booking`.
-Its implemented `admin-access` module owns the first Admin behavior; the
-accepted `course-structure`, `course-access`, and `module-participation`
-modules arrive with later product slices. See
+Its implemented `admin-access` module owns the first Admin behavior, and its
+implemented `course-structure` module owns Course creation policy. The
+accepted `course-access` and `module-participation` modules arrive with later
+product slices. See
 [Packages](architecture/packages.md#accepted-initial-package).
 
 ### Booking-System Web Application

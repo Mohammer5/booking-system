@@ -379,6 +379,12 @@ non-production Worker separately imports the authentication-owned fixture
 interface. Automated Worker and browser tests exercise normal sessions and
 prove the production fixture path fails closed without establishing a session.
 
+The implemented Course index/create/detail requests reuse that one session and
+freshly resolve current Admin User state for every request. Course identity,
+state, and authority remain absent from the session; the Course insert also
+guards against an Admin becoming Disabled between initial resolution and write
+acceptance.
+
 Google is configured from environment-owned values, and the `/admin` browser
 uses Better Auth's supported client to start Google sign-in with fixed success
 and sanitized same-origin failure destinations and to terminate sessions on

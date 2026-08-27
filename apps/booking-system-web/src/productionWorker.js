@@ -1,6 +1,7 @@
 import { createAuthentication } from "./authentication/index.js";
 import {
   createAdminPersistence,
+  createCoursePersistence,
   createWorkerApplication,
 } from "./worker/index.js";
 
@@ -17,7 +18,9 @@ export default {
     const handleWorkerRequest = createWorkerApplication({
       authentication,
       createAdminUserId: () => crypto.randomUUID(),
-      persistence: createAdminPersistence(environment.DB),
+      createCourseId: () => crypto.randomUUID(),
+      adminPersistence: createAdminPersistence(environment.DB),
+      coursePersistence: createCoursePersistence(environment.DB),
     });
 
     return handleWorkerRequest(request);

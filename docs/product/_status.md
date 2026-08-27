@@ -24,8 +24,10 @@ but implementation planning does not need to invent behavior for the cases
 covered here.
 
 This product area remains the implementation-agnostic source of product truth.
-The repository now implements the first Admin bootstrap subset, including its
-one-time creation and fresh Admin-context behavior. Course, Group, Module,
+The repository now implements the first Admin bootstrap subset and the first
+[Course](../DICTIONARY.md#course) subset: an Active Admin User can create an
+Active Course with the canonical minimal fields and inspect it through the
+Course index and stable detail route. Course editing/archival, Group, Module,
 Participant, Assignment, Selection, Invite, later Admin onboarding, and Admin
 management behavior remain unimplemented. Technology, persistence, API,
 frontend, and infrastructure mechanics remain outside this product

@@ -187,7 +187,9 @@ function ApplicationNavigation({ onNavigate, translate }) {
  * @returns {"participant" | "admin"} Current browser context.
  */
 function currentContext(pathname) {
-  return pathname === "/admin" ? "admin" : "participant";
+  return pathname === "/admin" || pathname.startsWith("/admin/")
+    ? "admin"
+    : "participant";
 }
 
 /**

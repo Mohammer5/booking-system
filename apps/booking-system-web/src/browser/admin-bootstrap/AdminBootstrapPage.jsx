@@ -8,11 +8,10 @@ import {
 } from "@mui/material";
 import { useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
-import { useSearchParams } from "react-router";
+import { Outlet, useSearchParams } from "react-router";
 
 import { AdminRegistrationForm } from "./AdminRegistrationForm.jsx";
 import { AdminSignOutButton } from "./AdminSignOutButton.jsx";
-import { AdministrationContext } from "./AdministrationContext.jsx";
 import { GoogleSignInButton } from "./GoogleSignInButton.jsx";
 import { useAdminBootstrap } from "./useAdminBootstrap.js";
 
@@ -30,6 +29,10 @@ export function AdminBootstrapPage() {
   const authenticationFailureRef = useRef(null);
   const isLoading =
     adminFlow.entryQuery.isPending || adminFlow.currentAdminQuery.isPending;
+  const isActiveAdmin =
+    !isLoading &&
+    !adminFlow.entryQuery.isError &&
+    adminFlow.currentAdminQuery.isSuccess;
 
   useEffect(() => {
     if (isAuthenticationFailure && !isLoading) {
@@ -39,44 +42,96 @@ export function AdminBootstrapPage() {
 
   return (
     <>
-      <Paper
-        elevation={3}
-        sx={{
-          maxWidth: "38rem",
-          mx: "auto",
-          overflowWrap: "anywhere",
-          p: { xs: 3, sm: 5 },
-          width: "100%",
-        }}
-      >
-        <Stack spacing={3}>
-          {isAuthenticationFailure && !isLoading ? (
-            <Alert
-              ref={authenticationFailureRef}
-              severity="error"
-              tabIndex={-1}
-            >
-              {t("adminAccess.authentication.failure")}
-            </Alert>
-          ) : null}
-          <AdminBootstrapContent
-            adminFlow={adminFlow}
-            isLoading={isLoading}
-            translate={t}
-          />
-        </Stack>
-      </Paper>
-      <Snackbar
-        anchorOrigin={{ horizontal: "center", vertical: "bottom" }}
-        autoHideDuration={6000}
-        onClose={() => adminFlow.signOutMutation.reset()}
-        open={adminFlow.signOutMutation.isSuccess}
-      >
-        <Alert role="status" severity="success" variant="filled">
-          {t("adminAccess.authentication.signOutSuccess")}
-        </Alert>
-      </Snackbar>
+      {isActiveAdmin ? (
+        <ActiveAdminOutlet adminFlow={adminFlow} />
+      ) : (
+        <AdminEntrySurface
+          adminFlow={adminFlow}
+          authenticationFailureRef={authenticationFailureRef}
+          isAuthenticationFailure={isAuthenticationFailure}
+          isLoading={isLoading}
+          translate={t}
+        />
+      )}
+      <SignOutNotification adminFlow={adminFlow} translate={t} />
     </>
+  );
+}
+
+/**
+ * Supply current Active Admin state only to authorized nested routes.
+ *
+ * @param {object} props Active Admin state.
+ * @returns {import("react").ReactElement} The nested Admin route outlet.
+ */
+function ActiveAdminOutlet({ adminFlow }) {
+  return (
+    <Outlet
+      context={{
+        admin: adminFlow.currentAdminQuery.data,
+        hasJustBootstrapped: adminFlow.bootstrapMutation.isSuccess,
+        signOutMutation: adminFlow.signOutMutation,
+      }}
+    />
+  );
+}
+
+/**
+ * Present all non-Active administration entry and refusal states.
+ *
+ * @param {object} props Admin entry presentation state.
+ * @returns {import("react").ReactElement} The bounded Admin entry surface.
+ */
+function AdminEntrySurface(props) {
+  return (
+    <Paper
+      elevation={3}
+      sx={{
+        maxWidth: "38rem",
+        mx: "auto",
+        overflowWrap: "anywhere",
+        p: { xs: 3, sm: 5 },
+        width: "100%",
+      }}
+    >
+      <Stack spacing={3}>
+        {props.isAuthenticationFailure && !props.isLoading ? (
+          <Alert
+            ref={props.authenticationFailureRef}
+            severity="error"
+            tabIndex={-1}
+          >
+            {props.translate("adminAccess.authentication.failure")}
+          </Alert>
+        ) : null}
+        <AdminBootstrapContent
+          adminFlow={props.adminFlow}
+          isLoading={props.isLoading}
+          translate={props.translate}
+        />
+      </Stack>
+    </Paper>
+  );
+}
+
+/**
+ * Announce successful termination of the normal Admin session.
+ *
+ * @param {object} props Sign-out presentation state.
+ * @returns {import("react").ReactElement} The sign-out notification.
+ */
+function SignOutNotification({ adminFlow, translate }) {
+  return (
+    <Snackbar
+      anchorOrigin={{ horizontal: "center", vertical: "bottom" }}
+      autoHideDuration={6000}
+      onClose={() => adminFlow.signOutMutation.reset()}
+      open={adminFlow.signOutMutation.isSuccess}
+    >
+      <Alert role="status" severity="success" variant="filled">
+        {translate("adminAccess.authentication.signOutSuccess")}
+      </Alert>
+    </Snackbar>
   );
 }
 
@@ -136,10 +191,6 @@ function AdminBootstrapContent({ adminFlow, isLoading, translate }) {
  * @returns {import("react").ReactElement} The current-context state.
  */
 function FirstAdminEntry({ adminFlow, translate }) {
-  if (adminFlow.currentAdminQuery.isSuccess) {
-    return <ActiveAdministration adminFlow={adminFlow} />;
-  }
-
   if (adminFlow.currentAdminQuery.error.outcome === "unauthenticated") {
     return (
       <Stack component="section" spacing={3}>
@@ -184,10 +235,6 @@ function FirstAdminEntry({ adminFlow, translate }) {
  * @returns {import("react").ReactElement} The current-context state.
  */
 function CurrentAdministration({ adminFlow, translate }) {
-  if (adminFlow.currentAdminQuery.isSuccess) {
-    return <ActiveAdministration adminFlow={adminFlow} />;
-  }
-
   if (adminFlow.currentAdminQuery.error.outcome === "unauthenticated") {
     return (
       <Stack component="section" spacing={3}>
@@ -206,22 +253,6 @@ function CurrentAdministration({ adminFlow, translate }) {
   }
 
   return <RefusedAdministration adminFlow={adminFlow} translate={translate} />;
-}
-
-/**
- * Present an authenticated Active Admin and session recovery action.
- *
- * @param {object} props Presentation properties.
- * @returns {import("react").ReactElement} The Active administration state.
- */
-function ActiveAdministration({ adminFlow }) {
-  return (
-    <AdministrationContext
-      admin={adminFlow.currentAdminQuery.data}
-      hasJustBootstrapped={adminFlow.bootstrapMutation.isSuccess}
-      signOutMutation={adminFlow.signOutMutation}
-    />
-  );
 }
 
 /**

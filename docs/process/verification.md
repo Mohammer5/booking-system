@@ -86,6 +86,14 @@ journey and a later principal's bootstrap refusal. The task implementation plan
 assigns the detailed assertions without duplicating every invariant at every
 layer.
 
+For Course create/view, booking-domain Vitest owns minimal fields, timezone
+validation/defaulting, nonunique names, Active outcome, and no-effect refusals.
+Worker/D1 Vitest owns clean and upgrade migrations, stable persistence,
+guarded stale-Admin acceptance, concurrent independent creation, exact HTTP
+outcomes, and production composition. Playwright owns the German empty/create/
+detail/refresh journey, validation and refusal focus, responsive layout,
+pre-authorization privacy, and accessible route states.
+
 The implemented integration uses project-pinned `@cloudflare/vitest-plugin`
 with isolated D1 state and the version-controlled migration sequence.
 
@@ -145,10 +153,11 @@ viewports. Axe supplements rather than replaces assertions for
 landmarks/headings, named list navigation, control names, keyboard-only
 activation, visible focus, field/error association, Drawer/Dialog trapping and
 restoration, result/error focus, direct navigation and refresh, request-free
-Participant entry, and absence of horizontal overflow. The current eight-test
+Participant entry, and absence of horizontal overflow. The current eleven-test
 suite also proves that one fixed normal session remains usable while navigating
-between Participant and Admin contexts and that successful sign-out terminates
-that session.
+between Participant and Admin contexts, successful sign-out terminates that
+session, and an Active Admin can create and revisit a Course while missing
+Admin context causes no Course request.
 
 On browser-test failure, CI should retain short-lived useful diagnostics such
 as the Playwright report, traces, screenshots, and relevant logs. Artifacts

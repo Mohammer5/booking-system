@@ -39,11 +39,12 @@ architectural permissions and runtime graphs remain separate.
 
 ## Current Responsibility Modules
 
-The booking map declares one `admin-access` module with no sibling,
-third-party, or workspace edges. Its root `src/index.js` composition may import
-only the `admin-access/index.js` interface. Tests may import Vitest and the
-declared root composition. Booking production code cannot import application,
-Worker/Cloudflare, D1, Better Auth, HTTP, or browser/UI implementation.
+The booking map declares `admin-access` and `course-structure` modules, each
+with no sibling, third-party, or workspace edges. Its root `src/index.js`
+composition may import only those two module interfaces. Tests may import
+Vitest and the declared root composition. Booking production code cannot
+import application, Worker/Cloudflare, D1, Better Auth, HTTP, or browser/UI
+implementation.
 
 The application map declares:
 
@@ -74,6 +75,12 @@ Cloudflare, or the booking package; its narrow Better Auth client import talks
 to the same-origin authentication HTTP surface rather than crossing a source
 module edge. Authentication cannot import booking policy or browser source. No
 generic shared or contracts package exists for the small HTTP shapes.
+
+The Course change adds second-level `course-structure` slices within the
+existing browser and Worker responsibilities. It changes no first-level
+application-module edge: Worker source continues to use only the exact booking
+package root, and browser source continues to reach Course behavior only over
+same-origin HTTP.
 
 ## Map Shape
 

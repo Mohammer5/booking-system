@@ -16,7 +16,8 @@ domain and behavior.
 ### Product Status
 - Path: `docs/product/_status.md`
 - Summary: Closed first-release product-contract state, explicit v1 scope
-  boundaries, and the intentionally absent product implementation.
+  boundaries, implemented Admin-bootstrap and Course create/view subsets, and
+  the remaining product implementation gap.
 - Read when: You need to distinguish accepted first-release behavior and
   non-goals from implementation state.
 - Tags: product, status, current-state, v1, implementation

@@ -1,6 +1,7 @@
-import { Alert, Box, Chip, Stack, Typography } from "@mui/material";
+import { Alert, Box, Button, Chip, Stack, Typography } from "@mui/material";
 import { useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
+import { Link as RouterLink, useOutletContext } from "react-router";
 
 import { AdminSignOutButton } from "./AdminSignOutButton.jsx";
 
@@ -32,6 +33,7 @@ export function AdministrationContext({
       aria-labelledby="administration-context-title"
       component="section"
       spacing={3}
+      sx={{ overflowWrap: "anywhere" }}
     >
       {hasJustBootstrapped ? (
         <Alert
@@ -48,8 +50,27 @@ export function AdministrationContext({
       </Typography>
       <AdministrationDetails admin={admin} translate={t} />
       <AdminSignOutButton signOutMutation={signOutMutation} />
+      <Button
+        component={RouterLink}
+        sx={{ alignSelf: "flex-start" }}
+        to="/admin/courses"
+        variant="contained"
+      >
+        {t("adminAccess.context.courses")}
+      </Button>
     </Stack>
   );
+}
+
+/**
+ * Read the Active Admin gate context for the administration index route.
+ *
+ * @returns {import("react").ReactElement} The administration index content.
+ */
+export function AdministrationContextRoute() {
+  const context = useOutletContext();
+
+  return <AdministrationContext {...context} />;
 }
 
 /**

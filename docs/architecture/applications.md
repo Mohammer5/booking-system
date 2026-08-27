@@ -44,12 +44,12 @@ workspaces, and their two audiences do not by themselves justify permanent
 audience-first source buckets. See [browser conventions](browser-conventions.md)
 for the accepted browser libraries and their responsibilities.
 
-The implemented browser exposes a request-free Participant entry at `/` and
-the existing administration entry at `/admin` through one responsive MUI
-shell. Navigation between them preserves the same browser cookie and Better
-Auth principal; the Participant entry neither selects a role nor creates or
-reveals booking-domain records. Both paths are direct-navigation and
-refresh-safe through the application-owned SPA fallback.
+The implemented browser exposes a request-free Participant entry at `/`, the
+administration entry at `/admin`, and nested Course index/create/detail routes
+through one responsive MUI shell. Navigation preserves the same browser cookie
+and Better Auth principal; the Participant entry neither selects a role nor
+creates or reveals booking-domain records. Every route is direct-navigation
+and refresh-safe through the application-owned SPA fallback.
 
 Better Auth remains private to this application and resolves a request to one
 stable external principal. The application then uses participant or
@@ -94,6 +94,31 @@ dependencies, Worker/API runtime dependencies, application build and
 development tooling, and the dependency on `packages/booking`. Sharing that
 manifest does not make each dependency architecturally available to every
 source responsibility or include it in every runtime output.
+
+### Course Administration HTTP Surface
+
+The first `course-structure` application slice adds three concrete same-origin
+operations:
+
+```text
+GET  /api/admin/courses
+POST /api/admin/courses
+GET  /api/admin/courses/:courseId
+```
+
+| Operation | Authentication and current state | Results |
+| --- | --- | --- |
+| Course index | Normal session resolving a current Active Admin | `200 { courses }`; `401 unauthenticated`; exact `403` missing/Disabled Admin |
+| Course creation | Same plus guarded Active-Admin write acceptance | `201` narrow Course; `401`; exact `403`; `422` field outcome |
+| Course detail | Normal session resolving a current Active Admin | `200` narrow Course; `401`; exact `403`; `404 course-not-found` |
+
+Course representations contain only `id`, `name`, `description`, `timezone`,
+and `state`. The server creates identity and Active state, ignores browser
+trust fields, freshly resolves Admin context for every request, and uses one
+guarded insert so an actor Disabled after page load creates nothing. The
+browser nests `/admin/courses`, `/admin/courses/new`, and
+`/admin/courses/:courseId` behind its current-Admin gate, while Worker
+authorization remains authoritative for every operation.
 
 ### No Separate API Application
 

@@ -45,6 +45,7 @@ export const adminBootstrapTranslations = {
       active: "Aktiv",
       superAdmin: "Super Admin",
       admin: "Admin",
+      courses: "Kurse verwalten",
     },
     status: {
       loading: "Administrationsstatus wird geladen …",

@@ -1,7 +1,7 @@
 ---
 id: PLAN-xtvcq
 title: Implement Course creation and Admin views
-status: draft
+status: done
 implements:
 - TASK-ubm2q
 related: []
@@ -159,8 +159,8 @@ write boundary so a stale submit cannot create a Course.
 
 ### Phase 1: Domain And Boundary
 
-- [ ] Implement/test the Course creation operation and public exports.
-- [ ] Add the `course-structure` booking responsibility to the deny-by-default
+- [x] Implement/test the Course creation operation and public exports.
+- [x] Add the `course-structure` booking responsibility to the deny-by-default
       map and its exact root interface permission.
 
 **Checkpoint**: pure tests prove minimal creation, validation, default timezone,
@@ -168,10 +168,10 @@ nonunique names, Active/empty outcome, and no extra capability call.
 
 ### Phase 2: Migration, Persistence, And Worker/API
 
-- [ ] Add migration 0002 and clean/upgrade schema evidence.
-- [ ] Implement/test Course persistence, stable identity, deterministic reads,
+- [x] Add migration 0002 and clean/upgrade schema evidence.
+- [x] Implement/test Course persistence, stable identity, deterministic reads,
       duplicate/concurrent creation, and guarded stale-actor refusal.
-- [ ] Compose and test exact authenticated Course HTTP routes/outcomes in both
+- [x] Compose and test exact authenticated Course HTTP routes/outcomes in both
       production and non-production Worker graphs.
 
 **Checkpoint**: Worker/D1 tests prove migration compatibility, authorization,
@@ -179,11 +179,11 @@ validation, atomic write acceptance, narrow serialization, and no implicit row.
 
 ### Phase 3: Browser Slice
 
-- [ ] Refactor the existing Admin state into the nested route gate without
+- [x] Refactor the existing Admin state into the nested route gate without
       changing bootstrap/authentication behavior.
-- [ ] Add German MUI index/create/detail routes, query/form state, navigation,
+- [x] Add German MUI index/create/detail routes, query/form state, navigation,
       success announcement, refusal focus, and responsive layouts.
-- [ ] Add Playwright real journey plus direct/refresh, empty/error/privacy,
+- [x] Add Playwright real journey plus direct/refresh, empty/error/privacy,
       keyboard/focus, desktop/360px, overflow, and axe evidence.
 
 **Checkpoint**: an Active Admin can discover, create, and revisit Courses by
@@ -191,12 +191,12 @@ URL while every non-Active context receives no Course data.
 
 ### Phase 4: Documentation And Completion
 
-- [ ] Update canonical implementation/status, package/module/boundary,
+- [x] Update canonical implementation/status, package/module/boundary,
       persistence, application/route, browser, verification, index, and
       dictionary wording; maintain no nonexistent co-located docs.
-- [ ] Run focused suites/build/boundary graph checks and canonical
+- [x] Run focused suites/build/boundary graph checks and canonical
       `nix develop -c corepack pnpm check`.
-- [ ] Complete task/plan evidence, Markplane state, validation, and semantic
+- [x] Complete task/plan evidence, Markplane state, validation, and semantic
       implementation commit.
 
 **Checkpoint**: code, schema, docs, Markplane, tests, and Git all agree the
@@ -232,20 +232,26 @@ a destructive down migration.
 
 ## Execution State
 
-- Current phase/checkpoint: source-grounded planning is complete; no product
-  code has changed.
-- Completed phase checkboxes: none; Phases 1-4 remain.
-- Next exact action: synchronize/check Markplane, validate the planning diff,
-  and commit the attached plan before starting Phase 1.
+- Current phase/checkpoint: Phases 1-4 and Markplane closure are complete; the
+  reviewed implementation commit remains.
+- Completed phase checkboxes: all Phase 1-4 items.
+- Next exact action: review and stage the complete task diff, create the
+  semantic implementation commit, and verify clean Git.
 - Persisted decisions: canonical Course/Admin/timezone/empty-state rules remain
   in product docs; implementation/API/schema/UI choices are recorded above.
-- Focused verification: rehydration confirmed both dependencies done, the task
-  ready and outside release hardening, current source/config/test seams, no
-  adjacent `*.docs.md`, and Cloudflare migration-slice support.
-- Remaining verification: every focused layer, production build/graph, full
-  `pnpm check`, Markplane validation, diff check, and clean committed tree.
-- Working tree: only the newly attached plan and task plan/date metadata are
-  changed; no unrelated changes are present.
+- Focused verification: 30 booking-domain Vitest cases pass; focused booking
+  source/boundary ESLint passes with zero warnings; 34 Worker/D1 cases pass
+  across six files; all 13 boundary-tooling cases pass; no changed file has an
+  adjacent `*.docs.md`; clean and upgrade migration paths are covered; both
+  production graphs build; all 11 Chromium tests pass across desktop/narrow
+  Course and existing Admin/shell journeys with axe and focus evidence. The
+  canonical full gate passes on 2026-08-28 with 9 repository-rule, 13 boundary,
+  30 booking-domain, 34 Worker/D1, both production-build, and 11 Chromium
+  results.
+- Remaining verification: implementation commit and clean Git.
+- Working tree: the planning checkpoint is committed; task-start metadata,
+  Phase 1-3 source/tests/migration/boundary/browser changes, and plan updates
+  are uncommitted.
 
 ## Pre-Approval Checklist
 

@@ -52,31 +52,37 @@ pre-implementation planning, and planning may proceed to creation of the real
 implementation backlog in Markplane. Release hardening and hosted staging
 verification remain mandatory before the first production release.
 
-The first local application foundation is now implemented:
+The local application foundation and first Course slice are now implemented:
 
 - `@booking-system/booking` at `packages/booking` owns the implemented
-  `admin-access` domain behavior;
+  `admin-access` behavior and minimal `course-structure` Course-creation
+  policy;
 - `@booking-system/booking-system-web` at `apps/booking-system-web` owns the
-  React `/` Participant entry and `/admin` administration flow, Worker/API
-  handling, Better Auth composition, D1 persistence, Vite/Workers Static
-  Assets integration, and local runtime;
-- one version-controlled migration creates the Better Auth core schema, Admin
-  User persistence, and permanent first-bootstrap history;
+  React `/` Participant entry, `/admin` administration flow, nested Course
+  index/create/detail routes, Worker/API handling, Better Auth composition, D1
+  persistence, Vite/Workers Static Assets integration, and local runtime;
+- two version-controlled migrations create the Better Auth/Admin foundation
+  and additive `courses` schema, with clean and data-preserving upgrade-path
+  evidence;
 - production and explicit non-production Worker compositions structurally
   separate fixed fixture-session establishment from production;
 - the `/admin` browser flow starts fixed-destination Google sign-in, requires
   authentication before the first-Admin name form, and supports Better Auth
   sign-out in every authenticated Admin-route outcome;
-- `/` and `/admin` are direct/refresh-safe German MUI contexts within one
+- `/`, `/admin`, `/admin/courses`, `/admin/courses/new`, and stable Course
+  detail routes are direct/refresh-safe German MUI contexts within one
   responsive shell; the request-free Participant entry creates no domain
   identity or membership and navigation preserves one principal/session;
+- each Course HTTP request freshly resolves Active Admin state, and Course
+  creation uses a guarded D1 insert so a stale actor creates no row;
 - free MUI Core and Emotion are pinned for browser use; one application theme
   and `CssBaseline` now style the complete `/admin` flow with responsive,
   visible-focus, semantic-status, and non-color-only presentation;
-- Playwright scans critical Admin and shell states with axe and explicitly
-  verifies desktop/narrow layout, keyboard activation, semantic navigation,
-  Drawer/Dialog focus trapping and restoration, labels/names, field-error
-  association, direct/refresh behavior, Participant privacy, and overflow;
+- Playwright scans critical Admin, Course, and shell states with axe and
+  explicitly verifies desktop/narrow layout, keyboard activation, semantic
+  navigation, Drawer/Dialog focus trapping and restoration, labels/names,
+  field-error association, direct/refresh behavior, Participant privacy, and
+  overflow;
 - both workspace boundary maps are registered in ESLint with exact module,
   workspace, composition, third-party, and test-only permissions;
 - the root Nix flake supplies NixOS developer-host tooling: Node, pnpm,
@@ -86,7 +92,9 @@ The first local application foundation is now implemented:
 - the canonical `pnpm check` now runs repository, domain, Worker/D1, migration,
   build, and Chromium browser evidence.
 
-Apple, Microsoft, and Facebook providers, all later MVP product capabilities,
+Apple, Microsoft, and Facebook providers, Course editing/lifecycle, Group,
+Module, Participant, Assignment, Selection, Invite, and later Admin
+capabilities,
 remote Google credentials and production callback/domain configuration, remote
 Cloudflare staging/production resources, release automation, deployment
 credentials, and production deployment remain absent. The account-bound

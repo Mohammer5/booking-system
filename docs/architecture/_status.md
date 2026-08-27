@@ -66,10 +66,11 @@
 - First Admin bootstrap availability is permanent historical state independent
   of current Admin User rows, and consuming bootstrap plus creating the first
   Active Super Admin is one atomic persistence outcome.
-- The implemented first slice has a same-origin Admin entry, Google sign-in and
-  Better Auth sign-out, bootstrap, and current-context HTTP surface with fixed
-  application destinations and browser input unable to select principal or
-  authority.
+- The implemented application slices have a same-origin Admin entry, Google
+  sign-in and Better Auth sign-out, bootstrap/current-context HTTP, and
+  freshly authorized Course index/create/detail HTTP. Application destinations
+  remain fixed and browser input cannot select principal, authority, Course
+  identity, or lifecycle state.
 - The initial infrastructure boundary is Worker, Workers Static Assets, and D1.
 - MVP implementation and local acceptance use Worker/D1-compatible tooling,
   configuration, and semantics from the beginning; a conventional
@@ -88,19 +89,23 @@
 
 - `@booking-system/booking` and `@booking-system/booking-system-web` are real
   modern-ESM workspaces with one manifest each.
-- The booking package currently exposes only the three `admin-access`
-  operation factories required by first Admin bootstrap and fresh context
-  resolution.
+- The booking package exposes the three `admin-access` operation factories
+  required by first Admin bootstrap/fresh context resolution plus the
+  `course-structure` Course-creation factory.
 - The web application has distinct `browser`, `worker`, and `authentication`
   responsibilities plus thin browser, production Worker, and non-production
   Worker compositions.
-- React Router serves the independently navigable `/` Participant entry and
-  `/admin` administration route. Both use one responsive browser-owned MUI
-  shell with desktop list navigation, a narrow modal Drawer, a skip link, and
-  stable route titles. The request-free Participant entry creates no identity,
-  membership, role, or Course-data exposure.
-- TanStack Query owns remote Admin state, React Hook Form owns the name form,
-  and German-first slice-owned i18next resources own all browser copy.
+- React Router serves the independently navigable `/` Participant entry,
+  `/admin` administration entry, and nested `/admin/courses`,
+  `/admin/courses/new`, and `/admin/courses/:courseId` views. They use one
+  responsive browser-owned MUI shell with desktop list navigation, a narrow
+  modal Drawer, a skip link, and stable route titles. The request-free
+  Participant entry creates no identity, membership, role, or Course-data
+  exposure.
+- TanStack Query owns remote Admin and Course state, React Hook Form owns the
+  Admin-name and Course forms, and German-first slice-owned i18next resources
+  own all browser copy. The current-Admin page is a nested route gate, so no
+  Course query mounts before an Active Admin resolves.
 - Free MUI Core 9.4.0 and its Emotion styling dependencies are pinned in the
   application manifest. One browser-owned theme and `CssBaseline` establish
   typography, spacing, surfaces, responsive breakpoints, and visible focus;
@@ -115,17 +120,19 @@
   behavior only as `externalPrincipalId`. Google sign-in uses the one normal
   `/api/auth/callback/google` provider callback and returns to `/admin`. Fixed
   non-production fixture identities use a separate executable composition.
-- A version-controlled D1 migration and atomic `D1Database.batch()` claim
-  implement permanent first-bootstrap history and exactly-one creation.
+- Two version-controlled D1 migrations implement the authentication/Admin
+  foundation and additive Course schema. Atomic `D1Database.batch()` preserves
+  exactly-one first bootstrap; a guarded Course insert rechecks Active Admin
+  state at write acceptance.
 - Both explicit workspace boundary maps are registered in ESLint. The boundary
   converter denies undeclared third-party imports and supports exact test-only
   and composition-interface permissions.
 - Repository, domain, Worker/D1, migration, production-composition, build, and
   Chromium E2E verification are integrated into `pnpm check` and CI. Critical
-  Admin and shell states receive axe scans plus explicit desktop/narrow,
-  keyboard, modal focus/trapping/restoration, semantic navigation,
-  name/label, error-association, direct/refresh, privacy, and overflow
-  assertions.
+  Admin, Course, and shell states receive axe scans plus explicit
+  desktop/narrow, keyboard, modal focus/trapping/restoration, semantic
+  navigation, name/label, error-association, direct/refresh, privacy, stale
+  refusal, and overflow assertions.
 - The root flake supplies Node 24, pnpm 11.17.0, Git, Markplane, Chromium, and
   a Nix-patched official workerd 1.20260826.1 binary for x86_64-linux. It points
   Miniflare and Playwright at the Nix executables and supplies Miniflare with

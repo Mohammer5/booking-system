@@ -1,7 +1,15 @@
 import { Navigate, Route, Routes } from "react-router";
 
-import { AdminBootstrapPage } from "./admin-bootstrap/index.js";
+import {
+  AdminBootstrapPage,
+  AdministrationContextRoute,
+} from "./admin-bootstrap/index.js";
 import { ResponsiveApplicationShell } from "./application-shell/index.js";
+import {
+  CourseCreatePage,
+  CourseDetailPage,
+  CourseIndexPage,
+} from "./course-structure/index.js";
 import { ParticipantEntryPage } from "./participant-entry/index.js";
 
 /**
@@ -27,7 +35,12 @@ export function BrowserApplication() {
             <AdminBootstrapPage />
           </ResponsiveApplicationShell>
         }
-      />
+      >
+        <Route index element={<AdministrationContextRoute />} />
+        <Route path="courses" element={<CourseIndexPage />} />
+        <Route path="courses/new" element={<CourseCreatePage />} />
+        <Route path="courses/:courseId" element={<CourseDetailPage />} />
+      </Route>
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );

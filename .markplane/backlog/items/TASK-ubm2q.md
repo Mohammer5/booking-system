@@ -1,7 +1,7 @@
 ---
 id: TASK-ubm2q
 title: Create and view Courses
-status: backlog
+status: done
 priority: medium
 type: feature
 effort: medium
@@ -15,7 +15,7 @@ blocks:
 - TASK-z6hut
 - TASK-k2ckf
 related: []
-assignee: null
+assignee: gerkules
 tags:
 - course
 - admin
@@ -38,24 +38,24 @@ Course index/detail path, not only as a domain function or endpoint.
 
 ## Acceptance Criteria
 
-- [ ] An Active Admin User can create and subsequently view a Course with a
+- [x] An Active Admin User can create and subsequently view a Course with a
       required name that is non-blank after trimming and an optional
       description; Course names need not be unique and are not identity.
-- [ ] The Course has one valid IANA/TZDB timezone, defaults to
+- [x] The Course has one valid IANA/TZDB timezone, defaults to
       `Europe/Berlin` when none is chosen, and rejects a fixed UTC offset as a
       timezone substitute.
-- [ ] A successfully created Course is Active with zero Groups, zero Modules,
+- [x] A successfully created Course is Active with zero Groups, zero Modules,
       zero Course Assignments, and no Course Invite.
-- [ ] Creating the Course does not implicitly create any other business
+- [x] Creating the Course does not implicitly create any other business
       object.
 
-- [ ] Only a freshly resolved Active Admin User may create or inspect Courses;
+- [x] Only a freshly resolved Active Admin User may create or inspect Courses;
       unauthenticated, missing, and Disabled Admin contexts are refused, and a
       stale submit after actor disable creates nothing.
-- [ ] D1 persistence and version-controlled migrations preserve stable Course
+- [x] D1 persistence and version-controlled migrations preserve stable Course
       identity, lifecycle state, optional description, and valid timezone;
       concurrent submissions create only their independently accepted Courses.
-- [ ] The Admin browser provides a directly navigable Course index with a
+- [x] The Admin browser provides a directly navigable Course index with a
       truthful empty state, create action, and links to refresh-safe Course
       detail views. A successful create makes the new Course reachable without
       requiring a guessed URL.

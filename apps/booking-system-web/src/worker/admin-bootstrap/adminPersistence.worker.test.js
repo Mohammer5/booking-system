@@ -25,7 +25,7 @@ describe("clean migration sequence", () => {
         where type = 'table'
           and name in (
             'user', 'session', 'account', 'verification',
-            'admin_users', 'admin_bootstrap_history'
+            'admin_users', 'admin_bootstrap_history', 'courses'
           )
         order by name`,
     ).all();
@@ -34,6 +34,7 @@ describe("clean migration sequence", () => {
       "account",
       "admin_bootstrap_history",
       "admin_users",
+      "courses",
       "session",
       "user",
       "verification",

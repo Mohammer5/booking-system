@@ -35,14 +35,16 @@ modules:
   Course access, and membership; and
 - `module-participation` for Module participation.
 
-Only `admin-access` exists in source today, implementing the first Admin
-bootstrap subset. The remaining modules are introduced only with the later MVP
-behavior they own. These are internal responsibility modules within one booking
-package, not separate workspace packages.
+`admin-access` and `course-structure` now exist in source. The former implements
+the first Admin bootstrap subset; the latter implements minimal Active Course
+creation with name, optional description, IANA timezone/default, and current
+Admin acceptance outcomes. The remaining modules are introduced only with the
+later MVP behavior they own. These are internal responsibility modules within
+one booking package, not separate workspace packages.
 
 Authentication-provider SDK mechanics, Admin UI implementation, HTTP, Vite,
 Cloudflare, and D1 remain private to `apps/booking-system-web`; `admin-access`
-owns only product policy and conceptual outcomes.
+and `course-structure` own only their product policy and conceptual outcomes.
 
 The same prohibition covers Better Auth, OAuth/provider SDKs, cookies,
 sessions, Cloudflare authentication integration, and non-production

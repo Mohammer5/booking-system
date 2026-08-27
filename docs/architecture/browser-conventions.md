@@ -67,19 +67,21 @@ guidance.
 `src/browser/applicationTheme.js` owns the single theme: system typography,
 eight-pixel spacing, explicit responsive breakpoints, application surfaces,
 and a high-contrast three-pixel visible-focus outline. `main.jsx` applies that
-theme and `CssBaseline` once. The existing Admin authentication/bootstrap,
-current-context, refusal, failure, and sign-out states use free MUI Core
-components directly without changing their browser, HTTP, authentication, or
-domain behavior. The Participant and Admin routes share one responsive
-browser-owned shell with a banner, named list navigation, narrow modal Drawer,
-skip link, and one main landmark; route content remains slice-owned.
+theme and `CssBaseline` once. The Admin authentication/bootstrap,
+current-context, refusal, failure, and sign-out states plus the Course
+index/create/detail states use free MUI Core components directly without
+changing their HTTP, authentication, or domain ownership. The Participant and
+Admin routes share one responsive browser-owned shell with a banner, named
+list navigation, narrow modal Drawer, skip link, and one main landmark; route
+content remains slice-owned.
 
 The local Playwright harness uses `@axe-core/playwright` 4.13.0 for automated
-scans of the critical Admin states and both application contexts at desktop
+scans of critical Admin/Course states and both application contexts at desktop
 and 360px widths. Explicit assertions separately cover landmarks and headings,
 accessible names, keyboard activation, visible focus, field/error association,
 Drawer/Dialog trapping and restoration, result/error focus, direct navigation
-and refresh, request-free Participant entry, and horizontal overflow.
+and refresh, pre-authorization Course privacy, request-free Participant entry,
+and horizontal overflow.
 
 MUI X Community may be introduced only for a concrete need such as date/time
 input; its Community packages are MIT-licensed, while Pro and Premium packages
@@ -128,7 +130,9 @@ locale. Direct navigation or refresh to frontend routes must work within the
 accepted same-origin Worker and static-assets deployment, while `/api/*`
 remains Worker/API-owned. [Runtime and hosting](runtime-and-hosting.md) owns the
 deployment and fallback behavior. The current independently navigable routes
-are the Participant entry at `/` and administration entry at `/admin`.
+are the Participant entry at `/`, administration entry at `/admin`, Course
+index at `/admin/courses`, creation at `/admin/courses/new`, and stable detail
+at `/admin/courses/:courseId`.
 
 ## Browser Authentication
 
@@ -243,8 +247,9 @@ moduleParticipation.selection.save
 Translation resources follow conceptual and vertical-slice ownership where
 practical. Do not anticipate reuse with one giant generic `common` namespace
 or a technical shared package. The browser composition combines resources
-owned by the application shell, Participant entry, and Admin-bootstrap slices;
-the Admin resources retain the `adminAccess` semantic key family.
+owned by the application shell, Participant entry, Admin-bootstrap, and Course
+structure slices; the Admin and Course resources retain the `adminAccess` and
+`courseStructure` semantic key families.
 
 ## Local Ownership And Late Abstraction
 

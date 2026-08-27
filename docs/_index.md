@@ -15,8 +15,9 @@ This repository uses an indexed global documentation system.
 ### Docs Status
 - Path: `docs/_status.md`
 - Summary: Present accepted product and technical direction, the implemented
-  local application, responsive MUI Admin/Participant shell, Google
-  authentication, live tooling, and intentionally deferred release surfaces.
+  local application and Course create/view slice, responsive MUI
+  Admin/Participant shell, Google authentication, live tooling, and
+  intentionally deferred release surfaces.
 - Read when: You need the current documentation or repository baseline.
 - Tags: docs, status, template
 
@@ -55,9 +56,9 @@ This repository uses an indexed global documentation system.
 - Path: `docs/architecture/_index.md`
 - Summary: Conceptual-domain-first source organization, JavaScript functional
   composition and MUI-based browser conventions including the responsive
-  Admin/Participant shell, implemented runtime, persistence, and Google
-  authentication direction, NixOS developer-host tooling, ESLint enforcement,
-  and explicit dependency boundaries.
+  Admin/Participant shell and Course routes, implemented runtime/persistence,
+  Google authentication direction, NixOS developer-host tooling, ESLint
+  enforcement, and explicit dependency boundaries.
 - Read when: A task affects source layout, dependencies, modules, exports,
   applications, packages, JavaScript or browser conventions, runtime,
   persistence, authentication, sessions, ESLint, or boundary maps.
