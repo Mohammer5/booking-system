@@ -44,6 +44,13 @@ workspaces, and their two audiences do not by themselves justify permanent
 audience-first source buckets. See [browser conventions](browser-conventions.md)
 for the accepted browser libraries and their responsibilities.
 
+The implemented browser exposes a request-free Participant entry at `/` and
+the existing administration entry at `/admin` through one responsive MUI
+shell. Navigation between them preserves the same browser cookie and Better
+Auth principal; the Participant entry neither selects a role nor creates or
+reveals booking-domain records. Both paths are direct-navigation and
+refresh-safe through the application-owned SPA fallback.
+
 Better Auth remains private to this application and resolves a request to one
 stable external principal. The application then uses participant or
 administration context to resolve the relevant current domain identity and

@@ -57,8 +57,9 @@ The first local application foundation is now implemented:
 - `@booking-system/booking` at `packages/booking` owns the implemented
   `admin-access` domain behavior;
 - `@booking-system/booking-system-web` at `apps/booking-system-web` owns the
-  React `/admin` flow, Worker/API handling, Better Auth composition, D1
-  persistence, Vite/Workers Static Assets integration, and local runtime;
+  React `/` Participant entry and `/admin` administration flow, Worker/API
+  handling, Better Auth composition, D1 persistence, Vite/Workers Static
+  Assets integration, and local runtime;
 - one version-controlled migration creates the Better Auth core schema, Admin
   User persistence, and permanent first-bootstrap history;
 - production and explicit non-production Worker compositions structurally
@@ -66,12 +67,16 @@ The first local application foundation is now implemented:
 - the `/admin` browser flow starts fixed-destination Google sign-in, requires
   authentication before the first-Admin name form, and supports Better Auth
   sign-out in every authenticated Admin-route outcome;
+- `/` and `/admin` are direct/refresh-safe German MUI contexts within one
+  responsive shell; the request-free Participant entry creates no domain
+  identity or membership and navigation preserves one principal/session;
 - free MUI Core and Emotion are pinned for browser use; one application theme
   and `CssBaseline` now style the complete `/admin` flow with responsive,
   visible-focus, semantic-status, and non-color-only presentation;
-- Playwright scans critical Admin states with axe and explicitly verifies
-  desktop/narrow layout, keyboard activation, focus, labels/names,
-  field-error association, refresh, and overflow behavior;
+- Playwright scans critical Admin and shell states with axe and explicitly
+  verifies desktop/narrow layout, keyboard activation, semantic navigation,
+  Drawer/Dialog focus trapping and restoration, labels/names, field-error
+  association, direct/refresh behavior, Participant privacy, and overflow;
 - both workspace boundary maps are registered in ESLint with exact module,
   workspace, composition, third-party, and test-only permissions;
 - the root Nix flake supplies NixOS developer-host tooling: Node, pnpm,

@@ -1,7 +1,7 @@
 ---
 id: TASK-dfq2k
 title: Establish responsive application shells and interaction states
-status: backlog
+status: done
 priority: high
 type: enhancement
 effort: medium
@@ -15,7 +15,7 @@ blocks:
 - TASK-k2ckf
 - TASK-wny83
 related: []
-assignee: null
+assignee: gerkules
 tags:
 - ui
 - navigation
@@ -23,7 +23,7 @@ tags:
 - accessibility
 position: b10
 created: 2026-08-27
-updated: 2026-08-27
+updated: 2026-08-28
 ---
 
 # Establish responsive application shells and interaction states
@@ -42,26 +42,26 @@ later vertical tasks own their domain operations and slice-local forms.
 
 ## Acceptance Criteria
 
-- [ ] Admin and Participant contexts have responsive MUI application shells,
+- [x] Admin and Participant contexts have responsive MUI application shells,
       stable language-independent entry routes, clear context-appropriate
       navigation, and direct-navigation/refresh behavior through the existing
       same-origin SPA fallback; `/api/*` remains Worker-owned.
-- [ ] The Participant entry does not imply a second session or session role:
+- [x] The Participant entry does not imply a second session or session role:
       it uses the same Better Auth principal, creates no Participant or Course
       membership, and exposes no Course data before later onboarding/access
       tasks authorize it.
-- [ ] Concrete, consistently styled patterns exist for loading, empty,
+- [x] Concrete, consistently styled patterns exist for loading, empty,
       success/status, validation, technical error, unavailable/refused,
       notification, list/table, form, dialog, and destructive confirmation
       states without duplicating TanStack Query or React Hook Form ownership.
-- [ ] Navigation and state patterns work on desktop and narrow/mobile widths,
+- [x] Navigation and state patterns work on desktop and narrow/mobile widths,
       use familiar Material interactions, expose semantic landmarks and
       accessible names, retain visible focus, and do not communicate meaning
       by color alone.
-- [ ] Dialog and destructive-confirmation behavior moves focus predictably,
+- [x] Dialog and destructive-confirmation behavior moves focus predictably,
       traps it only while modal, supports Escape where safe, and restores focus
       to the invoking control after dismissal or completion.
-- [ ] Shared UI abstractions exist only where the two concrete contexts or
+- [x] Shared UI abstractions exist only where the two concrete contexts or
       repeated states prove one stable owner; no `common`, generic design
       system, or component-by-component MUI wrapper is added.
 
@@ -90,6 +90,12 @@ Participant onboarding, Course discovery, Admin management, and booking
 operations remain in their vertical tasks. Do not add placeholder product
 records or a role value to authentication state. Create a fresh implementation
 plan when selected.
+
+The canonical `pnpm check` passed on 2026-08-28 with 9 repository-rule tests,
+13 boundary tests, 8 booking-domain tests, 17 Worker/D1/authentication tests,
+both production builds, and 8 Chromium tests covering both routes and
+viewports, direct navigation/refresh, axe, keyboard and modal focus,
+request-free Participant privacy, one-session context switching, and sign-out.
 
 ## References
 

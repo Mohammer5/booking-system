@@ -14,7 +14,8 @@ development work is tracked and verified, and how releases are promoted.
 
 ### Process Status
 - Path: `docs/process/_status.md`
-- Summary: Current process rules, active state, and known gaps.
+- Summary: Current process rules, layered Admin/application-shell verification,
+  active state, and known gaps.
 - Read when: You need the present-state view of the docs or tracking process.
 - Tags: docs, process, status, current-state
 
@@ -49,8 +50,9 @@ development work is tracked and verified, and how releases are promoted.
 ### Verification
 - Path: `docs/process/verification.md`
 - Summary: Defines the layered regression harness, canonical `pnpm check`
-  contract, NixOS local browser provisioning, pull-request CI, browser and
-  accessibility-test policy, and external branch protection requirement.
+  contract, NixOS local browser provisioning, pull-request CI, responsive
+  shell/browser and accessibility-test policy, and external branch protection
+  requirement.
 - Read when: A task affects tests, CI, required checks, test environments,
   browser automation, local test-tool provisioning, verification commands, or
   failure artifacts.

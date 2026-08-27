@@ -6,11 +6,13 @@ import { useTranslation } from "react-i18next";
  * Present the fixed Google authentication entry action.
  *
  * @param {object} props Component properties.
+ * @param {boolean} props.focusOnRender Whether this is the post-action target.
  * @param {object} props.signInMutation The Google sign-in mutation.
  * @returns {import("react").ReactElement} The sign-in action and local failure.
  */
-export function GoogleSignInButton({ signInMutation }) {
+export function GoogleSignInButton({ focusOnRender = false, signInMutation }) {
   const { t } = useTranslation();
+  const buttonRef = useRef(null);
   const errorRef = useRef(null);
 
   useEffect(() => {
@@ -18,6 +20,12 @@ export function GoogleSignInButton({ signInMutation }) {
       errorRef.current?.focus();
     }
   }, [signInMutation.isError]);
+
+  useEffect(() => {
+    if (focusOnRender) {
+      buttonRef.current?.focus();
+    }
+  }, [focusOnRender]);
 
   return (
     <Stack spacing={2}>
@@ -27,6 +35,7 @@ export function GoogleSignInButton({ signInMutation }) {
         </Alert>
       ) : null}
       <Button
+        ref={buttonRef}
         type="button"
         disabled={signInMutation.isPending}
         fullWidth

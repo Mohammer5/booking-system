@@ -1,8 +1,8 @@
 import {
   Alert,
   CircularProgress,
-  Container,
   Paper,
+  Snackbar,
   Stack,
   Typography,
 } from "@mui/material";
@@ -38,20 +38,16 @@ export function AdminBootstrapPage() {
   }, [isAuthenticationFailure, isLoading]);
 
   return (
-    <Container
-      component="main"
-      maxWidth="sm"
-      sx={{
-        alignItems: "center",
-        display: "grid",
-        minHeight: "100vh",
-        px: { xs: 2, sm: 3 },
-        py: { xs: 3, sm: 6 },
-      }}
-    >
+    <>
       <Paper
         elevation={3}
-        sx={{ overflowWrap: "anywhere", p: { xs: 3, sm: 5 }, width: "100%" }}
+        sx={{
+          maxWidth: "38rem",
+          mx: "auto",
+          overflowWrap: "anywhere",
+          p: { xs: 3, sm: 5 },
+          width: "100%",
+        }}
       >
         <Stack spacing={3}>
           {isAuthenticationFailure && !isLoading ? (
@@ -70,7 +66,17 @@ export function AdminBootstrapPage() {
           />
         </Stack>
       </Paper>
-    </Container>
+      <Snackbar
+        anchorOrigin={{ horizontal: "center", vertical: "bottom" }}
+        autoHideDuration={6000}
+        onClose={() => adminFlow.signOutMutation.reset()}
+        open={adminFlow.signOutMutation.isSuccess}
+      >
+        <Alert role="status" severity="success" variant="filled">
+          {t("adminAccess.authentication.signOutSuccess")}
+        </Alert>
+      </Snackbar>
+    </>
   );
 }
 
@@ -143,7 +149,10 @@ function FirstAdminEntry({ adminFlow, translate }) {
         <Typography>
           {translate("adminAccess.bootstrap.authenticationDescription")}
         </Typography>
-        <GoogleSignInButton signInMutation={adminFlow.signInMutation} />
+        <GoogleSignInButton
+          focusOnRender={adminFlow.signOutMutation.isSuccess}
+          signInMutation={adminFlow.signInMutation}
+        />
       </Stack>
     );
   }
@@ -188,7 +197,10 @@ function CurrentAdministration({ adminFlow, translate }) {
         <Typography>
           {translate("adminAccess.login.authenticationRequired")}
         </Typography>
-        <GoogleSignInButton signInMutation={adminFlow.signInMutation} />
+        <GoogleSignInButton
+          focusOnRender={adminFlow.signOutMutation.isSuccess}
+          signInMutation={adminFlow.signInMutation}
+        />
       </Stack>
     );
   }

@@ -16,10 +16,11 @@ JavaScript conventions, and ESLint-enforced dependency rules.
 ### Architecture Status
 - Path: `docs/architecture/_status.md`
 - Summary: Current implemented application/package foundation, React browser
-  slice, Google sign-in, browser-private MUI theme and accessibility baseline,
-  functional-composition direction,
-  Cloudflare/Vite/D1 runtime, NixOS developer tooling, boundary enforcement,
-  and still-deferred product and release surfaces.
+  slices and responsive Admin/Participant shell, Google sign-in,
+  browser-private MUI theme and accessibility baseline,
+  functional-composition direction, Cloudflare/Vite/D1 runtime, NixOS
+  developer tooling, boundary enforcement, and still-deferred product and
+  release surfaces.
 - Read when: You need to distinguish decided architecture from current
   implementation or identify which application, browser, runtime, and
   persistence surfaces do not yet exist.
@@ -53,8 +54,8 @@ JavaScript conventions, and ESLint-enforced dependency rules.
 ### Applications
 - Path: `docs/architecture/applications.md`
 - Summary: Defines application boundaries and the implemented
-  `apps/booking-system-web` workspace as the complete initial same-origin
-  application.
+  `apps/booking-system-web` workspace with its responsive Participant/Admin
+  browser contexts as the complete initial same-origin application.
 - Read when: A task adds, removes, deploys, or changes an application boundary
   or application manifest ownership.
 - Tags: architecture, applications, deployment, composition, manifests
@@ -62,9 +63,9 @@ JavaScript conventions, and ESLint-enforced dependency rules.
 ### Runtime And Hosting
 - Path: `docs/architecture/runtime-and-hosting.md`
 - Summary: Defines the implemented local `booking-system-web` Cloudflare Worker
-  and Vite composition, static assets, same-origin routing, compatibility,
-  separate browser/Worker graphs, NixOS host-tooling boundary, and minimal
-  hosting footprint.
+  and Vite composition, static assets, direct `/` and `/admin` SPA routing,
+  compatibility, separate browser/Worker graphs, NixOS host-tooling boundary,
+  and minimal hosting footprint.
 - Read when: A task affects hosting, frontend/backend deployment shape, Worker
   runtime behavior, Vite delivery, runtime dependency inclusion, routes, or
   local developer tool provisioning, or infrastructure selection.
@@ -122,9 +123,9 @@ JavaScript conventions, and ESLint-enforced dependency rules.
 ### Browser Conventions
 - Path: `docs/architecture/browser-conventions.md`
 - Summary: React-based browser ownership rules for React Router, TanStack Query,
-  React Hook Form, Material UI, accessible interaction, Better Auth session
-  actions, classnames, debug, i18next, localization, routes, and vertical-slice
-  placement.
+  React Hook Form, Material UI, responsive shell navigation and accessible
+  interaction, Better Auth session actions, classnames, debug, i18next,
+  localization, routes, and vertical-slice placement.
 - Read when: A task affects browser routing, navigation, server state, forms,
   frontend validation, conditional classes, diagnostics, localization, or
   browser dependency choices.

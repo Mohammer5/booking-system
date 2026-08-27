@@ -8,7 +8,7 @@ import { BrowserRouter } from "react-router";
 import {
   BrowserApplication,
   applicationTheme,
-  createAdminBootstrapI18n,
+  createBrowserI18n,
 } from "./browser/index.js";
 
 const container = document.getElementById("root");
@@ -17,10 +17,8 @@ if (container === null) {
   throw new Error("Browser root element is missing.");
 }
 
-const i18n = await createAdminBootstrapI18n();
+const i18n = await createBrowserI18n();
 const queryClient = new QueryClient();
-
-document.title = i18n.t("adminAccess.documentTitle");
 
 createRoot(container).render(
   <React.StrictMode>

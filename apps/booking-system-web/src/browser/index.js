@@ -1,3 +1,3 @@
 export { BrowserApplication } from "./BrowserApplication.jsx";
 export { applicationTheme } from "./applicationTheme.js";
-export { createAdminBootstrapI18n } from "./admin-bootstrap/index.js";
+export { createBrowserI18n } from "./createBrowserI18n.js";

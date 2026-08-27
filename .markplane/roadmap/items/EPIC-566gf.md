@@ -1,7 +1,7 @@
 ---
 id: EPIC-566gf
 title: Accessible application experience
-status: next
+status: done
 priority: high
 started: null
 target: null
@@ -12,7 +12,7 @@ tags:
 - mui
 - accessibility
 created: 2026-08-27
-updated: 2026-08-27
+updated: 2026-08-28
 ---
 
 # Accessible application experience
@@ -28,7 +28,7 @@ route-level Admin/Participant shells plus evidence-backed interaction states.
 
 - [x] KR1: Free MUI Core, one application-owned theme, and explicit browser-only
       import boundaries replace the current unthemed Admin presentation.
-- [ ] KR2: Admin and Participant contexts have responsive, directly navigable
+- [x] KR2: Admin and Participant contexts have responsive, directly navigable
       shells and consistent German loading/empty/success/error/unavailable/
       destructive states without a generic design-system layer.
 - [x] KR3: Automated accessibility scans plus explicit keyboard, focus,
@@ -38,6 +38,6 @@ route-level Admin/Participant shells plus evidence-backed interaction states.
 
 This is the first implementation epic after the completed application and
 Google-authentication foundation. `TASK-ic4fu` delivered the browser-private
-MUI theme and accessibility baseline; `TASK-dfq2k` remains the next shell and
-interaction-state task. No paid MUI component or remote infrastructure is
-authorized by this epic.
+MUI theme and accessibility baseline, and `TASK-dfq2k` delivered the shared
+responsive shell and evidenced interaction states. No paid MUI component or
+remote infrastructure was introduced by this epic.

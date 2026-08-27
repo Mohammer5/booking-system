@@ -20,6 +20,7 @@ test("bootstraps exactly one first Admin through the German browser flow", async
   await expect(page.getByLabel("Name")).toHaveCount(0);
   await expectNoHorizontalOverflow(page);
   await expectNoAxeViolations(page);
+  await page.getByRole("main").focus();
   await page.keyboard.press("Tab");
   await expectVisibleKeyboardFocus(googleButton);
 
@@ -59,6 +60,7 @@ test("bootstraps exactly one first Admin through the German browser flow", async
   await expect(
     page.getByRole("button", { name: "Weiter mit Google" }),
   ).toHaveCount(0);
+  await page.getByRole("main").focus();
   await page.keyboard.press("Tab");
   await expect(nameInput).toBeFocused();
   await page.keyboard.press("Tab");
@@ -102,11 +104,19 @@ test("bootstraps exactly one first Admin through the German browser flow", async
   await expectVisibleKeyboardFocus(
     page.getByRole("button", { name: "Abmelden" }),
   );
-  await page.keyboard.press("Enter");
+  await confirmSignOut(page);
 
   await expect(
     page.getByRole("button", { name: "Weiter mit Google" }),
   ).toBeVisible();
+  await expect(
+    page.getByRole("status").filter({
+      hasText: "Sie wurden erfolgreich abgemeldet.",
+    }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "Weiter mit Google" }),
+  ).toBeFocused();
   await expect(page.getByLabel("Name")).toHaveCount(0);
 
   const signedOutCurrentAdmin = await page.request.get("/api/admin/me");
@@ -126,9 +136,10 @@ test("bootstraps exactly one first Admin through the German browser flow", async
   ).toBeVisible();
   await expectNoAxeViolations(page);
 
+  await page.getByRole("main").focus();
   await page.keyboard.press("Tab");
   await expect(page.getByRole("button", { name: "Abmelden" })).toBeFocused();
-  await page.keyboard.press("Enter");
+  await confirmSignOut(page);
   await expect(
     page.getByRole("button", { name: "Weiter mit Google" }),
   ).toBeVisible();
@@ -163,9 +174,10 @@ test("bootstraps exactly one first Admin through the German browser flow", async
   ).toHaveCount(0);
   await expectNoAxeViolations(page);
 
+  await page.getByRole("main").focus();
   await page.keyboard.press("Tab");
   await expect(page.getByRole("button", { name: "Abmelden" })).toBeFocused();
-  await page.keyboard.press("Enter");
+  await confirmSignOut(page);
   await expect(
     page.getByRole("button", { name: "Weiter mit Google" }),
   ).toBeVisible();
@@ -217,6 +229,7 @@ for (const [viewportName, viewport] of Object.entries({
 
     await expect(freshGoogleButton).toBeVisible();
     await expect(page.getByLabel("Name")).toHaveCount(0);
+    await page.getByRole("main").focus();
     await page.keyboard.press("Tab");
     await expectVisibleKeyboardFocus(freshGoogleButton);
     await expectStateAccessibility(page);
@@ -230,6 +243,7 @@ for (const [viewportName, viewport] of Object.entries({
       name: "Administration einrichten",
     });
 
+    await page.getByRole("main").focus();
     await page.keyboard.press("Tab");
     await expect(formNameInput).toBeFocused();
     await page.keyboard.press("Tab");
@@ -261,6 +275,7 @@ for (const [viewportName, viewport] of Object.entries({
     await expect(
       page.getByRole("heading", { name: "Administration", exact: true }),
     ).toBeVisible();
+    await page.getByRole("main").focus();
     await page.keyboard.press("Tab");
     await expectVisibleKeyboardFocus(
       page.getByRole("button", { name: "Weiter mit Google" }),
@@ -276,6 +291,7 @@ for (const [viewportName, viewport] of Object.entries({
         hasText: "Für diese Anmeldung existiert kein Administrationskonto.",
       }),
     ).toBeVisible();
+    await page.getByRole("main").focus();
     await page.keyboard.press("Tab");
     await expectVisibleKeyboardFocus(
       page.getByRole("button", { name: "Abmelden" }),
@@ -295,6 +311,7 @@ for (const [viewportName, viewport] of Object.entries({
     await expect(
       page.getByText("Dieses Administrationskonto ist deaktiviert."),
     ).toBeVisible();
+    await page.getByRole("main").focus();
     await page.keyboard.press("Tab");
     await expectVisibleKeyboardFocus(
       page.getByRole("button", { name: "Abmelden" }),
@@ -320,11 +337,12 @@ for (const [viewportName, viewport] of Object.entries({
     await page.route("**/api/auth/sign-out", (route) =>
       fulfillJson(route, 500, { message: "test sign-out failure" }),
     );
+    await page.getByRole("main").focus();
     await page.keyboard.press("Tab");
     await expectVisibleKeyboardFocus(
       page.getByRole("button", { name: "Abmelden" }),
     );
-    await page.keyboard.press("Enter");
+    await confirmSignOut(page);
     const signOutFailure = page.getByRole("alert").filter({
       hasText: "Die Abmeldung ist fehlgeschlagen. Bitte versuchen Sie es erneut.",
     });
@@ -356,6 +374,25 @@ for (const [viewportName, viewport] of Object.entries({
     ).toBeVisible();
     await expectStateAccessibility(page);
   });
+}
+
+/**
+ * Confirm sign-out from an already keyboard-focused invoking control.
+ *
+ * @param {import("@playwright/test").Page} page Browser page.
+ * @returns {Promise<void>} Completion after keyboard confirmation.
+ */
+async function confirmSignOut(page) {
+  await page.keyboard.press("Enter");
+  await expect(
+    page.getByRole("dialog", { name: "Abmeldung bestätigen" }),
+  ).toBeVisible();
+  await expect(page.getByRole("button", { name: "Abbrechen" })).toBeFocused();
+  await page.keyboard.press("Tab");
+  await expectVisibleKeyboardFocus(
+    page.getByRole("button", { name: "Jetzt abmelden" }),
+  );
+  await page.keyboard.press("Enter");
 }
 
 /**

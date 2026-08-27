@@ -23,9 +23,9 @@ slice requires it:
 - `i18next`; and
 - `react-i18next`.
 
-The current Admin slice uses React, React DOM, React Router, TanStack Query,
-React Hook Form, i18next, react-i18next, the application-owned Better Auth
-React client, and MUI Core with Emotion styling. It does not declare
+The current browser uses React, React DOM, React Router, TanStack Query, React
+Hook Form, i18next, react-i18next, the application-owned Better Auth React
+client, and MUI Core with Emotion styling. It does not declare
 `classnames`, `debug`, or `ramda` because no current source needs them.
 Acceptance here grants neither an import edge nor inclusion in every
 application output: the application [boundary
@@ -70,13 +70,16 @@ and a high-contrast three-pixel visible-focus outline. `main.jsx` applies that
 theme and `CssBaseline` once. The existing Admin authentication/bootstrap,
 current-context, refusal, failure, and sign-out states use free MUI Core
 components directly without changing their browser, HTTP, authentication, or
-domain behavior.
+domain behavior. The Participant and Admin routes share one responsive
+browser-owned shell with a banner, named list navigation, narrow modal Drawer,
+skip link, and one main landmark; route content remains slice-owned.
 
 The local Playwright harness uses `@axe-core/playwright` 4.13.0 for automated
-scans of the critical Admin states at desktop and 360px widths. Explicit
-assertions separately cover landmarks and headings, accessible names,
-keyboard activation, visible focus, field/error association, result/error
-focus, direct navigation and refresh, and horizontal overflow.
+scans of the critical Admin states and both application contexts at desktop
+and 360px widths. Explicit assertions separately cover landmarks and headings,
+accessible names, keyboard activation, visible focus, field/error association,
+Drawer/Dialog trapping and restoration, result/error focus, direct navigation
+and refresh, request-free Participant entry, and horizontal overflow.
 
 MUI X Community may be introduced only for a concrete need such as date/time
 input; its Community packages are MIT-licensed, while Pro and Premium packages
@@ -124,8 +127,8 @@ Route paths remain stable and language-independent rather than changing with
 locale. Direct navigation or refresh to frontend routes must work within the
 accepted same-origin Worker and static-assets deployment, while `/api/*`
 remains Worker/API-owned. [Runtime and hosting](runtime-and-hosting.md) owns the
-deployment and fallback behavior. The current independently navigable route is
-`/admin`.
+deployment and fallback behavior. The current independently navigable routes
+are the Participant entry at `/` and administration entry at `/admin`.
 
 ## Browser Authentication
 
@@ -239,8 +242,9 @@ moduleParticipation.selection.save
 
 Translation resources follow conceptual and vertical-slice ownership where
 practical. Do not anticipate reuse with one giant generic `common` namespace
-or a technical shared package. The current Admin-bootstrap resources stay with
-that slice and use the `adminAccess` semantic key family.
+or a technical shared package. The browser composition combines resources
+owned by the application shell, Participant entry, and Admin-bootstrap slices;
+the Admin resources retain the `adminAccess` semantic key family.
 
 ## Local Ownership And Late Abstraction
 

@@ -1,12 +1,12 @@
 ---
 id: PLAN-vx3ws
 title: Responsive application shells and interaction states
-status: draft
+status: done
 implements:
 - TASK-dfq2k
 related: []
 created: 2026-08-27
-updated: 2026-08-27
+updated: 2026-08-28
 ---
 
 # Responsive Application Shells And Interaction States Implementation Plan
@@ -136,28 +136,28 @@ Participant, Course Assignment, session role, or expose Course data. Moving to
 
 ### Phase 1: Route, Localization, And Shell
 
-- [ ] Add the shared responsive shell and exact route composition.
-- [ ] Compose shell/Participant/Admin resources and route titles.
-- [ ] Add the request-free Participant empty/unavailable entry.
+- [x] Add the shared responsive shell and exact route composition.
+- [x] Compose shell/Participant/Admin resources and route titles.
+- [x] Add the request-free Participant empty/unavailable entry.
 
 **Checkpoint**: both routes render in one accessible shell with no lower-layer
 or boundary change.
 
 ### Phase 2: Admin Interaction States
 
-- [ ] Fit the Admin state machine into the shell without remote-state changes.
-- [ ] Add sign-out confirmation, notification, and predictable focus.
-- [ ] Confirm every required pattern has real contextual ownership.
+- [x] Fit the Admin state machine into the shell without remote-state changes.
+- [x] Add sign-out confirmation, notification, and predictable focus.
+- [x] Confirm every required pattern has real contextual ownership.
 
 **Checkpoint**: existing Admin behavior remains and the real destructive flow
 proves modal focus, dismissal, completion, and notification.
 
 ### Phase 3: Focused Evidence
 
-- [ ] Extend Playwright for both routes at desktop/360px: direct/refresh,
+- [x] Extend Playwright for both routes at desktop/360px: direct/refresh,
       landmarks/nav, active context, same-session switching, request-free
       privacy, drawer/dialog keyboard and focus, notification, axe, overflow.
-- [ ] Update current Admin assertions; run focused lint, boundary/Worker
+- [x] Update current Admin assertions; run focused lint, boundary/Worker
       regressions, build, Worker-graph audit, and Playwright.
 
 **Checkpoint**: focused acceptance passes without provider UI automation,
@@ -165,10 +165,10 @@ credentials, or release infrastructure.
 
 ### Phase 4: Documentation And Completion
 
-- [ ] Update canonical architecture/status/verification docs and indexes.
-- [ ] Run adjacent-doc and dictionary coverage passes; change only affected
+- [x] Update canonical architecture/status/verification docs and indexes.
+- [x] Run adjacent-doc and dictionary coverage passes; change only affected
       existing docs or stable terminology.
-- [ ] Run `pnpm check`, `markplane sync`, `markplane check`, and
+- [x] Run `pnpm check`, `markplane sync`, `markplane check`, and
       `git diff --check`; close plan/task/epic before implementation commit.
 
 **Checkpoint**: docs, planning, verification, and Git agree that the task and
@@ -194,27 +194,34 @@ change.
 
 ## Execution State
 
-- Current phase/checkpoint: plan authored after full repository rehydration;
-  implementation has not started.
-- Completed phase checkboxes: none.
-- Next exact action: sync/validate Markplane, commit this planning change,
-  start `TASK-dfq2k`, then implement Phase 1.
+- Current phase/checkpoint: Phases 1-4 and Markplane closure are complete; the
+  final synchronized validation and implementation commit remain.
+- Completed phase checkboxes: all Phase 1-4 items.
+- Next exact action: stage the reviewed task diff, create the semantic
+  implementation commit, and verify the working tree is clean.
 - Persisted decisions: canonical docs/task already decide exact routes, one
   session/principal, pre-onboarding privacy, MUI, and late abstraction; the
   source-grounded implementation choices are recorded above.
-- Focused verification: `markplane check` and `git diff --check` passed after
-  attaching the blank plan; the failed plan patch changed no file.
-- Remaining verification: all Phase 3 evidence, full check, docs/dictionary/
-  adjacent review, Markplane validation, and clean Git.
-- Working tree: only this plan and its task link are changed; no unrelated
-  changes were present.
+- Focused verification: the final 8-test Chromium suite passes both routes and
+  viewports, axe scans, keyboard/modal focus and restoration, request-free
+  Participant entry, and one-session context switching. Focus work exposed
+  list semantics and portal-mount timing, resolved with the named MUI list and
+  mount-time callback refs. Full lint, all 13 boundary tests, all 17
+  Worker/D1/authentication tests, a production build, and the MUI/Emotion-free
+  Worker graph audit pass. The canonical `nix develop -c corepack pnpm check`
+  passes on 2026-08-28 with 9 repository-rule, 13 boundary, 8 booking-domain,
+  17 Worker/D1/authentication, both production-build, and 8 Chromium results.
+- Remaining verification: implementation commit and clean Git.
+- Working tree: the task start, this execution checkpoint, shell/Participant
+  slices, browser composition, and Admin interaction changes are uncommitted;
+  no unrelated changes are present.
 
 ## Pre-Approval Checklist
 
 - [x] Ground Truth refs verified against current codebase
 - [x] Cross-plan contracts are referenced, not redefined
 - [x] No speculative code — all patterns derived from existing source
-- [x] Plan stays near the ~200-line guidance (223 lines)
+- [x] Plan stays near the ~200-line guidance (230 lines)
 
 ## References
 

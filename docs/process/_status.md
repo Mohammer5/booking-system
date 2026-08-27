@@ -19,9 +19,11 @@ Current reality:
   targeting `main` and pushes to `main` through the stable `verify` job.
 - Layered local application verification is implemented through domain Vitest,
   Workers Vitest with D1, the production build, and Chromium Playwright in the
-  canonical `pnpm check`. Critical Admin states include axe scans and explicit
-  desktop/narrow, keyboard, focus, semantic-name, error-association, refresh,
-  and overflow evidence. The tag-gated release policy remains unimplemented.
+  canonical `pnpm check`. Critical Admin and application-shell states include
+  axe scans and explicit desktop/narrow, keyboard, modal focus/trapping and
+  restoration, semantic navigation/name, error-association, direct/refresh,
+  request-free privacy, and overflow evidence. The tag-gated release policy
+  remains unimplemented.
 - x86_64 NixOS developers can enter a pinned host-tooling environment with
   `nix develop`; `pnpm check` remains the verification contract and GitHub
   Actions continues to provision Node, pnpm, and Playwright independently.

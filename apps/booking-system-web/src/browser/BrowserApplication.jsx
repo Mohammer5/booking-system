@@ -1,6 +1,8 @@
 import { Navigate, Route, Routes } from "react-router";
 
 import { AdminBootstrapPage } from "./admin-bootstrap/index.js";
+import { ResponsiveApplicationShell } from "./application-shell/index.js";
+import { ParticipantEntryPage } from "./participant-entry/index.js";
 
 /**
  * Define the language-independent browser route tree.
@@ -10,8 +12,23 @@ import { AdminBootstrapPage } from "./admin-bootstrap/index.js";
 export function BrowserApplication() {
   return (
     <Routes>
-      <Route path="/admin" element={<AdminBootstrapPage />} />
-      <Route path="*" element={<Navigate to="/admin" replace />} />
+      <Route
+        path="/"
+        element={
+          <ResponsiveApplicationShell context="participant">
+            <ParticipantEntryPage />
+          </ResponsiveApplicationShell>
+        }
+      />
+      <Route
+        path="/admin"
+        element={
+          <ResponsiveApplicationShell context="admin">
+            <AdminBootstrapPage />
+          </ResponsiveApplicationShell>
+        }
+      />
+      <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
 }

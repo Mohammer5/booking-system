@@ -94,13 +94,18 @@
 - The web application has distinct `browser`, `worker`, and `authentication`
   responsibilities plus thin browser, production Worker, and non-production
   Worker compositions.
-- React Router serves the independently navigable `/admin` route. TanStack
-  Query owns remote Admin state, React Hook Form owns the name form, and
-  German-first i18next resources own all browser copy.
+- React Router serves the independently navigable `/` Participant entry and
+  `/admin` administration route. Both use one responsive browser-owned MUI
+  shell with desktop list navigation, a narrow modal Drawer, a skip link, and
+  stable route titles. The request-free Participant entry creates no identity,
+  membership, role, or Course-data exposure.
+- TanStack Query owns remote Admin state, React Hook Form owns the name form,
+  and German-first slice-owned i18next resources own all browser copy.
 - Free MUI Core 9.4.0 and its Emotion styling dependencies are pinned in the
   application manifest. One browser-owned theme and `CssBaseline` establish
   typography, spacing, surfaces, responsive breakpoints, and visible focus;
-  the complete `/admin` experience now uses direct MUI Core components.
+  both shell contexts and the complete `/admin` experience use direct MUI Core
+  components.
 - Browser-only boundary permissions and production-build graphs keep MUI and
   Emotion out of booking, Worker, persistence, and authentication source and
   out of the built Worker output.
@@ -117,8 +122,10 @@
   and composition-interface permissions.
 - Repository, domain, Worker/D1, migration, production-composition, build, and
   Chromium E2E verification are integrated into `pnpm check` and CI. Critical
-  Admin states receive axe scans plus explicit desktop/narrow, keyboard,
-  focus, name/label, error-association, refresh, and overflow assertions.
+  Admin and shell states receive axe scans plus explicit desktop/narrow,
+  keyboard, modal focus/trapping/restoration, semantic navigation,
+  name/label, error-association, direct/refresh, privacy, and overflow
+  assertions.
 - The root flake supplies Node 24, pnpm 11.17.0, Git, Markplane, Chromium, and
   a Nix-patched official workerd 1.20260826.1 binary for x86_64-linux. It points
   Miniflare and Playwright at the Nix executables and supplies Miniflare with

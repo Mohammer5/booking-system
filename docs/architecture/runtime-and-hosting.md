@@ -53,7 +53,8 @@ Cloudflare D1
 The default routing model is same-origin:
 
 ```text
-/admin        -> frontend application through SPA fallback
+/             -> Participant frontend entry through SPA fallback
+/admin        -> administration frontend entry through SPA fallback
 /assets/*     -> frontend static assets
 /api/*        -> backend/API handling
 ```
