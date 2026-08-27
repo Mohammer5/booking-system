@@ -6,7 +6,7 @@ priority: high
 type: enhancement
 effort: medium
 epic: EPIC-566gf
-plan: null
+plan: PLAN-586hh
 depends_on:
 - TASK-aeij8
 - TASK-t65sy
