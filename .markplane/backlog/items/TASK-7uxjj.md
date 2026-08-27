@@ -1,12 +1,12 @@
 ---
 id: TASK-7uxjj
 title: Register Participants
-status: backlog
+status: in-progress
 priority: medium
 type: feature
 effort: medium
 epic: EPIC-m22qh
-plan: null
+plan: PLAN-n8a29
 depends_on:
 - TASK-aeij8
 - TASK-dfq2k
@@ -15,7 +15,7 @@ blocks:
 - TASK-5gny6
 related:
 - TASK-rrp92
-assignee: null
+assignee: gerkules
 tags:
 - participant
 - onboarding
@@ -23,7 +23,7 @@ tags:
 - ui
 position: c30
 created: 2026-08-27
-updated: 2026-08-27
+updated: 2026-08-28
 ---
 
 # Register Participants
