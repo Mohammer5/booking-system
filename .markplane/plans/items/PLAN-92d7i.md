@@ -13,15 +13,17 @@ updated: 2026-08-27
 
 ## Objective And Scope
 
-Implement `TASK-aeij8` as the first deployable booking-system slice: establish
-first-ever Admin registration, normal Better Auth sessions, fresh Admin context
-resolution, D1 persistence, the minimum same-origin browser/Worker flow, real
-workspace boundaries, required tests, and the release surfaces triggered by
-the first application.
+Implement `TASK-aeij8` as the first locally complete booking-system slice:
+establish first-ever Admin registration, normal Better Auth sessions, fresh
+Admin context resolution, D1 persistence, the minimum same-origin
+browser/Worker flow, real workspace boundaries, and required local tests and
+configuration on the accepted production-compatible Worker/D1 architecture.
 
 The implementation ends with one Active Super Admin on a fresh installation
-and a foundation that is locally verifiable and releasable. It does not build
-later booking capabilities or use this plan as permission to start work.
+and a foundation that is locally runnable, locally accepted, and ready to
+unblock the remaining MVP work. It does not deploy the application, establish
+account-bound release infrastructure, build later booking capabilities, or use
+this plan as permission to start work.
 
 ## Canonical Ground Truth
 
@@ -32,6 +34,8 @@ later booking capabilities or use this plan as permission to start work.
 - `docs/product/domain-model.md#administration-and-invitations` — identity and
   Admin invariants.
 - `docs/product/_status.md` — accepted product contract and absent product code.
+- `docs/architecture/_status.md` — accepted production architecture, local MVP
+  lifecycle, and deferred account-bound infrastructure.
 - `docs/architecture/applications.md` — one same-origin application and initial
   Admin HTTP surface.
 - `docs/architecture/packages.md` and
@@ -45,8 +49,13 @@ later booking capabilities or use this plan as permission to start work.
   bootstrap claim, migration safety, and environment isolation.
 - `docs/architecture/runtime-and-hosting.md` — Worker, Vite static assets,
   same-origin routing, and compatibility selection.
-- `docs/process/verification.md` and `docs/process/releases.md` — canonical
-  checks, layered evidence, tag gate, staging, production, and rollout safety.
+- `docs/process/verification.md` — canonical local checks and layered evidence
+  required with the first real application.
+- `docs/process/releases.md` — the mandatory later release-hardening phase,
+  tag gate, staging, production promotion, and rollout-safety contract that do
+  not belong to this task's completion.
+- `docs/process/_status.md` — current local-first implementation state and the
+  intentional absence of remote release infrastructure.
 
 If implementation reveals a conflict, canonical product behavior wins and the
 plan must be amended before behavior is invented.
@@ -65,6 +74,12 @@ plan must be amended before behavior is invented.
   deterministic, explicitly non-production fixture session establishment.
 - Deny-by-default maps are created with real source and registered explicitly
   in root ESLint; no second architecture checker is permitted.
+- Local development, builds, and tests use real Worker/Vite/Cloudflare and
+  D1-compatible tooling, configuration, and semantics rather than a temporary
+  Node-server or unrelated-database architecture.
+- Account-bound staging and production environments, remote D1 databases,
+  deployment credentials, and release automation are created only during
+  release hardening after the MVP is feature-complete and accepted locally.
 
 ## Domain And Application Operation Contracts
 
@@ -185,7 +200,7 @@ The browser must re-handle a lost bootstrap race. Choose only the components,
 forms, and local state required by this flow; do not preselect a large frontend
 architecture.
 
-## Production And Non-Production Authentication
+## Production-Compatible And Non-Production Authentication
 
 - Named fixture `first-admin` establishes a normal Better Auth session. The
   design leaves room for fixed `participant-a` and `participant-b` fixtures.
@@ -195,10 +210,12 @@ architecture.
 - Production composition contains the normal application and Better Auth but
   no activatable fixture-session surface.
 - Explicit non-production composition adds fixture-session establishment.
-- Hosted staging/preview additionally requires a CI-controlled secret or an
-  equivalent non-public gate.
 - A production request for test authentication fails closed. Safety must come
   from executable/source composition, not only `ENABLE_TEST_AUTH`-style flags.
+- If release hardening later exposes non-production authentication to hosted
+  staging or preview, that later work must add the canonical CI-controlled
+  secret or equivalent non-public gate. Hosted exposure is not required to
+  complete this task.
 
 ## Proposed Source Responsibilities
 
@@ -267,9 +284,12 @@ The first version-controlled migration sequence establishes only:
 5. a clean-state migration path exercised in tests.
 
 Verify official Better Auth D1 schema/migration guidance at implementation
-time; do not copy remembered generated schema. Use separate local/test,
-staging, and production D1 databases. Keep migrations additive or otherwise
-compatible with application versions during rollout.
+time; do not copy remembered generated schema. Use isolated local/test D1
+state and configuration for this task. Design the schema and migrations for
+eventual remote D1 deployment, keeping them additive or otherwise compatible
+with application versions during later rollout. Dedicated remote staging and
+production D1 databases and their account-specific bindings are provisioned
+during release hardening, not by this task.
 
 ## Verification Matrix
 
@@ -282,18 +302,27 @@ compatible with application versions during rollout.
 | Repository integration | Production build succeeds and root `pnpm check` composes lint, repository tests, domain tests, Worker/D1/migration integration, and local Chromium E2E without a competing check-all command. |
 
 Routine tests never automate Google, Apple, Microsoft, or Facebook UIs.
-Hosted E2E uses isolated staging data; production checks remain non-destructive.
+Later release hardening must add hosted E2E against isolated staging data and
+must limit production verification to non-destructive smoke checks; neither is
+completion evidence for this task.
 
-## Release And Deployment Requirements
+## Release-Hardening Boundary
 
-Because this is the first deployable application, the implementing change must
-also provide real Cloudflare/Vite/Wrangler configuration, local/test plus
-separate staging/production D1 configuration, and the tag-triggered GitHub
-release workflow. Release must prove tag containment in `main`, rerun full
-verification, deploy the same commit to staging, run hosted Playwright, apply
-rollout-compatible production migrations, deploy production, and run only a
-safe smoke check. Wrangler and all runtime/test integrations are project-pinned
-and secrets remain environment-owned.
+This task provides the real project-pinned Cloudflare/Vite/Wrangler and test
+tooling, local Worker configuration, local/test D1 bindings, migration safety,
+and runtime behavior needed to implement and accept the first slice locally on
+the production-compatible architecture.
+
+It does not create remote staging or production Worker environments, remote
+staging or production D1 databases, deployment credentials or account-bound
+secrets, staging or production URLs/domains, hosted Playwright execution, the
+tag-triggered release workflow, a production deployment, or production smoke
+verification. The future release-hardening phase owns those surfaces after the
+MVP is feature-complete and accepted locally. It must use this task's
+version-controlled, clean-state-tested, rollout-compatible migrations and
+production-compatible runtime behavior. No production release is permitted
+until release hardening is complete and the canonical staging and promotion
+gate can be executed.
 
 ## Dependency-Ordered Implementation Phases
 
@@ -325,16 +354,18 @@ and secrets remain environment-owned.
   abstractions.
 - [ ] Add Worker/D1/migration integration and local Chromium Playwright E2E.
 - [ ] Add focused proof that production composition cannot activate test auth.
-- [ ] Add real Cloudflare/Vite/Wrangler environment and build configuration.
+- [ ] Add the real local Worker/Vite/Cloudflare integration, project-pinned
+  Wrangler configuration, and production build configuration.
 - [ ] Expand the canonical `pnpm check` composition.
 
-### Phase 5: Make The First App Releasable
+### Phase 5: Accept The Local Application Foundation
 
-- [ ] Add the real tag-gated release workflow, hosted staging verification,
-  separate staging/production D1 resources, compatible migration rollout, and
-  safe production smoke check.
-- [ ] Run complete verification, review docs/maps/configuration together, and
-  only then mark `TASK-aeij8` done.
+- [ ] Run the complete canonical local verification, including production
+  build and local Chromium E2E, from clean deterministic local/test state.
+- [ ] Review source, boundary maps, local configuration, migrations, and all
+  implementation-triggered documentation together.
+- [ ] Confirm the foundation remains production-compatible while requiring no
+  account-bound Cloudflare resource, then mark `TASK-aeij8` done locally.
 
 ## Acceptance-Criteria Traceability
 
@@ -346,8 +377,21 @@ and secrets remain environment-owned.
 | Abandoned bootstrap creates nothing; only first completion wins | Mutation-only creation, atomic claim, stale/concurrent D1 tests. |
 | Bootstrap never reopens; auth creates no later Admin | Permanent history, second/later-principal refusals in D1 and E2E. |
 | Named non-production sessions exercise real authorization | Separate fixture composition and normal-session browser path. |
-| Production test auth fails closed; hosted access gated | Structural regression plus staging CI secret/equivalent gate. |
-| First deployable foundation satisfies every trigger | Workspace maps, migrations, expanded `pnpm check`, runtime config, release workflow, staging and smoke evidence. |
+| Production test auth fails closed | Structural local regression proves production composition cannot activate fixture authentication; any future hosted gate belongs to release hardening. |
+| First locally accepted foundation satisfies every implementation-time trigger | Workspaces and maps, migrations, expanded `pnpm check`, project-pinned tooling, local Worker/D1 configuration, production build, and local browser evidence. |
+
+## Completion Definition
+
+`TASK-aeij8` is complete when the real first application slice and its domain
+workspace are implemented on the accepted Worker/D1-compatible architecture,
+all applicable local verification passes from clean deterministic state, and
+the implementation-triggered boundary and documentation updates are aligned.
+Its completion unblocks `TASK-ubm2q` and `TASK-7uxjj` without waiting for remote
+Cloudflare provisioning.
+
+Completion does not mean the application has been deployed or may be released
+to production. Release hardening remains a mandatory later phase after the
+whole MVP is feature-complete and accepted locally.
 
 ## Explicit Non-Goals
 
@@ -362,6 +406,10 @@ and secrets remain environment-owned.
   automation, implicit provider linking, or booking authority in sessions.
 - No abstractions, dependencies, configurations, or source trees solely for
   speculative future reuse.
+- No remote Cloudflare staging or production infrastructure, remote D1
+  databases, account-bound deployment configuration or secrets, hosted staging
+  Playwright, tag-triggered release workflow, production deployment, or
+  production smoke verification; release hardening owns all of these.
 
 ## Intentionally Deferred Implementation Choices
 
@@ -374,6 +422,9 @@ and secrets remain environment-owned.
 - Exact package specifier, internal helper/composition filenames, component
   decomposition, and request/response helper placement.
 - Generic future HTTP conventions and all Course/Participant/Invite routes.
+- Exact remote environment resources, account bindings, URLs/domains,
+  deployment credentials, and release-workflow implementation remain decisions
+  for the later release-hardening phase.
 
 Implementation must update this plan before freezing any deferred choice that
 materially changes a canonical contract.

@@ -23,19 +23,20 @@ updated: 2026-08-27
 
 ## Description
 
-Establish the first usable administration entry and the application foundation
-that makes it deployable. While no Admin User has ever existed, a person must
-be able to authenticate through the accepted application-owned Better Auth
-boundary, supply the required booking-system Admin User name, and become the
-first Active Super Admin. Better Auth runs in the Worker with D1-backed opaque
-sessions; its stable user ID is only the external principal used to resolve the
-current Admin User from authoritative domain state.
+Establish the first usable administration entry and a locally runnable
+application foundation that is compatible with the accepted production
+architecture. While no Admin User has ever existed, a person must be able to
+authenticate through the accepted application-owned Better Auth boundary,
+supply the required booking-system Admin User name, and become the first Active
+Super Admin. Better Auth runs in the Worker with D1-backed opaque sessions; its
+stable user ID is only the external principal used to resolve the current
+Admin User from authoritative domain state.
 
 This is the implementation trigger for the first real application and booking
 domain workspaces. When implementation is separately authorized, the behavior
 is not complete unless the repository's accepted application, persistence,
-architecture-boundary, verification, and release triggers are satisfied with
-the first deployable outcome rather than postponed.
+architecture-boundary, and local verification triggers are satisfied with the
+first locally accepted Worker/D1-compatible outcome rather than postponed.
 
 ## Acceptance Criteria
 
@@ -59,12 +60,12 @@ the first deployable outcome rather than postponed.
       application sessions, and lets browser verification exercise real domain
       authorization without automating third-party provider login UIs.
 - [ ] Production contains no activatable test-authentication mechanism and
-      fails closed if test-only authentication is requested; automated
-      verification proves that property, and hosted staging/preview access is
-      additionally gated by a CI-controlled secret or equivalent control.
-- [ ] The first deployable behavior demonstrably satisfies all applicable
+      fails closed if test-only authentication is requested; local automated
+      verification proves that structural property.
+- [ ] The first locally accepted behavior demonstrably satisfies all applicable
       accepted application/workspace, persistence, explicit boundary
-      enforcement, regression verification, and release-trigger contracts.
+      enforcement, production build, and local regression-verification
+      contracts on the production-compatible Worker/D1 architecture.
 
 ## Notes
 
@@ -74,7 +75,11 @@ outside this task. Implicit provider linking remains disabled. Exact schema,
 session timing, compatibility flag, internal filenames, and deferred technology
 versions remain implementation choices. `PLAN-92d7i` defines the detailed
 implementation contracts and sequence; its attachment and this task's planned
-status do not authorize implementation.
+status do not authorize implementation. Account-bound staging/production
+infrastructure, remote D1 databases, hosted staging verification, deployment
+credentials, the release workflow, production deployment, and production smoke
+verification are deferred to mandatory release hardening after the MVP is
+feature-complete and accepted locally.
 
 ## References
 
@@ -85,9 +90,9 @@ status do not authorize implementation.
 - `docs/architecture/authentication-and-sessions.md#non-production-authentication`
 - `docs/architecture/applications.md#accepted-initial-boundary`
 - `docs/architecture/module-organization.md`
-- `docs/architecture/runtime-and-hosting.md#implementation-trigger`
-- `docs/architecture/persistence.md#current-state-and-implementation-trigger`
+- `docs/architecture/runtime-and-hosting.md#implementation-time-local-runtime-requirements`
+- `docs/architecture/persistence.md#when-the-first-real-schema-exists`
 - `docs/architecture/boundaries.md#activation-rule`
 - `docs/architecture/eslint.md#dependency-boundaries`
 - `docs/process/verification.md#application-implementation-trigger`
-- `docs/process/releases.md#current-state-and-implementation-trigger`
+- `docs/process/releases.md#current-state-and-release-hardening-trigger`
