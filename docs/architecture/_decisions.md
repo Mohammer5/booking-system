@@ -69,6 +69,16 @@ while D1 provides durable storage in the Workers environment. Separate local,
 staging, and production data protects production from destructive regression
 tests and makes pre-production verification meaningful.
 
+## Model First Admin Bootstrap As A Permanent Atomic Claim
+
+Bootstrap availability represents whether the installation has ever created
+an Admin User, so current Admin User rows cannot reconstruct it after
+legitimate deletion. Persisting that history independently prevents
+administration bootstrap from reopening. Creating the first Active Super Admin
+and consuming bootstrap are one atomic authoritative claim so stale or
+concurrent requests cannot leave partial state or create two first
+administrators.
+
 ## Use Better Auth With D1-Backed Opaque Sessions
 
 Better Auth will run inside `apps/booking-system-web` and use the application's
@@ -78,11 +88,20 @@ revocable. The session establishes only one stable external principal;
 Participant/Admin resolution and every authorization decision use authoritative
 current booking-domain state instead of session claims.
 
+Collapsing application authentication to `externalPrincipalId` keeps Better
+Auth and provider mechanics private and prevents technical session data from
+becoming booking identity or authority. A principal can therefore continue to
+back an Admin User, Participant, both, or neither without role selection in the
+session.
+
 Implicit provider linking is disabled in v1 to avoid accidental identity
 merging. The first epic uses a separately composed, explicitly non-production
 Better Auth mechanism to establish normal sessions for deterministic fixture
 identities. Production must be structurally unable to activate that mechanism;
 real Google, Apple, Microsoft, and Facebook integration remains deferred.
+Structural composition, rather than a production runtime flag, makes the
+fail-closed property independently verifiable and prevents a hidden test route
+from becoming an authentication bypass.
 
 ## Keep Node Tooling Separate From The Worker Runtime
 

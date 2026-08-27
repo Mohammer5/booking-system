@@ -24,6 +24,9 @@
   production use separate D1 databases.
 - Better Auth is the intended application-owned authentication layer inside
   `apps/booking-system-web`, backed by the application's D1 database.
+- The application-to-booking authentication seam exposes only
+  `externalPrincipalId`; domain identity, state, authority, and permissions are
+  resolved fresh from booking persistence rather than authentication claims.
 - Authentication uses one database-backed opaque cookie session per stable
   external principal. Each request resolves the context-relevant Participant
   or Admin User and its authorization from authoritative current domain state;
@@ -31,6 +34,12 @@
 - Implicit provider linking is disabled in v1. Deterministic browser tests use
   a separately composed, explicitly non-production Better Auth session
   mechanism that must be structurally unavailable in production.
+- First Admin bootstrap availability is permanent historical state independent
+  of current Admin User rows, and consuming bootstrap plus creating the first
+  Active Super Admin is one atomic persistence outcome.
+- The planned first slice has a minimal same-origin Admin entry, bootstrap, and
+  current-context HTTP surface with browser input unable to select principal or
+  authority.
 - The initial infrastructure boundary is Worker, Workers Static Assets, and D1.
 
 ## Current Implementation
@@ -46,17 +55,19 @@
 - The boundary converter implements deny-by-default workspace and module
   enforcement from explicit local maps.
 - Local ESLint rules and boundary conversion have Node test suites.
-- No application or package boundary map or exact browser-facing or
-  Worker/API-facing responsibility-module name exists.
+- No application or package boundary map or exact implemented browser-facing
+  or Worker/API-facing responsibility-module declaration exists. The first
+  Admin implementation plan now records the intended responsibility split and
+  edges for creation with real source.
 - No architecture fitness function, secondary checker, inferred dependency
   map, application framework, installed runtime dependency, or runtime
   dependency version exists.
 
-The conceptual workspace identities and initial booking responsibility modules
-are declared. Exact application responsibility modules, dependency edges,
-entrypoints, composition-file names, package exports, optional application
-framework, exact internal source files, and runtime dependency versions remain
-undeclared until application implementation begins. Better Auth is selected,
-but exact session timing, schema and route names, provider configuration, and
-minimum supported Worker compatibility mode remain implementation choices.
-Accepted direction must not be mistaken for implemented runtime code.
+The conceptual workspace identities, initial booking responsibility modules,
+and first Admin application/domain contracts are declared and have a detailed
+implementation plan. Exact implemented map declarations, entrypoints,
+composition-file names, package exports, optional application framework,
+internal helper files, schema names, runtime dependency versions, session
+timing, provider configuration, and minimum supported Worker compatibility mode
+remain implementation choices. Accepted and planned direction must not be
+mistaken for implemented runtime code.

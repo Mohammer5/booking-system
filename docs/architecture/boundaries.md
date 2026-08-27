@@ -40,16 +40,40 @@ When `apps/booking-system-web` is implemented, its local deny-by-default map
 must model the chosen browser-facing and Worker/API-facing responsibility
 modules and reject inappropriate cross-responsibility implementation imports.
 Both sides may consume only explicitly allowed conceptual booking interfaces,
-and composition receives only the permissions needed to join them. Exact
-application module names, composition files, and dependency edges remain
-undeclared.
+and composition receives only the permissions needed to join them. The first
+Admin plan declares the intended initial module names and edges; exact map
+syntax and composition filenames remain undeclared until real source exists.
 
 That map must also declare the narrow edges through which application-owned
 authentication and session behavior is consumed and composed. Better Auth,
 OAuth/provider SDKs, cookie/session mechanics, Cloudflare authentication
 integration, and non-production test-authentication code must remain outside
-`packages/booking`. The accepted responsibility does not pre-authorize an
-import or select an application module name before the map exists.
+`packages/booking`. Documentation and planning do not themselves authorize an
+import; the implementation must still declare every planned name and edge in
+the real map before source may use it.
+
+The accepted first Admin implementation plan narrows the initial direction
+further without claiming that a map exists:
+
+- browser responsibility imports neither Worker implementation,
+  application-private authentication, Better Auth, nor Cloudflare/D1
+  implementation;
+- Worker responsibility may import the public booking package interface and a
+  narrow application authentication interface, but not browser
+  implementation;
+- authentication responsibility may use application-private Better Auth
+  mechanics, but imports neither booking product policy nor browser
+  implementation;
+- `packages/booking` imports no application, Worker/Cloudflare, D1, Better
+  Auth, HTTP, or browser/UI implementation; and
+- each thin executable composition file receives only the explicit module
+  permissions required for its runtime graph.
+
+The task implementation plan records the intended initial map edges in detail.
+The implementation change must reconcile those planned edges with the real
+source graph, declare them in each new workspace map, register both maps in
+root ESLint, and update this document in the same change. No generic shared or
+contracts package is introduced merely to exchange the first HTTP shapes.
 
 ## Map Shape
 

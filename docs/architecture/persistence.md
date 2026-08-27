@@ -47,6 +47,38 @@ need proves otherwise. Sharing D1 does not merge their ownership:
 authentication records remain application-owned technical persistence and
 booking records remain conceptually domain-owned.
 
+## First Admin Bootstrap Persistence
+
+First Admin bootstrap availability is a durable historical fact: it answers
+whether an Admin User has ever successfully been created, not whether an Admin
+User row exists now. Counting current Admin Users is therefore not an adequate
+implementation because legitimate later deletion must not reopen bootstrap.
+The exact table, column, and schema representation of that history remain
+implementation choices.
+
+The first bootstrap claim must produce one atomic authoritative persistence
+outcome that either:
+
+- creates exactly one Active Admin User with Super Admin authority and
+  permanently records bootstrap as consumed; or
+- refuses with bootstrap unavailable without creating an Admin User or
+  consuming bootstrap.
+
+The persistence design and database constraints must preserve that outcome
+under concurrent or stale attempts. No accepted state may record bootstrap as
+consumed without the first Admin User creation, and two requests must not both
+successfully create the first Admin User.
+
+The first slice needs only narrow capabilities to read permanent bootstrap
+history, resolve a current Admin User by stable external principal, and claim
+the first Admin atomically. Their exact function and query names remain
+implementation choices. They do not justify a generic repository,
+`DatabaseService`, unit of work, generic CRUD/data-access package, or shared
+infrastructure package. The initial booking schema is limited to the Admin User
+state, permanent bootstrap history, and integrity constraints required by this
+slice; future Course, Group, Module, Invite, Participant, Course Assignment,
+and Module Selection schema waits for the work that needs it.
+
 ## Environment Isolation
 
 Persistence must distinguish at least these environments when implementation

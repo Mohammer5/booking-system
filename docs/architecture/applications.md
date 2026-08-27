@@ -42,6 +42,26 @@ authorization through `packages/booking`; the authentication session is not a
 domain role selector. See [authentication and
 sessions](authentication-and-sessions.md).
 
+### First Administration HTTP Surface
+
+The first application slice uses three concrete same-origin operations:
+
+```text
+GET  /api/admin/entry
+POST /api/admin/bootstrap
+GET  /api/admin/me
+```
+
+The public entry read reveals only whether the browser should present first
+Admin registration or normal login. Bootstrap and current-Admin resolution
+use the stable external principal derived server-side from the normal
+application session. Browser-controlled bootstrap input contains the required
+booking-system Admin User name, never an external principal, domain identity,
+state, authority, role, or permissions. Each current-Admin read resolves fresh
+booking state rather than trusting session claims. Detailed response status
+and machine-readable outcome shapes belong to the implementation plan and
+application translation rather than a generic API or error framework.
+
 When created, the workspace's one manifest may declare browser runtime
 dependencies, Worker/API runtime dependencies, application build and
 development tooling, and the dependency on `packages/booking`. Sharing that

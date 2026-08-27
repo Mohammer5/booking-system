@@ -11,9 +11,10 @@ Admin User and Admin Invite product policy, not authentication-provider SDK or
 Admin UI mechanics.
 
 The planned `apps/booking-system-web` workspace is the single application
-composition boundary. No workspace or source directory has been created, and
-the target does not yet declare dependency edges, composition-file names,
-public exports, or detailed internal files.
+composition boundary. No workspace or source directory has been created. The
+first Admin implementation plan declares its intended initial responsibility
+and dependency edges, but no real map, composition-file name, public export, or
+detailed internal file exists.
 
 ## Workspace Roots
 
@@ -70,17 +71,29 @@ on the appropriate conceptual interfaces from `packages/booking` when the
 eventual boundary map explicitly permits those imports. Application
 composition may join the responsibilities only where required.
 
-This separation is a durable responsibility rule, not a decision about exact
-folder names, entrypoint names, composition filenames, public exports, or
-dependency edges. Those remain deferred until the real application and its
-boundary map are introduced.
+This separation is a durable responsibility rule. The first Admin plan now
+chooses the intended initial first-level names and edge direction; exact
+entrypoint and composition filenames, public exports, and map declarations
+remain deferred until the real application and its boundary map are
+introduced.
 
 Authentication and session establishment are application-owned technical
 responsibilities. The eventual application boundary map must make their
 allowed browser, Worker, composition, and booking-interface edges explicit,
 while preventing Better Auth, provider, cookie/session, Cloudflare-auth, and
 test-authentication implementation imports from entering `packages/booking`.
-This contract does not select an exact first-level application folder name.
+The first Admin plan uses `browser`, `worker`, and `authentication` as the
+intended initial first-level names; the implementation introduces them only
+with their real source and map declarations.
+
+The first Admin implementation plan separates three application roles: the
+browser Admin-bootstrap flow, Worker-side Admin-bootstrap/API handling, and
+application-private authentication. A thin composition entry may join only
+the roles required for its executable graph. This is a planned responsibility
+shape, not an implemented directory tree; exact files and map declarations are
+created together with real source. The browser communicates with Worker
+behavior through same-origin HTTP rather than importing Worker implementation
+to share transport data.
 
 ## Vertical Slices
 

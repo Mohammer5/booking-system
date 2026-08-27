@@ -59,6 +59,25 @@ Assignment, whether an Admin User is ordinary Admin or Super Admin, or whether
 an operation is authorized. The application resolves those questions through
 `packages/booking` against authoritative current state.
 
+The application-facing authentication boundary collapses Better Auth state to
+exactly one of these conceptual results:
+
+```text
+unauthenticated
+
+authenticated {
+  externalPrincipalId
+}
+```
+
+`externalPrincipalId` is the only authentication value supplied to booking
+behavior. Better Auth records, provider SDK types, OAuth details, cookies,
+session implementation, provider profile properties, and provider identifiers
+remain behind the application boundary. The booking-facing contract also
+contains no Participant ID, Admin User ID, selected role, `isAdmin`,
+`isSuperAdmin`, permission, Course Assignment, or provider-derived
+authorization value.
+
 Better Auth, OAuth and provider SDKs, cookie and session concepts, Cloudflare
 authentication integration, and test-authentication machinery remain private
 to the application. `packages/booking` must never import them.
@@ -258,13 +277,31 @@ composition. Better Auth test utilities or its then-current test-capable
 composition are the preferred mechanism, provided official Better Auth
 documentation still supports the required behavior when implementation begins.
 
+Production and non-production authentication are different executable
+compositions rather than one production composition conditionally exposing a
+test route through a runtime flag:
+
+```text
+production composition
+  +-- normal application
+  +-- Better Auth
+  X-- fixture-session establishment
+
+explicit non-production composition
+  +-- normal application
+  +-- Better Auth
+  +-- fixture-session establishment
+```
+
 The mechanism must:
 
 - establish normal Better Auth application sessions for deterministic named
-  fixture identities;
+  fixture identities, beginning with `first-admin` and leaving room for fixed
+  names such as `participant-a` and `participant-b` when those flows exist;
 - let Playwright exercise the normal authenticated application and real domain
   authorization after session establishment;
-- prevent selection of arbitrary principals;
+- prevent arbitrary-principal impersonation, including a caller-supplied
+  principal identifier;
 - exist only in explicitly non-production composition;
 - be absent or unavailable in production regardless of request headers,
   queries, or cookies, so production fails closed;
@@ -274,7 +311,9 @@ The mechanism must:
 - keep its secrets and tokens out of CI artifacts.
 
 Production must not contain an activatable hidden authentication bypass. Exact
-test-authentication route names are intentionally not selected here.
+test-authentication route names are intentionally not selected here. Fixture
+session establishment supplies authentication only; it never creates booking
+identity, role, authority, or permissions.
 
 ## Worker Compatibility
 
@@ -311,7 +350,7 @@ compatibility setting, D1 schema or migration, authentication route, test-auth
 composition, or UI exists yet.
 
 The first application implementation must verify then-current Better Auth and
-Cloudflare compatibility and select exact application modules, boundary-map
-edges, schema names, session lifetime and refresh values, route names, and
-environment configuration. It must preserve every contract above without
+Cloudflare compatibility and select exact concrete module/map declarations,
+schema names, session lifetime and refresh values, authentication route names,
+and environment configuration. It must preserve every contract above without
 turning those implementation choices into product policy.

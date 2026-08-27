@@ -1,12 +1,12 @@
 ---
 id: TASK-aeij8
 title: Establish first Admin bootstrap and application foundation
-status: backlog
+status: planned
 priority: medium
 type: feature
 effort: medium
 epic: EPIC-m22qh
-plan: null
+plan: PLAN-92d7i
 depends_on: []
 blocks:
 - TASK-ubm2q
@@ -71,9 +71,10 @@ the first deployable outcome rather than postponed.
 Production Google, Apple, Microsoft, and Facebook authentication integration,
 Admin Invites, additional Admin User onboarding, and Super Admin promotion are
 outside this task. Implicit provider linking remains disabled. Exact schema,
-route, session timing, compatibility-flag, and application-module names remain
-implementation choices. No implementation plan is attached; a detailed plan
-belongs to a later explicitly selected implementation session.
+session timing, compatibility flag, internal filenames, and deferred technology
+versions remain implementation choices. `PLAN-92d7i` defines the detailed
+implementation contracts and sequence; its attachment and this task's planned
+status do not authorize implementation.
 
 ## References
 

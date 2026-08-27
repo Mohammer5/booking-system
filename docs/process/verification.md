@@ -78,6 +78,14 @@ When real application or domain behavior exists:
 - database tests construct deterministic isolated state from the
   version-controlled migration sequence, never from production D1.
 
+For the first Admin foundation, focused domain tests own name validation and
+bootstrap outcomes, while Worker/D1 integration tests own permanent bootstrap
+history, atomic first-Admin concurrency, external-principal resolution, and
+fresh current-Admin authorization. Browser tests own the composed registration
+journey and a later principal's bootstrap refusal. The task implementation plan
+assigns the detailed assertions without duplicating every invariant at every
+layer.
+
 Confirm the package name and compatibility against current official
 Cloudflare guidance when dependencies are actually added.
 
