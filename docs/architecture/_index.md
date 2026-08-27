@@ -17,27 +17,28 @@ JavaScript conventions, and ESLint-enforced dependency rules.
 - Path: `docs/architecture/_status.md`
 - Summary: Current implemented application/package foundation, React browser
   slice and Google sign-in, functional-composition direction,
-  Cloudflare/Vite/D1 runtime, boundary enforcement, and still-deferred product
-  and release surfaces.
+  Cloudflare/Vite/D1 runtime, NixOS developer tooling, boundary enforcement,
+  and still-deferred product and release surfaces.
 - Read when: You need to distinguish decided architecture from current
   implementation or identify which application, browser, runtime, and
   persistence surfaces do not yet exist.
 - Tags: architecture, status, browser, functional-programming, cloudflare,
-  workers, vite, d1, implementation
+  workers, vite, d1, nixos, implementation
 
 ### Architecture Decisions
 - Path: `docs/architecture/_decisions.md`
 - Summary: Rationale for the booking application/package boundaries, one
   manifest per workspace, React and browser-library responsibilities,
   functional composition, one same-origin Cloudflare Worker, D1 with SQLite
-  semantics, Node/runtime separation, explicit ESLint enforcement, and
-  deferred runtime tooling.
+  semantics, Node/runtime and NixOS host-tooling separation, explicit ESLint
+  enforcement, and deferred remote infrastructure.
 - Read when: You need to understand why the project chose one web application,
   one booking domain package, browser libraries, functional composition,
   workspace-level manifest ownership, Cloudflare, D1, a non-Node production
-  runtime, explicit boundaries, or real-application-triggered tooling.
+  runtime, NixOS developer tooling, explicit boundaries, or
+  real-application-triggered tooling.
 - Tags: architecture, decisions, browser, functional-programming, cloudflare,
-  workers, d1, nodejs, tooling, eslint, manifests
+  workers, d1, nodejs, nixos, tooling, eslint, manifests
 
 ### Architecture Principles
 - Path: `docs/architecture/principles.md`
@@ -60,12 +61,13 @@ JavaScript conventions, and ESLint-enforced dependency rules.
 - Path: `docs/architecture/runtime-and-hosting.md`
 - Summary: Defines the implemented local `booking-system-web` Cloudflare Worker
   and Vite composition, static assets, same-origin routing, compatibility,
-  separate browser/Worker graphs, and minimal hosting footprint.
+  separate browser/Worker graphs, NixOS host-tooling boundary, and minimal
+  hosting footprint.
 - Read when: A task affects hosting, frontend/backend deployment shape, Worker
   runtime behavior, Vite delivery, runtime dependency inclusion, routes, or
-  infrastructure selection.
+  local developer tool provisioning, or infrastructure selection.
 - Tags: architecture, cloudflare, workers, vite, hosting, runtime,
-  dependency-graphs
+  dependency-graphs, nixos
 
 ### Persistence
 - Path: `docs/architecture/persistence.md`

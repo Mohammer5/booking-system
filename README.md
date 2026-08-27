@@ -27,6 +27,28 @@ The [architecture overview](docs/architecture/README.md) describes the accepted
 runtime direction, and [verification](docs/process/verification.md) and
 [releases](docs/process/releases.md) own CI and release policy.
 
+## NixOS Development
+
+On x86_64 NixOS with flakes enabled, enter the repository development
+environment before installing dependencies:
+
+```sh
+nix develop
+pnpm install --frozen-lockfile
+```
+
+The flake supplies Node 24, the repository-declared pnpm 11.17.0, Git,
+Markplane, Chromium, and a Nix-compatible build of the lockfile-resolved
+workerd. JavaScript application and Cloudflare tooling such as Wrangler, Vite,
+and Vitest remain project-pinned in `package.json` and `pnpm-lock.yaml`.
+
+Entering the shell does not install dependencies, change local D1 state,
+create `.env`, or start a server. Use the existing commands below after entry;
+normal development still reads the ignored application `.env`, while
+`pnpm check` remains the comprehensive credential-independent verification
+command. GitHub Actions continues to provision its tools directly, and this
+repository has no Docker-based development path.
+
 ## Real Local Google Authentication
 
 Create `apps/booking-system-web/.env` from the committed example. Keep its

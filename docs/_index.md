@@ -45,8 +45,8 @@ This repository uses an indexed global documentation system.
 
 ### Process
 - Path: `docs/process/_index.md`
-- Summary: Documentation workflow, Markplane tracking, verification, CI, and
-  release rules.
+- Summary: Documentation workflow, Markplane tracking, verification including
+  local-tool provisioning, CI, and release rules.
 - Read when: A task affects documentation, Markplane, tests, CI, releases,
   routing, indexes, or terminology maintenance.
 - Tags: process, docs, tracking, verification, ci, release
@@ -55,8 +55,8 @@ This repository uses an indexed global documentation system.
 - Path: `docs/architecture/_index.md`
 - Summary: Conceptual-domain-first source organization, JavaScript functional
   composition and browser conventions, implemented runtime, persistence, and
-  Google authentication direction, ESLint enforcement, and explicit
-  dependency boundaries.
+  Google authentication direction, NixOS developer-host tooling, ESLint
+  enforcement, and explicit dependency boundaries.
 - Read when: A task affects source layout, dependencies, modules, exports,
   applications, packages, JavaScript or browser conventions, runtime,
   persistence, authentication, sessions, ESLint, or boundary maps.

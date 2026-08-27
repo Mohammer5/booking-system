@@ -21,13 +21,14 @@ development work is tracked and verified, and how releases are promoted.
 ### Process Decisions
 - Path: `docs/process/_decisions.md`
 - Summary: Rationale for documentation structure, canonical `pnpm check`,
-  layered tests, GitHub Actions CI/CD authority, tag-gated releases, and
-  deferred deployment automation.
+  layered tests, GitHub Actions CI/CD authority independent of local Nix
+  tooling, tag-gated releases, and deferred deployment automation.
 - Read when: You need to understand why process responsibilities are separated
   or why verification, testing, CI ownership, release gates, merge/deployment
-  separation, or delayed automation have their current shape.
+  separation, local-tooling/CI ownership, or delayed automation have their
+  current shape.
 - Tags: docs, process, decisions, rationale, verification, testing, ci-cd,
-  releases
+  releases, nixos
 
 ### Conceptual Simplicity
 - Path: `docs/process/conceptual-simplicity.md`
@@ -48,11 +49,12 @@ development work is tracked and verified, and how releases are promoted.
 ### Verification
 - Path: `docs/process/verification.md`
 - Summary: Defines the layered regression harness, canonical `pnpm check`
-  contract, pull-request CI, browser-test policy, and external branch
-  protection requirement.
+  contract, NixOS local browser provisioning, pull-request CI, browser-test
+  policy, and external branch protection requirement.
 - Read when: A task affects tests, CI, required checks, test environments,
-  browser automation, verification commands, or failure artifacts.
-- Tags: process, verification, testing, ci, vitest, playwright
+  browser automation, local test-tool provisioning, verification commands, or
+  failure artifacts.
+- Tags: process, verification, testing, ci, vitest, playwright, nixos
 
 ### Releases
 - Path: `docs/process/releases.md`

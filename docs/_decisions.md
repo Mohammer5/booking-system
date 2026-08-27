@@ -20,10 +20,10 @@ clearer where to update repository truth.
 
 The repository began as a product-neutral template. Product or domain content
 is added only when concrete accepted requirements give it an owner and make it
-repository truth. The booking-system specification now meets that threshold;
-the accepted hosting, persistence, verification, and release direction now
-meets it as well. Workspaces and runtime implementation remain absent until an
-authorized implementation change justifies them.
+repository truth. The booking-system specification and accepted hosting,
+persistence, verification, and release direction met that threshold. The
+repository therefore kept workspaces and runtime implementation absent until
+authorized implementation changes justified them.
 
 ## Separate Conceptual Truth From Technology Choices
 

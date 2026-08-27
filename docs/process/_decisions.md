@@ -59,6 +59,8 @@ task nor its implementation plan may redefine that truth by itself.
 requests, and releases rely on the same evidence. Existing Node tests retain
 ownership of ESLint tooling; application layers extend the composition instead
 of replacing those tests or adding a competing check-everything path.
+`nix flake check` may validate normal flake outputs, but it does not replace or
+wrap the repository verification contract.
 
 ## Layer Tests By Responsibility
 
@@ -71,7 +73,10 @@ assertions at every level.
 
 One authority should decide whether production may change. GitHub Actions owns
 the normal verification and release gates; Cloudflare supplies the runtime and
-deployment target but does not independently auto-deploy `main`.
+deployment target but does not independently auto-deploy `main`. The Nix
+development shell is local host-tool provisioning, so CI continues to install
+its repository-declared Node, pnpm, and Playwright environment directly rather
+than depending on Nix.
 
 ## Separate Merge Verification From Production Release
 

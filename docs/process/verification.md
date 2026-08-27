@@ -93,6 +93,9 @@ with isolated D1 state and the version-controlled migration sequence.
 
 Playwright is the initial browser E2E tool. Routine CI starts with Chromium
 only; more browsers or devices require a demonstrated compatibility need.
+On x86_64 NixOS, the development flake supplies Chromium and uses the existing
+`PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH` configuration seam; this local provision
+does not change the Playwright project or CI browser installation.
 
 Normal pull-request CI runs Playwright against a local production-like
 application composed from Vite/static assets, the Worker API, and an isolated
@@ -168,6 +171,11 @@ and Worker/D1 Vitest. `pnpm check` adds lint, the production Vite/Worker build,
 and local Chromium Playwright E2E. Release CI must reuse the same underlying
 surfaces rather than maintain a hidden alternative suite.
 
+NixOS developers may run these commands inside `nix develop`, which supplies
+host tools but does not install the pnpm dependency graph or run verification
+automatically. `nix flake check` validates the normal flake outputs only; it is
+not a second comprehensive repository command.
+
 ## Pull-Request CI Gate
 
 The repository's GitHub Actions CI workflow currently:
@@ -177,6 +185,7 @@ The repository's GitHub Actions CI workflow currently:
 - installs from `pnpm-lock.yaml` with `--frozen-lockfile`;
 - installs the project-pinned Playwright Chromium and its runner dependencies;
 - runs `pnpm check` in the uniquely named `verify` job;
+- remains independent of the local Nix development environment;
 - uses read-only repository permissions and no Cloudflare credentials; and
 - cancels superseded verification for the same pull request or branch.
 

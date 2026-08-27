@@ -185,6 +185,25 @@ the one `http://localhost:5173/api/auth/callback/google` provider callback.
 The existing Playwright harness remains separately fixed to
 `127.0.0.1:4173` and uses explicit non-production composition.
 
+### NixOS Developer Host Tooling
+
+The root flake supplies the x86_64-linux tools that host the existing local
+workflow. It pins Node 24 and pnpm 11.17.0, supplies Chromium and Markplane, and
+packages the official lockfile-resolved workerd 1.20260826.1 Linux binary with
+Nix ELF patching. `MINIFLARE_WORKERD_PATH` selects that immutable runtime for
+Wrangler, Miniflare, Worker Vitest, Vite development, local D1 operations, and
+the Playwright application server; `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH`
+selects Nix Chromium.
+
+The flake is not a second application runtime. Wrangler, Vite, Vitest, Better
+Auth, the Cloudflare plugins, React, and all other JavaScript dependencies
+remain owned by `package.json` and `pnpm-lock.yaml`. Entering `nix develop`
+does not install dependencies, apply migrations, reset local state, create
+`.env`, patch `node_modules`, or start services. Normal `localhost:5173`
+development can therefore keep loading the developer's ignored `.env`, while
+the existing build and test commands retain their explicit environment
+isolation. No Docker environment or remote Cloudflare resource is introduced.
+
 ## Release-Hardening Infrastructure
 
 After the MVP is feature-complete and accepted locally, [release

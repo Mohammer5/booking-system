@@ -28,7 +28,8 @@ The repository has accepted an architecture and delivery direction:
   no session-cached booking authorization, and Google as the implemented
   normal local provider with explicit no-linking configuration;
 - GitHub Actions CI/CD, Vitest, the Workers Vitest integration, and Playwright;
-  and
+- a root x86_64-linux Nix development shell for host developer tooling, with
+  project JavaScript and Cloudflare dependencies still pnpm-owned; and
 - release-tag production promotion after real Cloudflare staging verification.
 
 The accepted delivery sequence is:
@@ -65,7 +66,10 @@ The first local application foundation is now implemented:
   authentication before the first-Admin name form, and supports Better Auth
   sign-out in every authenticated Admin-route outcome;
 - both workspace boundary maps are registered in ESLint with exact module,
-  workspace, composition, third-party, and test-only permissions; and
+  workspace, composition, third-party, and test-only permissions;
+- the root Nix flake supplies NixOS developer-host tooling: Node, pnpm,
+  Chromium, Markplane, Git, and a patched lockfile-matched workerd, without
+  changing the application runtime or GitHub Actions environment; and
 - the canonical `pnpm check` now runs repository, domain, Worker/D1, migration,
   build, and Chromium browser evidence.
 

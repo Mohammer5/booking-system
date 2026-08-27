@@ -20,6 +20,9 @@ Current reality:
 - Layered local application verification is implemented through domain Vitest,
   Workers Vitest with D1, the production build, and Chromium Playwright in the
   canonical `pnpm check`. The tag-gated release policy remains unimplemented.
+- x86_64 NixOS developers can enter a pinned host-tooling environment with
+  `nix develop`; `pnpm check` remains the verification contract and GitHub
+  Actions continues to provision Node, pnpm, and Playwright independently.
 - Account-bound Cloudflare infrastructure and the remote release pipeline are
   intentionally deferred until [release
   hardening](../DICTIONARY.md#release-hardening), after the MVP is

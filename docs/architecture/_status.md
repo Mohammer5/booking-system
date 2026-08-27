@@ -70,6 +70,9 @@
   configuration, and semantics from the beginning; a conventional
   long-running Node server or unrelated database is not an interim
   architecture.
+- On x86_64-linux, Nix supplies reproducible developer-host tooling while
+  `package.json` and `pnpm-lock.yaml` continue to own application dependencies;
+  the development shell is not a second application runtime.
 - Account-bound Cloudflare Worker environments, remote staging and production
   D1 databases, deployment credentials, and release infrastructure are
   intentionally deferred until [release
@@ -102,6 +105,10 @@
   and composition-interface permissions.
 - Repository, domain, Worker/D1, migration, production-composition, build, and
   Chromium E2E verification are integrated into `pnpm check` and CI.
+- The root flake supplies Node 24, pnpm 11.17.0, Git, Markplane, Chromium, and
+  a Nix-patched official workerd 1.20260826.1 binary for x86_64-linux. It points
+  Miniflare and Playwright at the Nix executables without patching the checkout
+  or changing Cloudflare runtime semantics.
 
 The first slice deliberately does not declare optional `classnames`, `debug`,
 or `ramda` dependencies because its source has no concrete use for them. Apple,

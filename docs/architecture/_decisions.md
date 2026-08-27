@@ -177,6 +177,21 @@ JavaScript may use Node-compatible packages when justified, but production is
 not modeled as a conventional long-running Node server. This prevents local
 Node execution from being mistaken for proof of Workers-runtime behavior.
 
+## Use Nix For NixOS Developer Host Tooling
+
+The repository-root flake owns reproducible developer-host executables for
+x86_64-linux: Node 24, pnpm 11.17.0, Git, Markplane, Chromium, and the exact
+workerd runtime resolved by the pnpm lockfile. The official workerd Linux
+binary is patched as a Nix derivation and selected through
+`MINIFLARE_WORKERD_PATH`, so NixOS developers do not need global `nix-ld`, an
+FHS environment, or mutable `node_modules` repair.
+
+Nix does not become another application runtime or dependency owner. Wrangler,
+Vite, Vitest, Better Auth, Cloudflare plugins, React, and the rest of the
+project graph remain pnpm-pinned; Vite, Miniflare/workerd, and local D1 retain
+their existing Cloudflare-native semantics. Docker is not a parallel local
+environment.
+
 ## Keep Contracts With Their Concepts
 
 Each conceptual package owns the schemas, commands, results, and events that
