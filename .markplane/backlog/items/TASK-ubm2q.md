@@ -6,7 +6,7 @@ priority: medium
 type: feature
 effort: medium
 epic: EPIC-m22qh
-plan: null
+plan: PLAN-xtvcq
 depends_on:
 - TASK-aeij8
 - TASK-dfq2k
@@ -22,7 +22,7 @@ tags:
 - ui
 position: c10
 created: 2026-08-27
-updated: 2026-08-27
+updated: 2026-08-28
 ---
 
 # Create and view Courses
