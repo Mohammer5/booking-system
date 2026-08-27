@@ -53,9 +53,9 @@ selectable.
       setup starts separately, direct-route refresh works, and the final
       documented acceptance journeys are reproducible.
 - [ ] The final coverage matrix contains no unmapped normative section or
-      scenario A–AI, every implementation task has an owning epic and complete
-      verification evidence, and all local-functional-completion epics are
-      closed.
+      scenario A–AI, every local-functional-completion implementation task has
+      an owning epic and complete verification evidence, and all
+      local-functional-completion epics are closed.
 - [ ] `pnpm check` and every stricter canonical planning/docs validation pass
       on the accepted commit. No product dependency, migration, test, or source
       is left undocumented or unverified.

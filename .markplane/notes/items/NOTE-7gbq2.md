@@ -77,18 +77,22 @@ never complete a browser-visible criterion.
 
 ## Epic Order, Parallel Lanes, And Critical Path
 
-| Wave | Epic | Outcome |
+| Lane / convergence phase | Epic | Outcome |
 | --- | --- | --- |
 | Completed | `EPIC-m22qh` completed foundation subset plus `TASK-t65sy` and `TASK-89cnu` | Existing application, Google Admin sign-in, D1/Worker/test and Nix foundation |
 | 1 | `EPIC-566gf` Accessible application experience | MUI/theme/accessibility, then responsive Admin/Participant shells |
 | 2 | `EPIC-m22qh` Core booking happy path | Course/Group/Module creation, Participant onboarding, Assignment/access, Participant Selection |
 | 3A | `EPIC-bh5dj` Participant profiles and membership lifecycle | Profile, Assignment revoke/reactivate, Participant Disable/Re-enable |
 | 3B | `EPIC-i2x79` Course content lifecycle | Course/Group/Module edits and lifecycle, terminal archival |
-| 3C | `EPIC-hc9uu` Admin identities and invitations | May progress after Wave 1; converges after representative booking records exist for no-cascade proof |
+| 3C | `EPIC-hc9uu` Admin identities and invitations | May progress after phase 1; converges after representative booking records exist for no-cascade proof |
 | 4A | `EPIC-ziadc` Course invites and joining | Invite management, secure continuation, explicit Join |
 | 4B | `EPIC-h8fpz` Administrative participation | Complete historical read model and assisted Selection mutation |
 | 5 | `EPIC-hikpy` Local functional acceptance | Final fixtures/migrations, A–AI browser/accessibility regression, docs and local acceptance |
 | Deferred | `EPIC-ifkev` Release hardening | Selectable only after `TASK-6sxq3` is done |
+
+Phase labels describe dependency and convergence structure, not a global
+single-agent execution order. When multiple tasks are ready, the deterministic
+task-selection rule and `position` ordering remain authoritative.
 
 The convergence critical path is:
 
@@ -377,10 +381,11 @@ do not absorb feature implementation.
 
 ## Final Acceptance Checklist
 
-- [ ] Every task has one epic, complete metadata, `plan: null` until selection,
-      cited truth, focused UI/test requirements, and an acyclic dependency set.
-- [ ] `TASK-ic4fu` through `TASK-2nh3b` are done with focused evidence and one
-      conceptual semantic commit each.
+- [ ] Every unfinished local-functional-completion task listed in this note has
+      one epic, complete metadata, `plan: null` until selection, cited canonical
+      truth, focused UI/test requirements, and an acyclic dependency set.
+- [ ] Every local-functional-completion task listed in this note is done with
+      its required focused evidence and conceptual semantic commit.
 - [ ] A fresh D1 database applies the entire migration chain and all fixed
       deterministic identities/states work without arbitrary impersonation.
 - [ ] Production cannot establish a fixture session; no test/provider/Invite
