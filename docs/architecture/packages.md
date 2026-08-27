@@ -5,8 +5,8 @@ of technical reuse.
 
 ## Current Inventory
 
-No package workspace or product source exists. The accepted first conceptual
-package target is `packages/booking`.
+One conceptual package workspace exists: `@booking-system/booking` at
+`packages/booking`.
 
 ## Accepted Initial Package
 
@@ -25,7 +25,8 @@ mechanics.
 - **Adjacent parts:** `apps/booking-system-web` and its private technical
   adapters.
 
-The package initially contains four focused conceptual responsibility modules:
+The accepted package scope contains four focused conceptual responsibility
+modules:
 
 - `admin-access` for Admin User identity and lifecycle, Super Admin authority,
   first Admin bootstrap, Admin Invites, and Admin onboarding policy;
@@ -34,9 +35,10 @@ The package initially contains four focused conceptual responsibility modules:
   Course access, and membership; and
 - `module-participation` for Module participation.
 
-These are internal responsibility modules within one booking package, not
-separate workspace packages. Their distinct product-spec documents reflect
-distinct conceptual ownership without requiring separate packages.
+Only `admin-access` exists in source today, implementing the first Admin
+bootstrap subset. The remaining modules are introduced only with the later MVP
+behavior they own. These are internal responsibility modules within one booking
+package, not separate workspace packages.
 
 Authentication-provider SDK mechanics, Admin UI implementation, HTTP, Vite,
 Cloudflare, and D1 remain private to `apps/booking-system-web`; `admin-access`
@@ -49,8 +51,8 @@ principal and application-context operation expressed through its conceptual
 interfaces, then evaluates domain identity and authorization against current
 state.
 
-When created, `packages/booking` will have one package manifest for the whole
-conceptual package. Its dependencies must remain consistent with booking-domain
+`packages/booking` has one package manifest for the whole conceptual package.
+Its dependencies must remain consistent with booking-domain
 responsibility and must not pull browser, HTTP, Worker, Vite, Cloudflare, D1,
 authentication-provider, or other application/runtime concerns into the
 package.

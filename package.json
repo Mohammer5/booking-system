@@ -10,16 +10,21 @@
   "scripts": {
     "lint": "eslint . --max-warnings=0",
     "lint:fix": "eslint . --fix",
-    "test": "pnpm run test:eslint-local-rules && pnpm run test:eslint-boundaries",
+    "test": "corepack pnpm run test:eslint-local-rules && corepack pnpm run test:eslint-boundaries && corepack pnpm run test:domain && corepack pnpm run test:worker",
+    "test:domain": "corepack pnpm --filter @booking-system/booking test",
+    "test:worker": "corepack pnpm --filter @booking-system/booking-system-web test:worker",
     "test:eslint-boundaries": "node --test eslint-boundaries.test.js",
     "test:eslint-local-rules": "node --test eslint-local-rules.test.js",
-    "check": "pnpm lint && pnpm test"
+    "build": "corepack pnpm --filter @booking-system/booking-system-web build",
+    "test:e2e": "corepack pnpm --filter @booking-system/booking-system-web test:e2e",
+    "check": "corepack pnpm lint && corepack pnpm test && corepack pnpm build && corepack pnpm test:e2e"
   },
   "devDependencies": {
     "@eslint/js": "9.39.5",
     "eslint": "9.39.5",
     "eslint-plugin-boundaries": "7.1.0",
     "eslint-plugin-import": "2.32.0",
+    "eslint-plugin-react": "7.37.5",
     "globals": "17.7.0"
   }
 }

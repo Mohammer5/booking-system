@@ -6,12 +6,12 @@ roles, while their internal technical mechanisms remain private.
 
 ## Current Inventory
 
-No application workspace or runtime implementation exists. The accepted first
-application target is `apps/booking-system-web`.
+One application workspace exists: `@booking-system/booking-system-web` at
+`apps/booking-system-web`.
 
 ## Accepted Initial Boundary
 
-The first application will be `apps/booking-system-web`, one
+The first application is `apps/booking-system-web`, one
 [workspace](../DICTIONARY.md#workspace) with one application package manifest
 and one independently runnable and deployable booking-system boundary. It is
 not only the Vite frontend and is not split into frontend and API workspaces;
@@ -31,7 +31,7 @@ conventions](browser-conventions.md).
   conceptual package.
 - **Outputs:** Frontend/static-asset responses, same-origin API responses, and
   authenticated external-principal context for application operations.
-- **Adjacent parts:** The planned `packages/booking` domain package, private
+- **Adjacent parts:** The implemented `packages/booking` domain package, private
   Worker/Vite/Better Auth composition, and D1 persistence.
 
 The browser reaches backend behavior through the same-origin API, such as
@@ -61,17 +61,26 @@ POST /api/admin/bootstrap
 GET  /api/admin/me
 ```
 
+| Operation | Authentication | Input | Results |
+| --- | --- | --- | --- |
+| `GET /api/admin/entry` | Public | None | `200 { mode: "register-admin" | "login" }` |
+| `POST /api/admin/bootstrap` | Normal application session | `{ name }` only | `201` current Admin; `401 unauthenticated`; `422 invalid-name`; `409 bootstrap-unavailable` |
+| `GET /api/admin/me` | Normal application session | None | `200` current Active Admin; `401 unauthenticated`; `403 no-admin-user`; `403 disabled-admin` |
+
+Admin success representations contain only `id`, `name`, `state`, and
+`authority`.
+
 The public entry read reveals only whether the browser should present first
 Admin registration or normal login. Bootstrap and current-Admin resolution
 use the stable external principal derived server-side from the normal
 application session. Browser-controlled bootstrap input contains the required
 booking-system Admin User name, never an external principal, domain identity,
 state, authority, role, or permissions. Each current-Admin read resolves fresh
-booking state rather than trusting session claims. Detailed response status
-and machine-readable outcome shapes belong to the implementation plan and
-application translation rather than a generic API or error framework.
+booking state rather than trusting session claims. The application translates
+these narrow outcomes directly rather than introducing a generic API or error
+framework.
 
-When created, the workspace's one manifest may declare browser runtime
+The workspace's one manifest declares browser runtime
 dependencies, Worker/API runtime dependencies, application build and
 development tooling, and the dependency on `packages/booking`. Sharing that
 manifest does not make each dependency architecturally available to every
@@ -88,9 +97,9 @@ justify. A separate application may be reconsidered only when a future
 concrete requirement needs an independent deployment, runtime, or application
 boundary.
 
-See [runtime and hosting](runtime-and-hosting.md) for the accepted deployment
-shape. This target description names the planned workspace but does not create
-it or claim that the application is already runnable.
+See [runtime and hosting](runtime-and-hosting.md) for the implemented local
+runtime and accepted deployment shape. The application is locally runnable;
+no remote deployment or release environment exists yet.
 
 ## Definition Rule
 

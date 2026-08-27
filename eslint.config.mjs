@@ -1,8 +1,13 @@
 import js from "@eslint/js";
 import importPlugin from "eslint-plugin-import";
+import boundariesPlugin from "eslint-plugin-boundaries";
 import globals from "globals";
+import reactPlugin from "eslint-plugin-react";
 
+import { bookingSystemWebBoundaryMap } from "./apps/booking-system-web/boundaries.config.mjs";
+import { createWorkspaceBoundaryConfig } from "./eslint-boundaries/createWorkspaceBoundaryConfig.mjs";
 import { localPlugin } from "./eslint-local-rules/index.mjs";
+import { bookingBoundaryMap } from "./packages/booking/boundaries.config.mjs";
 
 const productionFiles = [
   "apps/*/src/**/*.{js,jsx,mjs}",
@@ -17,7 +22,8 @@ const testFiles = [
 const toolingFiles = [
   "*.js",
   "*.mjs",
-  "apps/*/*.mjs",
+  "apps/*/*.{js,mjs}",
+  "apps/*/test/**/*.js",
   "packages/*/*.mjs",
   "eslint-boundaries/**/*.mjs",
   "eslint-local-rules/**/*.mjs",
@@ -42,6 +48,7 @@ export default [
     plugins: {
       import: importPlugin,
       local: localPlugin,
+      react: reactPlugin,
     },
     rules: {
       "max-lines": [
@@ -63,12 +70,36 @@ export default [
       "local/primary-export-name": "error",
       "local/require-directory-index": "error",
       "local/require-function-jsdoc": "error",
+      "react/jsx-uses-vars": "error",
+    },
+  },
+  {
+    files: [
+      "apps/booking-system-web/src/browser/**/*.{js,jsx}",
+      "apps/booking-system-web/src/main.jsx",
+    ],
+    languageOptions: {
+      globals: globals.browser,
+    },
+  },
+  {
+    files: [
+      "apps/booking-system-web/src/authentication/**/*.js",
+      "apps/booking-system-web/src/worker/**/*.js",
+      "apps/booking-system-web/src/productionWorker.js",
+      "apps/booking-system-web/src/nonProductionWorker.js",
+    ],
+    languageOptions: {
+      globals: globals.serviceworker,
     },
   },
   {
     files: testFiles,
     languageOptions: {
-      globals: globals.node,
+      globals: {
+        ...globals.node,
+        ...globals["shared-node-browser"],
+      },
     },
     rules: {
       "max-lines": "off",
@@ -93,7 +124,32 @@ export default [
     },
   },
   {
-    files: ["eslint.config.mjs"],
+    files: [
+      "eslint.config.mjs",
+      "apps/booking-system-web/vite.config.js",
+      "apps/booking-system-web/vite.non-production.config.js",
+      "apps/booking-system-web/vitest.worker.config.js",
+      "apps/booking-system-web/playwright.config.js",
+    ],
+    rules: {
+      "import/no-default-export": "off",
+    },
+  },
+  createWorkspaceBoundaryConfig({
+    boundaryMap: bookingBoundaryMap,
+    workspacePath: "packages/booking",
+    boundariesPlugin,
+  }),
+  createWorkspaceBoundaryConfig({
+    boundaryMap: bookingSystemWebBoundaryMap,
+    workspacePath: "apps/booking-system-web",
+    boundariesPlugin,
+  }),
+  {
+    files: [
+      "apps/booking-system-web/src/productionWorker.js",
+      "apps/booking-system-web/src/nonProductionWorker.js",
+    ],
     rules: {
       "import/no-default-export": "off",
     },

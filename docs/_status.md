@@ -49,27 +49,27 @@ pre-implementation planning, and planning may proceed to creation of the real
 implementation backlog in Markplane. Release hardening and hosted staging
 verification remain mandatory before the first production release.
 
-The accepted direction is not yet product implementation:
+The first local application foundation is now implemented:
 
-- no product source code or runtime dependency exists;
-- no application or package workspace has been created or implemented;
-- none of the accepted browser libraries is installed; React and React DOM are
-  not installed, and no React application, route tree, query/form
-  configuration, translation resource, or browser runtime composition exists;
-- no Vite frontend, Worker, D1 schema, product test suite, Playwright suite,
-  Better Auth/session implementation, release workflow, or production
-  deployment exists; the account-bound release surfaces are intentionally
-  deferred until release hardening;
-- no workspace boundary map is registered yet;
-- the first project-specific delivery sequence exists only as non-active
-  Markplane planning state; and
-- no co-located `*.docs.md` file exists.
+- `@booking-system/booking` at `packages/booking` owns the implemented
+  `admin-access` domain behavior;
+- `@booking-system/booking-system-web` at `apps/booking-system-web` owns the
+  React `/admin` flow, Worker/API handling, Better Auth composition, D1
+  persistence, Vite/Workers Static Assets integration, and local runtime;
+- one version-controlled migration creates the Better Auth core schema, Admin
+  User persistence, and permanent first-bootstrap history;
+- production and explicit non-production Worker compositions structurally
+  separate fixed fixture-session establishment from production;
+- both workspace boundary maps are registered in ESLint with exact module,
+  workspace, composition, third-party, and test-only permissions; and
+- the canonical `pnpm check` now runs repository, domain, Worker/D1, migration,
+  build, and Chromium browser evidence.
 
-The architecture rule implementation and its Node tests are live. GitHub
-Actions now runs the canonical verification gate. Source-shape rules already
-target future `apps/*/src/` and `packages/*/src/` trees. A future workspace
-activates deny-by-default dependency enforcement by declaring its local
-boundary map and registering it explicitly in `eslint.config.mjs`.
+Real Google, Apple, Microsoft, and Facebook providers, all later MVP product
+capabilities, remote Cloudflare staging/production resources, release
+automation, deployment credentials, and production deployment remain absent.
+The account-bound release surfaces are intentionally deferred until release
+hardening. No co-located `*.docs.md` file exists.
 
 Further project-specific docs should be added only when accepted project truth
 gives them a concrete responsibility.

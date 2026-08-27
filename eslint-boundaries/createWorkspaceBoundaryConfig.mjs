@@ -1,6 +1,5 @@
 import path from "node:path";
 
-const externalPackagePatterns = ["*", "@*/*"];
 const testFilePattern = "**/*.{test,spec}.{js,jsx,mjs}";
 
 /**
@@ -122,42 +121,18 @@ function createDependencyPolicies(boundaryMap) {
 }
 
 /**
- * Allow third-party packages while enforcing the workspace package allow-list.
+ * Allow only explicitly declared external package imports.
  *
  * @param {object} boundaryMap The explicit workspace dependency map.
  * @returns {object[]} External-module dependency policies.
  */
 function createExternalPolicies(boundaryMap) {
-  const allowedWorkspacePolicies =
-    boundaryMap.allowedWorkspaceDependencies.map((packageName) => ({
-      allow: {
-        to: {
-          module: {
-            origin: "external",
-            source: packageName,
-            internalPath: null,
-          },
-        },
-      },
-      message: `Import ${packageName} only through its package root.`,
-    }));
-
   return [
     {
       allow: {
         to: {
           module: {
             origin: "core",
-          },
-        },
-      },
-    },
-    {
-      allow: {
-        to: {
-          module: {
-            origin: "external",
-            source: externalPackagePatterns,
           },
         },
       },
@@ -173,8 +148,126 @@ function createExternalPolicies(boundaryMap) {
       },
       message: "This workspace package dependency is not explicitly allowed.",
     },
-    ...allowedWorkspacePolicies,
+    ...createModuleExternalPolicies(boundaryMap),
+    ...createCompositionExternalPolicies(boundaryMap),
+    ...createTestExternalPolicies(boundaryMap),
   ];
+}
+
+/**
+ * Create exact external import policies for responsibility modules.
+ *
+ * @param {object} boundaryMap The explicit workspace dependency map.
+ * @returns {object[]} Module-scoped external dependency policies.
+ */
+function createModuleExternalPolicies(boundaryMap) {
+  return Object.entries(boundaryMap.modules).flatMap(
+    ([moduleName, moduleDeclaration]) => {
+      const externalDependencies = [
+        ...moduleDeclaration.thirdPartyDependencies,
+        ...allowedWorkspaceDependencies(boundaryMap, moduleDeclaration),
+      ];
+
+      return externalDependencies.map((specifier) => ({
+        from: {
+          element: {
+            type: moduleName,
+          },
+        },
+        allow: {
+          to: {
+            module: createExternalModuleTarget(specifier),
+          },
+        },
+        message: `Module ${moduleName} may import only the declared external specifier ${specifier}.`,
+      }));
+    },
+  );
+}
+
+/**
+ * Create exact external import policies for composition files.
+ *
+ * @param {object} boundaryMap The explicit workspace dependency map.
+ * @returns {object[]} Composition-scoped external dependency policies.
+ */
+function createCompositionExternalPolicies(boundaryMap) {
+  return Object.entries(boundaryMap.compositionFiles).flatMap(
+    ([filePath, compositionDeclaration]) => {
+      const externalDependencies = [
+        ...compositionDeclaration.thirdPartyDependencies,
+        ...allowedWorkspaceDependencies(boundaryMap, compositionDeclaration),
+      ];
+
+      return externalDependencies.map((specifier) => ({
+        from: {
+          file: {
+            categories: compositionCategory(filePath),
+          },
+        },
+        allow: {
+          to: {
+            module: createExternalModuleTarget(specifier),
+          },
+        },
+        message: `Composition file ${filePath} may import only the declared external specifier ${specifier}.`,
+      }));
+    },
+  );
+}
+
+/**
+ * Keep local declarations within the workspace-wide exact dependency list.
+ *
+ * @param {object} boundaryMap The explicit workspace dependency map.
+ * @param {object} declaration One module or composition declaration.
+ * @returns {string[]} Workspace dependencies allowed at both levels.
+ */
+function allowedWorkspaceDependencies(boundaryMap, declaration) {
+  return declaration.workspaceDependencies.filter((specifier) =>
+    boundaryMap.allowedWorkspaceDependencies.includes(specifier),
+  );
+}
+
+/**
+ * Create exact external import policies that apply only to test files.
+ *
+ * @param {object} boundaryMap The explicit workspace dependency map.
+ * @returns {object[]} Test-only external dependency policies.
+ */
+function createTestExternalPolicies(boundaryMap) {
+  return boundaryMap.testDependencies.map((specifier) => ({
+    from: {
+      file: {
+        categories: "test",
+      },
+    },
+    allow: {
+      to: {
+        module: createExternalModuleTarget(specifier),
+      },
+    },
+    message: `Tests may import only the declared external specifier ${specifier}.`,
+  }));
+}
+
+/**
+ * Convert an exact npm import specifier to a boundaries module target.
+ *
+ * @param {string} specifier The exact package root or exported subpath.
+ * @returns {{origin: string, source: string, internalPath: string | null}} A dependency target.
+ */
+function createExternalModuleTarget(specifier) {
+  const segments = specifier.split("/");
+  const packageSegmentCount = specifier.startsWith("@") ? 2 : 1;
+  const source = segments.slice(0, packageSegmentCount).join("/");
+  const internalPath = segments.slice(packageSegmentCount).join("/") || null;
+
+  return {
+    origin: "external",
+    source,
+    internalPath,
+  };
 }
 
 /**
@@ -226,8 +319,8 @@ function createSameModulePolicies(boundaryMap) {
  */
 function createCrossModulePolicies(boundaryMap) {
   return Object.entries(boundaryMap.modules).flatMap(
-    ([sourceModule, targetModules]) =>
-      targetModules.map((targetModule) => ({
+    ([sourceModule, moduleDeclaration]) =>
+      moduleDeclaration.modules.map((targetModule) => ({
         from: {
           element: {
             type: sourceModule,
@@ -254,8 +347,8 @@ function createCrossModulePolicies(boundaryMap) {
  */
 function createCompositionPolicies(boundaryMap) {
   return Object.entries(boundaryMap.compositionFiles).flatMap(
-    ([filePath, targetModules]) =>
-      targetModules.map((targetModule) => ({
+    ([filePath, compositionDeclaration]) => [
+      ...compositionDeclaration.modules.map((targetModule) => ({
         from: {
           file: {
             categories: compositionCategory(filePath),
@@ -271,6 +364,25 @@ function createCompositionPolicies(boundaryMap) {
         },
         message: `Composition file ${filePath} may import ${targetModule} only through index.js.`,
       })),
+      ...(compositionDeclaration.moduleInterfaces ?? []).map(
+        ({ module: targetModule, fileInternalPath }) => ({
+          from: {
+            file: {
+              categories: compositionCategory(filePath),
+            },
+          },
+          allow: {
+            to: {
+              element: {
+                type: targetModule,
+                fileInternalPath,
+              },
+            },
+          },
+          message: `Composition file ${filePath} may import only the declared ${targetModule} interface ${fileInternalPath}.`,
+        }),
+      ),
+    ],
   );
 }
 
@@ -281,21 +393,38 @@ function createCompositionPolicies(boundaryMap) {
  * @returns {object[]} Composition-to-test denial policies.
  */
 function createCompositionTestPolicies(boundaryMap) {
-  return Object.keys(boundaryMap.compositionFiles).map((filePath) => ({
-    from: {
-      file: {
-        categories: compositionCategory(filePath),
+  return [
+    ...Object.keys(boundaryMap.compositionFiles).map((filePath) => ({
+      from: {
+        file: {
+          categories: compositionCategory(filePath),
+        },
       },
-    },
-    disallow: {
-      to: {
+      disallow: {
+        to: {
+          file: {
+            categories: "test",
+          },
+        },
+      },
+      message: "Production composition files may not import test files.",
+    })),
+    ...(boundaryMap.testCompositionFiles ?? []).map((filePath) => ({
+      from: {
         file: {
           categories: "test",
         },
       },
-    },
-    message: "Production composition files may not import test files.",
-  }));
+      allow: {
+        to: {
+          file: {
+            categories: compositionCategory(filePath),
+          },
+        },
+      },
+      message: `Tests may import the declared composition file ${filePath}.`,
+    })),
+  ];
 }
 
 /**

@@ -370,45 +370,64 @@ gate can be executed.
 
 ### Phase 1: Verify Toolchain And Establish Real Boundaries
 
-- [ ] Verify current official Better Auth, Workers, Cloudflare Vite, D1,
+- [x] Verify current official Better Auth, Workers, Cloudflare Vite, D1,
   Cloudflare Vitest, and compatibility-flag guidance.
-- [ ] Create both real workspaces, manifests, source roots, and explicit
+- [x] Create both real workspaces, manifests, source roots, and explicit
   deny-by-default maps using the responsibility/edge contract above.
-- [ ] Register both maps in root ESLint and update canonical boundary docs in
+- [x] Register both maps in root ESLint and update canonical boundary docs in
   the same change.
 
 ### Phase 2: Implement Domain And Persistence
 
-- [ ] Implement the narrow `admin-access` operations/outcomes and pure tests.
-- [ ] Add only the required Better Auth and Admin/bootstrap D1 migrations.
-- [ ] Implement the atomic first-Admin claim and focused D1 integration tests.
+- [x] Implement the narrow `admin-access` operations/outcomes and pure tests.
+- [x] Add only the required Better Auth and Admin/bootstrap D1 migrations.
+- [x] Implement the atomic first-Admin claim and focused D1 integration tests.
 
 ### Phase 3: Compose Authentication And HTTP
 
-- [ ] Integrate Better Auth and expose only the external-principal seam.
-- [ ] Add structurally separate named-fixture non-production composition.
-- [ ] Implement the three Worker operations and request/outcome translation.
-- [ ] Prove browser input cannot control principal or authority.
+- [x] Integrate Better Auth and expose only the external-principal seam.
+- [x] Add structurally separate named-fixture non-production composition.
+- [x] Implement the three Worker operations and request/outcome translation.
+- [x] Prove browser input cannot control principal or authority.
 
 ### Phase 4: Deliver Browser And Regression Surfaces
 
-- [ ] Implement the minimum React-based `/admin` route and state flow with the
+- [x] Implement the minimum React-based `/admin` route and state flow with the
   accepted routing, server-state, form, and localization responsibilities,
   without speculative frontend abstractions.
-- [ ] Add Worker/D1/migration integration and local Chromium Playwright E2E.
-- [ ] Add focused proof that production composition cannot activate test auth.
-- [ ] Add the real local Worker/Vite/Cloudflare integration, project-pinned
+- [x] Add Worker/D1/migration integration and local Chromium Playwright E2E.
+- [x] Add focused proof that production composition cannot activate test auth.
+- [x] Add the real local Worker/Vite/Cloudflare integration, project-pinned
   Wrangler configuration, and production build configuration.
-- [ ] Expand the canonical `pnpm check` composition.
+- [x] Expand the canonical `pnpm check` composition.
 
 ### Phase 5: Accept The Local Application Foundation
 
-- [ ] Run the complete canonical local verification, including production
+- [x] Run the complete canonical local verification, including production
   build and local Chromium E2E, from clean deterministic local/test state.
-- [ ] Review source, boundary maps, local configuration, migrations, and all
+- [x] Review source, boundary maps, local configuration, migrations, and all
   implementation-triggered documentation together.
-- [ ] Confirm the foundation remains production-compatible while requiring no
+- [x] Confirm the foundation remains production-compatible while requiring no
   account-bound Cloudflare resource, then mark `TASK-aeij8` done locally.
+
+## Implementation Evidence
+
+- `packages/booking` implements and tests the public `admin-access` operations;
+  `apps/booking-system-web` implements the browser, Worker, authentication, D1,
+  and composition responsibilities.
+- `0001_first_admin_foundation.sql` is applied from clean state in Worker tests
+  and local E2E; atomic, stale, concurrent, deletion-history, and rollback
+  behavior is covered against D1.
+- Worker tests cover every Admin HTTP status/outcome, trusted-principal
+  handling, fresh state/authority, fixed non-production sessions, and
+  production structural exclusion.
+- Chromium E2E covers direct `/admin` navigation, German presentation, normal
+  fixture session establishment, successful bootstrap, query refetch,
+  refreshed Active Super Admin context, later-principal refusal, and consumed
+  bootstrap presentation.
+- On 2026-08-27, frozen install, lint, all 42 non-browser tests, production
+  build, and the one full Chromium E2E passed through the canonical local
+  commands, including `pnpm check`.
 
 ## Acceptance-Criteria Traceability
 

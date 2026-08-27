@@ -1,0 +1,36 @@
+{
+  "name": "@booking-system/booking-system-web",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "vite build",
+    "dev": "vite",
+    "dev:fixtures": "vite --config vite.non-production.config.js",
+    "test:worker": "vitest run --config vitest.worker.config.js",
+    "test:e2e": "playwright test",
+    "e2e:prepare": "node ./test/prepareE2eState.js && wrangler d1 migrations apply DB --local --config wrangler.non-production.jsonc",
+    "e2e:serve": "corepack pnpm run e2e:prepare && vite --config vite.non-production.config.js --host 127.0.0.1 --port 4173 --strictPort"
+  },
+  "dependencies": {
+    "@booking-system/booking": "workspace:*",
+    "@tanstack/react-query": "5.102.7",
+    "better-auth": "1.7.2",
+    "i18next": "26.4.0",
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "react-hook-form": "7.86.0",
+    "react-i18next": "17.0.12",
+    "react-router": "8.3.0"
+  },
+  "devDependencies": {
+    "@cloudflare/vite-plugin": "1.54.1",
+    "@cloudflare/vitest-plugin": "1.1.1",
+    "@playwright/test": "1.62.1",
+    "@vitejs/plugin-react": "6.1.0",
+    "auth": "1.7.2",
+    "vite": "8.2.2",
+    "vitest": "4.1.11",
+    "wrangler": "4.127.0"
+  }
+}

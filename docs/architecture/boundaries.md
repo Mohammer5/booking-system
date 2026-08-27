@@ -8,24 +8,17 @@ authority. Package manifests never grant architectural permission.
 
 ## Current Workspace Dependencies
 
-No workspace or local boundary map has been implemented, so there are no
-package dependency edges. The accepted `apps/booking-system-web` and
-`packages/booking` targets do not pre-authorize a JavaScript import.
+Two local maps are implemented and registered explicitly in root ESLint:
 
-The React and browser dependencies accepted in [browser
-conventions](browser-conventions.md#dependency-scope) are likewise not
-installed dependencies or authorized edges. The first real slice that uses
-one must add it to the application manifest and permit it only from the source
-responsibilities that require it.
+- `@booking-system/booking` has no workspace dependency; and
+- `@booking-system/booking-system-web` may import only the exact
+  `@booking-system/booking` package root. Package subpaths remain denied.
 
-Ramda is additionally accepted across JavaScript responsibilities under the
-[JavaScript conventions](javascript-conventions.md#use-ramda-selectively). A
-workspace declares it only when real source in that workspace uses it, and its
-map must permit the relevant source responsibility to import it. Worker use
-also requires runtime compatibility. These requirements do not create a new
-workspace or package boundary. No ESLint or boundary-map change can express
-any of these future edges correctly before the workspace and real source
-modules exist, so no speculative enforcement is introduced now.
+React, browser libraries, Better Auth, and test tooling are declared only in
+the manifest that uses them and permitted only from their owning source
+responsibility, composition file, or tests. Optional `classnames`, `debug`, and
+`ramda` are not installed or permitted because the first slice does not use
+them.
 
 ## Three Dependency Layers
 
@@ -40,55 +33,37 @@ Keep three distinct questions explicit:
 
 A manifest declaration grants no architectural import permission, and it does
 not put the dependency into every output. This distinction is especially
-important for the planned `apps/booking-system-web`, whose one application
+important for `apps/booking-system-web`, whose one application
 manifest may declare both browser and Worker/API dependencies while their
 architectural permissions and runtime graphs remain separate.
 
 ## Current Responsibility Modules
 
-`admin-access`, `course-structure`, `course-access`, and `module-participation`
-are accepted as conceptual responsibility modules within the planned booking
-package. No source module, dependency edge, boundary-map entry, or composition
-file exists yet; those permissions require the concrete implementation change.
+The booking map declares one `admin-access` module with no sibling,
+third-party, or workspace edges. Its root `src/index.js` composition may import
+only the `admin-access/index.js` interface. Tests may import Vitest and the
+declared root composition. Booking production code cannot import application,
+Worker/Cloudflare, D1, Better Auth, HTTP, or browser/UI implementation.
 
-When `apps/booking-system-web` is implemented, its local deny-by-default map
-must model the chosen browser-facing and Worker/API-facing responsibility
-modules and reject inappropriate cross-responsibility implementation imports.
-Both sides may consume only explicitly allowed conceptual booking interfaces,
-and composition receives only the permissions needed to join them. The first
-Admin plan declares the intended initial module names and edges; exact map
-syntax and composition filenames remain undeclared until real source exists.
+The application map declares:
 
-That map must also declare the narrow edges through which application-owned
-authentication and session behavior is consumed and composed. Better Auth,
-OAuth/provider SDKs, cookie/session mechanics, Cloudflare authentication
-integration, and non-production test-authentication code must remain outside
-`packages/booking`. Documentation and planning do not themselves authorize an
-import; the implementation must still declare every planned name and edge in
-the real map before source may use it.
+- `browser` with no local or workspace edge and exact third-party permission
+  for TanStack Query, i18next, React Hook Form, react-i18next, and React Router;
+- `worker -> authentication`, plus the exact `@booking-system/booking` root;
+- `authentication` with no local or booking edge and exact `better-auth` and
+  `better-auth/plugins` permissions;
+- `src/index.js -> worker`;
+- `src/main.jsx -> browser`, with only its exact React/provider dependencies;
+- `src/productionWorker.js -> worker + authentication`;
+- `src/nonProductionWorker.js -> worker + authentication`, plus the exact
+  nested `authentication/fixture-session/index.js` interface; and
+- test-only `vitest` and `cloudflare:test` permissions, with exact access to
+  the two Worker composition files needed by the structural regression.
 
-The accepted first Admin implementation plan narrows the initial direction
-further without claiming that a map exists:
-
-- browser responsibility imports neither Worker implementation,
-  application-private authentication, Better Auth, nor Cloudflare/D1
-  implementation;
-- Worker responsibility may import the public booking package interface and a
-  narrow application authentication interface, but not browser
-  implementation;
-- authentication responsibility may use application-private Better Auth
-  mechanics, but imports neither booking product policy nor browser
-  implementation;
-- `packages/booking` imports no application, Worker/Cloudflare, D1, Better
-  Auth, HTTP, or browser/UI implementation; and
-- each thin executable composition file receives only the explicit module
-  permissions required for its runtime graph.
-
-The task implementation plan records the intended initial map edges in detail.
-The implementation change must reconcile those planned edges with the real
-source graph, declare them in each new workspace map, register both maps in
-root ESLint, and update this document in the same change. No generic shared or
-contracts package is introduced merely to exchange the first HTTP shapes.
+Production composition has no edge to the fixture-session interface. Browser
+source cannot import Worker, authentication, D1, Cloudflare, or the booking
+package, while authentication cannot import booking policy or browser source.
+No generic shared or contracts package exists for the small HTTP shapes.
 
 ## Map Shape
 
@@ -99,13 +74,21 @@ Each map explicitly declares:
   rejected;
 - `sourceRoot`;
 - `allowedWorkspaceDependencies`;
-- first-level `modules` and their allowed outgoing module edges; and
-- root `compositionFiles` and the modules each may import.
+- first-level `modules` and each module's allowed outgoing modules, exact
+  third-party specifiers, and exact workspace dependencies;
+- root `compositionFiles` and each file's exact modules, nested public module
+  interfaces, third-party specifiers, and workspace dependencies;
+- `testDependencies`, which apply only to test files; and
+- `testCompositionFiles`, which let tests import only named executable
+  compositions.
 
 Cross-workspace imports use the exact destination package root. Relative
 traversal, package subpaths, undeclared workspace packages, unknown local files,
 cross-module implementation imports, and production-to-test imports are
-rejected.
+rejected. A module-level workspace declaration is effective only when the same
+specifier is present in the map's workspace-wide allow-list. Ordinary
+third-party imports are denied from production by default and are never
+inferred from `package.json`.
 
 ## Activation Rule
 

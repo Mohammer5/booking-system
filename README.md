@@ -1,19 +1,21 @@
 # Booking System
 
-This repository defines the product and documentation foundation for a
-deliberately simple course and module booking system. It currently contains:
+This repository contains the product specification and the first locally
+complete application foundation for a deliberately simple course and module
+booking system. It currently includes:
 
 - an authoritative, implementation-agnostic product specification;
 - an indexed, maintainable documentation process;
 - a conceptual-domain-first architecture philosophy with ESLint enforcement;
-- an accepted Cloudflare Worker, Vite, and D1 application direction;
+- a locally runnable React/Vite and Cloudflare Worker application with D1;
+- the first-Admin bootstrap vertical slice and its booking-domain package;
 - GitHub Actions verification for pull requests and `main`; and
 - a repository-local Markplane development backlog.
 
-The direction is accepted, but the application is not implemented. The
-repository still contains no product workspace, runtime code, Vite frontend,
-Worker, D1 schema, product test suite, Playwright suite, release workflow, or
-production deployment.
+The implemented local foundation does not include production identity-provider
+integration, remote Cloudflare resources, a release workflow, or a production
+deployment. Those remain explicitly deferred; local acceptance is not release
+approval.
 
 Start with [the product specification](docs/product/README.md) for accepted
 booking-system behavior or [the docs overview](docs/README.md) for the
@@ -22,6 +24,19 @@ repository documentation model. Use
 The [architecture overview](docs/architecture/README.md) describes the accepted
 runtime direction, and [verification](docs/process/verification.md) and
 [releases](docs/process/releases.md) own CI and release policy.
+
+## Local Application
+
+The explicit non-production composition can run with clean local D1 state:
+
+```sh
+pnpm --filter @booking-system/booking-system-web run e2e:prepare
+pnpm --filter @booking-system/booking-system-web run dev:fixtures
+```
+
+The preparation command intentionally resets only the application's generated
+local Wrangler state and applies all migrations. It does not provision or use
+remote Cloudflare resources.
 
 ## Development Tracking
 
@@ -44,7 +59,7 @@ pnpm test
 pnpm check
 ```
 
-These commands currently verify the architecture tooling. GitHub Actions runs
-`pnpm check` in the `verify` job. Workspace boundary enforcement becomes active
-for each future workspace when it adds an explicit local
-`boundaries.config.mjs` map and registers it in `eslint.config.mjs`.
+`pnpm check` composes lint, repository-tooling tests, booking-domain tests,
+Worker/D1 and migration tests, the production build, and local Chromium
+Playwright E2E. GitHub Actions runs that command in the `verify` job. Both real
+workspaces have explicit deny-by-default boundary maps registered in ESLint.

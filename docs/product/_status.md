@@ -23,7 +23,10 @@ remains. A future requirement may deliberately change or extend the contract,
 but implementation planning does not need to invent behavior for the cases
 covered here.
 
-This product area contains specifications only. The repository has no product
-implementation or application workspace. Accepted technology, persistence,
-API, frontend, and infrastructure direction remains outside the product
-specification and does not alter its implementation-agnostic behavior.
+This product area remains the implementation-agnostic source of product truth.
+The repository now implements the first Admin bootstrap subset, including its
+one-time creation and fresh Admin-context behavior. Course, Group, Module,
+Participant, Assignment, Selection, Invite, later Admin onboarding, and Admin
+management behavior remain unimplemented. Technology, persistence, API,
+frontend, and infrastructure mechanics remain outside this product
+specification and do not alter its contracts.

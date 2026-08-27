@@ -15,10 +15,9 @@ JavaScript conventions, and ESLint-enforced dependency rules.
 
 ### Architecture Status
 - Path: `docs/architecture/_status.md`
-- Summary: Current distinction between the accepted application/package target,
-  React/browser-library and functional-composition direction, one-manifest
-  workspace direction, Cloudflare/Vite/D1 runtime shape, and still-unimplemented
-  workspaces and runtime.
+- Summary: Current implemented application/package foundation, React browser
+  slice, functional-composition direction, Cloudflare/Vite/D1 runtime, boundary
+  enforcement, and still-deferred product and release surfaces.
 - Read when: You need to distinguish decided architecture from current
   implementation or identify which application, browser, runtime, and
   persistence surfaces do not yet exist.
@@ -49,19 +48,18 @@ JavaScript conventions, and ESLint-enforced dependency rules.
 
 ### Applications
 - Path: `docs/architecture/applications.md`
-- Summary: Defines application boundaries, the empty implemented inventory,
-  and `apps/booking-system-web` as one workspace and complete initial
-  same-origin application.
+- Summary: Defines application boundaries and the implemented
+  `apps/booking-system-web` workspace as the complete initial same-origin
+  application.
 - Read when: A task adds, removes, deploys, or changes an application boundary
   or application manifest ownership.
 - Tags: architecture, applications, deployment, composition, manifests
 
 ### Runtime And Hosting
 - Path: `docs/architecture/runtime-and-hosting.md`
-- Summary: Defines the intended `booking-system-web` Cloudflare Worker
-  deployment, Vite static assets, same-origin API composition, runtime
-  distinction, separate browser and Worker dependency graphs, and minimal
-  hosting footprint.
+- Summary: Defines the implemented local `booking-system-web` Cloudflare Worker
+  and Vite composition, static assets, same-origin routing, compatibility,
+  separate browser/Worker graphs, and minimal hosting footprint.
 - Read when: A task affects hosting, frontend/backend deployment shape, Worker
   runtime behavior, Vite delivery, runtime dependency inclusion, routes, or
   infrastructure selection.
@@ -70,8 +68,8 @@ JavaScript conventions, and ESLint-enforced dependency rules.
 
 ### Persistence
 - Path: `docs/architecture/persistence.md`
-- Summary: Defines SQLite-compatible semantics, D1 persistence, environment
-  isolation, migration constraints, and current unimplemented state.
+- Summary: Defines SQLite-compatible semantics, implemented local/test D1 and
+  first-Admin migration, environment isolation, and migration constraints.
 - Read when: A task affects databases, D1, SQL semantics, environment data,
   migrations, or persistence safety.
 - Tags: architecture, persistence, database, d1, sqlite, migrations
@@ -91,18 +89,18 @@ JavaScript conventions, and ESLint-enforced dependency rules.
 
 ### Packages
 - Path: `docs/architecture/packages.md`
-- Summary: Defines conceptual package boundaries, the empty implemented
-  inventory, `packages/booking` with four internal responsibility modules, and
-  why technical dependency segregation does not justify extraction.
+- Summary: Defines conceptual package boundaries, the implemented
+  `packages/booking` and `admin-access` module, accepted later modules, and why
+  technical dependency segregation does not justify extraction.
 - Read when: A task adds, removes, extracts, or changes a package boundary or
   proposes a package to segregate technical dependencies.
 - Tags: architecture, packages, domains, ownership, manifests
 
 ### Module Organization
 - Path: `docs/architecture/module-organization.md`
-- Summary: Defines the accepted initial responsibility-module target, source
-  roots, manifest ownership, internal browser/Worker responsibility separation,
-  vertical slices, interfaces, entrypoints, adapters, and dependency direction.
+- Summary: Defines the implemented initial responsibility modules, source
+  roots, manifest ownership, browser/Worker/authentication separation, vertical
+  slices, interfaces, entrypoints, adapters, and dependency direction.
 - Read when: A task affects source placement, workspace manifests, modules,
   runtime responsibilities, slices, imports, interfaces, or tests.
 - Tags: architecture, modules, source-layout, manifests, runtime-boundaries
@@ -137,10 +135,9 @@ JavaScript conventions, and ESLint-enforced dependency rules.
 
 ### Dependency Boundaries
 - Path: `docs/architecture/boundaries.md`
-- Summary: Canonical human counterpart to explicit per-workspace
-  deny-by-default dependency maps, including the distinction among manifest
-  availability, architectural import permission, runtime graph inclusion, and
-  not-yet-created enforcement maps.
+- Summary: Canonical human counterpart to the two implemented per-workspace
+  deny-by-default maps, including exact module, workspace, third-party,
+  composition, test-only, and runtime-graph distinctions.
 - Read when: A task changes workspace dependencies, responsibility modules,
   composition permissions, namespaces, package exports, manifests, or runtime
   dependency graphs.

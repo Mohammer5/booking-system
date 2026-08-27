@@ -5,8 +5,9 @@ for one concept and update this file when stable terminology changes.
 
 ## Repository Concepts
 
-The product concepts below are accepted specification truth but are not yet
-implemented.
+The product concepts below are accepted specification truth. The first Admin
+bootstrap subset is implemented; the remaining concepts and later lifecycle
+behavior are still specifications until their delivery tasks complete.
 
 ### Admin-Assisted Booking
 
@@ -98,6 +99,10 @@ accepted registrant authenticates, supplies a required Admin User name, and
 becomes an Active Super Admin. See [Admin
 access](product/admin-access.md#first-admin-bootstrap).
 
+The local application foundation implements this flow and its permanent
+exactly-once bootstrap history; that local acceptance is not a production
+release.
+
 ### Group
 
 A permanently Course-owned, Active or Archived attendance option with required
@@ -185,40 +190,42 @@ behavior with private technical implementations at an explicit runtime edge.
 The application-owned technical responsibility that authenticates a request
 and establishes one stable [external authentication
 identity](#external-authentication-identity). It does not own Participant,
-Admin User, or booking authorization decisions. The accepted initial layer is
-planned but not implemented. See [Authentication and
+Admin User, or booking authorization decisions. The implemented initial layer
+uses Better Auth inside the web application's Worker. See [Authentication and
 sessions](architecture/authentication-and-sessions.md#accepted-composition).
 
 ### Authentication Session
 
 The application-owned technical relationship that keeps one external
-principal authenticated across requests. The accepted initial model is a
-planned database-backed opaque server-side session identified by a secure
+principal authenticated across requests. The implemented initial model is a
+database-backed opaque server-side session identified by a secure
 same-origin `HttpOnly` cookie; it contains no booking authorization snapshot.
 See [Session
 model](architecture/authentication-and-sessions.md#session-model).
 
 ### Booking Package
 
-The planned conceptual domain package at `packages/booking`. It owns booking
-language, rules, and contracts through distinct `admin-access`,
-`course-structure`, `course-access`, and `module-participation` responsibility
-modules; it is not yet implemented. See
+The conceptual domain package `@booking-system/booking` at `packages/booking`.
+Its implemented `admin-access` module owns the first Admin behavior; the
+accepted `course-structure`, `course-access`, and `module-participation`
+modules arrive with later product slices. See
 [Packages](architecture/packages.md#accepted-initial-package).
 
 ### Booking-System Web Application
 
-The planned single deployable application at `apps/booking-system-web`. It owns
-the browser/Vite experience, frontend static assets, Cloudflare Worker and
-same-origin `/api/*` handling, private technical adapters, and the composition
-root; it is not yet implemented. See
+The implemented single deployable application
+`@booking-system/booking-system-web` at `apps/booking-system-web`. It owns the
+browser/Vite experience, frontend static assets, Cloudflare Worker and
+same-origin `/api/*` handling, private technical adapters, and composition
+roots. See
 [Applications](architecture/applications.md#accepted-initial-boundary).
 
 ### Boundary Map
 
 One workspace's explicit deny-by-default declaration of its package namespace,
-allowed workspace dependencies, responsibility-module edges, and
-composition-file permissions.
+allowed workspace dependencies, responsibility-module edges, exact
+third-party permissions, composition-file interfaces, and test-only
+permissions.
 
 ### CI Gate
 
@@ -256,12 +263,13 @@ repository truth or product runtime data.
 
 ### Domain-Oriented Functional Composition
 
-The accepted but not yet implemented JavaScript style in which vertical-slice
+The implemented JavaScript style in which vertical-slice
 workflows compose named domain or application instructions over plain data,
 receive narrow explicit capabilities, keep conceptual decisions visible, and
 extract abstractions only after concrete evidence. Functional techniques and
-Ramda support this style but do not create a peer architecture or override
-conceptual ownership. See [vertical slices](#vertical-slice) and [JavaScript
+optional Ramda may support this style but do not create a peer architecture or
+override conceptual ownership. The first slice uses plain JavaScript without
+Ramda. See [vertical slices](#vertical-slice) and [JavaScript
 conventions](architecture/javascript-conventions.md#architecture-before-technique).
 
 ### Global Docs
@@ -277,7 +285,7 @@ indexes.
 
 ### Non-Production Authentication
 
-The separately composed test-only mechanism that establishes normal
+The implemented, separately composed test-only mechanism that establishes normal
 [authentication sessions](#authentication-session) for deterministic named
 fixture identities without automating third-party provider UIs or bypassing
 booking-domain authorization. It must be unavailable in production. See

@@ -1,15 +1,15 @@
 # Browser Conventions
 
 These conventions apply to the React-based browser experience inside the
-planned `apps/booking-system-web` application. They refine the existing
+implemented `apps/booking-system-web` application. They refine the existing
 architecture; they do not create another application, package, layer, or
 ownership model.
 
 ## Dependency Scope
 
 React is the accepted browser UI framework. Each of these dependencies is
-accepted for introduction to the application workspace with the first real
-browser slice that requires it:
+accepted for introduction to the application workspace when a real browser
+slice requires it:
 
 - `react`;
 - `react-dom`;
@@ -22,14 +22,16 @@ browser slice that requires it:
 - `i18next`; and
 - `react-i18next`.
 
-Introduce only the dependencies and configuration used by that slice. Exact
-versions remain implementation-time choices. Acceptance here grants neither an
-import edge nor inclusion in every application output: the future application
+The first Admin slice uses React, React DOM, React Router, TanStack Query, React
+Hook Form, i18next, and react-i18next. It does not declare `classnames`, `debug`,
+or `ramda` because no current source needs them. Acceptance here grants neither
+an import edge nor inclusion in every application output: the application
 [boundary map](../DICTIONARY.md#boundary-map) and each runtime source/build
 graph remain authoritative.
 
-Exact React initialization files, root component shape, render entrypoint,
-provider nesting, and route tree remain implementation-time choices.
+The current `main.jsx` composes i18next, one Query Client, React Router, and the
+browser application. Future slices evolve that composition only for concrete
+behavior.
 
 These libraries support the browser-facing responsibility of the one
 [booking-system web
@@ -70,8 +72,8 @@ Route paths remain stable and language-independent rather than changing with
 locale. Direct navigation or refresh to frontend routes must work within the
 accepted same-origin Worker and static-assets deployment, while `/api/*`
 remains Worker/API-owned. [Runtime and hosting](runtime-and-hosting.md) owns the
-deployment and fallback behavior; the exact route tree remains an
-implementation choice.
+deployment and fallback behavior. The current independently navigable route is
+`/admin`.
 
 ## Server State
 
@@ -149,7 +151,7 @@ outside this convention.
 
 ## Internationalization
 
-Internationalization begins with the first frontend slice. Use `i18next` with
+Internationalization began with the first frontend slice. Use `i18next` with
 `react-i18next`; German is the initial frontend language, while English and
 other languages may be added without changing the architecture.
 
@@ -165,8 +167,8 @@ moduleParticipation.selection.save
 
 Translation resources follow conceptual and vertical-slice ownership where
 practical. Do not anticipate reuse with one giant generic `common` namespace
-or a technical shared package. Resource filenames, namespace mechanics,
-initialization filenames, and directory shape remain implementation choices.
+or a technical shared package. The current Admin-bootstrap resources stay with
+that slice and use the `adminAccess` semantic key family.
 
 ## Local Ownership And Late Abstraction
 

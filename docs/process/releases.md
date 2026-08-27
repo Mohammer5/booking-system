@@ -155,12 +155,12 @@ reproducibility rule.
 
 ## Current State And Release-Hardening Trigger
 
-No deployable application, Cloudflare environment, or release workflow exists
-today, so the repository does not contain a workflow that pretends to deploy.
-MVP implementation may begin and proceed through local acceptance without
-account-bound Cloudflare infrastructure or a remote release pipeline. Their
-absence before that point is intentional rather than an unresolved release
-gap.
+A locally buildable application now exists, but no remote Cloudflare
+environment, release workflow, or deployment exists. The repository therefore
+does not contain a workflow that pretends to deploy. MVP implementation may
+continue through local acceptance without account-bound Cloudflare
+infrastructure or a remote release pipeline. Their absence before release
+hardening is intentional rather than an unresolved local-verification gap.
 
 After the MVP is feature-complete and accepted locally, [release
 hardening](../DICTIONARY.md#release-hardening) begins. Before the first real

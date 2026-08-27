@@ -41,8 +41,8 @@ and their relationships.
 
 ## Accepted Composition
 
-[Better Auth](https://www.better-auth.com/) is the chosen initial
-[authentication layer](../DICTIONARY.md#authentication-layer). It will run
+[Better Auth](https://www.better-auth.com/) is the implemented initial
+[authentication layer](../DICTIONARY.md#authentication-layer). It runs
 inside the `apps/booking-system-web` Cloudflare Worker and use the
 application's D1 database for its technical user, account, and session records.
 This fits the accepted Worker and D1 boundary without adding another identity
@@ -144,7 +144,7 @@ state.
 
 ## Session Model
 
-Use Better Auth's database-backed opaque session model. The browser receives a
+Better Auth uses its database-backed opaque session model. The browser receives a
 secure same-origin `HttpOnly` cookie whose opaque value identifies server-side
 session state in D1. Sign-out terminates that authentication session.
 
@@ -154,7 +154,8 @@ The initial architecture has:
 - no JWT-based authorization or session architecture;
 - no KV session store;
 - no domain permission, role, authority, or Course claims in the session; and
-- no cookie-cached authorization state.
+- no cookie-cached authorization state; Better Auth's session cookie cache is
+  disabled.
 
 Database-backed opaque sessions are simple to revoke while keeping domain
 authorization current. Exact session lifetime and refresh values are
@@ -271,11 +272,11 @@ storage are deferred to implementation.
 
 ## Non-Production Authentication
 
-The first epic uses a separate explicitly
+The first slice uses a separate explicitly
 [non-production authentication](../DICTIONARY.md#non-production-authentication)
-composition. Better Auth test utilities or its then-current test-capable
-composition are the preferred mechanism, provided official Better Auth
-documentation still supports the required behavior when implementation begins.
+composition. The authentication-owned fixture interface uses Better Auth's
+`testUtils` plugin to create normal signed D1-backed sessions for two fixed
+identities: `first-admin` and `later-admin`.
 
 Production and non-production authentication are different executable
 compositions rather than one production composition conditionally exposing a
@@ -296,8 +297,8 @@ explicit non-production composition
 The mechanism must:
 
 - establish normal Better Auth application sessions for deterministic named
-  fixture identities, beginning with `first-admin` and leaving room for fixed
-  names such as `participant-a` and `participant-b` when those flows exist;
+  fixture identities, currently `first-admin` and `later-admin`, while leaving
+  room for Participant fixtures when those flows exist;
 - let Playwright exercise the normal authenticated application and real domain
   authorization after session establishment;
 - prevent arbitrary-principal impersonation, including a caller-supplied
@@ -310,19 +311,21 @@ The mechanism must:
 - have automated regression evidence that production cannot activate it; and
 - keep its secrets and tokens out of CI artifacts.
 
-Production must not contain an activatable hidden authentication bypass. Exact
-test-authentication route names are intentionally not selected here. Fixture
-session establishment supplies authentication only; it never creates booking
-identity, role, authority, or permissions.
+Production does not import the fixture-session interface. The non-production
+composition exposes only fixed POST routes below
+`/api/_fixtures/session/{fixture-name}`; path selection determines the fixed
+identity, and request bodies, queries, headers, and cookies cannot supply a
+principal. Fixture session establishment supplies authentication only; it
+never creates booking identity, role, authority, or permissions.
 
 ## Worker Compatibility
 
-Better Auth currently requires Worker-side Node compatibility support for
-`AsyncLocalStorage`. When implementation begins, enable only the minimum
-Cloudflare Worker compatibility mode required by the chosen Better Auth
-version: prefer `nodejs_als` when sufficient and otherwise use
-`nodejs_compat`. Verify the requirement against then-current official Better
-Auth and Cloudflare documentation when dependencies are introduced.
+Better Auth 1.7.2 requires Worker-side Node compatibility support for
+`AsyncLocalStorage` and imports `node:crypto` in the actual Vite Worker graph.
+The application therefore uses `nodejs_compat`; `nodejs_als` alone does not
+satisfy the built development graph. The compatibility date is current and the
+setting is declared identically in production and non-production Worker
+configuration.
 
 This narrow compatibility requirement does not turn production into a
 conventional Node server or permit unrelated Node-only application
@@ -336,7 +339,7 @@ otherwise. Sharing one database does not merge their conceptual ownership:
 authentication and session records remain application-owned technical
 persistence, while booking records remain domain-owned.
 
-When introduced, Better Auth schema and migrations participate in the same
+Better Auth schema and migrations participate in the same
 version-controlled migration, clean-state test, compatibility, and release
 discipline as other application D1 changes. Local/test, staging, and production
 data remain isolated, and production regression tests never mutate production
@@ -344,17 +347,17 @@ identity or session data.
 
 ## Current State And Implementation Trigger
 
-This architecture is accepted but unimplemented. No application workspace,
-Better Auth dependency, session store, provider integration, Worker
-compatibility setting, D1 schema or migration, authentication route, test-auth
-composition, or UI exists yet.
+The local authentication foundation is implemented inside
+`apps/booking-system-web`. Better Auth 1.7.2 uses the application D1 binding,
+serves its technical routes below `/api/auth`, and exposes only
+`unauthenticated` or `authenticated { externalPrincipalId }` to Worker
+composition. The production Worker imports normal authentication only; the
+non-production Worker separately imports the authentication-owned fixture
+interface. Automated Worker and browser tests exercise normal sessions and
+prove the production fixture path fails closed without establishing a session.
 
-The first application implementation must verify then-current Better Auth and
-Cloudflare compatibility and select exact concrete module/map declarations,
-schema names, session lifetime and refresh values, authentication route names,
-and local/test environment configuration required by implemented behavior. It
-must preserve every contract above without turning those implementation
-choices into product policy. Remote provider and other account-bound production
-configuration is not a prerequisite for local MVP implementation; it follows
-the accepted provider-integration timing and [release-hardening
+Real Google, Apple, Microsoft, and Facebook providers, hosted non-production
+authentication, production secrets, and remote provider configuration remain
+deferred. Their absence does not block local MVP implementation; they follow
+the accepted provider timing and [release-hardening
 lifecycle](../DICTIONARY.md#release-hardening).

@@ -18,9 +18,9 @@
 - The initial browser experience is React-based, with `react` and `react-dom`
   as foundational browser dependencies. It uses `react-router` in Declarative
   Mode for stable URL-to-view navigation, `@tanstack/react-query` for server
-  state, `react-hook-form` for transient form mechanics, direct `classnames`
-  use, `debug` for application diagnostics, `ramda` for selective functional
-  composition, and `i18next` with `react-i18next` for localization.
+  state, `react-hook-form` for transient form mechanics, and `i18next` with
+  `react-i18next` for localization. `classnames`, `debug`, and `ramda` remain
+  optional and are introduced only for a concrete use.
 - Every independently navigable browser view receives a route, without turning
   incidental UI state into routes. Frontend routes support direct navigation
   and refresh through the same-origin deployment; `/api/*` remains Worker/API
@@ -58,7 +58,7 @@
 - First Admin bootstrap availability is permanent historical state independent
   of current Admin User rows, and consuming bootstrap plus creating the first
   Active Super Admin is one atomic persistence outcome.
-- The planned first slice has a minimal same-origin Admin entry, bootstrap, and
+- The implemented first slice has a minimal same-origin Admin entry, bootstrap, and
   current-context HTTP surface with browser input unable to select principal or
   authority.
 - The initial infrastructure boundary is Worker, Workers Static Assets, and D1.
@@ -74,45 +74,33 @@
 
 ## Current Implementation
 
-- Neither accepted application/package workspace nor either workspace manifest
-  has been created or implemented.
-- No product `src/` directory or product code exists.
-- None of the accepted browser libraries is installed. In particular, React
-  and React DOM are not installed and no React application, browser route,
-  Query Client, form, translation resource, diagnostic namespace, or runtime
-  composition has been created.
-- No Vite frontend, Worker, local/test D1 binding, database schema, migration,
-  authentication/session implementation, test-authentication composition, or
-  real provider integration exists.
-- No production deployment, remote Cloudflare environment, remote staging or
-  production D1 database, provider production configuration, deployment
-  credential, or release infrastructure exists. These account-bound surfaces
-  are intentionally deferred until release hardening and do not block normal
-  local MVP implementation.
-- The repository uses modern ESM JavaScript and pnpm workspace globs.
-- ESLint source-shape rules target future application and package source.
-- The boundary converter implements deny-by-default workspace and module
-  enforcement from explicit local maps.
-- Local ESLint rules and boundary conversion have Node test suites.
-- No application or package boundary map or exact implemented browser-facing
-  or Worker/API-facing responsibility-module declaration exists. The first
-  Admin implementation plan now records the intended responsibility split and
-  edges for creation with real source.
-- No architecture fitness function, secondary checker, inferred dependency
-  map, installed runtime dependency, or runtime dependency version exists.
+- `@booking-system/booking` and `@booking-system/booking-system-web` are real
+  modern-ESM workspaces with one manifest each.
+- The booking package currently exposes only the three `admin-access`
+  operation factories required by first Admin bootstrap and fresh context
+  resolution.
+- The web application has distinct `browser`, `worker`, and `authentication`
+  responsibilities plus thin browser, production Worker, and non-production
+  Worker compositions.
+- React Router serves the independently navigable `/admin` route. TanStack
+  Query owns remote Admin state, React Hook Form owns the name form, and
+  German-first i18next resources own all browser copy.
+- Vite and the Cloudflare Vite plugin build the browser and Worker outputs;
+  Workers Static Assets provides SPA fallback while `/api/*` runs Worker-first.
+- Better Auth 1.7.2 uses D1-backed normal sessions and crosses into booking
+  behavior only as `externalPrincipalId`. Fixed non-production fixture
+  identities use a separate executable composition.
+- A version-controlled D1 migration and atomic `D1Database.batch()` claim
+  implement permanent first-bootstrap history and exactly-one creation.
+- Both explicit workspace boundary maps are registered in ESLint. The boundary
+  converter denies undeclared third-party imports and supports exact test-only
+  and composition-interface permissions.
+- Repository, domain, Worker/D1, migration, production-composition, build, and
+  Chromium E2E verification are integrated into `pnpm check` and CI.
 
-The conceptual workspace identities, initial booking responsibility modules,
-first Admin application/domain contracts, React browser framework and
-libraries, and functional composition direction are declared. Exact versions,
-React initialization files, root component shape, render entrypoint, provider
-nesting, source and composition filenames, route tree, query keys and freshness
-values, translation resource filenames and namespace mechanics, concrete
-runtime composition, implemented map declarations, entrypoints, package
-exports, internal helper files, schema names, session timing, provider
-configuration, and minimum supported Worker compatibility mode remain
-implementation choices. The first relevant real slice introduces only the
-dependencies and configuration it actually uses.
-Accepted and planned direction must not be mistaken for implemented runtime
-code. The accepted application can be implemented and accepted locally without
-remote Cloudflare resources, but release hardening and real staging
+The first slice deliberately does not declare optional `classnames`, `debug`,
+or `ramda` dependencies because its source has no concrete use for them. No
+real provider integration, production deployment, remote Cloudflare
+environment, remote staging or production D1 database, deployment credential,
+or release infrastructure exists. Release hardening and real staging
 verification remain mandatory before the first production release.

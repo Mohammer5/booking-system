@@ -15,7 +15,9 @@ deny-by-default.
 - JSDoc for module-scope named functions; and
 - explicit class exceptions for stateful resources and imperative adapters.
 
-These rules already target future `apps/*/src/` and `packages/*/src/` files.
+These rules target the implemented `apps/*/src/` and `packages/*/src/` files.
+`eslint-plugin-react` contributes only JSX variable-use recognition so the
+existing unused-variable rule remains meaningful for React source.
 
 ## Dependency Boundaries
 
@@ -28,23 +30,32 @@ The helper under `eslint-boundaries/` converts explicit maps into ESLint
 configuration. It never scans directories or manifests to invent nodes,
 dependencies, package permissions, package namespaces, or composition rights.
 
-For every implemented workspace, import its local map in `eslint.config.mjs`
-and add one explicit `createWorkspaceBoundaryConfig` entry. With no implemented
-workspaces, the repository registers no boundary map; a documented conceptual
-target alone does not activate enforcement.
+Both implemented local maps are imported in `eslint.config.mjs`, with one
+explicit `createWorkspaceBoundaryConfig` entry for `packages/booking` and one
+for `apps/booking-system-web`.
+
+The converter permits exact third-party specifiers per responsibility or
+composition file, exact workspace dependencies within the workspace-wide
+allow-list, exact nested module interfaces for composition, and exact test-only
+dependencies and composition imports. All ordinary undeclared third-party
+imports remain denied from production source. Permissions are never inferred
+from manifests.
 
 ## Tests And Tooling
 
-The synthetic boundary-converter suite proves that undeclared workspace
-packages, package subpaths, and undeclared responsibility modules fail while an
-exact allow-listed package root succeeds. The local-rule suite checks every
-custom source-shape rule. Tests disable only code-size budgets. Tooling receives
-Node globals and normal syntax, unused-variable, cycle, and named-export checks
-where applicable.
+The synthetic boundary-converter suite proves undeclared workspace and
+third-party packages fail, package subpaths fail, local declarations cannot
+bypass the workspace-wide allow-list, owning-responsibility and composition
+permissions are exact, nested composition interfaces are exact, test
+composition access is explicit, and test dependencies remain unavailable to
+production. The local-rule suite checks every custom source-shape rule. Tests
+disable only code-size budgets. Tooling receives Node globals and normal
+syntax, unused-variable, cycle, and named-export checks where applicable.
 
-The only default-export exception is `eslint.config.mjs`, whose consumer
-requires that shape. Future framework configuration exceptions must be exact
-file patterns and documented before use.
+Exact default-export exceptions exist only for tool-mandated configuration
+files (`eslint.config.mjs`, the Vite, Vitest, and Playwright configs) and the
+two Cloudflare Worker module entrypoints. All other production source retains
+the named-export default.
 
 ## No Secondary Checker
 

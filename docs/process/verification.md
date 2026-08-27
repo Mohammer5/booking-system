@@ -63,7 +63,7 @@ Vitest for uniformity.
 
 ### Product And Worker Tests
 
-When real application or domain behavior exists:
+For real application and domain behavior:
 
 - Vitest owns fast product, transformation, validation, and frontend-logic
   tests that do not need a browser;
@@ -86,15 +86,15 @@ journey and a later principal's bootstrap refusal. The task implementation plan
 assigns the detailed assertions without duplicating every invariant at every
 layer.
 
-Confirm the package name and compatibility against current official
-Cloudflare guidance when dependencies are actually added.
+The implemented integration uses project-pinned `@cloudflare/vitest-plugin`
+with isolated D1 state and the version-controlled migration sequence.
 
 ### Browser Tests
 
 Playwright is the initial browser E2E tool. Routine CI starts with Chromium
 only; more browsers or devices require a demonstrated compatibility need.
 
-Normal pull-request CI will run Playwright against a local production-like
+Normal pull-request CI runs Playwright against a local production-like
 application composed from Vite/static assets, the Worker API, and an isolated
 local D1 database. Tests must start from deterministic state rather than a
 developer's database. Representative flows should eventually cover:
@@ -109,7 +109,7 @@ developer's database. Representative flows should eventually cover:
 Detailed product invariants remain lower-level-test responsibilities.
 
 Routine E2E must not automate Google, Apple, Microsoft, or Facebook login UIs.
-The accepted direction is an explicitly non-production Better Auth test-capable
+The implemented direction is an explicitly non-production Better Auth test-capable
 composition that establishes normal application sessions for deterministic
 named fixture identities such as Admin User, Participant A, and Participant B.
 Playwright then exercises the normal authenticated application and real
@@ -142,20 +142,20 @@ production.
 ## Canonical Repository Command
 
 `pnpm check` is the one comprehensive non-deployment verification entrypoint.
-Today it composes lint with the repository's Node-based ESLint tooling tests.
-The current scripts are:
+The current scripts include:
 
 ```sh
 pnpm lint
 pnpm test
+pnpm build
+pnpm test:e2e
 pnpm check
 ```
 
-When application code exists, expand `pnpm check` rather than introducing a
-competing check-everything command. It should eventually compose lint,
-repository tooling tests, unit tests, Worker/API/D1 and migration tests, a
-production build, and local browser E2E. Release CI must reuse the same
-underlying surfaces rather than maintain a hidden alternative suite.
+`pnpm test` composes the repository's Node tooling tests, booking-domain Vitest,
+and Worker/D1 Vitest. `pnpm check` adds lint, the production Vite/Worker build,
+and local Chromium Playwright E2E. Release CI must reuse the same underlying
+surfaces rather than maintain a hidden alternative suite.
 
 ## Pull-Request CI Gate
 
@@ -164,13 +164,13 @@ The repository's GitHub Actions CI workflow currently:
 - runs for pull requests targeting `main` and pushes to `main`;
 - reads Node and pnpm versions from repository declarations;
 - installs from `pnpm-lock.yaml` with `--frozen-lockfile`;
+- installs the project-pinned Playwright Chromium and its runner dependencies;
 - runs `pnpm check` in the uniquely named `verify` job;
 - uses read-only repository permissions and no Cloudflare credentials; and
 - cancels superseded verification for the same pull request or branch.
 
 Cloudflare preview deployment is not required for each pull request. Local
-Worker, D1, and browser verification is the initial PR contract once those
-surfaces exist.
+Worker, D1, and browser verification is the current PR contract.
 
 ## External Main-Branch Protection
 

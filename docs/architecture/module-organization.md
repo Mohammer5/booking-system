@@ -2,19 +2,18 @@
 
 ## Accepted Initial Conceptual Target
 
-The planned `packages/booking` workspace contains focused responsibility modules
-named `admin-access`, `course-structure`, `course-access`, and
-`module-participation`. They own distinct product concepts inside one domain
-package and MUST NOT become separate workspace packages merely because the
-product specification uses separate focused documents. `admin-access` owns
-Admin User and Admin Invite product policy, not authentication-provider SDK or
-Admin UI mechanics.
+The `packages/booking` workspace currently contains the `admin-access`
+responsibility required by first Admin bootstrap. The accepted later package
+scope also names `course-structure`, `course-access`, and
+`module-participation`; they do not exist until their product behavior is
+implemented. These concepts remain modules inside one domain package rather
+than separate workspaces. `admin-access` owns product policy, not
+authentication-provider SDK or Admin UI mechanics.
 
-The planned `apps/booking-system-web` workspace is the single application
-composition boundary. No workspace or source directory has been created. The
-first Admin implementation plan declares its intended initial responsibility
-and dependency edges, but no real map, composition-file name, public export, or
-detailed internal file exists.
+The `apps/booking-system-web` workspace is the single application composition
+boundary. Its first-level source responsibilities are `browser`, `worker`, and
+`authentication`; its explicit maps, public interfaces, and thin browser and
+Worker composition files exist with the first Admin slice.
 
 ## Workspace Roots
 
@@ -24,8 +23,7 @@ remain at the workspace root.
 
 One workspace has one package manifest. Internal responsibility modules do not
 receive separate `package.json` files merely because their technical
-dependencies differ. The intended ownership shape, once implementation creates
-the accepted workspaces, is:
+dependencies differ. The implemented ownership shape is:
 
 ```text
 /
@@ -42,8 +40,7 @@ The root manifest is not the normal owner of application-specific runtime
 dependencies or dependencies owned only by the booking domain package. The
 current root manifest follows this direction by owning repository-wide tooling
 and orchestration only. The current `apps/*` and `packages/*` workspace globs
-already admit the planned direct-child workspaces; they do not create those
-workspaces or their manifests.
+admit exactly the two direct-child workspaces currently present.
 
 ## Conceptual Packages
 
@@ -68,30 +65,24 @@ code are distinct internal application responsibilities. Browser-facing code
 MUST NOT import Worker/API implementation details, and Worker/API-facing code
 MUST NOT import browser or UI implementation details. Both may depend inward
 on the appropriate conceptual interfaces from `packages/booking` when the
-eventual boundary map explicitly permits those imports. Application
+boundary map explicitly permits those imports. Application
 composition may join the responsibilities only where required.
 
-This separation is a durable responsibility rule. The first Admin plan now
-chooses the intended initial first-level names and edge direction; exact
-entrypoint and composition filenames, public exports, and map declarations
-remain deferred until the real application and its boundary map are
-introduced.
+This separation is a durable responsibility rule. The implemented maps enforce
+the first slice's exact module edges, interfaces, and composition files.
 
 Authentication and session establishment are application-owned technical
-responsibilities. The eventual application boundary map must make their
+responsibilities. The application boundary map makes their
 allowed browser, Worker, composition, and booking-interface edges explicit,
 while preventing Better Auth, provider, cookie/session, Cloudflare-auth, and
 test-authentication implementation imports from entering `packages/booking`.
-The first Admin plan uses `browser`, `worker`, and `authentication` as the
-intended initial first-level names; the implementation introduces them only
-with their real source and map declarations.
+The first slice uses `browser`, `worker`, and `authentication` as its initial
+first-level names, introduced together with real source and map declarations.
 
-The first Admin implementation plan separates three application roles: the
+The first Admin implementation separates three application roles: the
 browser Admin-bootstrap flow, Worker-side Admin-bootstrap/API handling, and
 application-private authentication. A thin composition entry may join only
-the roles required for its executable graph. This is a planned responsibility
-shape, not an implemented directory tree; exact files and map declarations are
-created together with real source. The browser communicates with Worker
+the roles required for its executable graph. The browser communicates with Worker
 behavior through same-origin HTTP rather than importing Worker implementation
 to share transport data.
 

@@ -51,10 +51,11 @@ booking records remain conceptually domain-owned.
 
 First Admin bootstrap availability is a durable historical fact: it answers
 whether an Admin User has ever successfully been created, not whether an Admin
-User row exists now. Counting current Admin Users is therefore not an adequate
-implementation because legitimate later deletion must not reopen bootstrap.
-The exact table, column, and schema representation of that history remain
-implementation choices.
+User row exists now. Counting current Admin Users is therefore not adequate.
+The implemented `admin_bootstrap_history` table has one constrained singleton
+row. Its nullable foreign key records the first Admin while that row exists and
+uses `ON DELETE SET NULL`, so later Admin deletion preserves the permanent
+historical fact.
 
 The first bootstrap claim must produce one atomic authoritative persistence
 outcome that either:
@@ -69,10 +70,12 @@ under concurrent or stale attempts. No accepted state may record bootstrap as
 consumed without the first Admin User creation, and two requests must not both
 successfully create the first Admin User.
 
-The first slice needs only narrow capabilities to read permanent bootstrap
+The first slice exposes only narrow capabilities to read permanent bootstrap
 history, resolve a current Admin User by stable external principal, and claim
-the first Admin atomically. Their exact function and query names remain
-implementation choices. They do not justify a generic repository,
+the first Admin atomically. The claim uses one atomic D1 `batch()` containing
+the Admin insert and singleton-history insert; database constraints decide
+stale and concurrent losers and roll back the complete batch on failure. These
+capabilities do not justify a generic repository,
 `DatabaseService`, unit of work, generic CRUD/data-access package, or shared
 infrastructure package. The initial booking schema is limited to the Admin User
 state, permanent bootstrap history, and integrity constraints required by this
@@ -94,7 +97,7 @@ tests must not point at production data.
 
 ## Migration Contract
 
-Once a schema exists:
+For the implemented schema and every later schema change:
 
 - every schema change is a version-controlled migration;
 - applying the full sequence constructs the current schema on a clean database;
@@ -105,7 +108,7 @@ Once a schema exists:
 - undocumented manual production schema changes are not a normal path.
 
 Better Auth schema and migrations participate in this same version-controlled,
-clean-state-tested, rollout-compatible discipline when introduced. Production
+clean-state-tested, rollout-compatible discipline. Production
 regression tests never mutate production authentication, identity, session, or
 booking data.
 
@@ -115,11 +118,15 @@ change requires an explicit exceptional deployment decision.
 
 ## Current State And Persistence Lifecycle
 
-No D1 database, binding, schema, or migration exists today.
+The application has local/test D1 bindings and one version-controlled migration
+at `apps/booking-system-web/migrations/0001_first_admin_foundation.sql`. It
+creates the Better Auth `user`, `session`, `account`, and `verification`
+technical tables and indexes plus `admin_users` and
+`admin_bootstrap_history`. No remote D1 database exists.
 
-### When The First Real Schema Exists
+### Implemented First Schema
 
-Introduce the following with the first real schema that uses them:
+The first schema includes:
 
 - SQLite/D1-compatible schema design;
 - version-controlled migrations;
@@ -129,10 +136,10 @@ Introduce the following with the first real schema that uses them:
 - local/test database bindings and configuration needed by implemented
   behavior.
 
-The first schema must already be designed for eventual D1 deployment. Do not
-create an empty migration framework before that schema exists. A remote staging
-or production D1 database is not required at this point; its absence during
-local MVP development is intentional.
+The full migration sequence is applied to clean isolated state in Worker tests
+and before browser E2E. The schema is designed for eventual D1 deployment. A
+remote staging or production D1 database is not required at this point; its
+absence during local MVP development is intentional.
 
 ### During Release Hardening
 

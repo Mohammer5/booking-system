@@ -57,8 +57,8 @@ task nor its implementation plan may redefine that truth by itself.
 
 `pnpm check` composes all non-deployment verification so local work, pull
 requests, and releases rely on the same evidence. Existing Node tests retain
-ownership of ESLint tooling; future application layers extend the composition
-instead of replacing those tests or adding a competing check-everything path.
+ownership of ESLint tooling; application layers extend the composition instead
+of replacing those tests or adding a competing check-everything path.
 
 ## Layer Tests By Responsibility
 

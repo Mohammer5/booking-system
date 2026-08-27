@@ -17,7 +17,7 @@ provider SDKs.
 
 ## Deploy One Same-Origin Worker Application Initially
 
-`apps/booking-system-web` will compose the browser/Vite experience, frontend
+`apps/booking-system-web` composes the browser/Vite experience, frontend
 assets, Worker request handling, `/api/*`, technical adapters, and the
 composition root inside one Cloudflare Worker deployment. This avoids an
 unproven `apps/api` deployment boundary and its independent release and CORS
@@ -29,15 +29,15 @@ Vite, and D1 remain private technical mechanisms.
 One workspace owns one package manifest. Internal responsibility modules do
 not receive separate manifests merely because they use different technical
 dependencies. The root manifest owns repository-wide tooling and orchestration;
-the planned `apps/booking-system-web` manifest will own dependencies for the
-whole deployable application; and the planned `packages/booking` manifest will
+the `apps/booking-system-web` manifest owns dependencies for the whole
+deployable application; and the `packages/booking` manifest owns
 own only dependencies consistent with the booking domain package.
 
 Browser and Worker/API dependencies may therefore coexist in the one
 application manifest. That shared declaration means only that the workspace's
 build, runtime, and tooling environment can resolve them. It neither permits
 every source module to import them nor places them in every output: the
-workspace boundary map will grant architectural import permission, while the
+workspace boundary map grants architectural import permission, while the
 source/build graph rooted at each runtime determines output inclusion.
 Dependency segregation by itself does not justify frontend, API, browser,
 server, or other technical workspaces; application extraction requires an
@@ -57,13 +57,14 @@ would confuse documentation boundaries with deployment and package ownership.
 ## Use Focused Browser Libraries With Distinct Responsibilities
 
 The browser UI framework is React, with `react` and `react-dom` as its
-foundational dependencies. The browser will use `react-router` for navigation
+foundational dependencies. The browser uses `react-router` for navigation
 and URL-to-view mapping, `@tanstack/react-query` for server state, and
 `react-hook-form` for transient form mechanics. React Router starts in
 Declarative Mode rather than making its loaders and actions the primary
-server-state architecture. `classnames` is used directly for conditional
-classes, and `debug` is the application-level diagnostic mechanism without a
-pre-emptive wrapper framework.
+server-state architecture. When concrete source needs them, `classnames` is
+used directly for conditional classes and `debug` is the application-level
+diagnostic mechanism without a pre-emptive wrapper framework. Neither optional
+dependency is needed by the first slice.
 
 These choices remain inside the browser responsibility of the one
 `apps/booking-system-web` application. Distinct library responsibilities and
@@ -73,7 +74,7 @@ ownership rules live in [browser conventions](browser-conventions.md).
 
 ## Build Internationalization Into The First Frontend Slice
 
-The browser will use `i18next` and `react-i18next` from its first real slice,
+The browser uses `i18next` and `react-i18next` from its first real slice,
 with German initially and stable semantic translation keys. Domain outcomes
 remain language-neutral, route paths remain locale-independent, and browser
 code owns localized presentation. This avoids hard-coding the initial language
@@ -144,7 +145,7 @@ administrators.
 
 ## Use Better Auth With D1-Backed Opaque Sessions
 
-Better Auth will run inside `apps/booking-system-web` and use the application's
+Better Auth runs inside `apps/booking-system-web` and uses the application's
 D1 database. This fits the accepted Worker and D1 footprint without another
 identity service, while database-backed opaque sessions remain simple and
 revocable. The session establishes only one stable external principal;
@@ -196,10 +197,9 @@ an architectural edge. Composition files receive explicit permissions.
 
 Example applications, packages, or domain names can look authoritative before
 a product boundary is accepted. The repository therefore kept its implemented
-workspace inventory empty and tests enforcement with synthetic names. The now
-accepted `apps/booking-system-web` and `packages/booking` targets are documented
-without creating scaffolding; implementation still requires explicit
-authorization.
+workspace inventory empty until explicitly authorized, while testing
+enforcement with synthetic names. The accepted `apps/booking-system-web` and
+`packages/booking` workspaces now exist with real behavior and explicit maps.
 
 ## Introduce Runtime Tooling With A Real Application
 

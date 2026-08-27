@@ -8,8 +8,7 @@ shape for the initial booking-system web application.
 ## Not Responsible For
 
 This document does not define product behavior, persistence semantics,
-verification policy, release promotion, or the exact future application route
-implementation.
+verification policy, release promotion, or application-owned route behavior.
 
 ## Inputs
 
@@ -54,7 +53,7 @@ Cloudflare D1
 The default routing model is same-origin:
 
 ```text
-/             -> frontend application
+/admin        -> frontend application through SPA fallback
 /assets/*     -> frontend static assets
 /api/*        -> backend/API handling
 ```
@@ -68,7 +67,8 @@ independently navigable views: a frontend route that is not a static asset or
 Worker-owned endpoint must still reach the browser application through the
 same-origin Worker/static-assets shape. `/api/*` remains reserved for
 Worker/API handling. Browser route paths remain stable across locales. The
-future implementation chooses the exact route tree and fallback mechanism;
+implemented Workers Static Assets configuration uses
+`single-page-application` fallback and runs `/api/*` through the Worker first;
 see [browser conventions](browser-conventions.md#routing-and-navigation).
 
 There is no separate `apps/api` in the initial architecture. That would be a
@@ -78,9 +78,9 @@ requirement justifies an independent runtime boundary.
 
 ## Frontend And Worker Runtime
 
-Vite will build the frontend. When implementation begins, use Cloudflare's
-then-current official Vite integration to combine Workers Static Assets and
-Worker request handling in the same deployable application.
+Vite builds the frontend and Worker through Cloudflare's official Vite plugin,
+combining Workers Static Assets and Worker request handling in the same
+deployable output.
 
 Backend and API code will remain JavaScript in the Node.js ecosystem, but its
 production runtime is Cloudflare Workers. Production is not a persistent Node
@@ -96,11 +96,11 @@ Keep three concerns distinct:
 
 ### Authentication Runtime Compatibility
 
-The accepted Better Auth composition currently requires Worker-side
-`AsyncLocalStorage` support. When dependencies are introduced, verify the
-then-current Better Auth and Cloudflare requirements and enable the narrowest
-supported compatibility capability: prefer `nodejs_als` when sufficient and
-otherwise use `nodejs_compat`.
+Better Auth 1.7.2 requires Worker-side Node compatibility for
+`AsyncLocalStorage` and its bundled `node:crypto` import. Both Worker
+configurations therefore declare `nodejs_compat` with the current compatibility
+date. ALS-only compatibility is insufficient for the real Vite development
+graph.
 
 This is a dependency-specific Worker setting, not permission for arbitrary
 Node-only application assumptions. Production remains a Cloudflare Worker, not
@@ -109,7 +109,7 @@ sessions](authentication-and-sessions.md#worker-compatibility).
 
 ## Dependency Declaration And Runtime Graphs
 
-The planned `apps/booking-system-web` workspace has one package manifest for
+The `apps/booking-system-web` workspace has one package manifest for
 the complete application. That manifest declares which dependencies are
 available to the workspace's build, runtime, and tooling environment; it does
 not define one universal runtime graph.
@@ -131,8 +131,9 @@ determines inclusion in each output. A browser-only dependency is not included
 in the Worker output merely because the same application manifest declares it,
 provided Worker/API-facing source does not import it. Likewise, a Worker/API
 dependency does not become a browser dependency merely because the manifest is
-shared. Exact entrypoints, build configuration, and bundler integration remain
-deferred until the application is implemented.
+shared. `main.jsx` roots the browser graph; `productionWorker.js` and
+`nonProductionWorker.js` root the two Worker graphs, and the Vite configurations
+select the required Cloudflare composition.
 
 [Dependency boundaries](boundaries.md) separately determine which source
 responsibilities may import declared dependencies. Manifest availability,
@@ -158,11 +159,10 @@ Durable Objects, KV, R2, Queues, Workflows, Containers, external databases,
 Redis, background workers, separate hosting providers, and other
 infrastructure require a concrete need and a separate architecture decision.
 
-## Implementation-Time Local Runtime Requirements
+## Implemented Local Runtime
 
-The direction above is accepted but not implemented. When real application
-code begins, introduce the actual project configuration needed to build and
-exercise the implemented behavior locally, as applicable:
+The application workspace now includes the actual project configuration needed
+to build and exercise the first slice locally:
 
 - Vite;
 - Cloudflare's then-current supported Vite/Workers integration;
@@ -171,11 +171,12 @@ exercise the implemented behavior locally, as applicable:
 - Worker-compatible runtime assumptions; and
 - local environment and binding configuration used by implemented behavior.
 
-These surfaces arrive with code and tests that use them. Placeholder runtime
-code, empty infrastructure scaffolding, and unused configuration do not satisfy
-this contract. Local development and verification must exercise compatible
-Worker semantics rather than treating a conventional long-running Node server
-as proof of production-runtime behavior.
+Production and explicit non-production Wrangler configurations bind local D1,
+point to the version-controlled migrations, configure SPA assets, and select
+their structurally distinct Worker entrypoints. Worker Vitest and local
+Playwright exercise Cloudflare-compatible runtime and D1 semantics rather than
+a conventional long-running Node server. No remote Cloudflare resource is
+required for this local lifecycle.
 
 ## Release-Hardening Infrastructure
 

@@ -1,7 +1,7 @@
 ---
 id: TASK-aeij8
 title: Establish first Admin bootstrap and application foundation
-status: planned
+status: done
 priority: medium
 type: feature
 effort: medium
@@ -12,7 +12,7 @@ blocks:
 - TASK-ubm2q
 - TASK-7uxjj
 related: []
-assignee: null
+assignee: gerkules
 tags: []
 position: a0
 created: 2026-08-27
@@ -40,29 +40,29 @@ first locally accepted Worker/D1-compatible outcome rather than postponed.
 
 ## Acceptance Criteria
 
-- [ ] While no Admin User has ever existed, the administration authentication
+- [x] While no Admin User has ever existed, the administration authentication
       entry offers `Register admin` in place of normal Admin login, regardless
       of whether Participants already exist.
-- [ ] A successful registrant authenticates through the application identity
+- [x] A successful registrant authenticates through the application identity
       boundary, supplies an Admin User name that is non-blank after trimming,
       and becomes exactly one Active Admin User with Super Admin authority.
-- [ ] The Better Auth session contains no selected role or booking
+- [x] The Better Auth session contains no selected role or booking
       authorization state; administration context resolves the stable external
       principal to the current Admin User and evaluates current state and
       authority for each request.
-- [ ] Incomplete or abandoned bootstrap creates no Admin User; competing
+- [x] Incomplete or abandoned bootstrap creates no Admin User; competing
       completions are decided from authoritative current state so only the
       first accepted creation succeeds.
-- [ ] Bootstrap never reopens after an Admin User has ever been created, and
+- [x] Bootstrap never reopens after an Admin User has ever been created, and
       authentication alone does not create later Admin Users.
-- [ ] The separate explicitly non-production Better Auth composition provides
+- [x] The separate explicitly non-production Better Auth composition provides
       only deterministic named fixture identities, establishes normal
       application sessions, and lets browser verification exercise real domain
       authorization without automating third-party provider login UIs.
-- [ ] Production contains no activatable test-authentication mechanism and
+- [x] Production contains no activatable test-authentication mechanism and
       fails closed if test-only authentication is requested; local automated
       verification proves that structural property.
-- [ ] The first locally accepted behavior demonstrably satisfies all applicable
+- [x] The first locally accepted behavior demonstrably satisfies all applicable
       accepted application/workspace, persistence, explicit boundary
       enforcement, production build, and local regression-verification
       contracts on the production-compatible Worker/D1 architecture.
@@ -90,8 +90,8 @@ feature-complete and accepted locally.
 - `docs/architecture/authentication-and-sessions.md#non-production-authentication`
 - `docs/architecture/applications.md#accepted-initial-boundary`
 - `docs/architecture/module-organization.md`
-- `docs/architecture/runtime-and-hosting.md#implementation-time-local-runtime-requirements`
-- `docs/architecture/persistence.md#when-the-first-real-schema-exists`
+- `docs/architecture/runtime-and-hosting.md#implemented-local-runtime`
+- `docs/architecture/persistence.md#implemented-first-schema`
 - `docs/architecture/boundaries.md#activation-rule`
 - `docs/architecture/eslint.md#dependency-boundaries`
 - `docs/process/verification.md#application-implementation-trigger`
