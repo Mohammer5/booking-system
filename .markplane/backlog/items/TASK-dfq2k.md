@@ -6,7 +6,7 @@ priority: high
 type: enhancement
 effort: medium
 epic: EPIC-566gf
-plan: null
+plan: PLAN-vx3ws
 depends_on:
 - TASK-ic4fu
 blocks:
