@@ -13,6 +13,7 @@ slice requires it:
 
 - `react`;
 - `react-dom`;
+- `@mui/material` with its supported open-source styling dependencies;
 - `react-router`;
 - `@tanstack/react-query`;
 - `classnames`;
@@ -49,6 +50,52 @@ conventions](javascript-conventions.md#use-ramda-selectively). A different
 browser dependency may be used outside the browser graph only when a concrete
 requirement deliberately introduces that use, its runtime is compatible, and
 the applicable boundary map permits it.
+
+## Material UI And Accessible Interaction
+
+Material UI (MUI) is the accepted component library and visual foundation for
+the complete browser experience. It is accepted but not implemented: the
+current application manifest and browser boundary map do not yet declare it,
+and the existing Admin bootstrap/sign-in presentation still uses native HTML
+without a repository-owned MUI theme.
+
+At the 2026-08-27 planning baseline, the npm `latest` package metadata resolves
+`@mui/material` 9.4.0. Its declared peer range includes React and React DOM 19,
+which covers the repository's locked React 19.2.8. Compatibility with locked
+Vite 8.2.2 is a planning-time inference from the stable v9 package's modern ESM
+distribution and absence of a Vite peer constraint, not a separate MUI/Vite
+compatibility guarantee. The implementation task must re-check and pin the
+then-current stable compatible releases rather than relying indefinitely on
+this planning-time minor version. See the official [MUI versions](https://mui.com/material-ui/getting-started/versions/),
+[installation and peer-dependency](https://mui.com/material-ui/getting-started/installation/),
+and [v9 migration](https://mui.com/material-ui/migration/upgrade-to-v9/)
+guidance.
+
+The first MUI slice establishes one application-owned theme, `CssBaseline`,
+typography, spacing, responsive layout, and visible-focus treatment, then
+migrates the existing Admin authentication/bootstrap experience without
+changing its behavior. Browser slices use free MUI Core components directly.
+MUI X Community may be introduced only for a concrete need such as date/time
+input; its Community packages are MIT-licensed, while Pro and Premium packages
+are excluded. See the official [MUI X licensing
+contract](https://mui.com/x/introduction/licensing/).
+
+Every browser-facing slice must provide German-first localized copy and
+appropriate loading, empty, success, validation, error, unavailable, and
+destructive-confirmation states. Applicable WCAG 2.2 AA behavior includes
+semantic labels and accessible names, full keyboard operation, predictable
+focus movement and restoration, visible focus, and status communication that
+does not rely on color alone. Automated accessibility scans supplement rather
+than replace explicit keyboard, focus, dialog-focus, and accessible-name
+assertions for critical journeys. Desktop and narrow/mobile viewports are both
+acceptance surfaces.
+
+Do not build a parallel bespoke design system or a generic local wrapper for
+each MUI component. A shared presentation abstraction is justified only after
+repeated concrete use demonstrates that it represents one stable concept with
+one owner. MUI and its styling dependencies remain private to browser-facing
+source and must be permitted explicitly by the application boundary map when
+implemented.
 
 ## Routing And Navigation
 

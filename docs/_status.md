@@ -16,8 +16,9 @@ The repository has accepted an architecture and delivery direction:
   composition root;
 - a React-based browser experience using `react` and `react-dom`, React Router
   Declarative Mode, TanStack Query server state, React Hook Form form mechanics,
-  German-first i18next localization, and domain-oriented functional
-  composition with selectively used Ramda;
+  German-first i18next localization, accepted browser-private Material UI as
+  the component and accessible visual foundation, and domain-oriented
+  functional composition with selectively used Ramda;
 - one conceptual domain package at `packages/booking`, with Admin access,
   Course structure, Course access, and Module participation as internal
   responsibility modules;
@@ -75,7 +76,8 @@ The first local application foundation is now implemented:
   build, and Chromium browser evidence.
 
 Apple, Microsoft, and Facebook providers, all later MVP product capabilities,
-remote Google credentials and production callback/domain configuration, remote
+the accepted MUI component/theme/accessibility foundation, remote Google
+credentials and production callback/domain configuration, remote
 Cloudflare staging/production resources, release automation, deployment
 credentials, and production deployment remain absent. The account-bound
 release surfaces are intentionally deferred until release hardening. No

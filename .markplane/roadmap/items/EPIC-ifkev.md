@@ -5,8 +5,13 @@ status: later
 priority: medium
 started: null
 target: null
-related: []
-tags: []
+related:
+- TASK-6sxq3
+- EPIC-hikpy
+tags:
+- release
+- cloudflare
+- deployment
 created: 2026-08-27
 updated: 2026-08-27
 ---
@@ -36,7 +41,8 @@ block normal local MVP implementation or acceptance.
 ## Notes
 
 This epic follows the locally accepted MVP and precedes the first production
-release. It records the mandatory future phase without prematurely selecting
-detailed tasks or attaching an implementation plan. Canonical release,
-runtime, persistence, authentication, and verification docs remain
-authoritative when this work is selected.
+release. It remains unselectable until `TASK-6sxq3` completes and closes all
+local-functional-completion epics. It records the mandatory future phase
+without prematurely selecting detailed tasks or attaching an implementation
+plan. Canonical release, runtime, persistence, authentication, and verification
+docs remain authoritative when this work is selected.

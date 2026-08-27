@@ -72,6 +72,29 @@ dependency graphs improve local reasoning without creating frontend, API,
 Admin, Participant, UI, or other technical workspaces or packages. Detailed
 ownership rules live in [browser conventions](browser-conventions.md).
 
+## Use Material UI As The Browser Component Foundation
+
+The browser uses Material UI (MUI) as its mature component library and visual
+foundation. MUI remains a browser-facing implementation choice inside the one
+`apps/booking-system-web` application: it does not enter `packages/booking`,
+Worker-side domain authorization, persistence, or authentication
+responsibilities, and its application-manifest declaration does not grant an
+import edge outside the browser graph.
+
+The repository owns one cohesive theme and accessibility baseline over free
+MUI Core components. Familiar Material interaction patterns, responsive
+layout, visible focus, semantic labeling, keyboard operation, predictable
+focus management, and non-color-only communication take precedence over novel
+navigation or bespoke primitives. This direction does not create a competing
+design-system package or justify wrappers around every MUI component. Shared
+presentation abstractions require repeated concrete use and one clear owner.
+
+MUI X Community components may be introduced only for a concrete browser need
+that MUI Core does not meet, such as accessible date/time entry. Pro, Premium,
+or other commercially licensed components are not accepted for the v1 local
+application. Exact dependencies and import permissions arrive with the first
+real MUI implementation task rather than being declared speculatively.
+
 ## Build Internationalization Into The First Frontend Slice
 
 The browser uses `i18next` and `react-i18next` from its first real slice,

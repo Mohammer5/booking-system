@@ -1,12 +1,17 @@
 ---
 id: EPIC-m22qh
 title: Core booking happy path
-status: next
+status: later
 priority: medium
 started: null
 target: null
-related: []
-tags: []
+related:
+- EPIC-566gf
+- EPIC-bh5dj
+tags:
+- booking
+- core
+- happy-path
 created: 2026-08-27
 updated: 2026-08-27
 ---
@@ -35,6 +40,12 @@ participation.
       Module Selection remain independent concepts.
 
 ## Notes
+
+The accessible application-experience foundation in `EPIC-566gf` now precedes
+the unfinished happy-path tasks. Every browser slice uses the accepted MUI
+theme/shell, German i18n, responsive states, keyboard/focus behavior, and
+appropriate accessibility evidence; the epic objective itself remains the
+same central booking journey.
 
 The first deployable behavior uses the accepted Better Auth boundary inside
 `apps/booking-system-web`: deterministic named test identities establish

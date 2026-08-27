@@ -21,6 +21,11 @@
   state, `react-hook-form` for transient form mechanics, and `i18next` with
   `react-i18next` for localization. `classnames`, `debug`, and `ramda` remain
   optional and are introduced only for a concrete use.
+- Material UI is the accepted browser component library and visual foundation.
+  Free MUI Core components, one repository-owned theme, responsive Material
+  interaction patterns, and a WCAG 2.2 AA-oriented accessibility baseline
+  remain browser-private; MUI X Community requires a concrete need, and paid
+  MUI components are excluded.
 - Every independently navigable browser view receives a route, without turning
   incidental UI state into routes. Frontend routes support direct navigation
   and refresh through the same-origin deployment; `/api/*` remains Worker/API
@@ -92,6 +97,12 @@
 - React Router serves the independently navigable `/admin` route. TanStack
   Query owns remote Admin state, React Hook Form owns the name form, and
   German-first i18next resources own all browser copy.
+- MUI is not yet implemented or declared in the application manifest or
+  browser boundary map. The current stable `@mui/material` 9.4.0 package
+  metadata accepts React 19, covering locked React 19.2.8. Planning infers Vite
+  8.2.2 compatibility from its modern ESM distribution and lack of a Vite peer
+  constraint; the implementation task will re-verify and pin the then-current
+  stable release.
 - Vite and the Cloudflare Vite plugin build the browser and Worker outputs;
   Workers Static Assets provides SPA fallback while `/api/*` runs Worker-first.
 - Better Auth 1.7.2 uses D1-backed normal sessions and crosses into booking
@@ -111,10 +122,11 @@
   the Nixpkgs CA bundle for local outbound HTTPS, without patching the checkout
   or changing Cloudflare runtime semantics.
 
-The first slice deliberately does not declare optional `classnames`, `debug`,
-or `ramda` dependencies because its source has no concrete use for them. Apple,
-Microsoft, and Facebook integration, remote Google credentials and production
-callback/domain configuration, production deployment, remote Cloudflare
-environments and D1 databases, deployment credentials, and release
-infrastructure remain absent. Release hardening and real staging verification
-remain mandatory before the first production release.
+The first slice deliberately does not declare MUI or optional `classnames`,
+`debug`, or `ramda` dependencies because it predates the accepted MUI adoption
+task and has no concrete use for the optional libraries. Apple, Microsoft, and
+Facebook integration, remote Google credentials and production callback/domain
+configuration, production deployment, remote Cloudflare environments and D1
+databases, deployment credentials, and release infrastructure remain absent.
+Release hardening and real staging verification remain mandatory before the
+first production release.

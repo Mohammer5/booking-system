@@ -16,19 +16,20 @@ JavaScript conventions, and ESLint-enforced dependency rules.
 ### Architecture Status
 - Path: `docs/architecture/_status.md`
 - Summary: Current implemented application/package foundation, React browser
-  slice and Google sign-in, functional-composition direction,
+  slice and Google sign-in, accepted-but-unimplemented MUI foundation,
+  functional-composition direction,
   Cloudflare/Vite/D1 runtime, NixOS developer tooling, boundary enforcement,
   and still-deferred product and release surfaces.
 - Read when: You need to distinguish decided architecture from current
   implementation or identify which application, browser, runtime, and
   persistence surfaces do not yet exist.
-- Tags: architecture, status, browser, functional-programming, cloudflare,
-  workers, vite, d1, nixos, implementation
+- Tags: architecture, status, browser, mui, accessibility,
+  functional-programming, cloudflare, workers, vite, d1, nixos, implementation
 
 ### Architecture Decisions
 - Path: `docs/architecture/_decisions.md`
 - Summary: Rationale for the booking application/package boundaries, one
-  manifest per workspace, React and browser-library responsibilities,
+  manifest per workspace, React, MUI, and browser-library responsibilities,
   functional composition, one same-origin Cloudflare Worker, D1 with SQLite
   semantics, Node/runtime and NixOS host-tooling separation, explicit ESLint
   enforcement, and deferred remote infrastructure.
@@ -37,8 +38,9 @@ JavaScript conventions, and ESLint-enforced dependency rules.
   workspace-level manifest ownership, Cloudflare, D1, a non-Node production
   runtime, NixOS developer tooling, explicit boundaries, or
   real-application-triggered tooling.
-- Tags: architecture, decisions, browser, functional-programming, cloudflare,
-  workers, d1, nodejs, nixos, tooling, eslint, manifests
+- Tags: architecture, decisions, browser, mui, component-library,
+  functional-programming, cloudflare, workers, d1, nodejs, nixos, tooling,
+  eslint, manifests
 
 ### Architecture Principles
 - Path: `docs/architecture/principles.md`
@@ -120,13 +122,15 @@ JavaScript conventions, and ESLint-enforced dependency rules.
 ### Browser Conventions
 - Path: `docs/architecture/browser-conventions.md`
 - Summary: React-based browser ownership rules for React Router, TanStack Query,
-  React Hook Form, Better Auth session actions, classnames, debug, i18next,
-  localization, routes, and vertical-slice placement.
+  React Hook Form, Material UI, accessible interaction, Better Auth session
+  actions, classnames, debug, i18next, localization, routes, and vertical-slice
+  placement.
 - Read when: A task affects browser routing, navigation, server state, forms,
   frontend validation, conditional classes, diagnostics, localization, or
   browser dependency choices.
-- Tags: architecture, browser, react, react-dom, react-router, tanstack-query,
-  react-hook-form, better-auth, authentication, i18n, debug
+- Tags: architecture, browser, react, react-dom, mui, accessibility,
+  react-router, tanstack-query, react-hook-form, better-auth, authentication,
+  i18n, debug
 
 ### ESLint Enforcement
 - Path: `docs/architecture/eslint.md`

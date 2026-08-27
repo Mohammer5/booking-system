@@ -54,11 +54,11 @@ This repository uses an indexed global documentation system.
 ### Architecture
 - Path: `docs/architecture/_index.md`
 - Summary: Conceptual-domain-first source organization, JavaScript functional
-  composition and browser conventions, implemented runtime, persistence, and
-  Google authentication direction, NixOS developer-host tooling, ESLint
-  enforcement, and explicit dependency boundaries.
+  composition and MUI-based browser conventions, implemented runtime,
+  persistence, and Google authentication direction, NixOS developer-host
+  tooling, ESLint enforcement, and explicit dependency boundaries.
 - Read when: A task affects source layout, dependencies, modules, exports,
   applications, packages, JavaScript or browser conventions, runtime,
   persistence, authentication, sessions, ESLint, or boundary maps.
 - Tags: architecture, modules, runtime, persistence, authentication, sessions,
-  browser, functional-programming, boundaries, eslint
+  browser, mui, accessibility, functional-programming, boundaries, eslint

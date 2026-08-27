@@ -9,11 +9,24 @@ epic: EPIC-m22qh
 plan: null
 depends_on:
 - TASK-qk47b
-blocks: []
-related: []
+blocks:
+- TASK-smtvk
+- TASK-25j4s
+- TASK-kmm36
+- TASK-2u7z6
+- TASK-vwciv
+- TASK-3zcmt
+- TASK-ikzih
+related:
+- TASK-2u7z6
+- TASK-49if4
 assignee: null
-tags: []
-position: a6
+tags:
+- participant
+- selection
+- time
+- ui
+position: c60
 created: 2026-08-27
 updated: 2026-08-27
 ---
@@ -26,6 +39,9 @@ Allow an eligible Participant to explicitly choose, change, or remove their
 own Group choice for a future Scheduled Module. Completing this capability
 proves that Course Assignment answers membership while Module Selection
 independently records whether and how the Participant intends to participate.
+Persist the Selection through D1, expose it through the Participant Course
+view, and derive its current temporal presentation from authoritative state
+rather than introducing a stored Selection status.
 
 ## Acceptance Criteria
 
@@ -49,10 +65,46 @@ independently records whether and how the Participant intends to participate.
       mutation is validated against authoritative current state so a stale
       action cannot bypass current eligibility or the deadline.
 
-## Notes
+- [ ] One Participant may select overlapping Modules within or across Courses;
+      no warning or conflict prevention is introduced.
+- [ ] D1 enforces at most one Selection per Participant/Module and same-Course
+      references. Concurrent valid changes leave one accepted current Group;
+      any refused change leaves the prior Selection unchanged.
+- [ ] A retained Selection is presented as live while every live predicate is
+      true and `now < endsAt`, and becomes historical at exact `endsAt`; this
+      meaning is derived, never persisted as a Selection status.
 
-Admin-assisted booking and all deferred lifecycle operations remain outside
-this task.
+## UI/UX Expectations
+
+The Participant Course/Module view uses German-first MUI controls to show no
+choice, current Group, eligibility, deadline, and live/historical meaning.
+Create/change/removal exposes pending, success, validation, stale/unavailable,
+and technical-error states. Removal uses an appropriate accessible
+confirmation where destructive intent would otherwise be unclear. Keyboard,
+focus restoration, mobile/desktop layout, direct refresh, and non-color-only
+status behavior are explicit acceptance surfaces.
+
+## Verification Evidence Required
+
+- Booking-domain Vitest for eligibility, idempotence, replacement/removal,
+  exact `startsAt`/`endsAt`, overlap allowance, same-Course integrity, and
+  derived live/historical meaning with injected clocks/definite instants.
+- Worker/D1 tests for migrations, unique/foreign-key constraints, atomic
+  replacement, concurrency, fresh authorization/deadline checks, and no
+  partial side effects.
+- Playwright for choose/reselect/change/remove, missing choice, stale deadline
+  or Assignment loss, overlapping Modules, refresh, responsive layouts,
+  keyboard/dialog focus, and axe scans.
+- Full `pnpm check`.
+
+## Out Of Scope / Notes
+
+Admin-assisted booking is owned by `TASK-2nh3b`. Cancellation, Assignment
+revocation, Participant Disable, Group archival, and Course archival own their
+specific retention transitions. Capacities, approvals, attendance,
+notifications, configurable deadlines, automatic Group choice, and complete
+change history remain excluded. Create a fresh implementation plan when
+selected.
 
 ## References
 
@@ -64,3 +116,10 @@ this task.
 - `docs/product/module-participation.md#removing-participation`
 - `docs/product/module-participation.md#startsat-deadline`
 - `docs/product/module-participation.md#concurrent-and-stale-changes`
+- `docs/product/module-participation.md#exact-live-and-historical-meaning`
+- `docs/product/module-participation.md#scheduling-conflicts`
+- `docs/product/representative-scenarios.md#e-normal-participation`
+- `docs/product/representative-scenarios.md#p-module-deadline-and-schedule-immutability`
+- `docs/product/representative-scenarios.md#w-live-and-historical-selection-transitions`
+- `docs/product/representative-scenarios.md#ai-overlapping-modules`
+- `docs/process/verification.md`

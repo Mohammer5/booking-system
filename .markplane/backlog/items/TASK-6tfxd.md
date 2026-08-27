@@ -11,10 +11,16 @@ depends_on:
 - TASK-ubm2q
 blocks:
 - TASK-qk47b
+- TASK-7n2my
+- TASK-2u7z6
 related: []
 assignee: null
-tags: []
-position: a2
+tags:
+- group
+- module
+- scheduling
+- ui
+position: c20
 created: 2026-08-27
 updated: 2026-08-27
 ---
@@ -27,6 +33,8 @@ Allow an Active Admin User to configure enough structure in an Active Course
 for Module participation by creating Course-wide Groups and future Scheduled
 Modules. Each included creation capability must preserve its complete
 canonical contract even though later lifecycle operations remain deferred.
+The Admin Course detail must list and create both structures through complete
+browser-usable vertical slices backed by D1 and authoritative Worker policy.
 
 ## Acceptance Criteria
 
@@ -48,10 +56,45 @@ canonical contract even though later lifecycle operations remain deferred.
       outcome.
 - [ ] Creating a Module does not implicitly create a Module Selection.
 
-## Notes
+- [ ] Only a freshly resolved Active Admin User may mutate an Active Course;
+      stale actor/Course state, duplicate normalized Group name, invalid local
+      time, or failed Module creation leaves no partial Group, Module, or
+      timezone-freeze side effect.
+- [ ] Group and Module identities and their permanent Course ownership are
+      enforced in D1, and concurrent normalized Group-name attempts preserve
+      one valid Active-name outcome.
+- [ ] The Admin Course view lists Groups and Modules, exposes their normal
+      empty states, and creates them without requiring API-only access.
+
+## UI/UX Expectations
+
+Use German-first MUI forms and list/status patterns. Schedule input clearly
+uses the Course timezone, communicates the resolved instant, rejects a
+nonexistent wall time, and requires the user to choose the intended occurrence
+for an ambiguous wall time. Free MUI X Community date/time components may be
+used only if the implementation plan confirms they meet this concrete need;
+no Pro/Premium package is allowed. Forms, errors, and success states work by
+keyboard with predictable focus at desktop and narrow/mobile widths.
+
+## Verification Evidence Required
+
+- Booking-domain Vitest for Group normalization/uniqueness and deterministic
+  timezone/DST/instant rules using an injected clock or definite `now`.
+- Worker/D1 tests for migrations, Course ownership, unique/atomic outcomes,
+  first-successful-Module timezone freeze, authorization, and no partial
+  effects on refusal.
+- Playwright for list/create/empty/error journeys, DST gap and overlap input,
+  direct Course refresh, responsive widths, keyboard/focus behavior, and
+  axe-style accessibility checks.
+- Boundary checks for any MUI X/date-library import, production build, and
+  full `pnpm check`.
+
+## Out Of Scope / Notes
 
 Group archival, reactivation, and deletion; Module rescheduling, cancellation,
-and deletion; and Course archival are outside this task.
+and deletion; Course edits; and Course archival are outside this task. Do not
+add capacities, recurring Modules, per-Module Groups, or conflict prevention.
+Create a fresh implementation plan when selected.
 
 ## References
 
@@ -62,3 +105,7 @@ and deletion; and Course archival are outside this task.
 - `docs/product/course-structure.md#modules`
 - `docs/product/representative-scenarios.md#n-course-timezone-and-dst`
 - `docs/product/representative-scenarios.md#o-backdated-module-refusal`
+- `docs/product/non-goals.md#module-and-group-modeling`
+- `docs/architecture/browser-conventions.md#material-ui-and-accessible-interaction`
+- `docs/architecture/persistence.md#migration-contract`
+- `docs/process/verification.md`
