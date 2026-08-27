@@ -76,11 +76,12 @@ to the same-origin authentication HTTP surface rather than crossing a source
 module edge. Authentication cannot import booking policy or browser source. No
 generic shared or contracts package exists for the small HTTP shapes.
 
-The Course change adds second-level `course-structure` slices within the
-existing browser and Worker responsibilities. It changes no first-level
-application-module edge: Worker source continues to use only the exact booking
-package root, and browser source continues to reach Course behavior only over
-same-origin HTTP.
+The Course, Group, and Module creation changes add second-level
+`course-structure` slices within the existing browser and Worker
+responsibilities. They change no first-level application-module edge: Worker
+source continues to use only the exact booking package root, and browser
+source continues to reach Course-structure behavior only over same-origin
+HTTP. The local-time resolver adds no date/time or MUI X dependency.
 
 ## Map Shape
 

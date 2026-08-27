@@ -1,7 +1,7 @@
 ---
 id: TASK-6tfxd
 title: Create Groups and future Modules
-status: in-progress
+status: done
 priority: medium
 type: feature
 effort: medium
@@ -38,32 +38,32 @@ browser-usable vertical slices backed by D1 and authoritative Worker policy.
 
 ## Acceptance Criteria
 
-- [ ] An Active Admin User can create an Active, permanently Course-owned
+- [x] An Active Admin User can create an Active, permanently Course-owned
       Group with a required name that is non-blank after trimming and optional
       free-text details.
-- [ ] Active Group names are unique within the Course after trimming and
+- [x] Active Group names are unique within the Course after trimming and
       case-insensitive comparison, and each created Group is a Course-wide
       choice rather than Module-specific structure.
-- [ ] An Active Admin User can create a Scheduled Module in an Active Course
+- [x] An Active Admin User can create a Scheduled Module in an Active Course
       with a required non-blank title, optional description, optional
       instructions, and definite `startsAt` and `endsAt` instants.
-- [ ] Module creation succeeds only when `startsAt > now` and
+- [x] Module creation succeeds only when `startsAt > now` and
       `endsAt > startsAt`; schedule input uses the Course's IANA/TZDB timezone,
       rejects nonexistent DST local times, and requires explicit
       disambiguation of ambiguous local times.
-- [ ] The first successfully created Module permanently freezes the Course
+- [x] The first successfully created Module permanently freezes the Course
       timezone, while refused creation does not claim a successful Module
       outcome.
-- [ ] Creating a Module does not implicitly create a Module Selection.
+- [x] Creating a Module does not implicitly create a Module Selection.
 
-- [ ] Only a freshly resolved Active Admin User may mutate an Active Course;
+- [x] Only a freshly resolved Active Admin User may mutate an Active Course;
       stale actor/Course state, duplicate normalized Group name, invalid local
       time, or failed Module creation leaves no partial Group, Module, or
       timezone-freeze side effect.
-- [ ] Group and Module identities and their permanent Course ownership are
+- [x] Group and Module identities and their permanent Course ownership are
       enforced in D1, and concurrent normalized Group-name attempts preserve
       one valid Active-name outcome.
-- [ ] The Admin Course view lists Groups and Modules, exposes their normal
+- [x] The Admin Course view lists Groups and Modules, exposes their normal
       empty states, and creates them without requiring API-only access.
 
 ## UI/UX Expectations

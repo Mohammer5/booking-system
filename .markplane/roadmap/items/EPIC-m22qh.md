@@ -13,7 +13,7 @@ tags:
 - core
 - happy-path
 created: 2026-08-27
-updated: 2026-08-27
+updated: 2026-08-28
 ---
 
 # Core booking happy path
@@ -29,7 +29,7 @@ participation.
 
 ## Key Results
 
-- [ ] KR1: A first Active Super Admin can bootstrap administration and create
+- [x] KR1: A first Active Super Admin can bootstrap administration and create
       an Active Course with Groups and a future Scheduled Module.
 - [ ] KR2: A new Active Participant can register, be discovered and assigned
       to that Course by an Active Admin User, and access the participation

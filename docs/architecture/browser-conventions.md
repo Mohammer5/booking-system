@@ -69,10 +69,13 @@ eight-pixel spacing, explicit responsive breakpoints, application surfaces,
 and a high-contrast three-pixel visible-focus outline. `main.jsx` applies that
 theme and `CssBaseline` once. The Admin authentication/bootstrap,
 current-context, refusal, failure, and sign-out states plus the Course
-index/create/detail states use free MUI Core components directly without
-changing their HTTP, authentication, or domain ownership. The Participant and
-Admin routes share one responsive browser-owned shell with a banner, named
-list navigation, narrow modal Drawer, skip link, and one main landmark; route
+index/create/detail, Course-wide Group creation, and future Module creation
+states use free MUI Core components directly without changing their HTTP,
+authentication, or domain ownership. Native `datetime-local` fields collect
+local minutes; MUI radio groups expose server-resolved DST-overlap occurrences,
+so no MUI X or date/time dependency is present. The Participant and Admin
+routes share one responsive browser-owned shell with a banner, named list
+navigation, narrow modal Drawer, skip link, and one main landmark; route
 content remains slice-owned.
 
 The local Playwright harness uses `@axe-core/playwright` 4.13.0 for automated
@@ -81,7 +84,8 @@ and 360px widths. Explicit assertions separately cover landmarks and headings,
 accessible names, keyboard activation, visible focus, field/error association,
 Drawer/Dialog trapping and restoration, result/error focus, direct navigation
 and refresh, pre-authorization Course privacy, request-free Participant entry,
-and horizontal overflow.
+Group/Module empty and creation states, definite-instant display, DST
+gap/overlap interaction, stale/technical refusals, and horizontal overflow.
 
 MUI X Community may be introduced only for a concrete need such as date/time
 input; its Community packages are MIT-licensed, while Pro and Premium packages
@@ -132,7 +136,9 @@ remains Worker/API-owned. [Runtime and hosting](runtime-and-hosting.md) owns the
 deployment and fallback behavior. The current independently navigable routes
 are the Participant entry at `/`, administration entry at `/admin`, Course
 index at `/admin/courses`, creation at `/admin/courses/new`, and stable detail
-at `/admin/courses/:courseId`.
+at `/admin/courses/:courseId`. Course-owned Group and Module lists and creation
+forms remain on stable detail because they are not independently navigable
+views.
 
 ## Browser Authentication
 

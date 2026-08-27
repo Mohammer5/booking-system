@@ -1,96 +1,150 @@
 import {
   createCreateCourse,
+  createCreateGroup,
+  createCreateModule,
   createResolveAdminContext,
 } from "@booking-system/booking";
 
-const coursesPath = "/api/admin/courses";
-const courseDetailPrefix = `${coursesPath}/`;
+import {
+  jsonResponse,
+  matchCourseRoute,
+  readJsonObject,
+  toCourseDetailResponse,
+  toCourseResponse,
+  toGroupResponse,
+  toModuleResponse,
+} from "./courseHttpContract.js";
 
 /**
- * Create the same-origin Course index, creation, and detail HTTP operations.
+ * Create the same-origin Course, Group, and Module HTTP operations.
  *
  * @param {object} capabilities Application and booking capabilities.
- * @returns {(request: Request) => Promise<Response>} The Course HTTP handler.
+ * @returns {(request: Request) => Promise<Response>} Course-structure HTTP handler.
  */
-export function createCourseHttpHandler({
-  authenticate,
-  createCourseId,
-  adminPersistence,
-  coursePersistence,
-}) {
-  const resolveAdminContext = createResolveAdminContext({
-    findAdminUserByExternalPrincipalId:
-      adminPersistence.findAdminUserByExternalPrincipalId,
-  });
-  const createCourse = createCreateCourse({
-    createCourseId,
-    createCourseForActiveAdmin:
-      coursePersistence.createCourseForActiveAdmin,
-  });
-  const operations = {
-    authenticate,
-    createCourse,
-    coursePersistence,
-    resolveAdminContext,
-  };
+export function createCourseHttpHandler(capabilities) {
+  const operations = createOperations(capabilities);
 
   return async function handleCourseHttpRequest(request) {
-    const pathname = new URL(request.url).pathname;
+    const route = matchCourseRoute(new URL(request.url).pathname);
 
-    if (pathname === coursesPath && request.method === "GET") {
-      return handleCourseListRequest(request, operations);
+    if (route === null || !isSupportedRoute(route, request.method)) {
+      return jsonResponse({ outcome: "not-found" }, 404);
     }
 
-    if (pathname === coursesPath && request.method === "POST") {
-      return handleCreateCourseRequest(request, operations);
-    }
+    const authorization = await authorizeAdminRequest(request, operations);
 
-    const courseId = courseIdFromPath(pathname);
-
-    if (courseId !== null && request.method === "GET") {
-      return handleCourseDetailRequest(request, courseId, operations);
-    }
-
-    return jsonResponse({ outcome: "not-found" }, 404);
+    return authorization.response ??
+      handleAuthorizedRoute(
+        { request, route, adminUser: authorization.adminUser },
+        operations,
+      );
   };
 }
 
 /**
- * List Courses only after fresh Active Admin resolution.
+ * Compose narrow domain and application operations once per Worker request graph.
  *
- * @param {Request} request The list request.
- * @param {object} operations Course HTTP operations.
- * @returns {Promise<Response>} The Course index response.
+ * @param {object} capabilities Raw application capabilities.
+ * @returns {object} Course-structure HTTP operations.
  */
-async function handleCourseListRequest(request, operations) {
-  const authorization = await authorizeAdminRequest(request, operations);
+function createOperations(capabilities) {
+  return {
+    ...capabilities,
+    createCourse: createCreateCourse({
+      createCourseId: capabilities.createCourseId,
+      createCourseForActiveAdmin:
+        capabilities.coursePersistence.createCourseForActiveAdmin,
+    }),
+    createGroup: createCreateGroup({
+      createGroupId: capabilities.createGroupId,
+      createGroupForActiveAdmin:
+        capabilities.groupPersistence?.createGroupForActiveAdmin,
+    }),
+    createModule: createCreateModule({
+      createModuleId: capabilities.createModuleId,
+      createModuleForActiveAdmin:
+        capabilities.modulePersistence?.createModuleForActiveAdmin,
+      now: capabilities.now,
+    }),
+    resolveAdminContext: createResolveAdminContext({
+      findAdminUserByExternalPrincipalId:
+        capabilities.adminPersistence.findAdminUserByExternalPrincipalId,
+    }),
+  };
+}
 
-  if (authorization.response !== undefined) {
-    return authorization.response;
+/**
+ * Check the exact method owned by one matched route.
+ *
+ * @param {object} route Matched route.
+ * @param {string} method Request method.
+ * @returns {boolean} Whether the operation exists.
+ */
+function isSupportedRoute(route, method) {
+  const methodsByKind = {
+    courses: new Set(["GET", "POST"]),
+    course: new Set(["GET"]),
+    groups: new Set(["POST"]),
+    modules: new Set(["POST"]),
+  };
+
+  return methodsByKind[route.kind].has(method);
+}
+
+/**
+ * Dispatch one freshly authorized Course-structure request.
+ *
+ * @param {object} context Request, route, and current Active Admin User.
+ * @param {object} operations Course-structure operations.
+ * @returns {Promise<Response>} Exact operation response.
+ */
+function handleAuthorizedRoute(context, operations) {
+  const { request, route, adminUser } = context;
+
+  if (route.kind === "courses" && request.method === "GET") {
+    return handleCourseListRequest(operations);
   }
 
+  if (route.kind === "courses") {
+    return handleCreateCourseRequest(request, adminUser, operations);
+  }
+
+  if (route.kind === "course") {
+    return handleCourseDetailRequest(route.courseId, operations);
+  }
+
+  return route.kind === "groups"
+    ? handleCreateGroupRequest(
+        { request, courseId: route.courseId, adminUser },
+        operations,
+      )
+    : handleCreateModuleRequest(
+        { request, courseId: route.courseId, adminUser },
+        operations,
+      );
+}
+
+/**
+ * List Courses after fresh Active Admin resolution.
+ *
+ * @param {object} operations Course operations.
+ * @returns {Promise<Response>} Course index response.
+ */
+async function handleCourseListRequest(operations) {
   const courses = await operations.coursePersistence.listCourses();
 
   return jsonResponse({ courses: courses.map(toCourseResponse) }, 200);
 }
 
 /**
- * Create a Course only from server-resolved current Admin context.
+ * Create one Course from server-resolved Admin context.
  *
- * @param {Request} request The creation request.
- * @param {object} operations Course HTTP operations.
- * @returns {Promise<Response>} The Course creation response.
+ * @returns {Promise<Response>} Course creation response.
  */
-async function handleCreateCourseRequest(request, operations) {
-  const authorization = await authorizeAdminRequest(request, operations);
-
-  if (authorization.response !== undefined) {
-    return authorization.response;
-  }
-
+async function handleCreateCourseRequest(request, adminUser, operations) {
   const body = await readJsonObject(request);
   const result = await operations.createCourse({
-    adminUser: authorization.adminUser,
+    adminUser,
     name: body.name,
     description: body.description,
     timezone: body.timezone,
@@ -100,49 +154,145 @@ async function handleCreateCourseRequest(request, operations) {
     return staleAdminResponse(request, operations);
   }
 
-  if (result.outcome !== "created") {
-    return jsonResponse(result, 422);
-  }
-
-  return jsonResponse(toCourseResponse(result.course), 201);
+  return result.outcome === "created"
+    ? jsonResponse(toCourseResponse(result.course), 201)
+    : jsonResponse(result, 422);
 }
 
 /**
- * Read one Course only after fresh Active Admin resolution.
+ * Read one Course with its ordered owned structures.
  *
- * @param {Request} request The detail request.
- * @param {string} courseId The stable Course identity from the route.
- * @param {object} operations Course HTTP operations.
- * @returns {Promise<Response>} The Course detail response.
+ * @returns {Promise<Response>} Complete Course detail response.
  */
-async function handleCourseDetailRequest(request, courseId, operations) {
-  const authorization = await authorizeAdminRequest(request, operations);
-
-  if (authorization.response !== undefined) {
-    return authorization.response;
-  }
-
+async function handleCourseDetailRequest(courseId, operations) {
   const course = await operations.coursePersistence.findCourseById(courseId);
 
-  return course === null
-    ? jsonResponse({ outcome: "course-not-found" }, 404)
-    : jsonResponse(toCourseResponse(course), 200);
+  if (course === null) {
+    return jsonResponse({ outcome: "course-not-found" }, 404);
+  }
+
+  const [groups, modules] = await Promise.all([
+    operations.groupPersistence.listGroupsByCourseId(courseId),
+    operations.modulePersistence.listModulesByCourseId(courseId),
+  ]);
+
+  return jsonResponse(toCourseDetailResponse(course, groups, modules), 200);
 }
 
 /**
- * Authenticate and resolve current Admin state for one Course request.
+ * Create one Course-wide Group with authoritative write guards.
  *
- * @param {Request} request The incoming request.
- * @param {object} operations Authentication and Admin-resolution operations.
- * @returns {Promise<object>} An Active Admin or an exact refusal response.
+ * @returns {Promise<Response>} Group creation or refusal response.
+ */
+async function handleCreateGroupRequest(context, operations) {
+  const { request, courseId, adminUser } = context;
+  const course = await operations.coursePersistence.findCourseById(courseId);
+
+  if (course === null) {
+    return jsonResponse({ outcome: "course-not-found" }, 404);
+  }
+
+  const body = await readJsonObject(request);
+  const result = await operations.createGroup({
+    adminUser,
+    course,
+    name: body.name,
+    details: body.details,
+  });
+  const staleResponse = await currentStateRefusal(
+    result,
+    { request, courseId },
+    operations,
+  );
+
+  return staleResponse ?? groupResultResponse(result);
+}
+
+/**
+ * Create one future Scheduled Module with authoritative write guards.
+ *
+ * @returns {Promise<Response>} Module creation or refusal response.
+ */
+async function handleCreateModuleRequest(context, operations) {
+  const { request, courseId, adminUser } = context;
+  const course = await operations.coursePersistence.findCourseById(courseId);
+
+  if (course === null) {
+    return jsonResponse({ outcome: "course-not-found" }, 404);
+  }
+
+  const body = await readJsonObject(request);
+  const result = await operations.createModule({
+    adminUser,
+    course,
+    title: body.title,
+    description: body.description,
+    instructions: body.instructions,
+    startsAtLocal: body.startsAtLocal,
+    startsAtOccurrence: body.startsAtOccurrence,
+    endsAtLocal: body.endsAtLocal,
+    endsAtOccurrence: body.endsAtOccurrence,
+  });
+  const staleResponse = await currentStateRefusal(
+    result,
+    { request, courseId },
+    operations,
+  );
+
+  return staleResponse ?? moduleResultResponse(result);
+}
+
+/**
+ * Re-resolve any guarded-write current-state refusal.
+ *
+ * @returns {Promise<Response | null>} Exact stale response or null.
+ */
+async function currentStateRefusal(result, context, operations) {
+  if (result.outcome === "admin-not-active") {
+    return staleAdminResponse(context.request, operations);
+  }
+
+  return result.outcome === "course-not-active"
+    ? staleCourseResponse(context.request, context.courseId, operations)
+    : null;
+}
+
+/**
+ * Map one Group result to its exact non-stale HTTP response.
+ *
+ * @returns {Response} Group result response.
+ */
+function groupResultResponse(result) {
+  if (result.outcome === "created") {
+    return jsonResponse(toGroupResponse(result.group), 201);
+  }
+
+  const status = result.outcome === "group-name-conflict" ? 409 : 422;
+
+  return jsonResponse(result, status);
+}
+
+/**
+ * Map one Module result to its exact non-stale HTTP response.
+ *
+ * @returns {Response} Module result response.
+ */
+function moduleResultResponse(result) {
+  return result.outcome === "created"
+    ? jsonResponse(toModuleResponse(result.module), 201)
+    : jsonResponse(result, 422);
+}
+
+/**
+ * Authenticate and freshly resolve Active Admin state.
+ *
+ * @returns {Promise<object>} Active Admin or exact refusal response.
  */
 async function authorizeAdminRequest(request, operations) {
   const authentication = await operations.authenticate(request);
 
   if (authentication.outcome === "unauthenticated") {
-    return {
-      response: jsonResponse({ outcome: "unauthenticated" }, 401),
-    };
+    return { response: jsonResponse({ outcome: "unauthenticated" }, 401) };
   }
 
   const context = await operations.resolveAdminContext(
@@ -155,76 +305,43 @@ async function authorizeAdminRequest(request, operations) {
 }
 
 /**
- * Re-resolve an actor rejected by the guarded write and refuse safely.
+ * Re-resolve an actor rejected by a guarded write.
  *
- * @param {Request} request The stale creation request.
- * @param {object} operations Authentication and Admin-resolution operations.
- * @returns {Promise<Response>} The current refusal response.
+ * @returns {Promise<Response>} Current Admin refusal response.
  */
 async function staleAdminResponse(request, operations) {
   const authorization = await authorizeAdminRequest(request, operations);
 
-  return (
-    authorization.response ??
-    jsonResponse({ outcome: "admin-not-active" }, 403)
-  );
+  return authorization.response ??
+    jsonResponse({ outcome: "admin-not-active" }, 403);
 }
 
 /**
- * Extract one non-nested Course identity from a detail route.
+ * Re-resolve a Course rejected by a guarded structural write.
  *
- * @param {string} pathname The request pathname.
- * @returns {string | null} The route identity or null.
+ * @returns {Promise<Response>} Current Course refusal response.
  */
-function courseIdFromPath(pathname) {
-  if (!pathname.startsWith(courseDetailPrefix)) {
-    return null;
+async function staleCourseResponse(request, courseId, operations) {
+  const adminRefusal = await staleAdminResponseIfNeeded(request, operations);
+
+  if (adminRefusal !== null) {
+    return adminRefusal;
   }
 
-  const courseId = pathname.slice(courseDetailPrefix.length);
+  const course = await operations.coursePersistence.findCourseById(courseId);
 
-  return courseId.length > 0 && !courseId.includes("/") ? courseId : null;
+  return course === null
+    ? jsonResponse({ outcome: "course-not-found" }, 404)
+    : jsonResponse({ outcome: "course-not-active" }, 409);
 }
 
 /**
- * Read a narrow JSON object, treating malformed input as invalid fields.
+ * Return a current Admin refusal without manufacturing one for an Active actor.
  *
- * @param {Request} request The incoming request.
- * @returns {Promise<object>} Parsed input or an empty object.
+ * @returns {Promise<Response | null>} Refusal or null.
  */
-async function readJsonObject(request) {
-  try {
-    const body = await request.json();
+async function staleAdminResponseIfNeeded(request, operations) {
+  const authorization = await authorizeAdminRequest(request, operations);
 
-    return typeof body === "object" && body !== null ? body : {};
-  } catch {
-    return {};
-  }
-}
-
-/**
- * Remove all fields outside the Course HTTP representation.
- *
- * @param {object} course The booking-domain Course.
- * @returns {object} The narrow browser representation.
- */
-function toCourseResponse(course) {
-  return {
-    id: course.id,
-    name: course.name,
-    description: course.description,
-    timezone: course.timezone,
-    state: course.state,
-  };
-}
-
-/**
- * Create one JSON response without a universal envelope.
- *
- * @param {object} body The response body.
- * @param {number} status The HTTP status.
- * @returns {Response} The JSON response.
- */
-function jsonResponse(body, status) {
-  return Response.json(body, { status });
+  return authorization.response ?? null;
 }

@@ -3,6 +3,8 @@ import { createFixtureSessionEstablishment } from "./authentication/fixture-sess
 import {
   createAdminPersistence,
   createCoursePersistence,
+  createGroupPersistence,
+  createModulePersistence,
   createWorkerApplication,
 } from "./worker/index.js";
 
@@ -31,8 +33,13 @@ export default {
       authentication: normalAuthentication,
       createAdminUserId: () => crypto.randomUUID(),
       createCourseId: () => crypto.randomUUID(),
+      createGroupId: () => crypto.randomUUID(),
+      createModuleId: () => crypto.randomUUID(),
+      now: () => environment.BOOKING_TEST_NOW,
       adminPersistence: createAdminPersistence(environment.DB),
       coursePersistence: createCoursePersistence(environment.DB),
+      groupPersistence: createGroupPersistence(environment.DB),
+      modulePersistence: createModulePersistence(environment.DB),
     });
 
     return handleWorkerRequest(request);

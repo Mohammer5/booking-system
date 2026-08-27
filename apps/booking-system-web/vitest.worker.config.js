@@ -19,6 +19,7 @@ export default defineConfig({
             "local-worker-google-client-id-not-a-real-credential",
           GOOGLE_CLIENT_SECRET:
             "local-worker-google-client-secret-not-a-real-credential",
+          BOOKING_TEST_NOW: "2026-08-28T10:00:00.000Z",
           TEST_MIGRATIONS: await readD1Migrations(
             new URL("./migrations", import.meta.url).pathname,
           ),

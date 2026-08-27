@@ -52,17 +52,20 @@ pre-implementation planning, and planning may proceed to creation of the real
 implementation backlog in Markplane. Release hardening and hosted staging
 verification remain mandatory before the first production release.
 
-The local application foundation and first Course slice are now implemented:
+The local application foundation and Course-structure creation slice are now
+implemented:
 
 - `@booking-system/booking` at `packages/booking` owns the implemented
-  `admin-access` behavior and minimal `course-structure` Course-creation
-  policy;
+  `admin-access` behavior plus `course-structure` Course, Course-wide Group,
+  future Module, and Course-local definite-time creation policy;
 - `@booking-system/booking-system-web` at `apps/booking-system-web` owns the
   React `/` Participant entry, `/admin` administration flow, nested Course
-  index/create/detail routes, Worker/API handling, Better Auth composition, D1
-  persistence, Vite/Workers Static Assets integration, and local runtime;
-- two version-controlled migrations create the Better Auth/Admin foundation
-  and additive `courses` schema, with clean and data-preserving upgrade-path
+  index/create/detail routes and Group/Module creation forms, Worker/API
+  handling, Better Auth composition, D1 persistence, Vite/Workers Static
+  Assets integration, and local runtime;
+- three version-controlled migrations create the Better Auth/Admin foundation,
+  Courses, and additive Group/Module schema with permanent first-Module
+  scheduling history, clean-state construction, and data-preserving upgrade
   evidence;
 - production and explicit non-production Worker compositions structurally
   separate fixed fixture-session establishment from production;
@@ -74,15 +77,22 @@ The local application foundation and first Course slice are now implemented:
   responsive shell; the request-free Participant entry creates no domain
   identity or membership and navigation preserves one principal/session;
 - each Course HTTP request freshly resolves Active Admin state, and Course
-  creation uses a guarded D1 insert so a stale actor creates no row;
+  creation plus nested Group/Module writes use guarded D1 inserts so a stale
+  actor or Course creates no row or scheduling-history side effect;
+- the stable Course detail lists and creates Course-wide Groups with unique
+  normalized Active names and future Scheduled Modules, resolves local minute
+  input through the Course IANA timezone, rejects DST gaps, requires an
+  explicit overlap occurrence, displays definite instants, and creates no
+  Module Selection;
 - free MUI Core and Emotion are pinned for browser use; one application theme
   and `CssBaseline` now style the complete `/admin` flow with responsive,
   visible-focus, semantic-status, and non-color-only presentation;
 - Playwright scans critical Admin, Course, and shell states with axe and
   explicitly verifies desktop/narrow layout, keyboard activation, semantic
   navigation, Drawer/Dialog focus trapping and restoration, labels/names,
-  field-error association, direct/refresh behavior, Participant privacy, and
-  overflow;
+  field-error association, direct/refresh behavior, Group/Module empty and
+  creation states, DST gap/overlap handling, stale/technical refusals,
+  Participant privacy, and overflow;
 - both workspace boundary maps are registered in ESLint with exact module,
   workspace, composition, third-party, and test-only permissions;
 - the root Nix flake supplies NixOS developer-host tooling: Node, pnpm,
@@ -92,14 +102,13 @@ The local application foundation and first Course slice are now implemented:
 - the canonical `pnpm check` now runs repository, domain, Worker/D1, migration,
   build, and Chromium browser evidence.
 
-Apple, Microsoft, and Facebook providers, Course editing/lifecycle, Group,
-Module, Participant, Assignment, Selection, Invite, and later Admin
-capabilities,
-remote Google credentials and production callback/domain configuration, remote
-Cloudflare staging/production resources, release automation, deployment
-credentials, and production deployment remain absent. The account-bound
-release surfaces are intentionally deferred until release hardening. No
-co-located `*.docs.md` file exists.
+Apple, Microsoft, and Facebook providers, Course/Group/Module editing and
+lifecycle, Participant, Assignment, Selection, Invite, later Admin
+capabilities, remote Google credentials and production callback/domain
+configuration, remote Cloudflare staging/production resources, release
+automation, deployment credentials, and production deployment remain absent.
+The account-bound release surfaces are intentionally deferred until release
+hardening. No co-located `*.docs.md` file exists.
 
 Further project-specific docs should be added only when accepted project truth
 gives them a concrete responsibility.

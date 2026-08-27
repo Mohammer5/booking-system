@@ -9,6 +9,8 @@ beforeAll(async () => {
 
 beforeEach(async () => {
   await env.DB.batch([
+    env.DB.prepare("delete from modules"),
+    env.DB.prepare("delete from groups"),
     env.DB.prepare("delete from courses"),
     env.DB.prepare("delete from admin_bootstrap_history"),
     env.DB.prepare("delete from admin_users"),
@@ -16,7 +18,7 @@ beforeEach(async () => {
 });
 
 describe("Course persistence", () => {
-  it("preserves stable minimal Course data without related records", async () => {
+  it("preserves stable minimal Course data without implicit related rows", async () => {
     await insertAdmin("admin-1", "active");
     const persistence = createCoursePersistence(env.DB);
     const course = courseCandidate("course-1", "Course", null);
@@ -32,15 +34,13 @@ describe("Course persistence", () => {
     );
     await expect(persistence.findCourseById("missing")).resolves.toBeNull();
 
-    const absentTables = await env.DB.prepare(
-      `select name from sqlite_master
-        where type = 'table'
-          and name in (
-            'groups', 'modules', 'course_assignments', 'course_invites'
-          )`,
-    ).all();
+    const relatedCounts = await env.DB.prepare(
+      `select
+         (select count(*) from groups) as group_count,
+         (select count(*) from modules) as module_count`,
+    ).first();
 
-    expect(absentTables.results).toEqual([]);
+    expect(relatedCounts).toEqual({ group_count: 0, module_count: 0 });
   });
 
   it("enforces required name and lifecycle state constraints", async () => {
@@ -147,6 +147,7 @@ function courseCandidate(id, name, description = null) {
     description,
     timezone: "Europe/Berlin",
     state: "active",
+    hasEverHadModule: false,
   };
 }
 

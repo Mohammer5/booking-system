@@ -1,7 +1,7 @@
 ---
 id: PLAN-7vmhd
 title: Implement Group and future Module creation
-status: in-progress
+status: done
 implements:
 - TASK-6tfxd
 related: []
@@ -171,11 +171,11 @@ produce no Group, Module, Selection, or timezone-lock side effect.
 
 ### Phase 1: Domain And Definite-Time Policy
 
-- [ ] Implement/test Group creation, normalization, language-neutral outcomes,
+- [x] Implement/test Group creation, normalization, language-neutral outcomes,
       and validation-before-effect.
-- [ ] Implement/test strict local-time resolution for unambiguous, gap, and
+- [x] Implement/test strict local-time resolution for unambiguous, gap, and
       overlap cases plus Module creation at exact time boundaries.
-- [ ] Extend only the existing package public interface; preserve boundary map
+- [x] Extend only the existing package public interface; preserve boundary map
       edges and dependency-free manifests.
 
 **Checkpoint**: booking Vitest proves complete creation/refusal behavior with
@@ -183,10 +183,10 @@ fixed definite time and no persistence call on invalid input.
 
 ### Phase 2: Migration, Persistence, And Worker/API
 
-- [ ] Add migration 0003 and clean/data-preserving upgrade evidence.
-- [ ] Implement/test stable rows, immutable ownership, normalized concurrency,
+- [x] Add migration 0003 and clean/data-preserving upgrade evidence.
+- [x] Implement/test stable rows, immutable ownership, normalized concurrency,
       guarded Active actor/Course writes, Module history trigger, and rollback.
-- [ ] Compose UUID/clock/persistence capabilities and test exact nested HTTP
+- [x] Compose UUID/clock/persistence capabilities and test exact nested HTTP
       routes, narrow shapes, ignored trust fields, authorization, and stale
       refusals in production/non-production graphs.
 
@@ -195,11 +195,11 @@ concurrent normalized Group winner, and zero partial rows/history on refusal.
 
 ### Phase 3: Browser Course Structure
 
-- [ ] Extend Course detail queries/mutations and split locally owned detail,
+- [x] Extend Course detail queries/mutations and split locally owned detail,
       Group, and Module presentation without introducing generic UI layers.
-- [ ] Add German MUI empty/list/forms, timezone and definite-instant display,
+- [x] Add German MUI empty/list/forms, timezone and definite-instant display,
       DST gap/overlap interaction, success/refusal focus, and responsive states.
-- [ ] Extend Playwright with real create/list/refresh journeys, gap/overlap,
+- [x] Extend Playwright with real create/list/refresh journeys, gap/overlap,
       stale/error, keyboard/focus, desktop/360px overflow, and axe evidence.
 
 **Checkpoint**: an Active Admin can create and revisit Groups and Modules from
@@ -207,12 +207,12 @@ the Course URL, while overlap requires an explicit choice and gaps create none.
 
 ### Phase 4: Documentation And Completion
 
-- [ ] Update canonical product/architecture/process status, persistence,
+- [x] Update canonical product/architecture/process status, persistence,
       package/module/browser/verification, routing summaries, and dictionary
       implementation wording; update no nonexistent co-located docs.
-- [ ] Run focused domain/Worker/browser/boundary/build checks and canonical
+- [x] Run focused domain/Worker/browser/boundary/build checks and canonical
       `nix develop -c corepack pnpm check`.
-- [ ] Complete task/epic/plan evidence, Markplane validation, semantic
+- [x] Complete task/epic/plan evidence, Markplane validation, semantic
       implementation commit, and clean-tree verification.
 
 **Checkpoint**: schema, code, docs, Markplane, tests, and Git agree the complete
@@ -247,17 +247,27 @@ during this task.
 
 ## Execution State
 
-- Current phase/checkpoint: planning complete; Phase 1 has not started.
-- Completed phase checkboxes: none.
-- Next exact action: synchronize/validate this plan, commit the planning
-  checkpoint, then implement Phase 1 domain policy and focused tests.
+- Current phase/checkpoint: all implementation-plan phases are complete.
+- Completed phase checkboxes: all Phase 1-4 items.
+- Next exact action: create the semantic implementation commit and verify the
+  clean working tree before selecting the next task.
 - Persisted decisions: canonical product behavior remains in product docs;
   implementation/schema/API/UI choices are recorded above.
-- Focused verification: repository/source/docs/Markplane rehydration complete;
-  current Node 24 reports native `Temporal` unavailable; current manifests and
-  lock contain no MUI X/date library; no relevant adjacent `*.docs.md` exists.
-- Remaining verification: all Phase 1-4 focused checks and full regression.
-- Working tree: only task-start metadata and this new plan are uncommitted.
+- Focused verification: lint, all 97 booking tests, all 53 Worker/D1 tests, and
+  13 boundary tests pass with zero warnings.
+  Migration clean/upgrade, immutable ownership, Group concurrency, exact HTTP,
+  stale actor/Course, trigger rollback/history, DST/time, and production
+  fixture-exclusion cases are covered. Both production graphs build (628
+  Worker and 1100 client modules; existing client chunk warning only). No
+  relevant adjacent `*.docs.md` exists. Five focused Course Playwright tests
+  pass, covering Group/Module create/list/refresh, duplicate/gap/overlap,
+  stale/technical refusal focus, desktop/360px layout, and axe scans. The
+  canonical `nix develop -c corepack pnpm check` passes all layers and all 13
+  browser tests; the existing client chunk-size advisory is the only build
+  notice.
+- Remaining verification: semantic commit and clean-tree check only.
+- Working tree: planning checkpoint is committed; the verified implementation,
+  docs, tracking closure, and plan checkpoints are ready for one task commit.
 
 ## Pre-Approval Checklist
 

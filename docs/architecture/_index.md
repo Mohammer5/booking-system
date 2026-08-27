@@ -16,8 +16,8 @@ JavaScript conventions, and ESLint-enforced dependency rules.
 ### Architecture Status
 - Path: `docs/architecture/_status.md`
 - Summary: Current implemented application/package foundation, Course
-  create/view slice, React browser routes and responsive Admin/Participant
-  shell, Google sign-in,
+  structure-creation slice, React browser routes and responsive
+  Admin/Participant shell, Google sign-in,
   browser-private MUI theme and accessibility baseline,
   functional-composition direction, Cloudflare/Vite/D1 runtime, NixOS
   developer tooling, boundary enforcement, and still-deferred product and
@@ -56,7 +56,8 @@ JavaScript conventions, and ESLint-enforced dependency rules.
 - Path: `docs/architecture/applications.md`
 - Summary: Defines application boundaries and the implemented
   `apps/booking-system-web` workspace with responsive Participant/Admin
-  contexts and Course routes as the complete initial same-origin application.
+  contexts plus Course/Group/Module creation as the complete initial
+  same-origin application.
 - Read when: A task adds, removes, deploys, or changes an application boundary
   or application manifest ownership.
 - Tags: architecture, applications, deployment, composition, manifests
@@ -76,8 +77,8 @@ JavaScript conventions, and ESLint-enforced dependency rules.
 ### Persistence
 - Path: `docs/architecture/persistence.md`
 - Summary: Defines SQLite-compatible semantics, implemented local/test D1,
-  first-Admin and additive Course migrations, environment isolation, guarded
-  acceptance, and migration constraints.
+  first-Admin, Course, and Group/Module migrations, environment isolation,
+  guarded acceptance, permanent scheduling history, and migration constraints.
 - Read when: A task affects databases, D1, SQL semantics, environment data,
   migrations, or persistence safety.
 - Tags: architecture, persistence, database, d1, sqlite, migrations
@@ -98,18 +99,18 @@ JavaScript conventions, and ESLint-enforced dependency rules.
 ### Packages
 - Path: `docs/architecture/packages.md`
 - Summary: Defines conceptual package boundaries, the implemented
-  `packages/booking` with `admin-access` and `course-structure`, accepted later
-  modules, and why technical dependency segregation does not justify
-  extraction.
+  `packages/booking` with `admin-access` and Course/Group/Module
+  `course-structure` behavior, accepted later modules, and why technical
+  dependency segregation does not justify extraction.
 - Read when: A task adds, removes, extracts, or changes a package boundary or
   proposes a package to segregate technical dependencies.
 - Tags: architecture, packages, domains, ownership, manifests
 
 ### Module Organization
 - Path: `docs/architecture/module-organization.md`
-- Summary: Defines the implemented initial responsibility modules, source
-  roots, manifest ownership, browser/Worker/authentication separation, vertical
-  slices, interfaces, entrypoints, adapters, and dependency direction.
+- Summary: Defines the implemented responsibility modules and Course-structure
+  slices, source roots, manifest ownership, browser/Worker/authentication
+  separation, interfaces, entrypoints, adapters, and dependency direction.
 - Read when: A task affects source placement, workspace manifests, modules,
   runtime responsibilities, slices, imports, interfaces, or tests.
 - Tags: architecture, modules, source-layout, manifests, runtime-boundaries
@@ -126,8 +127,8 @@ JavaScript conventions, and ESLint-enforced dependency rules.
 ### Browser Conventions
 - Path: `docs/architecture/browser-conventions.md`
 - Summary: React-based browser ownership rules for React Router, TanStack Query,
-  React Hook Form, Material UI, responsive shell/Course navigation and
-  accessible interaction, Better Auth session actions, classnames, debug,
+  React Hook Form, Material UI, responsive shell/Course structure navigation
+  and accessible interaction, Better Auth session actions, classnames, debug,
   i18next, localization, routes, and vertical-slice placement.
 - Read when: A task affects browser routing, navigation, server state, forms,
   frontend validation, conditional classes, diagnostics, localization, or

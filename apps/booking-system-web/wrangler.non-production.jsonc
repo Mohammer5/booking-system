@@ -7,7 +7,8 @@
   "vars": {
     "BETTER_AUTH_SECRET": "local-e2e-only-not-a-production-secret-value",
     "GOOGLE_CLIENT_ID": "local-e2e-google-client-id-not-a-real-credential",
-    "GOOGLE_CLIENT_SECRET": "local-e2e-google-client-secret-not-a-real-credential"
+    "GOOGLE_CLIENT_SECRET": "local-e2e-google-client-secret-not-a-real-credential",
+    "BOOKING_TEST_NOW": "2026-08-28T10:00:00.000Z"
   },
   "assets": {
     "not_found_handling": "single-page-application",

@@ -46,10 +46,12 @@ for the accepted browser libraries and their responsibilities.
 
 The implemented browser exposes a request-free Participant entry at `/`, the
 administration entry at `/admin`, and nested Course index/create/detail routes
-through one responsive MUI shell. Navigation preserves the same browser cookie
-and Better Auth principal; the Participant entry neither selects a role nor
-creates or reveals booking-domain records. Every route is direct-navigation
-and refresh-safe through the application-owned SPA fallback.
+through one responsive MUI shell. Stable Course detail contains the owned Group
+and future-Module lists and creation forms rather than adding incidental
+routes. Navigation preserves the same browser cookie and Better Auth principal;
+the Participant entry neither selects a role nor creates or reveals booking
+domain records. Every route is direct-navigation and refresh-safe through the
+application-owned SPA fallback.
 
 Better Auth remains private to this application and resolves a request to one
 stable external principal. The application then uses participant or
@@ -97,26 +99,35 @@ source responsibility or include it in every runtime output.
 
 ### Course Administration HTTP Surface
 
-The first `course-structure` application slice adds three concrete same-origin
-operations:
+The implemented `course-structure` creation slices use five concrete
+same-origin operations:
 
 ```text
 GET  /api/admin/courses
 POST /api/admin/courses
 GET  /api/admin/courses/:courseId
+POST /api/admin/courses/:courseId/groups
+POST /api/admin/courses/:courseId/modules
 ```
 
 | Operation | Authentication and current state | Results |
 | --- | --- | --- |
 | Course index | Normal session resolving a current Active Admin | `200 { courses }`; `401 unauthenticated`; exact `403` missing/Disabled Admin |
 | Course creation | Same plus guarded Active-Admin write acceptance | `201` narrow Course; `401`; exact `403`; `422` field outcome |
-| Course detail | Normal session resolving a current Active Admin | `200` narrow Course; `401`; exact `403`; `404 course-not-found` |
+| Course detail | Normal session resolving a current Active Admin | `200` Course with ordered `groups` and `modules`; `401`; exact `403`; `404 course-not-found` |
+| Group creation | Same plus guarded current Active Admin and Active Course acceptance | `201` narrow Active Group; `401`; exact `403`; `404`; `409` stale Course/name conflict; `422` field outcome |
+| Module creation | Same plus guarded current Active Admin and Active Course acceptance | `201` narrow Scheduled Module with definite instants; `401`; exact `403`; `404`; `409` stale Course; `422` field/time/overlap outcome |
 
 Course representations contain only `id`, `name`, `description`, `timezone`,
-and `state`. The server creates identity and Active state, ignores browser
-trust fields, freshly resolves Admin context for every request, and uses one
-guarded insert so an actor Disabled after page load creates nothing. The
-browser nests `/admin/courses`, `/admin/courses/new`, and
+and `state`; detail adds only its Course-owned Group and Module
+representations. The server creates identities and lifecycle state, derives
+the Course and definite instants, ignores browser trust fields, freshly
+resolves Admin context for every request, and uses guarded inserts so an actor
+Disabled or Course Archived after page load creates nothing. Group responses
+omit the persistence normalization key. Module responses preserve exact ISO
+instants; local input, DST gap rejection, and overlap choices remain request
+mechanics interpreted through the persisted Course timezone. The browser nests
+`/admin/courses`, `/admin/courses/new`, and
 `/admin/courses/:courseId` behind its current-Admin gate, while Worker
 authorization remains authoritative for every operation.
 

@@ -25,10 +25,14 @@ covered here.
 
 This product area remains the implementation-agnostic source of product truth.
 The repository now implements the first Admin bootstrap subset and the first
-[Course](../DICTIONARY.md#course) subset: an Active Admin User can create an
-Active Course with the canonical minimal fields and inspect it through the
-Course index and stable detail route. Course editing/archival, Group, Module,
-Participant, Assignment, Selection, Invite, later Admin onboarding, and Admin
-management behavior remain unimplemented. Technology, persistence, API,
-frontend, and infrastructure mechanics remain outside this product
-specification and do not alter its contracts.
+[Course](../DICTIONARY.md#course) structure subset: an Active Admin User can
+create an Active Course with the canonical minimal fields, add Course-wide
+[Groups](../DICTIONARY.md#group) whose Active names are normalized and unique,
+add future Scheduled [Modules](../DICTIONARY.md#module) through the Course
+timezone's DST rules, and
+inspect all three through the Course index and stable detail route. Course,
+Group, and Module editing or lifecycle operations; Participant, Assignment,
+Selection, Invite, later Admin onboarding, and Admin management behavior remain
+unimplemented. Technology, persistence, API, frontend, and infrastructure
+mechanics remain outside this product specification and do not alter its
+contracts.

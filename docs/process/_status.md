@@ -22,8 +22,10 @@ Current reality:
   canonical `pnpm check`. Critical Admin, Course, and application-shell states
   include axe scans and explicit desktop/narrow, keyboard, modal
   focus/trapping and restoration, semantic navigation/name,
-  error-association, direct/refresh, pre-authorization privacy, stale refusal,
-  and overflow evidence. The tag-gated release policy remains unimplemented.
+  error-association, direct/refresh, pre-authorization privacy, Course-wide
+  Group and future-Module creation, DST gap/overlap and exact-instant
+  presentation, stale/technical refusal, and overflow evidence. The tag-gated
+  release policy remains unimplemented.
 - x86_64 NixOS developers can enter a pinned host-tooling environment with
   `nix develop`; `pnpm check` remains the verification contract and GitHub
   Actions continues to provision Node, pnpm, and Playwright independently.

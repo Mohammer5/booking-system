@@ -13,6 +13,8 @@ beforeAll(async () => {
 
 beforeEach(async () => {
   await env.DB.batch([
+    env.DB.prepare("delete from modules"),
+    env.DB.prepare("delete from groups"),
     env.DB.prepare("delete from courses"),
     env.DB.prepare("delete from admin_bootstrap_history"),
     env.DB.prepare("delete from admin_users"),
@@ -133,7 +135,11 @@ describe("Course HTTP creation and reads", () => {
     );
 
     expect(detail.status).toBe(200);
-    await expect(detail.json()).resolves.toEqual(body);
+    await expect(detail.json()).resolves.toEqual({
+      ...body,
+      groups: [],
+      modules: [],
+    });
     await expect(index.json()).resolves.toEqual({ courses: [body] });
     await expect(countRows("courses")).resolves.toBe(1);
     await expect(countRows("admin_users")).resolves.toBe(1);

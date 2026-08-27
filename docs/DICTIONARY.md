@@ -6,9 +6,9 @@ for one concept and update this file when stable terminology changes.
 ## Repository Concepts
 
 The product concepts below are accepted specification truth. The first Admin
-bootstrap and Course create/view subsets are implemented; remaining concepts
-and later lifecycle behavior are still specifications until their delivery
-tasks complete.
+bootstrap and Course, Course-wide Group, and future Scheduled Module creation
+subsets are implemented; remaining concepts and later lifecycle behavior are
+still specifications until their delivery tasks complete.
 
 ### Admin-Assisted Booking
 
@@ -208,9 +208,10 @@ model](architecture/authentication-and-sessions.md#session-model).
 
 The conceptual domain package `@booking-system/booking` at `packages/booking`.
 Its implemented `admin-access` module owns the first Admin behavior, and its
-implemented `course-structure` module owns Course creation policy. The
-accepted `course-access` and `module-participation` modules arrive with later
-product slices. See
+implemented `course-structure` module owns Course, Course-wide Group, future
+Scheduled Module, and Course-local definite-time creation policy. The accepted
+`course-access` and `module-participation` modules arrive with later product
+slices. See
 [Packages](architecture/packages.md#accepted-initial-package).
 
 ### Booking-System Web Application
@@ -218,8 +219,8 @@ product slices. See
 The implemented single deployable application
 `@booking-system/booking-system-web` at `apps/booking-system-web`. It owns the
 browser/Vite experience, frontend static assets, Cloudflare Worker and
-same-origin `/api/*` handling, private technical adapters, and composition
-roots. See
+same-origin `/api/*` handling including Course-owned Group/Module creation,
+private technical adapters, and composition roots. See
 [Applications](architecture/applications.md#accepted-initial-boundary).
 
 ### Boundary Map

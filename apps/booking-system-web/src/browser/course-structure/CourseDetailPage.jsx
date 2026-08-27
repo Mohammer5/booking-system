@@ -19,6 +19,8 @@ import {
 } from "react-router";
 
 import { useCourseDetail } from "./useCourses.js";
+import { GroupCreationSection } from "./GroupCreationSection.jsx";
+import { ModuleCreationSection } from "./ModuleCreationSection.jsx";
 
 /**
  * Present one refresh-safe Course detail route.
@@ -190,6 +192,8 @@ function CourseDetails({ course, headingRef, translate }) {
         />
       </Stack>
       <CourseDescriptionList course={course} translate={translate} />
+      <GroupCreationSection course={course} />
+      <ModuleCreationSection course={course} />
     </Stack>
   );
 }

@@ -80,9 +80,9 @@ These capabilities do not justify a generic repository,
 infrastructure package. The initial booking schema is limited to the Admin User
 state, permanent bootstrap history, and integrity constraints required by this
 slice. The implemented Course slice separately owns narrow list, stable-detail,
-and guarded-create capabilities over `courses`; future Group, Module, Invite,
-Participant, Course Assignment, and Module Selection schema waits for the work
-that needs it.
+and guarded-create capabilities over `courses`, `groups`, and `modules`;
+future Invite, Participant, Course Assignment, and Module Selection schema
+waits for the work that needs it.
 
 ## Environment Isolation
 
@@ -120,13 +120,14 @@ change requires an explicit exceptional deployment decision.
 
 ## Current State And Persistence Lifecycle
 
-The application has local/test D1 bindings and two version-controlled
+The application has local/test D1 bindings and three version-controlled
 migrations. `0001_first_admin_foundation.sql` creates the Better Auth `user`,
 `session`, `account`, and `verification` technical tables and indexes plus
 `admin_users` and `admin_bootstrap_history`. `0002_courses.sql` adds the
 booking-owned `courses` table with stable identity, required name/timezone,
-optional description, and constrained Active/Archived state. No remote D1
-database exists.
+optional description, and constrained Active/Archived state.
+`0003_groups_and_modules.sql` adds permanent Course scheduling history plus
+Course-owned Groups and Modules. No remote D1 database exists.
 
 ### Implemented First Schema
 
@@ -145,6 +146,17 @@ single guarded `insert ... select ... where exists` accepts Course creation
 only while the acting Admin row is still Active; duplicate names have no
 uniqueness constraint and independent accepted submissions retain distinct
 Course identities.
+
+The third additive migration preserves existing Course data with
+`has_ever_had_module = 0`, adds stable Group/Module identities and restrictive
+Course foreign keys, and prevents ownership changes through triggers. A
+partial unique index enforces one Active normalized Group name per Course while
+allowing later Archived-name conflicts. Group and Module inserts recheck both
+the current Active Admin and Active Course in SQL. A successful Module insert
+updates one-way Course scheduling history through an `after insert` trigger in
+the same statement; a refused guarded write or failed interval constraint
+leaves both Module rows and history unchanged. Module instants are stored as
+integer epoch milliseconds and returned as exact ISO instants.
 
 The full migration sequence is applied to clean isolated state in Worker tests
 and before browser E2E. The schema is designed for eventual D1 deployment. A

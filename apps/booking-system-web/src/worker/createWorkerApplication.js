@@ -11,8 +11,13 @@ export function createWorkerApplication({
   authentication,
   createAdminUserId,
   createCourseId,
+  createGroupId,
+  createModuleId,
+  now,
   adminPersistence,
   coursePersistence,
+  groupPersistence,
+  modulePersistence,
 }) {
   const handleAdminHttpRequest = createAdminHttpHandler({
     authenticate: authentication.authenticate,
@@ -22,8 +27,13 @@ export function createWorkerApplication({
   const handleCourseHttpRequest = createCourseHttpHandler({
     authenticate: authentication.authenticate,
     createCourseId,
+    createGroupId,
+    createModuleId,
+    now,
     adminPersistence,
     coursePersistence,
+    groupPersistence,
+    modulePersistence,
   });
 
   return async function handleWorkerRequest(request) {

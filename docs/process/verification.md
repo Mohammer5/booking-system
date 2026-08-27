@@ -94,6 +94,17 @@ outcomes, and production composition. Playwright owns the German empty/create/
 detail/refresh journey, validation and refusal focus, responsive layout,
 pre-authorization privacy, and accessible route states.
 
+For Group and future-Module creation, booking-domain Vitest owns Group
+normalization, minimal structure outcomes, strict Course-local minute
+resolution, DST gaps/overlaps, definite interval rules, injected-time
+boundaries, and validation before persistence. Worker/D1 Vitest owns the
+additive migration, permanent Course ownership, normalized-name concurrency,
+guarded current-state writes, atomic first-Module scheduling history, exact
+nested HTTP contracts, and no partial side effects. Playwright owns the German
+Course-detail empty/create/list/refresh journeys, duplicate and time errors,
+explicit overlap selection, exact-instant presentation, stale/technical
+refusal focus, responsive layout, and axe scans.
+
 The implemented integration uses project-pinned `@cloudflare/vitest-plugin`
 with isolated D1 state and the version-controlled migration sequence.
 
@@ -153,11 +164,12 @@ viewports. Axe supplements rather than replaces assertions for
 landmarks/headings, named list navigation, control names, keyboard-only
 activation, visible focus, field/error association, Drawer/Dialog trapping and
 restoration, result/error focus, direct navigation and refresh, request-free
-Participant entry, and absence of horizontal overflow. The current eleven-test
-suite also proves that one fixed normal session remains usable while navigating
-between Participant and Admin contexts, successful sign-out terminates that
-session, and an Active Admin can create and revisit a Course while missing
-Admin context causes no Course request.
+Participant entry, and absence of horizontal overflow. The current
+thirteen-test suite also proves that one fixed normal session remains usable
+while navigating between Participant and Admin contexts, successful sign-out
+terminates that session, and an Active Admin can create and revisit a Course
+with Groups and a future Module while missing Admin context causes no Course
+request.
 
 On browser-test failure, CI should retain short-lived useful diagnostics such
 as the Playwright report, traces, screenshots, and relevant logs. Artifacts

@@ -114,6 +114,8 @@ describe("Public booking package interface", () => {
     expect(Object.keys(publicInterface).sort()).toEqual([
       "createBootstrapFirstAdmin",
       "createCreateCourse",
+      "createCreateGroup",
+      "createCreateModule",
       "createGetAdminAuthenticationEntry",
       "createResolveAdminContext",
     ]);

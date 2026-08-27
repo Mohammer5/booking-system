@@ -33,7 +33,8 @@ export function createCoursePersistence(database) {
     async listCourses() {
       const { results } = await database
         .prepare(
-          `select id, name, description, timezone, state
+          `select id, name, description, timezone, state,
+                  has_ever_had_module
              from courses
             order by name collate nocase, id`,
         )
@@ -45,7 +46,8 @@ export function createCoursePersistence(database) {
     async findCourseById(courseId) {
       const row = await database
         .prepare(
-          `select id, name, description, timezone, state
+          `select id, name, description, timezone, state,
+                  has_ever_had_module
              from courses
             where id = ?`,
         )
@@ -70,5 +72,6 @@ function mapCourse(row) {
     description: row.description,
     timezone: row.timezone,
     state: row.state,
+    hasEverHadModule: row.has_ever_had_module === 1,
   };
 }

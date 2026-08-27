@@ -2,6 +2,8 @@ import { createAuthentication } from "./authentication/index.js";
 import {
   createAdminPersistence,
   createCoursePersistence,
+  createGroupPersistence,
+  createModulePersistence,
   createWorkerApplication,
 } from "./worker/index.js";
 
@@ -19,8 +21,13 @@ export default {
       authentication,
       createAdminUserId: () => crypto.randomUUID(),
       createCourseId: () => crypto.randomUUID(),
+      createGroupId: () => crypto.randomUUID(),
+      createModuleId: () => crypto.randomUUID(),
+      now: () => new Date().toISOString(),
       adminPersistence: createAdminPersistence(environment.DB),
       coursePersistence: createCoursePersistence(environment.DB),
+      groupPersistence: createGroupPersistence(environment.DB),
+      modulePersistence: createModulePersistence(environment.DB),
     });
 
     return handleWorkerRequest(request);

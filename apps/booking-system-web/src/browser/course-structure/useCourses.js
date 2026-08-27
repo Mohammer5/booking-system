@@ -42,9 +42,54 @@ export function useCreateCourse() {
     async onSuccess(course) {
       queryClient.setQueryData(
         ["course-structure", "course", course.id],
-        course,
+        { ...course, groups: [], modules: [] },
       );
       await queryClient.invalidateQueries({ queryKey: courseIndexQueryKey });
+    },
+  });
+}
+
+/**
+ * Create a Course-wide Group and refresh its parent Course detail.
+ *
+ * @param {string} courseId Parent Course identity.
+ * @returns {object} TanStack Group-creation mutation state.
+ */
+export function useCreateGroup(courseId) {
+  return useCourseStructureMutation(courseId, "groups");
+}
+
+/**
+ * Create a future Scheduled Module and refresh its parent Course detail.
+ *
+ * @param {string} courseId Parent Course identity.
+ * @returns {object} TanStack Module-creation mutation state.
+ */
+export function useCreateModule(courseId) {
+  return useCourseStructureMutation(courseId, "modules");
+}
+
+/**
+ * Create one nested Course-structure mutation with detail reconciliation.
+ *
+ * @param {string} courseId Parent Course identity.
+ * @param {"groups" | "modules"} resource Nested resource name.
+ * @returns {object} TanStack mutation state.
+ */
+function useCourseStructureMutation(courseId, resource) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (input) =>
+      requestJson(`/api/admin/courses/${courseId}/${resource}`, {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify(input),
+      }),
+    async onSuccess() {
+      await queryClient.invalidateQueries({
+        queryKey: ["course-structure", "course", courseId],
+      });
     },
   });
 }
@@ -79,6 +124,7 @@ async function requestJson(path, options) {
     const error = new Error(body.outcome ?? "technical-error");
     error.outcome = body.outcome ?? "technical-error";
     error.status = response.status;
+    error.body = body;
     throw error;
   }
 

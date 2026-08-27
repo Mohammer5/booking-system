@@ -68,9 +68,10 @@
   Active Super Admin is one atomic persistence outcome.
 - The implemented application slices have a same-origin Admin entry, Google
   sign-in and Better Auth sign-out, bootstrap/current-context HTTP, and
-  freshly authorized Course index/create/detail HTTP. Application destinations
-  remain fixed and browser input cannot select principal, authority, Course
-  identity, or lifecycle state.
+  freshly authorized Course index/create/detail plus nested Group/Module
+  creation HTTP. Application destinations remain fixed and browser input
+  cannot select principal, authority, Course-owned identity, lifecycle state,
+  definite instant, or permanent scheduling history.
 - The initial infrastructure boundary is Worker, Workers Static Assets, and D1.
 - MVP implementation and local acceptance use Worker/D1-compatible tooling,
   configuration, and semantics from the beginning; a conventional
@@ -90,8 +91,10 @@
 - `@booking-system/booking` and `@booking-system/booking-system-web` are real
   modern-ESM workspaces with one manifest each.
 - The booking package exposes the three `admin-access` operation factories
-  required by first Admin bootstrap/fresh context resolution plus the
-  `course-structure` Course-creation factory.
+  required by first Admin bootstrap/fresh context resolution plus
+  `course-structure` factories for Course, Course-wide Group, and future
+  Module creation. Course-local time resolution remains internal to that
+  responsibility module.
 - The web application has distinct `browser`, `worker`, and `authentication`
   responsibilities plus thin browser, production Worker, and non-production
   Worker compositions.
@@ -101,11 +104,14 @@
   responsive browser-owned MUI shell with desktop list navigation, a narrow
   modal Drawer, a skip link, and stable route titles. The request-free
   Participant entry creates no identity, membership, role, or Course-data
-  exposure.
+  exposure. Stable Course detail now owns the Group and future-Module lists and
+  forms without another route.
 - TanStack Query owns remote Admin and Course state, React Hook Form owns the
-  Admin-name and Course forms, and German-first slice-owned i18next resources
-  own all browser copy. The current-Admin page is a nested route gate, so no
-  Course query mounts before an Active Admin resolves.
+  Admin-name, Course, Group, and Module forms, and German-first slice-owned
+  i18next resources own all browser copy. Native local date/time fields and
+  MUI radio groups expose IANA-zone DST gap/overlap resolution without a date
+  library or MUI X. The current-Admin page is a nested route gate, so no Course
+  query mounts before an Active Admin resolves.
 - Free MUI Core 9.4.0 and its Emotion styling dependencies are pinned in the
   application manifest. One browser-owned theme and `CssBaseline` establish
   typography, spacing, surfaces, responsive breakpoints, and visible focus;
@@ -120,10 +126,13 @@
   behavior only as `externalPrincipalId`. Google sign-in uses the one normal
   `/api/auth/callback/google` provider callback and returns to `/admin`. Fixed
   non-production fixture identities use a separate executable composition.
-- Two version-controlled D1 migrations implement the authentication/Admin
-  foundation and additive Course schema. Atomic `D1Database.batch()` preserves
-  exactly-one first bootstrap; a guarded Course insert rechecks Active Admin
-  state at write acceptance.
+- Three version-controlled D1 migrations implement the authentication/Admin
+  foundation, additive Course schema, and additive Group/Module schema. Atomic
+  `D1Database.batch()` preserves exactly-one first bootstrap; guarded Course,
+  Group, and Module inserts recheck Active Admin and applicable Course state at
+  write acceptance. Constraints preserve stable ownership and normalized
+  Active Group uniqueness, while a Module-insert trigger records permanent
+  Course scheduling history atomically.
 - Both explicit workspace boundary maps are registered in ESLint. The boundary
   converter denies undeclared third-party imports and supports exact test-only
   and composition-interface permissions.
@@ -132,7 +141,8 @@
   Admin, Course, and shell states receive axe scans plus explicit
   desktop/narrow, keyboard, modal focus/trapping/restoration, semantic
   navigation, name/label, error-association, direct/refresh, privacy, stale
-  refusal, and overflow assertions.
+  refusal, Group/Module creation, DST gap/overlap, exact-instant, and overflow
+  assertions.
 - The root flake supplies Node 24, pnpm 11.17.0, Git, Markplane, Chromium, and
   a Nix-patched official workerd 1.20260826.1 binary for x86_64-linux. It points
   Miniflare and Playwright at the Nix executables and supplies Miniflare with
