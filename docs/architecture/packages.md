@@ -66,6 +66,6 @@ a package. Technical dependency segregation and a crowded or mixed-looking
 manifest are also insufficient: do not create default `frontend`, `backend`,
 `browser`, `server`, `api`, or `database` packages merely to give libraries
 separate dependency lists. Do not create default `shared`, `core`, `utils`,
-provider, transport, `contracts`, or all-contracts packages either. Extract a
-package only when a stable conceptual owner and independent change pressure
-justify the workspace boundary.
+`common`, `functional`, `ui`, provider, transport, `contracts`, or
+all-contracts packages either. Extract a package only when a stable conceptual
+owner and independent change pressure justify the workspace boundary.

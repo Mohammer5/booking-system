@@ -14,6 +14,9 @@ The repository has accepted an architecture and delivery direction:
 - one Cloudflare Worker-based application at `apps/booking-system-web`, owning
   the browser/Vite experience, static assets, `/api/*`, technical adapters, and
   composition root;
+- browser implementation conventions based on React Router Declarative Mode,
+  TanStack Query server state, React Hook Form form mechanics, German-first
+  i18next localization, and domain-oriented functional composition with Ramda;
 - one conceptual domain package at `packages/booking`, with Admin access,
   Course structure, Course access, and Module participation as internal
   responsibility modules;
@@ -49,6 +52,9 @@ The accepted direction is not yet product implementation:
 
 - no product source code or runtime dependency exists;
 - no application or package workspace has been created or implemented;
+- none of the accepted browser libraries is installed, and no route tree,
+  query/form configuration, translation resource, or browser runtime
+  composition exists;
 - no Vite frontend, Worker, D1 schema, product test suite, Playwright suite,
   Better Auth/session implementation, release workflow, or production
   deployment exists; the account-bound release surfaces are intentionally

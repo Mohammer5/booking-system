@@ -54,6 +54,45 @@ Participant Course access, but both responsibilities remain part of the same
 coherent booking domain. Making each focused specification a workspace package
 would confuse documentation boundaries with deployment and package ownership.
 
+## Use Focused Browser Libraries With Distinct Responsibilities
+
+The browser will use `react-router` for navigation and URL-to-view mapping,
+`@tanstack/react-query` for server state, and `react-hook-form` for transient
+form mechanics. React Router starts in Declarative Mode rather than making its
+loaders and actions the primary server-state architecture. `classnames` is
+used directly for conditional classes, and `debug` is the application-level
+diagnostic mechanism without a pre-emptive wrapper framework.
+
+These choices remain inside the browser responsibility of the one
+`apps/booking-system-web` application. Distinct library responsibilities and
+dependency graphs improve local reasoning without creating frontend, API,
+Admin, Participant, UI, or other technical workspaces or packages. Detailed
+ownership rules live in [browser conventions](browser-conventions.md).
+
+## Build Internationalization Into The First Frontend Slice
+
+The browser will use `i18next` and `react-i18next` from its first real slice,
+with German initially and stable semantic translation keys. Domain outcomes
+remain language-neutral, route paths remain locale-independent, and browser
+code owns localized presentation. This avoids hard-coding the initial language
+into component and domain boundaries while deferring concrete resource and
+namespace layout until implementation.
+
+## Use Domain-Oriented Functional Composition
+
+JavaScript favors [domain-oriented functional
+composition](../DICTIONARY.md#domain-oriented-functional-composition): plain
+data, instruction-shaped workflows, explicit narrow capability injection,
+visible decisions, and late abstraction inside existing vertical slices.
+Ramda supports that style, with `pipe` preferred when left-to-right
+composition clarifies the runtime story.
+
+Functional style does not create a peer architecture, generic functional
+layer, service locator, effect system, or universal Result wrapper. Existing
+conceptual ownership and dependency direction remain authoritative; plain
+`async`/`await` and ordinary branching are preferred whenever they make the
+owned behavior clearer.
+
 ## Use Cloudflare As The Initial Runtime Boundary
 
 Cloudflare Workers, Workers Static Assets, and D1 form the smallest accepted

@@ -254,6 +254,16 @@ The repository-local `.markplane/` project containing development epics,
 tasks, dependencies, plans, and notes. It is planning state, not canonical
 repository truth or product runtime data.
 
+### Domain-Oriented Functional Composition
+
+The accepted but not yet implemented JavaScript style in which vertical-slice
+workflows compose named domain or application instructions over plain data,
+receive narrow explicit capabilities, keep conceptual decisions visible, and
+extract abstractions only after concrete evidence. Functional techniques and
+Ramda support this style but do not create a peer architecture or override
+conceptual ownership. See [vertical slices](#vertical-slice) and [JavaScript
+conventions](architecture/javascript-conventions.md#architecture-before-technique).
+
 ### Global Docs
 
 Canonical repository-wide Markdown under `docs/`, routed through the root and

@@ -1,8 +1,8 @@
 # Architecture
 
 Architecture docs define conceptual-domain-first source organization, the
-accepted runtime, persistence, and authentication direction, JavaScript
-conventions, and ESLint-enforced dependency rules.
+accepted runtime, persistence, and authentication direction, browser and
+JavaScript conventions, and ESLint-enforced dependency rules.
 
 ## Documents
 
@@ -16,25 +16,28 @@ conventions, and ESLint-enforced dependency rules.
 ### Architecture Status
 - Path: `docs/architecture/_status.md`
 - Summary: Current distinction between the accepted application/package target,
-  one-manifest workspace direction, Cloudflare/Vite/D1 runtime shape, and
-  still-unimplemented workspaces and runtime.
+  browser-library and functional-composition direction, one-manifest workspace
+  direction, Cloudflare/Vite/D1 runtime shape, and still-unimplemented
+  workspaces and runtime.
 - Read when: You need to distinguish decided architecture from current
-  implementation or identify which application, runtime, and persistence
-  surfaces do not yet exist.
-- Tags: architecture, status, cloudflare, workers, vite, d1, implementation
+  implementation or identify which application, browser, runtime, and
+  persistence surfaces do not yet exist.
+- Tags: architecture, status, browser, functional-programming, cloudflare,
+  workers, vite, d1, implementation
 
 ### Architecture Decisions
 - Path: `docs/architecture/_decisions.md`
 - Summary: Rationale for the booking application/package boundaries, one
-  manifest per workspace, one same-origin Cloudflare Worker, D1 with SQLite
-  semantics, Node/runtime separation, explicit ESLint enforcement, and
-  deferred runtime tooling.
+  manifest per workspace, browser-library responsibilities, functional
+  composition, one same-origin Cloudflare Worker, D1 with SQLite semantics,
+  Node/runtime separation, explicit ESLint enforcement, and deferred runtime
+  tooling.
 - Read when: You need to understand why the project chose one web application,
-  one booking domain package, workspace-level manifest ownership, Cloudflare,
-  D1, a non-Node production runtime, explicit boundaries, or
-  real-application-triggered tooling.
-- Tags: architecture, decisions, cloudflare, workers, d1, nodejs, tooling,
-  eslint, manifests
+  one booking domain package, browser libraries, functional composition,
+  workspace-level manifest ownership, Cloudflare, D1, a non-Node production
+  runtime, explicit boundaries, or real-application-triggered tooling.
+- Tags: architecture, decisions, browser, functional-programming, cloudflare,
+  workers, d1, nodejs, tooling, eslint, manifests
 
 ### Architecture Principles
 - Path: `docs/architecture/principles.md`
@@ -106,10 +109,23 @@ conventions, and ESLint-enforced dependency rules.
 
 ### JavaScript Conventions
 - Path: `docs/architecture/javascript-conventions.md`
-- Summary: JavaScript rules for data, classes, names, functions, JSDoc, and
-  exports.
-- Read when: A task affects JavaScript source shape or conventions.
-- Tags: architecture, javascript, jsdoc
+- Summary: JavaScript rules for plain data, domain-oriented functional
+  composition, explicit capability injection, visible decisions, Ramda,
+  classes, names, JSDoc, and exports.
+- Read when: A task affects JavaScript source shape, functional composition,
+  dependency injection, async workflows, Ramda, or conventions.
+- Tags: architecture, javascript, functional-programming, ramda, jsdoc
+
+### Browser Conventions
+- Path: `docs/architecture/browser-conventions.md`
+- Summary: Browser ownership rules for React Router, TanStack Query, React Hook
+  Form, classnames, debug, i18next, localization, routes, and vertical-slice
+  placement.
+- Read when: A task affects browser routing, navigation, server state, forms,
+  frontend validation, conditional classes, diagnostics, localization, or
+  browser dependency choices.
+- Tags: architecture, browser, react-router, tanstack-query, react-hook-form,
+  i18n, debug
 
 ### ESLint Enforcement
 - Path: `docs/architecture/eslint.md`

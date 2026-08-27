@@ -63,6 +63,14 @@ The exact routing implementation remains private to the application. A
 separate Cloudflare Pages deployment requires a future concrete reason to add
 another deployment boundary.
 
+Frontend routing must preserve direct browser navigation and refresh for
+independently navigable views: a frontend route that is not a static asset or
+Worker-owned endpoint must still reach the browser application through the
+same-origin Worker/static-assets shape. `/api/*` remains reserved for
+Worker/API handling. Browser route paths remain stable across locales. The
+future implementation chooses the exact route tree and fallback mechanism;
+see [browser conventions](browser-conventions.md#routing-and-navigation).
+
 There is no separate `apps/api` in the initial architecture. That would be a
 second independently runnable and deployable application rather than an
 internal HTTP responsibility. It may be reconsidered only if a future concrete

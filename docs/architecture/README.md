@@ -44,6 +44,10 @@ source/build graphs determine what reaches each output. Read
 [applications.md](applications.md), [module-organization.md](module-organization.md),
 [boundaries.md](boundaries.md), and
 [runtime-and-hosting.md](runtime-and-hosting.md) for those distinctions.
+Read [browser conventions](browser-conventions.md) for routing, server-state,
+form, diagnostics, localization, and browser-library ownership, and
+[JavaScript conventions](javascript-conventions.md) for domain-oriented
+functional composition inside vertical slices.
 Read [authentication and sessions](authentication-and-sessions.md) for the
 technical-principal, session, contextual domain-resolution, and non-production
 authentication contracts.

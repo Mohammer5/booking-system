@@ -35,6 +35,13 @@ it owns technical composition for the complete same-origin application.
 The browser reaches backend behavior through the same-origin API, such as
 `/api/*`.
 
+Participant-facing and Admin-facing experiences are both browser
+responsibilities of this one application. They do not create separate
+`apps/participant`, `apps/admin`, `apps/frontend`, or generic frontend
+workspaces, and their two audiences do not by themselves justify permanent
+audience-first source buckets. See [browser conventions](browser-conventions.md)
+for the accepted browser libraries and their responsibilities.
+
 Better Auth remains private to this application and resolves a request to one
 stable external principal. The application then uses participant or
 administration context to resolve the relevant current domain identity and

@@ -15,6 +15,22 @@
   responsibilities. They may share declarations in the application manifest,
   but explicit source boundaries keep their implementation dependencies
   separate and their source/build graphs determine their respective outputs.
+- The initial browser direction uses `react-router` in Declarative Mode for
+  stable URL-to-view navigation, `@tanstack/react-query` for server state,
+  `react-hook-form` for transient form mechanics, direct `classnames` use,
+  `debug` for application diagnostics, `ramda` for selective functional
+  composition, and `i18next` with `react-i18next` for localization.
+- Every independently navigable browser view receives a route, without turning
+  incidental UI state into routes. Frontend routes support direct navigation
+  and refresh through the same-origin deployment; `/api/*` remains Worker/API
+  owned.
+- German is the initial frontend language. Stable semantic translation keys,
+  language-independent route paths, and language-neutral domain outcomes allow
+  later languages without changing the architecture.
+- JavaScript follows domain-oriented functional composition inside vertical
+  slices: explicit narrow dependencies, instruction-shaped workflows, visible
+  conceptual decisions, selective functional techniques, and late
+  abstraction remain subordinate to existing architecture boundaries.
 - `packages/booking` is the intended initial conceptual domain package, with
   `admin-access`, `course-structure`, `course-access`, and
   `module-participation` as distinct internal responsibility modules rather
@@ -56,6 +72,9 @@
 - Neither accepted application/package workspace nor either workspace manifest
   has been created or implemented.
 - No product `src/` directory or product code exists.
+- None of the accepted browser libraries is installed, and no browser route,
+  Query Client, form, translation resource, diagnostic namespace, or runtime
+  composition has been created.
 - No Vite frontend, Worker, local/test D1 binding, database schema, migration,
   authentication/session implementation, test-authentication composition, or
   real provider integration exists.
@@ -78,13 +97,15 @@
   dependency version exists.
 
 The conceptual workspace identities, initial booking responsibility modules,
-and first Admin application/domain contracts are declared and have a detailed
-implementation plan. Exact implemented map declarations, entrypoints,
-composition-file names, package exports, optional application framework,
-internal helper files, schema names, runtime dependency versions, session
-timing, provider configuration, and minimum supported Worker compatibility mode
-remain implementation choices. Accepted and planned direction must not be
-mistaken for implemented runtime code. The accepted application can be
-implemented and accepted locally without remote Cloudflare resources, but
-release hardening and real staging verification remain mandatory before the
-first production release.
+first Admin application/domain contracts, browser libraries, and functional
+composition direction are declared. Exact versions, source and composition
+filenames, route tree, query keys and freshness values, translation resource
+filenames and namespace mechanics, concrete runtime composition, implemented
+map declarations, entrypoints, package exports, internal helper files, schema
+names, session timing, provider configuration, and minimum supported Worker
+compatibility mode remain implementation choices. The first relevant real
+slice introduces only the dependencies and configuration it actually uses.
+Accepted and planned direction must not be mistaken for implemented runtime
+code. The accepted application can be implemented and accepted locally without
+remote Cloudflare resources, but release hardening and real staging
+verification remain mandatory before the first production release.

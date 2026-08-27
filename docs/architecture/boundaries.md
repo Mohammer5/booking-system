@@ -12,6 +12,14 @@ No workspace or local boundary map has been implemented, so there are no
 package dependency edges. The accepted `apps/booking-system-web` and
 `packages/booking` targets do not pre-authorize a JavaScript import.
 
+The browser dependencies accepted in [browser
+conventions](browser-conventions.md#dependency-scope) are likewise not
+installed dependencies or authorized edges. The first real slice that uses
+one must add it to the application manifest and permit it only from the source
+responsibilities that require it. No ESLint or boundary-map change can express
+those future edges correctly before the workspace and real source modules
+exist, so no speculative enforcement is introduced now.
+
 ## Three Dependency Layers
 
 Keep three distinct questions explicit:

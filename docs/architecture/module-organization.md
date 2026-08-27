@@ -101,6 +101,12 @@ Second-level folders name use cases or focused change paths. A slice may contain
 presentation, validation, policy invocation, and local adapter translation when
 they change together, while domain behavior stays in its owning package.
 
+Admin-facing and Participant-facing audiences do not by themselves establish
+permanent `browser/admin` and `browser/participant` buckets. Browser queries,
+mutations, forms, and translation resources stay with the use case that owns
+them rather than creating technical-first source trees. See [browser
+conventions](browser-conventions.md).
+
 ## Keep Conceptual Flow Visible
 
 A bounded use case prefers a primary pass-shaped file whose non-trivial
