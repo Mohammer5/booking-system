@@ -41,6 +41,12 @@ this plan as permission to start work.
 - `docs/architecture/packages.md` and
   `docs/architecture/module-organization.md` — booking ownership, source shape,
   interfaces, composition, and application responsibilities.
+- `docs/architecture/browser-conventions.md` — React and the accepted routing,
+  server-state, form, diagnostics, and localization responsibilities.
+- `docs/architecture/javascript-conventions.md` — domain-oriented functional
+  composition and selective Ramda use across JavaScript responsibilities.
+- `docs/architecture/_decisions.md` — accepted React/browser library and
+  functional-composition decisions.
 - `docs/architecture/boundaries.md` and `docs/architecture/eslint.md` — explicit
   deny-by-default workspace maps and sole ESLint enforcement.
 - `docs/architecture/authentication-and-sessions.md` — Better Auth, opaque D1
@@ -66,6 +72,11 @@ plan must be amended before behavior is invented.
   `apps/booking-system-web` deployable workspace; neither exists today.
 - Use modern ESM JavaScript, one manifest per workspace, one same-origin
   Cloudflare Worker application, Workers Static Assets, Vite, and D1.
+- The browser experience is React-based and follows the accepted browser
+  conventions. React and the focused browser libraries remain tools inside
+  the existing `browser/admin-bootstrap` vertical slice and the one
+  `apps/booking-system-web` application; they do not create a generic frontend
+  architecture, another workspace, or another package.
 - Better Auth is application-private and uses D1-backed opaque sessions.
 - One principal may back an Admin User, Participant, both, or neither.
 - `packages/booking` owns product contracts; the application owns HTTP,
@@ -77,6 +88,9 @@ plan must be amended before behavior is invented.
 - Local development, builds, and tests use real Worker/Vite/Cloudflare and
   D1-compatible tooling, configuration, and semantics rather than a temporary
   Node-server or unrelated-database architecture.
+- Introduce each accepted dependency only when real source in this slice uses
+  it, declare it in the owning workspace manifest, and permit only the source
+  responsibilities that require it.
 - Account-bound staging and production environments, remote D1 databases,
   deployment credentials, and release automation are created only during
   release hardening after the MVP is feature-complete and accepted locally.
@@ -187,18 +201,34 @@ with uniqueness/integrity constraints implied by the product contract.
 ## Browser State Flow
 
 ```text
-/admin -> load entry
-  register-admin -> authenticate -> supply/confirm Admin name -> bootstrap
-    created -> load administration context
+/admin React Router route -> query Admin entry
+  register-admin -> authenticate -> submit Admin-name form -> bootstrap mutation
+    created -> invalidate/refetch affected Admin queries -> administration context
     bootstrap-unavailable -> show bootstrap unavailable / proceed to login
-  login -> authenticate -> resolve /api/admin/me
+  login -> authenticate -> query current Admin
     active-admin -> administration context
     disabled-admin | no-admin-user -> explicit refused state
 ```
 
-The browser must re-handle a lost bootstrap race. Choose only the components,
-forms, and local state required by this flow; do not preselect a large frontend
-architecture.
+- `/admin` is an independently navigable React Router route using Declarative
+  Mode.
+- TanStack Query owns the Admin entry read, current Admin read, bootstrap
+  mutation, their pending/error state, and appropriate invalidation or refetch
+  after a successful mutation. Do not mirror query-owned server data into
+  ordinary React component state.
+- React Hook Form owns the Admin-name form mechanics; authoritative name
+  validity remains in the Worker and booking domain.
+- `i18next` with `react-i18next` owns all user-visible browser copy, with German
+  as the initial language. Domain/API outcomes stay machine-readable and
+  language-neutral, and browser code maps them to translated messages.
+- The browser must re-handle a lost bootstrap race.
+- Use `classnames` only if conditional class construction is actually needed,
+  `debug` only for a concrete diagnostic need under the documented namespace
+  and security rules, and Ramda only when a domain/application transformation
+  or orchestration becomes clearer. Do not introduce any of them merely to
+  demonstrate that the dependency exists.
+- Choose only the React components and local UI state required by this flow;
+  do not create a generic frontend architecture.
 
 ## Production-Compatible And Non-Production Authentication
 
@@ -241,9 +271,13 @@ Use product/use-case names below these roots. Do not introduce primary
 
 `packages/booking` map:
 
-- workspace dependencies: none;
+- workspace dependencies on application or other conceptual workspaces: none;
+- the workspace manifest declares Ramda only if real domain source in this
+  slice uses it to improve conceptual clarity, and the map then permits that
+  owning responsibility to import it;
 - `admin-access -> []` for sibling responsibility modules and external
-  application/runtime packages;
+  application/runtime packages, while a real Ramda import may receive its own
+  explicit external dependency permission;
 - package root public interface -> `admin-access` named re-exports only; and
 - no application, HTTP, Worker/Cloudflare, D1, Better Auth, or UI imports.
 
@@ -252,7 +286,9 @@ Use product/use-case names below these roots. Do not introduce primary
 - allowed workspace dependency: exact `packages/booking` package root chosen
   in its real manifest; package subpaths remain forbidden;
 - `browser -> []` for first-level application modules and no direct workspace
-  edge for this slice;
+  edge for this slice; browser source may import only the accepted React and
+  browser dependencies actually used by the slice and declared in the
+  application manifest;
 - `worker -> authentication` and `worker -> packages/booking` public root;
 - `authentication -> []` for local responsibility modules and no booking
   workspace edge; Better Auth stays an application-private dependency;
@@ -263,6 +299,12 @@ Use product/use-case names below these roots. Do not introduce primary
   non-production interface; and
 - no browser-to-Worker/auth/D1/Cloudflare edge, Worker-to-browser edge, or
   authentication-to-browser/booking-policy edge.
+
+Any application responsibility that genuinely uses Ramda may receive an
+explicit external dependency permission, with Worker usage additionally
+verified for runtime compatibility. Permission for React, a browser library,
+Ramda, or another external npm dependency does not create a new workspace or
+package boundary.
 
 Actual composition filenames and the exact package specifier are selected with
 the real manifests/source, but these node-to-node permissions are fixed. The
@@ -350,8 +392,9 @@ gate can be executed.
 
 ### Phase 4: Deliver Browser And Regression Surfaces
 
-- [ ] Implement the minimum `/admin` state flow without speculative frontend
-  abstractions.
+- [ ] Implement the minimum React-based `/admin` route and state flow with the
+  accepted routing, server-state, form, and localization responsibilities,
+  without speculative frontend abstractions.
 - [ ] Add Worker/D1/migration integration and local Chromium Playwright E2E.
 - [ ] Add focused proof that production composition cannot activate test auth.
 - [ ] Add the real local Worker/Vite/Cloudflare integration, project-pinned
@@ -415,10 +458,12 @@ whole MVP is feature-complete and accepted locally.
 
 - Exact D1 table/column names, low-level SQL/query organization, and exact
   Better Auth-generated schema details.
-- Exact Better Auth, Cloudflare, Vite, Vitest, Playwright, and Wrangler versions.
+- Exact React, React DOM, browser-library, Better Auth, Cloudflare, Vite,
+  Vitest, Playwright, and Wrangler versions.
 - Narrowest then-supported Worker compatibility flag.
 - Session lifetime/refresh values and production provider configuration.
-- Frontend framework unless concrete implementation need requires one.
+- Exact React initialization files, root component shape, render entrypoint,
+  provider nesting, and route tree.
 - Exact package specifier, internal helper/composition filenames, component
   decomposition, and request/response helper placement.
 - Generic future HTTP conventions and all Course/Participant/Invite routes.

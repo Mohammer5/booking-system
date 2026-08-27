@@ -68,9 +68,19 @@ understand ordinary application behavior.
 
 ## Use Ramda Selectively
 
-`ramda` is the accepted functional helper library when its use is explicitly
-available to the owning source responsibility. Prefer named imports and
-left-to-right `pipe` for ordinary instruction-shaped orchestration:
+`ramda` is an accepted functional helper across the JavaScript architecture
+when it improves conceptual clarity. This includes browser/application code,
+Worker/application workflows where the selected use is runtime-compatible,
+and `packages/booking` domain code. It is not required everywhere, and no
+workspace declares it pre-emptively.
+
+The workspace that owns real source using Ramda declares it in its own
+manifest when that usage is introduced. Its boundary map must permit the
+owning source responsibility to import it, and runtime compatibility must be
+verified where relevant. These are implementation and dependency-edge
+requirements, not a reason to reopen the architectural decision to accept
+Ramda. Prefer named imports and left-to-right `pipe` for ordinary
+instruction-shaped orchestration:
 
 ```js
 import { filter, map, pipe } from "ramda";
@@ -82,9 +92,8 @@ named imports make dependencies clearer.
 
 Do not wrap Ramda functions merely to rename generic mechanics, and do not
 create `functional`, `combinators`, `utils`, `common`, or `core` directories or
-packages to hold generic functional machinery. Acceptance of Ramda for the
-planned browser graph does not grant imports elsewhere; non-browser use
-requires a concrete dependency decision and an explicit boundary edge.
+packages to hold generic functional machinery. A permitted dependency does not
+make a pipeline mandatory or replace the architecture-before-technique rules.
 
 ## Inject Narrow Capabilities
 

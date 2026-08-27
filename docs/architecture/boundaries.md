@@ -12,13 +12,20 @@ No workspace or local boundary map has been implemented, so there are no
 package dependency edges. The accepted `apps/booking-system-web` and
 `packages/booking` targets do not pre-authorize a JavaScript import.
 
-The browser dependencies accepted in [browser
+The React and browser dependencies accepted in [browser
 conventions](browser-conventions.md#dependency-scope) are likewise not
 installed dependencies or authorized edges. The first real slice that uses
 one must add it to the application manifest and permit it only from the source
-responsibilities that require it. No ESLint or boundary-map change can express
-those future edges correctly before the workspace and real source modules
-exist, so no speculative enforcement is introduced now.
+responsibilities that require it.
+
+Ramda is additionally accepted across JavaScript responsibilities under the
+[JavaScript conventions](javascript-conventions.md#use-ramda-selectively). A
+workspace declares it only when real source in that workspace uses it, and its
+map must permit the relevant source responsibility to import it. Worker use
+also requires runtime compatibility. These requirements do not create a new
+workspace or package boundary. No ESLint or boundary-map change can express
+any of these future edges correctly before the workspace and real source
+modules exist, so no speculative enforcement is introduced now.
 
 ## Three Dependency Layers
 

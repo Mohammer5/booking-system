@@ -16,8 +16,8 @@ JavaScript conventions, and ESLint-enforced dependency rules.
 ### Architecture Status
 - Path: `docs/architecture/_status.md`
 - Summary: Current distinction between the accepted application/package target,
-  browser-library and functional-composition direction, one-manifest workspace
-  direction, Cloudflare/Vite/D1 runtime shape, and still-unimplemented
+  React/browser-library and functional-composition direction, one-manifest
+  workspace direction, Cloudflare/Vite/D1 runtime shape, and still-unimplemented
   workspaces and runtime.
 - Read when: You need to distinguish decided architecture from current
   implementation or identify which application, browser, runtime, and
@@ -28,10 +28,10 @@ JavaScript conventions, and ESLint-enforced dependency rules.
 ### Architecture Decisions
 - Path: `docs/architecture/_decisions.md`
 - Summary: Rationale for the booking application/package boundaries, one
-  manifest per workspace, browser-library responsibilities, functional
-  composition, one same-origin Cloudflare Worker, D1 with SQLite semantics,
-  Node/runtime separation, explicit ESLint enforcement, and deferred runtime
-  tooling.
+  manifest per workspace, React and browser-library responsibilities,
+  functional composition, one same-origin Cloudflare Worker, D1 with SQLite
+  semantics, Node/runtime separation, explicit ESLint enforcement, and
+  deferred runtime tooling.
 - Read when: You need to understand why the project chose one web application,
   one booking domain package, browser libraries, functional composition,
   workspace-level manifest ownership, Cloudflare, D1, a non-Node production
@@ -118,14 +118,14 @@ JavaScript conventions, and ESLint-enforced dependency rules.
 
 ### Browser Conventions
 - Path: `docs/architecture/browser-conventions.md`
-- Summary: Browser ownership rules for React Router, TanStack Query, React Hook
-  Form, classnames, debug, i18next, localization, routes, and vertical-slice
-  placement.
+- Summary: React-based browser ownership rules for React Router, TanStack Query,
+  React Hook Form, classnames, debug, i18next, localization, routes, and
+  vertical-slice placement.
 - Read when: A task affects browser routing, navigation, server state, forms,
   frontend validation, conditional classes, diagnostics, localization, or
   browser dependency choices.
-- Tags: architecture, browser, react-router, tanstack-query, react-hook-form,
-  i18n, debug
+- Tags: architecture, browser, react, react-dom, react-router, tanstack-query,
+  react-hook-form, i18n, debug
 
 ### ESLint Enforcement
 - Path: `docs/architecture/eslint.md`

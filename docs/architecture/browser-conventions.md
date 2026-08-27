@@ -1,14 +1,18 @@
 # Browser Conventions
 
-These conventions apply to browser-facing code inside the planned
-`apps/booking-system-web` application. They refine the existing architecture;
-they do not create another application, package, layer, or ownership model.
+These conventions apply to the React-based browser experience inside the
+planned `apps/booking-system-web` application. They refine the existing
+architecture; they do not create another application, package, layer, or
+ownership model.
 
 ## Dependency Scope
 
-Each of these dependencies is accepted for introduction to the application
-workspace with the first real browser slice that requires it:
+React is the accepted browser UI framework. Each of these dependencies is
+accepted for introduction to the application workspace with the first real
+browser slice that requires it:
 
+- `react`;
+- `react-dom`;
 - `react-router`;
 - `@tanstack/react-query`;
 - `classnames`;
@@ -24,7 +28,10 @@ import edge nor inclusion in every application output: the future application
 [boundary map](../DICTIONARY.md#boundary-map) and each runtime source/build
 graph remain authoritative.
 
-These libraries initially support the browser-facing responsibility of the one
+Exact React initialization files, root component shape, render entrypoint,
+provider nesting, and route tree remain implementation-time choices.
+
+These libraries support the browser-facing responsibility of the one
 [booking-system web
 application](../DICTIONARY.md#booking-system-web-application). Admin-facing and
 Participant-facing experiences remain parts of that application and do not
@@ -32,9 +39,13 @@ justify separate workspaces, generic frontend packages, or audience-first
 architecture buckets. In particular, these decisions do not create
 `apps/admin`, `apps/participant`, `apps/frontend`, `apps/api`,
 `packages/frontend`, `packages/ui`, `packages/functional`, `packages/common`,
-or `packages/utils`. A library may be used outside the browser graph only when
-a concrete requirement deliberately introduces that use, its runtime is
-compatible, and the applicable boundary map permits it.
+or `packages/utils`.
+
+Ramda's accepted non-browser scope is defined in [JavaScript
+conventions](javascript-conventions.md#use-ramda-selectively). A different
+browser dependency may be used outside the browser graph only when a concrete
+requirement deliberately introduces that use, its runtime is compatible, and
+the applicable boundary map permits it.
 
 ## Routing And Navigation
 

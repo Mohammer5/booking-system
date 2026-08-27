@@ -16,6 +16,8 @@ The first application will be `apps/booking-system-web`, one
 and one independently runnable and deployable booking-system boundary. It is
 not only the Vite frontend and is not split into frontend and API workspaces;
 it owns technical composition for the complete same-origin application.
+Its browser experience is React-based and follows the accepted [browser
+conventions](browser-conventions.md).
 
 - **Responsibility:** Compose and serve the browser-facing application,
   Vite-built frontend/static assets, Cloudflare Worker request handling,

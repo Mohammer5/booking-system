@@ -56,12 +56,14 @@ would confuse documentation boundaries with deployment and package ownership.
 
 ## Use Focused Browser Libraries With Distinct Responsibilities
 
-The browser will use `react-router` for navigation and URL-to-view mapping,
-`@tanstack/react-query` for server state, and `react-hook-form` for transient
-form mechanics. React Router starts in Declarative Mode rather than making its
-loaders and actions the primary server-state architecture. `classnames` is
-used directly for conditional classes, and `debug` is the application-level
-diagnostic mechanism without a pre-emptive wrapper framework.
+The browser UI framework is React, with `react` and `react-dom` as its
+foundational dependencies. The browser will use `react-router` for navigation
+and URL-to-view mapping, `@tanstack/react-query` for server state, and
+`react-hook-form` for transient form mechanics. React Router starts in
+Declarative Mode rather than making its loaders and actions the primary
+server-state architecture. `classnames` is used directly for conditional
+classes, and `debug` is the application-level diagnostic mechanism without a
+pre-emptive wrapper framework.
 
 These choices remain inside the browser responsibility of the one
 `apps/booking-system-web` application. Distinct library responsibilities and
@@ -84,8 +86,12 @@ JavaScript favors [domain-oriented functional
 composition](../DICTIONARY.md#domain-oriented-functional-composition): plain
 data, instruction-shaped workflows, explicit narrow capability injection,
 visible decisions, and late abstraction inside existing vertical slices.
-Ramda supports that style, with `pipe` preferred when left-to-right
-composition clarifies the runtime story.
+Ramda is accepted for that style in browser/application code,
+runtime-compatible Worker/application workflows, and `packages/booking` domain
+code where it improves conceptual clarity, with `pipe` preferred when
+left-to-right composition clarifies the runtime story. A workspace declares
+Ramda only when real source uses it, and the owning responsibility still needs
+an explicit boundary-map permission.
 
 Functional style does not create a peer architecture, generic functional
 layer, service locator, effect system, or universal Result wrapper. Existing

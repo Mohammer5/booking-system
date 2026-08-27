@@ -15,10 +15,11 @@
   responsibilities. They may share declarations in the application manifest,
   but explicit source boundaries keep their implementation dependencies
   separate and their source/build graphs determine their respective outputs.
-- The initial browser direction uses `react-router` in Declarative Mode for
-  stable URL-to-view navigation, `@tanstack/react-query` for server state,
-  `react-hook-form` for transient form mechanics, direct `classnames` use,
-  `debug` for application diagnostics, `ramda` for selective functional
+- The initial browser experience is React-based, with `react` and `react-dom`
+  as foundational browser dependencies. It uses `react-router` in Declarative
+  Mode for stable URL-to-view navigation, `@tanstack/react-query` for server
+  state, `react-hook-form` for transient form mechanics, direct `classnames`
+  use, `debug` for application diagnostics, `ramda` for selective functional
   composition, and `i18next` with `react-i18next` for localization.
 - Every independently navigable browser view receives a route, without turning
   incidental UI state into routes. Frontend routes support direct navigation
@@ -31,6 +32,10 @@
   slices: explicit narrow dependencies, instruction-shaped workflows, visible
   conceptual decisions, selective functional techniques, and late
   abstraction remain subordinate to existing architecture boundaries.
+- Ramda is accepted selectively in browser/application code,
+  runtime-compatible Worker/application workflows, and `packages/booking`
+  domain code. Each workspace declares it only when real source uses it and
+  its boundary map permits that source responsibility to import it.
 - `packages/booking` is the intended initial conceptual domain package, with
   `admin-access`, `course-structure`, `course-access`, and
   `module-participation` as distinct internal responsibility modules rather
@@ -72,7 +77,8 @@
 - Neither accepted application/package workspace nor either workspace manifest
   has been created or implemented.
 - No product `src/` directory or product code exists.
-- None of the accepted browser libraries is installed, and no browser route,
+- None of the accepted browser libraries is installed. In particular, React
+  and React DOM are not installed and no React application, browser route,
   Query Client, form, translation resource, diagnostic namespace, or runtime
   composition has been created.
 - No Vite frontend, Worker, local/test D1 binding, database schema, migration,
@@ -93,18 +99,19 @@
   Admin implementation plan now records the intended responsibility split and
   edges for creation with real source.
 - No architecture fitness function, secondary checker, inferred dependency
-  map, application framework, installed runtime dependency, or runtime
-  dependency version exists.
+  map, installed runtime dependency, or runtime dependency version exists.
 
 The conceptual workspace identities, initial booking responsibility modules,
-first Admin application/domain contracts, browser libraries, and functional
-composition direction are declared. Exact versions, source and composition
-filenames, route tree, query keys and freshness values, translation resource
-filenames and namespace mechanics, concrete runtime composition, implemented
-map declarations, entrypoints, package exports, internal helper files, schema
-names, session timing, provider configuration, and minimum supported Worker
-compatibility mode remain implementation choices. The first relevant real
-slice introduces only the dependencies and configuration it actually uses.
+first Admin application/domain contracts, React browser framework and
+libraries, and functional composition direction are declared. Exact versions,
+React initialization files, root component shape, render entrypoint, provider
+nesting, source and composition filenames, route tree, query keys and freshness
+values, translation resource filenames and namespace mechanics, concrete
+runtime composition, implemented map declarations, entrypoints, package
+exports, internal helper files, schema names, session timing, provider
+configuration, and minimum supported Worker compatibility mode remain
+implementation choices. The first relevant real slice introduces only the
+dependencies and configuration it actually uses.
 Accepted and planned direction must not be mistaken for implemented runtime
 code. The accepted application can be implemented and accepted locally without
 remote Cloudflare resources, but release hardening and real staging
