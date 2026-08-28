@@ -17,7 +17,8 @@ This repository uses an indexed global documentation system.
 - Summary: Present accepted product and technical direction, the implemented
   local application, Course creation/editing with permanent timezone locking,
   Group creation/editing/archival/reactivation/deletion, Module creation/
-  descriptive editing/pre-start rescheduling/terminal cancellation, and Participant
+  descriptive editing/pre-start rescheduling/terminal cancellation/deletion,
+  Participant
   registration/profile/lifecycle/Assignment-lifecycle/assigned-Course-access/
   Module-Selection
   slices, responsive MUI
@@ -68,7 +69,8 @@ This repository uses an indexed global documentation system.
   Admin/Participant shell, Participant onboarding/profile/directory, Course
   Assignment creation/revocation/reactivation, Participant lifecycle, assigned
   Participant Course access, and Participant Module Selection plus Course/
-  Group/Module creation, Module editing/rescheduling/cancellation, Group lifecycle/deletion,
+  Group/Module creation, Module editing/rescheduling/cancellation/deletion,
+  Group lifecycle/deletion,
   and guarded Course-editing experience,
   implemented runtime/persistence,
   Google authentication direction, NixOS developer-host tooling, ESLint

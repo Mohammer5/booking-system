@@ -1,4 +1,5 @@
 import {
+  createDeleteModule,
   createRescheduleModule,
   createUpdateModuleDetails,
 } from "@booking-system/booking";
@@ -17,6 +18,10 @@ import {
  */
 export function createModuleManagementOperations(capabilities) {
   return {
+    deleteModule: createDeleteModule({
+      deleteUnreferencedModule:
+        capabilities.modulePersistence?.deleteUnreferencedModule,
+    }),
     rescheduleModule: createRescheduleModule({
       now: capabilities.now,
       rescheduleModuleForActiveAdmin:
@@ -55,6 +60,10 @@ export async function resolveModuleManagementRequest(context, operations) {
     return { response: jsonResponse({ outcome: "module-not-found" }, 404) };
   }
 
+  if (request.method === "DELETE") {
+    return resolveModuleDeletion({ adminUser, course, module, route }, operations);
+  }
+
   const body = await readJsonObject(request);
   const result = route.kind === "module"
     ? await operations.updateModuleDetails({
@@ -74,6 +83,23 @@ export async function resolveModuleManagementRequest(context, operations) {
         endsAtLocal: body.endsAtLocal,
         endsAtOccurrence: body.endsAtOccurrence,
       });
+
+  return { result };
+}
+
+/** @returns {Promise<object>} One permanent Module deletion result. */
+async function resolveModuleDeletion(context, operations) {
+  const selectionContexts =
+    await operations.modulePersistence.listSelectionContextsByModuleId(
+      context.route.courseId,
+      context.route.moduleId,
+    );
+  const result = await operations.deleteModule({
+    adminUser: context.adminUser,
+    course: context.course,
+    module: context.module,
+    selectionContexts,
+  });
 
   return { result };
 }
@@ -115,6 +141,13 @@ export async function handleModuleManagementRequest(
  * @returns {Response} Narrow success or refusal response.
  */
 export function moduleManagementResultResponse({ result }, currentInstant) {
+  if (result.outcome === "deleted") {
+    return jsonResponse({
+      outcome: "deleted",
+      module: toModuleResponse(result.module, currentInstant),
+    }, 200);
+  }
+
   if (new Set(["rescheduled", "updated"]).has(result.outcome)) {
     return jsonResponse(toModuleResponse(result.module, currentInstant), 200);
   }

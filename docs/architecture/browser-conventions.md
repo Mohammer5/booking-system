@@ -72,7 +72,8 @@ current-context, refusal, failure, and sign-out states plus the Participant
 directory, Course membership/Assignment Dialog, Course index/create/detail,
 Course editing and permanent timezone-lock presentation, Course-wide Group
 creation/editing/lifecycle, and Module creation/descriptive-edit/schedule-edit
-and cancellation states use free MUI Core components directly without changing their HTTP,
+plus cancellation/deletion states use free MUI Core components directly
+without changing their HTTP,
 authentication, or domain ownership. Native `datetime-local` fields collect
 local minutes; MUI radio groups expose server-resolved DST-overlap occurrences,
 so no MUI X or date/time dependency is present. The Participant and Admin
@@ -93,6 +94,7 @@ editing, duplicate/stale refusal and stable Disabled-target detail, Group/Module
 empty and creation states, Group edit/archive/reactivate/delete and retained-history
 states, Module lifetime descriptive editing and future-only rescheduling,
 terminal cancellation and retained-history presentation,
+reference-protected permanent deletion and zero-current-Module timezone lock,
 Course editing and permanent timezone lock even
 with zero current Modules, definite-instant display, DST gap/overlap
 interaction, stale/technical refusals, and horizontal overflow.
@@ -261,6 +263,15 @@ parent-owned status after the card refreshes. Cancelled Modules retain the
 descriptive form, show non-color-only terminal copy, lock schedule controls,
 and cause Participant Selection controls to disappear while the retained
 selected Group remains visible as historical.
+
+Permanent Module deletion is a separate destructive card action available for
+Scheduled or Cancelled Modules at every time position. Its MUI Dialog names
+the Module and permanence, focuses cancellation first, restores the invoking
+action on dismissal, and focuses privacy-safe retained-reference, stale, or
+technical failures. TanStack Query reconciles Admin and Participant detail;
+after success the card unmounts and a parent-owned Module-section status takes
+focus. Last-row deletion presents the truthful empty state while the Course
+timezone remains visibly and authoritatively locked.
 
 Course Assignment lifecycle uses the same ownership split. TanStack Query
 owns membership-list and assigned-Course invalidation after reactivation or

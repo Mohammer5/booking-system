@@ -40,12 +40,14 @@ The first implements the first Admin bootstrap subset; the second implements
 Active Course creation and complete editing, permanent first-Module timezone
 locking, Course-wide Group creation/complete editing/archival/reactivation/
 permanent deletion,
-and future Scheduled Module creation, lifetime descriptive editing, and
-strictly pre-start rescheduling plus terminal before-end cancellation,
+and future Scheduled Module creation, lifetime descriptive editing, strictly
+pre-start rescheduling, terminal before-end cancellation, and permanent
+unreferenced deletion,
 including normalized Group names, IANA-zone local-time resolution, explicit
 DST-overlap choice, definite instants, the exact retained-Selection archival
 and deletion blockers, current-start schedule locking, Selection deadline
 retention, state-only cancellation with retained Selection history, and
+reference-protected deletion with permanent Course timezone history, plus
 current Admin/Course acceptance outcomes. `course-access` now
 implements fresh Participant-context resolution,
 explicit Participant registration with complete trimmed-email policy, direct

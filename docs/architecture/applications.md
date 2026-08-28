@@ -54,7 +54,8 @@ Stable Admin Course detail contains complete Course editing with its permanent
 timezone lock, Course membership creation, revocation, and reactivation plus
 the owned Group list, creation and complete field forms, current lifecycle
 actions, and Module list/creation plus separate descriptive and pre-start
-schedule forms and terminal cancellation rather than adding incidental routes.
+schedule forms, terminal cancellation, and permanent deletion rather than
+adding incidental routes.
 Navigation
 preserves the same browser cookie and Better Auth principal; Participant
 context resolves its own
@@ -206,7 +207,7 @@ creates no partial side effect; overlapping Modules remain independent.
 
 ### Course Administration HTTP Surface
 
-The implemented `course-structure` slices use thirteen concrete
+The implemented `course-structure` slices use fourteen concrete
 same-origin operations:
 
 ```text
@@ -221,6 +222,7 @@ POST /api/admin/courses/:courseId/groups/:groupId/archival
 POST /api/admin/courses/:courseId/groups/:groupId/reactivation
 POST /api/admin/courses/:courseId/modules
 PUT  /api/admin/courses/:courseId/modules/:moduleId
+DELETE /api/admin/courses/:courseId/modules/:moduleId
 PUT  /api/admin/courses/:courseId/modules/:moduleId/schedule
 POST /api/admin/courses/:courseId/modules/:moduleId/cancellation
 ```
@@ -240,6 +242,7 @@ POST /api/admin/courses/:courseId/modules/:moduleId/cancellation
 | Module descriptive update | Same plus one same-Course Scheduled/Cancelled Module and complete `{ title, description, instructions }` | `200` narrow updated Module; `401`; exact `403`; `404` Course/Module; `409` stale actor/Course/Module state; `422` field outcome; sanitized `500 technical-error` |
 | Module reschedule | Same plus one same-Course Scheduled Module before its current start, local start/end fields, and optional explicit overlap occurrences | `200` narrow rescheduled Module; `401`; exact `403`; `404` Course/Module; `409` locked or stale actor/Course/timezone/state/schedule; `422` field/DST/interval outcome; sanitized `500 technical-error` |
 | Module cancellation | Same plus one same-Course Scheduled Module with server-captured `now < endsAt`; no request body | `200 { outcome: "cancelled", module }`; `401`; exact `403`; `404` Course/Module; `409` deadline, terminal, or stale actor/Course/state; sanitized `500 technical-error` |
+| Module deletion | Same plus one same-Course Scheduled/Cancelled Module with no currently retained Selection; no request body | `200 { outcome: "deleted", module }`; `401`; exact `403`; `404` Course/Module; `409 module-deletion-blocked` or stale actor/Course/reference state; sanitized `500 technical-error` |
 
 Course representations contain only `id`, `name`, `description`, `timezone`,
 `state`, and derived `isTimezoneEditable`; detail adds only its Course-owned
@@ -263,8 +266,13 @@ new `startsAt` without rewriting references. Cancellation accepts no browser
 instant, state, ownership, or Selection input and changes only Scheduled state
 to Cancelled after rechecking Active Admin/Course and the exact `endsAt`
 deadline. It preserves every other Module field and Selection row; current
-Selection writes already reject the terminal state. Group lifecycle and
-deletion actions accept no browser-supplied instant, state, Course ownership,
+Selection writes already reject the terminal state. Module deletion also
+accepts no browser trust fields and removes only one same-Course Module after
+rechecking Active Admin/Course and the absence of every retained Selection.
+It is independent of Module time/state beyond Scheduled or Cancelled, cascades
+nothing, and leaves permanent Course scheduling history set; the restrictive
+Selection foreign key arbitrates a concurrent new reference. Group lifecycle
+and deletion actions accept no browser-supplied instant, state, Course ownership,
 or Selection data; the server derives retained-reference context and the
 guarded accepting D1 statement rechecks it. Archival and reactivation retain
 the row and never update a Selection. Deletion removes only an Active or

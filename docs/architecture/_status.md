@@ -70,7 +70,7 @@
   sign-in and Better Auth sign-out, bootstrap/current-context HTTP, and
   freshly authorized Course index/create/detail/update plus nested Group
   creation/edit/archival/reactivation/deletion and Module creation/descriptive-
-  edit/pre-start-reschedule/cancellation HTTP, plus fresh
+  edit/pre-start-reschedule/cancellation/deletion HTTP, plus fresh
   Participant context, explicit onboarding and
   self-profile maintenance, the global Admin Participant directory and stable
   profile detail plus Disable/Re-enable HTTP, Course Assignment list/create/
@@ -102,7 +102,8 @@
   `course-structure` factories for Course creation/editing, Course-wide Group
   creation/editing/archival/reactivation/permanent deletion, and future Module
   creation, lifetime descriptive editing, pre-start rescheduling, and terminal
-  before-end cancellation with retained Selection history;
+  before-end cancellation with retained Selection history plus permanent
+  unreferenced deletion;
   `course-access` factories for fresh
   Participant context,
   registration, self/Admin Participant profile maintenance, Participant
@@ -136,7 +137,8 @@
   with safe sign-out and mounts no private Participant view. Stable Course
   detail owns complete Course editing, its permanent timezone lock, Course
   membership creation/lifecycle, Group creation/edit/lifecycle/deletion, and
-  Module create/edit/reschedule/cancel interactions without incidental routes.
+  Module create/edit/reschedule/cancel/delete interactions without incidental
+  routes.
   Membership cards expose only current
   permitted revoke/reactivate actions with confirmation and accurate retention
   copy.
@@ -220,6 +222,10 @@
   retains schedule, content, identity, and every Selection row; existing
   Selection guards and restrictive references arbitrate concurrent mutation,
   while descriptive editing remains available after cancellation.
+  Permanent Module deletion reuses one guarded delete and the restrictive
+  Selection foreign key to recheck Active Admin/Course and zero retained
+  references. Success removes only the Module row and leaves permanent Course
+  scheduling history set; deletion/new-Selection races have one valid winner.
 - Both explicit workspace boundary maps are registered in ESLint. The boundary
   converter denies undeclared third-party imports and supports exact test-only
   and composition-interface permissions.
@@ -242,6 +248,8 @@
   stale-deadline refusal, truthful current/history presentation, Group/Module
   creation, Module descriptive editing/pre-start rescheduling/locked states,
   Module cancellation/deadline/retained-history states,
+  Module deletion after Selection removal, ended/Cancelled eligibility,
+  privacy-safe blockers, and permanent zero-current-Module timezone lock,
   Group editing/allowed-or-blocked archival/reactivation, permanent
   deletion after removal, historical/Cancelled reference blockers, and retained
   historical details, Course editing, permanent timezone locking with zero current

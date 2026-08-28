@@ -71,9 +71,9 @@ domain and behavior.
 ### Course Structure And Lifecycle
 - Path: `docs/product/course-structure.md`
 - Summary: Minimal Course/Group/Module data, IANA timezone semantics, Group and
-  Module lifecycle, retained-reference deletion, Module descriptive editing,
-  pre-start rescheduling and terminal cancellation, and structurally read-only
-  Course archival.
+  Module lifecycle, Group and Module retained-reference deletion, Module
+  descriptive editing, pre-start rescheduling and terminal cancellation, and
+  structurally read-only Course archival.
 - Read when: A task affects Courses, Groups, Modules, fields, timezones, DST,
   scheduling, names, deletion, cancellation, archival, or retained references.
 - Tags: product, course, group, module, timezone, scheduling, lifecycle

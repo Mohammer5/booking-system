@@ -142,6 +142,19 @@ German destructive confirmation, real retained Participant history and
 prohibited mutations, bounded in-progress/exact-end/terminal/technical states,
 refresh, keyboard/Dialog/result focus, desktop/360px layout, and axe scans.
 
+For permanent Module deletion, booking-domain Vitest owns Active actor/Course,
+same-Course Scheduled/Cancelled eligibility, the complete upcoming/exact-start/
+in-progress/ended retained-reference matrix, and the explicit absence of a
+removed-reference or time rule. Worker/D1 Vitest owns the guarded delete,
+restrictive composite foreign key, non-cascade preservation, permanent Course
+timezone history after first/last/every deletion, stale actor/Course state,
+trigger rollback, and the two-sided deletion/new-Selection race. Worker HTTP
+evidence owns the body-free existing item `DELETE`, post-read reference
+insertion, privacy, exact outcomes, production composition, and technical
+sanitization. Playwright owns real future and Cancelled deletion, bounded ended
+eligibility and historical blockers, last-row empty state and timezone refusal,
+refresh, keyboard/Dialog/result focus, desktop/360px layout, and axe scans.
+
 For Group editing and reversible lifecycle, booking-domain Vitest owns
 complete Active/Archived fields, Course-local normalized Active-name rules,
 injected time, the exact future/exact-start/in-progress/ended/Cancelled
@@ -324,7 +337,7 @@ onboarding/assigned-Course/zero-membership/privacy states, Participant
 directory and Course membership/Assignment-lifecycle states, Participant
 self/Admin profile editing and lifecycle, Course editing and permanent
 timezone-lock presentation, Disabled-target detail, and absence of horizontal
-overflow. The current 42-test browser suite also proves that one
+overflow. The current 44-test browser suite also proves that one
 fixed normal session remains usable while navigating between Participant and
 Admin contexts, successful sign-out terminates that session, an Active Admin
 can create, edit, and revisit a Course with Groups, a future Module, a
@@ -351,6 +364,10 @@ refusal, terminal status, body-free trust boundaries, immutable schedules,
 continued descriptive editing availability, retained Participant Group
 history, prohibited Selection mutation, Dialog/error/success focus, and
 refresh persistence.
+It also proves permanent Module deletion after real Selection removal, real
+Cancelled and bounded ended eligibility, privacy-safe current/historical
+blockers, stale/technical errors, confirmation/cancel/result focus, last-row
+empty state, permanent Course timezone refusal, and refresh persistence.
 
 On browser-test failure, CI should retain short-lived useful diagnostics such
 as the Playwright report, traces, screenshots, and relevant logs. Artifacts

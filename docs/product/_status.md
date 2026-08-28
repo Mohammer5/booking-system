@@ -81,6 +81,13 @@ Cancellation preserves Module identity, content, and its immutable original
 interval. Every retained Selection row remains stored, immediately presents as
 historical with its Participant and Group identity intact, and is unavailable
 for creation, replacement, or removal.
+The Admin may permanently delete a Scheduled or Cancelled Module in an Active
+Course only when no current Selection row references it, independent of
+upcoming, in-progress, or ended position. Every retained live or historical
+Selection blocks deletion; a removed or replaced pre-start Selection does not.
+Success removes only the Module row, preserves all unrelated structure and
+participation data, and leaves the Course timezone permanently locked even
+after the first, last, or every current Module is gone.
 A new authenticated principal can
 explicitly supply the required booking-system Participant name and unique
 email, become one Active Participant, return to the Participant home, and see
@@ -95,8 +102,8 @@ default. Unknown, inactive, unassigned, Revoked, stale, and cross-Participant
 Course identifiers reveal no Course data. An Active Participant may edit their
 own required name/email, while an Active Admin User may edit an Active or
 Disabled Participant from a stable detail; both preserve identity, lifecycle,
-relationships, provider data, and any same-principal Admin User. Module
-deletion; Course lifecycle operations;
+relationships, provider data, and any same-principal Admin User. Course
+lifecycle operations;
 Admin-assisted Module Selection,
 Archived-Course historical access, Invite, later Admin onboarding, and later
 Admin management

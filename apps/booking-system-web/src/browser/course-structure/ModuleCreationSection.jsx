@@ -6,6 +6,7 @@ import {
   Typography,
 } from "@mui/material";
 import { useTranslation } from "react-i18next";
+import { useEffect, useRef, useState } from "react";
 
 import { ModuleCreationForm } from "./ModuleCreationForm.jsx";
 import { ModuleManagementCard } from "./ModuleManagementCard.jsx";
@@ -18,13 +19,39 @@ import { ModuleManagementCard } from "./ModuleManagementCard.jsx";
  */
 export function ModuleCreationSection({ course }) {
   const { t } = useTranslation();
+  const [deletionResult, setDeletionResult] = useState(null);
+  const deletionSuccessRef = useRef(null);
+  const deletedModuleTitle = deletionResult?.courseId === course.id
+    ? deletionResult.moduleTitle
+    : null;
+
+  useEffect(() => {
+    if (deletedModuleTitle !== null) deletionSuccessRef.current?.focus();
+  }, [deletedModuleTitle, deletionResult]);
 
   return (
     <Stack aria-labelledby="course-modules-title" component="section" spacing={3}>
       <Typography component="h2" id="course-modules-title" variant="h2">
         {t("courseStructure.module.title")}
       </Typography>
-      <ModuleList course={course} translate={t} />
+      {deletedModuleTitle === null ? null : (
+        <Alert
+          ref={deletionSuccessRef}
+          role="status"
+          severity="success"
+          tabIndex={-1}
+        >
+          {t("courseStructure.module.deleted", { title: deletedModuleTitle })}
+        </Alert>
+      )}
+      <ModuleList
+        course={course}
+        onDeleted={(result) => setDeletionResult({
+          courseId: course.id,
+          moduleTitle: result.module.title,
+        })}
+        translate={t}
+      />
       <ModuleCreationForm course={course} translate={t} />
     </Stack>
   );
@@ -36,7 +63,7 @@ export function ModuleCreationSection({ course }) {
  * @param {object} props Module-list properties.
  * @returns {import("react").ReactElement} Current Module list state.
  */
-function ModuleList({ course, translate }) {
+function ModuleList({ course, onDeleted, translate }) {
   if (course.modules.length === 0) {
     return (
       <Alert role="status" severity="info">
@@ -55,6 +82,7 @@ function ModuleList({ course, translate }) {
           <ModuleManagementCard
             course={course}
             module={module}
+            onDeleted={onDeleted}
             translate={translate}
           />
         </ListItem>

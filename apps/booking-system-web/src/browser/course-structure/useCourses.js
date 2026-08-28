@@ -196,6 +196,23 @@ export function useCancelModule(courseId, moduleId) {
 }
 
 /**
+ * Permanently delete one unreferenced Module.
+ *
+ * @param {string} courseId Parent Course identity.
+ * @param {string} moduleId Stable Module identity.
+ * @param {(result: object) => void} onDeleted Parent-owned success callback.
+ * @returns {object} TanStack Module deletion mutation state.
+ */
+export function useDeleteModule(courseId, moduleId, onDeleted) {
+  return useModuleManagementMutation({
+    courseId,
+    method: "DELETE",
+    onDeleted,
+    path: `/api/admin/courses/${courseId}/modules/${moduleId}`,
+  });
+}
+
+/**
  * Create one nested Course-structure mutation with detail reconciliation.
  *
  * @param {string} courseId Parent Course identity.
@@ -280,13 +297,14 @@ function useModuleManagementMutation(input) {
         headers: body === undefined ? {} : { "content-type": "application/json" },
         body: body === undefined ? undefined : JSON.stringify(body),
       }),
-    async onSuccess() {
+    async onSuccess(result) {
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: detailQueryKey }),
         queryClient.invalidateQueries({
           queryKey: ["course-access", "participant-course", input.courseId],
         }),
       ]);
+      input.onDeleted?.(result);
     },
     async onError(error) {
       if (error.status === 409) {

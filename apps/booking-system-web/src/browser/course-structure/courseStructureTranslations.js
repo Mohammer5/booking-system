@@ -216,6 +216,19 @@ export const courseStructureTranslations = {
         "Das Modul hat inzwischen sein exaktes Ende erreicht und kann nicht mehr abgesagt werden.",
       cancellationUnavailable:
         "Das Modul hat sich geändert oder kann nicht mehr abgesagt werden. Die aktuellen Kursdaten wurden neu geladen.",
+      deletionTitle: "Modul dauerhaft entfernen",
+      deleteAction: "Modul löschen",
+      deleteTitle: "Modul endgültig löschen?",
+      deleteDescription:
+        "Das Modul wird dauerhaft entfernt. Dieser Vorgang kann nicht rückgängig gemacht werden. Bestehende aktuelle oder historische Modulauswahlen verhindern die Löschung.",
+      deleteCancel: "Abbrechen",
+      deleteConfirm: "Modul endgültig löschen",
+      deletePending: "Modul wird gelöscht …",
+      deleted: "Das Modul „{{title}}“ wurde endgültig gelöscht.",
+      deletionBlocked:
+        "Das Modul kann nicht gelöscht werden, weil mindestens eine aktuelle oder historische Modulauswahl darauf verweist.",
+      deletionUnavailable:
+        "Das Modul hat sich geändert oder kann im aktuellen Kursstatus nicht gelöscht werden. Die aktuellen Kursdaten wurden neu geladen.",
     },
   },
 };

@@ -2,11 +2,12 @@ import { Card, CardContent, Chip, Stack, Typography } from "@mui/material";
 
 import { ModuleDetailsForm } from "./ModuleDetailsForm.jsx";
 import { ModuleCancellationControl } from "./ModuleCancellationControl.jsx";
+import { ModuleDeletionControl } from "./ModuleDeletionControl.jsx";
 import { ModuleSchedule } from "./ModuleSchedule.jsx";
 import { ModuleScheduleForm } from "./ModuleScheduleForm.jsx";
 
 /** @returns {import("react").ReactElement} One retained Module management card. */
-export function ModuleManagementCard({ course, module, translate }) {
+export function ModuleManagementCard({ course, module, onDeleted, translate }) {
   const titleId = `module-${module.id}-title`;
 
   return (
@@ -37,6 +38,12 @@ export function ModuleManagementCard({ course, module, translate }) {
           <ModuleCancellationControl
             courseId={course.id}
             module={module}
+            translate={translate}
+          />
+          <ModuleDeletionControl
+            courseId={course.id}
+            module={module}
+            onDeleted={onDeleted}
             translate={translate}
           />
         </Stack>

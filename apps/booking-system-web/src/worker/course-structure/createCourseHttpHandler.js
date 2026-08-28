@@ -64,7 +64,7 @@ function isSupportedRoute(route, method) {
     groupArchival: new Set(["POST"]),
     groupReactivation: new Set(["POST"]),
     modules: new Set(["POST"]),
-    module: new Set(["PUT"]),
+    module: new Set(["DELETE", "PUT"]),
     moduleCancellation: new Set(["POST"]),
     moduleSchedule: new Set(["PUT"]),
   };

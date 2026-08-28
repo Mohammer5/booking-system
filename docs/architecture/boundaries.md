@@ -107,6 +107,14 @@ the existing `course-access` read and `module-participation` derivation. The
 new public factory export is already permitted and adds no map, dependency,
 composition, workspace, or first-level responsibility edge.
 
+Permanent Module deletion follows the same existing boundary. The booking
+factory owns retained-reference eligibility; application-private D1/HTTP and
+German MUI adapters own guarded deletion, restrictive-reference arbitration,
+transport, confirmation, and cache reconciliation. The Course history bit and
+Participant Selection foreign key stay inside existing persistence. The new
+public factory export requires no map, dependency, composition, workspace, or
+first-level responsibility edge.
+
 Participant registration introduces the accepted dependency-free
 `course-access` responsibility inside the booking package. Its root interface
 exposes Participant registration, fresh Participant-context, distinct

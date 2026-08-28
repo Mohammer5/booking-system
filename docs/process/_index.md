@@ -55,8 +55,8 @@ development work is tracked and verified, and how releases are promoted.
 - Summary: Defines the layered regression harness, canonical `pnpm check`
   contract, NixOS local browser provisioning, pull-request CI, responsive
   shell, Course creation/editing, Group lifecycle/deletion and structure,
-  Module editing/rescheduling/cancellation, Participant registration/profile/lifecycle/assigned-
-  Course access, and Assignment-lifecycle/Module-Selection browser and
+  Module editing/rescheduling/cancellation/deletion, Participant registration/
+  profile/lifecycle/assigned-Course access, and Assignment-lifecycle/Module-Selection browser and
   accessibility policy, plus the external branch-protection requirement.
 - Read when: A task affects tests, CI, required checks, test environments,
   browser automation, local test-tool provisioning, verification commands, or

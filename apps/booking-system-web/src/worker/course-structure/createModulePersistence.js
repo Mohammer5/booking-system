@@ -1,4 +1,5 @@
 import { createModuleCancellationPersistence } from "./createModuleCancellationPersistence.js";
+import { createModuleDeletionPersistence } from "./createModuleDeletionPersistence.js";
 import { createModuleEditingPersistence } from "./createModuleEditingPersistence.js";
 
 /**
@@ -10,6 +11,7 @@ import { createModuleEditingPersistence } from "./createModuleEditingPersistence
 export function createModulePersistence(database) {
   return {
     ...createModuleCancellationPersistence(database),
+    ...createModuleDeletionPersistence(database),
     ...createModuleEditingPersistence(database),
     async createModuleForActiveAdmin({
       adminUserId,

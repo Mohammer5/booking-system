@@ -232,6 +232,18 @@ also arbitrate schedule edits, while descriptive edits remain independently
 valid throughout the Cancelled lifetime. A deadline, terminal, stale, or
 technical loser changes no Module or Selection data.
 
+Permanent Module deletion requires no migration or batch. One guarded delete
+rechecks current Active Admin and Course, same-Course Scheduled/Cancelled
+Module existence, and the absence of every current `module_selections` row for
+that Module, without consulting its interval. The existing restrictive
+composite foreign key protects the inverse concurrent Selection write, giving
+deletion and Selection creation one valid winner. Success removes only the
+Module row, cascades nothing, and never updates the Course's permanent
+`has_ever_had_module` history bit; deleting the first, last, or every current
+Module therefore cannot restore timezone editability. A retained reference,
+stale state, constraint/trigger failure, or unexplained loser leaves all rows
+unchanged, and no deleted-Module audit or empty schedule history is introduced.
+
 The fourth additive migration preserves all existing application data and adds
 one `participants` table with stable Participant identity, one row per external
 principal, required nonblank name, retained trimmed email, a unique lowercase

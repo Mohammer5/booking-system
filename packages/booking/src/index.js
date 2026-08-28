@@ -10,6 +10,7 @@ export {
   createCreateGroup,
   createCreateModule,
   createDeleteGroup,
+  createDeleteModule,
   createReactivateGroup,
   createRescheduleModule,
   createUpdateCourse,
