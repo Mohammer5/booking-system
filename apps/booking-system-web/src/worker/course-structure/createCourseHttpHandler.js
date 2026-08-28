@@ -1,12 +1,4 @@
 import {
-  createCreateCourse,
-  createCreateGroup,
-  createCreateModule,
-  createResolveAdminContext,
-  createUpdateCourse,
-} from "@booking-system/booking";
-
-import {
   jsonResponse,
   matchCourseRoute,
   readJsonObject,
@@ -15,12 +7,14 @@ import {
   toGroupResponse,
 } from "./courseHttpContract.js";
 import {
-  createGroupManagementOperations,
   groupManagementResultResponse,
   resolveGroupManagementRequest,
 } from "./createGroupManagementHttp.js";
 import {
-  createModuleManagementOperations,
+  handleModuleCancellationRequest,
+} from "./createModuleCancellationHttp.js";
+import { createCourseHttpOperations } from "./createCourseHttpOperations.js";
+import {
   handleModuleManagementRequest,
   moduleCreationResultResponse,
 } from "./createModuleManagementHttp.js";
@@ -32,7 +26,7 @@ import {
  * @returns {(request: Request) => Promise<Response>} Course-structure HTTP handler.
  */
 export function createCourseHttpHandler(capabilities) {
-  const operations = createOperations(capabilities);
+  const operations = createCourseHttpOperations(capabilities);
 
   return async function handleCourseHttpRequest(request) {
     try {
@@ -55,44 +49,6 @@ export function createCourseHttpHandler(capabilities) {
 }
 
 /**
- * Compose narrow domain and application operations once per Worker request graph.
- *
- * @param {object} capabilities Raw application capabilities.
- * @returns {object} Course-structure HTTP operations.
- */
-function createOperations(capabilities) {
-  return {
-    ...capabilities,
-    ...createGroupManagementOperations(capabilities),
-    ...createModuleManagementOperations(capabilities),
-    createCourse: createCreateCourse({
-      createCourseId: capabilities.createCourseId,
-      createCourseForActiveAdmin:
-        capabilities.coursePersistence.createCourseForActiveAdmin,
-    }),
-    createGroup: createCreateGroup({
-      createGroupId: capabilities.createGroupId,
-      createGroupForActiveAdmin:
-        capabilities.groupPersistence?.createGroupForActiveAdmin,
-    }),
-    createModule: createCreateModule({
-      createModuleId: capabilities.createModuleId,
-      createModuleForActiveAdmin:
-        capabilities.modulePersistence?.createModuleForActiveAdmin,
-      now: capabilities.now,
-    }),
-    updateCourse: createUpdateCourse({
-      updateActiveCourseForActiveAdmin:
-        capabilities.coursePersistence.updateActiveCourseForActiveAdmin,
-    }),
-    resolveAdminContext: createResolveAdminContext({
-      findAdminUserByExternalPrincipalId:
-        capabilities.adminPersistence.findAdminUserByExternalPrincipalId,
-    }),
-  };
-}
-
-/**
  * Check the exact method owned by one matched route.
  *
  * @param {object} route Matched route.
@@ -109,6 +65,7 @@ function isSupportedRoute(route, method) {
     groupReactivation: new Set(["POST"]),
     modules: new Set(["POST"]),
     module: new Set(["PUT"]),
+    moduleCancellation: new Set(["POST"]),
     moduleSchedule: new Set(["PUT"]),
   };
 
@@ -152,6 +109,12 @@ function handleAuthorizedRoute(context, operations) {
 
   if (new Set(["module", "moduleSchedule"]).has(route.kind)) {
     return handleModuleManagementRequest(
+      context, operations, currentStateRefusal,
+    );
+  }
+
+  if (route.kind === "moduleCancellation") {
+    return handleModuleCancellationRequest(
       context, operations, currentStateRefusal,
     );
   }

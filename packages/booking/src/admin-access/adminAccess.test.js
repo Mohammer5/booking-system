@@ -115,6 +115,7 @@ describe("Public booking package interface", () => {
       "createArchiveGroup",
       "createAssignParticipantToCourse",
       "createBootstrapFirstAdmin",
+      "createCancelModule",
       "createCreateCourse",
       "createCreateGroup",
       "createCreateModule",

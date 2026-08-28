@@ -221,6 +221,17 @@ changes their deadline immediately without a reference rewrite. Stale
 interval, cancellation, exact-start, Course archival, actor change, invalid
 interval, or trigger failure leaves every Module field and Selection unchanged.
 
+Module cancellation also requires no migration or batch. One guarded update
+rechecks current Active Admin and Course, same-Course ownership, Scheduled
+state, and `ends_at > accepted_now`, then changes only Module state to
+Cancelled. Title, description, instructions, original start/end, identity, and
+every `module_selections` row remain unchanged. Existing Selection writes
+require Scheduled state, so cancellation and a concurrent create/change/remove
+have one current-state winner without rewriting history. The same predicates
+also arbitrate schedule edits, while descriptive edits remain independently
+valid throughout the Cancelled lifetime. A deadline, terminal, stale, or
+technical loser changes no Module or Selection data.
+
 The fourth additive migration preserves all existing application data and adds
 one `participants` table with stable Participant identity, one row per external
 principal, required nonblank name, retained trimmed email, a unique lowercase

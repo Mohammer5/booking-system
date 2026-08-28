@@ -5,6 +5,7 @@ export {
 } from "./admin-access/index.js";
 export {
   createArchiveGroup,
+  createCancelModule,
   createCreateCourse,
   createCreateGroup,
   createCreateModule,

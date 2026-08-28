@@ -96,6 +96,7 @@ describe("Module editing HTTP contract", () => {
       startsAt: new Date(startsAt).toISOString(),
       endsAt: new Date(endsAt).toISOString(),
       state,
+      isCancellationAvailable: state === "scheduled" && endsAt > nowEpoch,
       isScheduleEditable: state === "scheduled" && startsAt > nowEpoch,
     });
   });
@@ -125,6 +126,7 @@ describe("Module editing HTTP contract", () => {
       startsAt: "2027-01-15T11:00:00.000Z",
       endsAt: "2027-01-15T12:00:00.000Z",
       state: "scheduled",
+      isCancellationAvailable: true,
       isScheduleEditable: true,
     });
     await expect(moduleRow()).resolves.toMatchObject({

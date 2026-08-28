@@ -68,9 +68,17 @@ function matchCourseActionRoute(segments) {
     };
   }
 
-  return segments[1] === "modules" && segments[3] === "schedule"
-    ? { kind: "moduleSchedule", courseId: segments[0], moduleId: segments[2] }
-    : null;
+  if (segments[1] !== "modules") return null;
+
+  const kindByAction = {
+    cancellation: "moduleCancellation",
+    schedule: "moduleSchedule",
+  };
+  const kind = kindByAction[segments[3]];
+
+  return kind === undefined
+    ? null
+    : { kind, courseId: segments[0], moduleId: segments[2] };
 }
 
 /**
@@ -157,6 +165,9 @@ export function toModuleResponse(module, currentInstant) {
     startsAt: module.startsAt,
     endsAt: module.endsAt,
     state: module.state,
+    isCancellationAvailable:
+      module.state === "scheduled" &&
+      Date.parse(currentInstant) < Date.parse(module.endsAt),
     isScheduleEditable:
       module.state === "scheduled" &&
       Date.parse(currentInstant) < Date.parse(module.startsAt),

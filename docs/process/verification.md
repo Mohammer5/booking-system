@@ -129,6 +129,19 @@ German forms, real content/reschedule/DST/refresh behavior, bounded exact-
 start/in-progress/ended/Cancelled locks with descriptive availability,
 conflict focus, desktop/360px layout, unique form landmarks, and axe scans.
 
+For Module cancellation, booking-domain Vitest owns Active actor/Course and
+same-Course Scheduled eligibility, upcoming/exact-start/in-progress/exact-end/
+ended boundaries, terminal repeat, one captured instant, stable fields, and
+guarded persistence outcomes. Worker/D1 Vitest owns the state-only update,
+retained Selection rows and references, exact authorization/deadline
+classification, rollback, and cancellation races against Selection mutation,
+rescheduling, and descriptive editing. Worker HTTP evidence owns the body-free
+nested `POST`, privacy, exact outcomes, current server-derived availability,
+Participant historical detail, and technical sanitization. Playwright owns
+German destructive confirmation, real retained Participant history and
+prohibited mutations, bounded in-progress/exact-end/terminal/technical states,
+refresh, keyboard/Dialog/result focus, desktop/360px layout, and axe scans.
+
 For Group editing and reversible lifecycle, booking-domain Vitest owns
 complete Active/Archived fields, Course-local normalized Active-name rules,
 injected time, the exact future/exact-start/in-progress/ended/Cancelled
@@ -311,7 +324,7 @@ onboarding/assigned-Course/zero-membership/privacy states, Participant
 directory and Course membership/Assignment-lifecycle states, Participant
 self/Admin profile editing and lifecycle, Course editing and permanent
 timezone-lock presentation, Disabled-target detail, and absence of horizontal
-overflow. The current 40-test browser suite also proves that one
+overflow. The current 42-test browser suite also proves that one
 fixed normal session remains usable while navigating between Participant and
 Admin contexts, successful sign-out terminates that session, an Active Admin
 can create, edit, and revisit a Course with Groups, a future Module, a
@@ -333,6 +346,11 @@ pre-start rescheduling, DST gap and explicit overlap handling, exact/in-
 progress/ended/Cancelled schedule locking without content lockout, stale-
 schedule focus, refresh persistence, unique form landmarks, and deadline-
 sensitive definite instants.
+It also proves upcoming and in-progress Module cancellation, exact-end
+refusal, terminal status, body-free trust boundaries, immutable schedules,
+continued descriptive editing availability, retained Participant Group
+history, prohibited Selection mutation, Dialog/error/success focus, and
+refresh persistence.
 
 On browser-test failure, CI should retain short-lived useful diagnostics such
 as the Playwright report, traces, screenshots, and relevant logs. Artifacts

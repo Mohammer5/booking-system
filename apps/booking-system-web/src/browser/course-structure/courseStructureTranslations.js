@@ -198,6 +198,24 @@ export const courseStructureTranslations = {
         "Der Modulzeitraum hat sich geändert oder kann nicht mehr bearbeitet werden. Die aktuellen Kursdaten wurden neu geladen.",
       scheduleLocked:
         "Der Modulzeitraum ist gesperrt. Ab dem exakten Beginn und für abgesagte Module bleiben Beginn und Ende unverändert.",
+      cancellationTitle: "Modulabsage",
+      cancelAction: "Modul absagen",
+      cancelDialogTitle: "Modul endgültig absagen?",
+      cancelDescription:
+        "Die Absage ist endgültig. Bestehende Modulauswahlen bleiben gespeichert und werden sofort als historische Teilnahme angezeigt. Neue, geänderte oder entfernte Auswahlen sind danach nicht mehr möglich.",
+      cancelDialogCancel: "Abbrechen",
+      cancelConfirm: "Modul endgültig absagen",
+      cancelPending: "Modul wird abgesagt …",
+      cancellationSuccess:
+        "Das Modul wurde abgesagt. Bestehende Modulauswahlen bleiben als historische Teilnahme erhalten.",
+      cancellationTerminal:
+        "Das Modul ist endgültig abgesagt. Bestehende Modulauswahlen bleiben als historische Teilnahme erhalten und können nicht mehr geändert werden.",
+      cancellationEnded:
+        "Die Absagefrist ist abgelaufen. Ab dem exakten Modulende kann das Modul nicht mehr abgesagt werden.",
+      cancellationDeadlineReached:
+        "Das Modul hat inzwischen sein exaktes Ende erreicht und kann nicht mehr abgesagt werden.",
+      cancellationUnavailable:
+        "Das Modul hat sich geändert oder kann nicht mehr abgesagt werden. Die aktuellen Kursdaten wurden neu geladen.",
     },
   },
 };

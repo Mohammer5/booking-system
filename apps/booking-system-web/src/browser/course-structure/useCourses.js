@@ -181,6 +181,21 @@ export function useRescheduleModule(courseId, moduleId) {
 }
 
 /**
+ * Terminally cancel one eligible Scheduled Module.
+ *
+ * @param {string} courseId Parent Course identity.
+ * @param {string} moduleId Stable Module identity.
+ * @returns {object} TanStack Module cancellation mutation state.
+ */
+export function useCancelModule(courseId, moduleId) {
+  return useModuleManagementMutation({
+    courseId,
+    method: "POST",
+    path: `/api/admin/courses/${courseId}/modules/${moduleId}/cancellation`,
+  });
+}
+
+/**
  * Create one nested Course-structure mutation with detail reconciliation.
  *
  * @param {string} courseId Parent Course identity.
@@ -254,15 +269,16 @@ function useGroupManagementMutation(input) {
  * @returns {object} TanStack Module management mutation state.
  */
 function useModuleManagementMutation(input) {
+  const method = input.method ?? "PUT";
   const queryClient = useQueryClient();
   const detailQueryKey = ["course-structure", "course", input.courseId];
 
   return useMutation({
     mutationFn: (body) =>
       requestJson(input.path, {
-        method: "PUT",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify(body),
+        method,
+        headers: body === undefined ? {} : { "content-type": "application/json" },
+        body: body === undefined ? undefined : JSON.stringify(body),
       }),
     async onSuccess() {
       await Promise.all([

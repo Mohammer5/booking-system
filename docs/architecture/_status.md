@@ -70,7 +70,7 @@
   sign-in and Better Auth sign-out, bootstrap/current-context HTTP, and
   freshly authorized Course index/create/detail/update plus nested Group
   creation/edit/archival/reactivation/deletion and Module creation/descriptive-
-  edit/pre-start-reschedule HTTP, plus fresh
+  edit/pre-start-reschedule/cancellation HTTP, plus fresh
   Participant context, explicit onboarding and
   self-profile maintenance, the global Admin Participant directory and stable
   profile detail plus Disable/Re-enable HTTP, Course Assignment list/create/
@@ -101,7 +101,8 @@
   required by first Admin bootstrap/fresh context resolution plus
   `course-structure` factories for Course creation/editing, Course-wide Group
   creation/editing/archival/reactivation/permanent deletion, and future Module
-  creation, lifetime descriptive editing, and pre-start rescheduling;
+  creation, lifetime descriptive editing, pre-start rescheduling, and terminal
+  before-end cancellation with retained Selection history;
   `course-access` factories for fresh
   Participant context,
   registration, self/Admin Participant profile maintenance, Participant
@@ -134,8 +135,9 @@
   Disabled targets. The Participant gate presents a freshly Disabled target
   with safe sign-out and mounts no private Participant view. Stable Course
   detail owns complete Course editing, its permanent timezone lock, Course
-  membership creation/lifecycle, Group creation/edit/lifecycle/deletion, and future-
-  Module interactions without incidental routes. Membership cards expose only current
+  membership creation/lifecycle, Group creation/edit/lifecycle/deletion, and
+  Module create/edit/reschedule/cancel interactions without incidental routes.
+  Membership cards expose only current
   permitted revoke/reactivate actions with confirmation and accurate retention
   copy.
 - TanStack Query owns remote Admin, Course, Participant profile, Assignment,
@@ -213,6 +215,11 @@
   Active Admin/Course state and the absence of every retained Selection. The
   restrictive Selection foreign key arbitrates a concurrent new reference;
   success cascades nothing and no removed-reference audit is introduced.
+  Guarded Module cancellation changes only same-Course Scheduled state while
+  rechecking Active Admin/Course and exact before-`endsAt` acceptance. It
+  retains schedule, content, identity, and every Selection row; existing
+  Selection guards and restrictive references arbitrate concurrent mutation,
+  while descriptive editing remains available after cancellation.
 - Both explicit workspace boundary maps are registered in ESLint. The boundary
   converter denies undeclared third-party imports and supports exact test-only
   and composition-interface permissions.
@@ -234,6 +241,7 @@
   overlapping-Module independence, replacement/removal, confirmation focus,
   stale-deadline refusal, truthful current/history presentation, Group/Module
   creation, Module descriptive editing/pre-start rescheduling/locked states,
+  Module cancellation/deadline/retained-history states,
   Group editing/allowed-or-blocked archival/reactivation, permanent
   deletion after removal, historical/Cancelled reference blockers, and retained
   historical details, Course editing, permanent timezone locking with zero current

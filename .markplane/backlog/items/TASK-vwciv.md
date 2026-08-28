@@ -1,12 +1,12 @@
 ---
 id: TASK-vwciv
 title: Cancel Modules and preserve Selection history
-status: backlog
+status: done
 priority: medium
 type: feature
 effort: medium
 epic: EPIC-i2x79
-plan: null
+plan: PLAN-ybc4q
 depends_on:
 - TASK-2u7z6
 - TASK-jvqrk
@@ -16,7 +16,7 @@ blocks:
 - TASK-49if4
 related:
 - TASK-fzniz
-assignee: null
+assignee: gerkules
 tags:
 - module
 - cancellation
@@ -24,7 +24,7 @@ tags:
 - selections
 position: e50
 created: 2026-08-27
-updated: 2026-08-27
+updated: 2026-08-29
 ---
 
 # Cancel Modules and preserve Selection history
@@ -38,16 +38,16 @@ must be one authoritative atomic lifecycle outcome.
 
 ## Acceptance Criteria
 
-- [ ] A Scheduled Module in an Active Course may be Cancelled while `now <
+- [x] A Scheduled Module in an Active Course may be Cancelled while `now <
       endsAt`, including before `startsAt` and while in progress.
-- [ ] At exact `endsAt` or later, after Course archival, or by a non-Active
+- [x] At exact `endsAt` or later, after Course archival, or by a non-Active
       Admin User, cancellation is refused with no state or Selection change.
-- [ ] Cancellation is terminal: no uncancel/reactivation exists and its
+- [x] Cancellation is terminal: no uncancel/reactivation exists and its
       original `startsAt`/`endsAt` remain immutable.
-- [ ] Every retained Selection remains stored, immediately becomes historical,
+- [x] Every retained Selection remains stored, immediately becomes historical,
       continues identifying its Participant and Group, and is unavailable for
       creation, replacement, or removal.
-- [ ] Concurrent cancellation/booking/edit attempts are decided from current
+- [x] Concurrent cancellation/booking/edit attempts are decided from current
       state so only still-eligible operations succeed and no partial lifecycle
       or Selection outcome remains.
 
@@ -85,3 +85,27 @@ fresh implementation plan when selected.
 - `docs/product/representative-scenarios.md#w-live-and-historical-selection-transitions`
 - `docs/product/domain-model.md#time-and-lifecycle`
 - `docs/process/verification.md`
+
+## Completion Evidence
+
+- The booking operation captures one injected definite instant and covers
+  upcoming, exact-start, in-progress, exact-end, ended, terminal, stale actor/
+  Course, ownership, field retention, and authoritative persistence outcomes.
+- One guarded D1 state update rechecks Active Admin/Course, same-Course
+  Scheduled state, and `ends_at > accepted_now`; 12 focused integration cases
+  retain all Selection rows and Module fields, cover cancellation/Selection/
+  reschedule/edit races, and prove trigger-failure rollback.
+- The body-free nested cancellation resource derives current authorization,
+  ownership, instant, and action availability server-side, returns narrow
+  privacy-safe outcomes, and exposes retained Participant history without an
+  Admin roster or Selection side effect.
+- Stable German Module cards provide destructive confirmation, terminal and
+  historical copy, exact deadline/stale/technical focus, refresh behavior,
+  immutable schedule with continued descriptive editing, responsive layout,
+  keyboard operation, and axe coverage.
+- `pnpm check` passed on 2026-08-29: ESLint and boundary rules, 329 booking-
+  domain tests, 276 Worker/D1 tests, production Worker/browser builds, and 42
+  Chromium Playwright tests.
+- No migration, uncancel action, notification, attendance, audit workflow,
+  Module route, Admin participation roster, package, dependency, boundary-map
+  permission, or architecture checker was introduced.

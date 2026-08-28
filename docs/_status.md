@@ -53,14 +53,15 @@ implementation backlog in Markplane. Release hardening and hosted staging
 verification remain mandatory before the first production release.
 
 The local application foundation, Course creation/editing, Group reversible
-lifecycle/permanent deletion, Module creation/editing, Participant registration/profile/lifecycle
+lifecycle/permanent deletion, Module creation/editing/cancellation, Participant registration/profile/lifecycle
 maintenance, Course Assignment creation/lifecycle, assigned Participant
 Course access, and Participant Module Selection slices are now implemented:
 
 - `@booking-system/booking` at `packages/booking` owns the implemented
   `admin-access` behavior plus `course-structure` Course, Course-wide Group,
   future Module creation, lifetime descriptive editing, pre-start
-  rescheduling, guarded Course editing with its permanent timezone lock,
+  rescheduling, terminal cancellation with retained Selection history,
+  guarded Course editing with its permanent timezone lock,
   Group complete editing/archival/reactivation/permanent deletion with exact
   retained-Selection policy, and Course-local definite-time creation policy, plus
   `course-access` Participant registration, fresh context, Course Assignment
@@ -73,7 +74,7 @@ Course access, and Participant Module Selection slices are now implemented:
   flow, Participant directory, nested Course index/create/detail/update routes,
   Participant lifecycle, Course membership and Assignment interaction, and
   Course editing plus Group/Module creation forms, Group edit/lifecycle/delete
-  cards, separate Module descriptive/schedule forms,
+  cards, separate Module descriptive/schedule forms and cancellation Dialog,
   and retained selected-Group history, plus the Participant
   `/courses/:courseId`
   detail, explicit Module
@@ -106,7 +107,7 @@ Course access, and Participant Module Selection slices are now implemented:
   Admin User identities without a persisted role;
 - each Course HTTP request freshly resolves Active Admin state. Course
   creation and editing plus nested Group creation/edit/lifecycle and Module
-  create/edit/reschedule writes use guarded D1
+  create/edit/reschedule/cancel writes use guarded D1
   acceptance so a stale actor or Course creates no row, partial edit, or
   scheduling-history side effect. A Course-timezone edit and concurrent first
   Module creation recheck each other so exactly one timezone interpretation
@@ -144,6 +145,11 @@ Course access, and Participant Module Selection slices are now implemented:
   `startsAt` deadline at acceptance; replacement preserves one stable
   Participant/Module Selection identity, while refusal creates no partial
   effect;
+- guarded Module cancellation changes only one still-Scheduled same-Course row
+  before its exact `endsAt`, rechecking current Active Admin/Course state at
+  acceptance. It retains the original interval, content, identity, and every
+  Selection row; current Selection writes then refuse the Cancelled state and
+  Participant detail derives retained choices as historical;
 - the stable Course detail lists and creates Course-wide Groups with unique
   normalized Active names and future Scheduled Modules, resolves local minute
   input through the Course IANA timezone, rejects DST gaps, requires an
@@ -179,7 +185,8 @@ Course access, and Participant Module Selection slices are now implemented:
   presentation, self/Admin profile editing including Disabled targets,
   duplicate/stale refusal, Group edit/archive/reactivate/delete dialogs,
   retained-reference blockers, Module descriptive/reschedule/locked-state
-  forms, direct refresh, and overflow;
+  forms, Module cancellation/history/deadline states, direct refresh, and
+  overflow;
 - both workspace boundary maps are registered in ESLint with exact module,
   workspace, composition, third-party, and test-only permissions;
 - the root Nix flake supplies NixOS developer-host tooling: Node, pnpm,
@@ -189,7 +196,7 @@ Course access, and Participant Module Selection slices are now implemented:
 - the canonical `pnpm check` now runs repository, domain, Worker/D1, migration,
   build, and Chromium browser evidence.
 
-Apple, Microsoft, and Facebook providers, remaining Module lifecycle,
+Apple, Microsoft, and Facebook providers, Module deletion,
 Course lifecycle, Archived-Course Participant access, Admin-assisted Module
 Selection,
 Invite,

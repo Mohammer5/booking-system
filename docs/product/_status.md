@@ -74,6 +74,13 @@ explicit-overlap rules as creation. At exact current start or later, and for
 every Cancelled Module, both instants remain immutable. Either accepted edit
 preserves Module identity and retained Selections; a successful reschedule
 makes the new stored `startsAt` the Selection deadline immediately.
+An Active Admin User may terminally Cancel an upcoming or in-progress
+Scheduled Module in an Active Course while `now < endsAt`. Exact end, ended,
+already Cancelled, stale Course, and stale Admin attempts change nothing.
+Cancellation preserves Module identity, content, and its immutable original
+interval. Every retained Selection row remains stored, immediately presents as
+historical with its Participant and Group identity intact, and is unavailable
+for creation, replacement, or removal.
 A new authenticated principal can
 explicitly supply the required booking-system Participant name and unique
 email, become one Active Participant, return to the Participant home, and see
@@ -88,8 +95,8 @@ default. Unknown, inactive, unassigned, Revoked, stale, and cross-Participant
 Course identifiers reveal no Course data. An Active Participant may edit their
 own required name/email, while an Active Admin User may edit an Active or
 Disabled Participant from a stable detail; both preserve identity, lifecycle,
-relationships, provider data, and any same-principal Admin User. Remaining
-Module lifecycle operations; Course lifecycle operations;
+relationships, provider data, and any same-principal Admin User. Module
+deletion; Course lifecycle operations;
 Admin-assisted Module Selection,
 Archived-Course historical access, Invite, later Admin onboarding, and later
 Admin management

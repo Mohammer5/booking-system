@@ -8,7 +8,7 @@ for one concept and update this file when stable terminology changes.
 The product concepts below are accepted specification truth. The first Admin
 bootstrap, Course creation/editing, Course-wide-Group creation/editing/
 archival/reactivation/deletion, future-Scheduled-Module creation,
-Module descriptive editing and pre-start rescheduling,
+Module descriptive editing, pre-start rescheduling, and terminal cancellation,
 Participant registration/profile maintenance, Course Assignment creation/
 revocation/reactivation, Participant Disable/Re-enable, assigned Course access,
 and Participant-managed Module Selection subsets are implemented; remaining
@@ -140,8 +140,12 @@ and instructions, and no separate timezone. Its definite interval determines
 upcoming, in-progress, and ended descriptions. Descriptive fields remain
 editable in an Active Course throughout its lifetime. A Scheduled interval is
 editable only before its current start and only to another strictly future
-valid interval; Cancelled or begun schedules are immutable. Either edit
-preserves identity and retained Selections. See
+valid interval; begun schedules are immutable. Either accepted edit preserves
+identity and retained Selections. An Active Admin User may
+terminally Cancel a Scheduled Module before its exact `endsAt`, including
+while it is in progress. Cancellation preserves identity, schedule, content,
+and every retained Selection, which immediately becomes historical and cannot
+be changed or removed. Cancelled schedules remain immutable. See
 [Modules](product/course-structure.md#modules).
 
 ### Module Selection
@@ -249,7 +253,8 @@ implemented `course-structure` module owns Course, Course-wide Group, future
 Scheduled Module, Course editing with its permanent timezone lock, and
 Group editing/archival/reactivation/permanent deletion with retained Selection
 policy, plus Course-local definite-time creation and pre-start-rescheduling
-policy with lifetime Module descriptive editing. Its
+policy with lifetime Module descriptive editing and terminal state-only
+cancellation. Its
 implemented `course-access` module owns fresh Participant context and
 registration/profile policy plus Course Assignment creation/lifecycle and
 Participant lifecycle plus assigned Course access; Invite behavior stays with
@@ -270,6 +275,7 @@ Assignment revocation/reactivation, Participant Disable/Re-enable, Participant
 Module Selection, Course creation/editing, and Course-owned Group/Module
 creation plus Group editing/archival/reactivation and permanent deletion of
 unreferenced Groups plus Module descriptive editing/pre-start rescheduling,
+terminal Module cancellation with retained Selection history,
 private technical adapters, and composition roots.
 See
 [Applications](architecture/applications.md#accepted-initial-boundary).

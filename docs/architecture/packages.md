@@ -41,11 +41,12 @@ Active Course creation and complete editing, permanent first-Module timezone
 locking, Course-wide Group creation/complete editing/archival/reactivation/
 permanent deletion,
 and future Scheduled Module creation, lifetime descriptive editing, and
-strictly pre-start rescheduling,
+strictly pre-start rescheduling plus terminal before-end cancellation,
 including normalized Group names, IANA-zone local-time resolution, explicit
 DST-overlap choice, definite instants, the exact retained-Selection archival
 and deletion blockers, current-start schedule locking, Selection deadline
-retention, and current Admin/Course acceptance outcomes. `course-access` now
+retention, state-only cancellation with retained Selection history, and
+current Admin/Course acceptance outcomes. `course-access` now
 implements fresh Participant-context resolution,
 explicit Participant registration with complete trimmed-email policy, direct
 Course Assignment plus retained-row revocation/reactivation for registered

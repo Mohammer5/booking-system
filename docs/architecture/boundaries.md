@@ -99,6 +99,14 @@ German MUI forms remain application-private. The added root exports are
 already permitted public `course-structure` interfaces and introduce no map,
 dependency, composition, workspace, or first-level responsibility change.
 
+Terminal Module cancellation remains in those same `course-structure` slices.
+The dependency-free booking factory owns before-`endsAt` policy; application-
+private D1/HTTP and German MUI adapters own guarded acceptance, transport,
+confirmation, and cache reconciliation. Participant history continues through
+the existing `course-access` read and `module-participation` derivation. The
+new public factory export is already permitted and adds no map, dependency,
+composition, workspace, or first-level responsibility edge.
+
 Participant registration introduces the accepted dependency-free
 `course-access` responsibility inside the booking package. Its root interface
 exposes Participant registration, fresh Participant-context, distinct

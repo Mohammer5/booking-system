@@ -48,7 +48,11 @@ export function ModuleSelectionControl({ courseId, module, groups, translate }) 
         />
       ) : (
         <Alert severity="info">
-          {translate("courseAccess.participantCourses.selection.locked")}
+          {translate(
+            module.state === "cancelled"
+              ? "courseAccess.participantCourses.selection.cancelledLocked"
+              : "courseAccess.participantCourses.selection.locked",
+          )}
         </Alert>
       )}
       <MutationResult

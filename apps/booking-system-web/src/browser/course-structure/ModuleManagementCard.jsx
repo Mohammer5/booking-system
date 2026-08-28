@@ -1,6 +1,7 @@
 import { Card, CardContent, Chip, Stack, Typography } from "@mui/material";
 
 import { ModuleDetailsForm } from "./ModuleDetailsForm.jsx";
+import { ModuleCancellationControl } from "./ModuleCancellationControl.jsx";
 import { ModuleSchedule } from "./ModuleSchedule.jsx";
 import { ModuleScheduleForm } from "./ModuleScheduleForm.jsx";
 
@@ -30,6 +31,11 @@ export function ModuleManagementCard({ course, module, translate }) {
           />
           <ModuleScheduleForm
             course={course}
+            module={module}
+            translate={translate}
+          />
+          <ModuleCancellationControl
+            courseId={course.id}
             module={module}
             translate={translate}
           />

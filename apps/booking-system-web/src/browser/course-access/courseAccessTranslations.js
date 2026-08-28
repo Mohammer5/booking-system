@@ -177,6 +177,8 @@ export const courseAccessTranslations = {
         historical: "Historische Teilnahme",
         deadline: "Änderbar bis zum Modulbeginn: {{instant}}",
         locked: "Diese Modulauswahl kann ab dem Modulbeginn nicht mehr geändert werden.",
+        cancelledLocked:
+          "Das Modul wurde abgesagt. Eine bestehende Auswahl bleibt als historische Teilnahme erhalten; sie kann nicht neu angelegt, geändert oder entfernt werden.",
         groupLabel: "Gruppe auswählen",
         required: "Bitte wählen Sie ausdrücklich eine Gruppe aus.",
         noGroups: "Für dieses Modul ist derzeit keine aktive Gruppe verfügbar.",
