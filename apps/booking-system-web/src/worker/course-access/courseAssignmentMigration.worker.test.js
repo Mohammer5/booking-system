@@ -18,7 +18,7 @@ beforeAll(async () => {
                'existing@example.com', 'active')`,
     ),
   ]);
-  await applyD1Migrations(env.DB, env.TEST_MIGRATIONS);
+  await applyD1Migrations(env.DB, env.TEST_MIGRATIONS.slice(0, 5));
 });
 
 describe("Course Assignment schema upgrade", () => {

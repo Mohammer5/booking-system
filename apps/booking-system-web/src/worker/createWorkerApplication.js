@@ -5,6 +5,7 @@ import {
   createParticipantHttpHandler,
 } from "./course-access/index.js";
 import { createCourseHttpHandler } from "./course-structure/index.js";
+import { createModuleParticipationHttpHandler } from "./module-participation/index.js";
 
 /**
  * Create the normal Worker request application around narrow capabilities.
@@ -58,14 +59,25 @@ function createWorkerHandlers(capabilities) {
   });
   const handleParticipantCourseHttpRequest = createParticipantCourseHttpHandler({
     authenticate: authentication.authenticate,
+    now: capabilities.now,
     participantPersistence: capabilities.participantPersistence,
     persistence: capabilities.participantCoursePersistence,
   });
+  const handleModuleParticipationHttpRequest =
+    createModuleParticipationHttpHandler({
+      authenticate: authentication.authenticate,
+      createModuleSelectionId: capabilities.createModuleSelectionId,
+      now: capabilities.now,
+      participantCoursePersistence: capabilities.participantCoursePersistence,
+      participantPersistence: capabilities.participantPersistence,
+      selectionPersistence: capabilities.selectionPersistence,
+    });
 
   return {
     handleAdminHttpRequest,
     handleCourseAccessHttpRequest,
     handleCourseHttpRequest,
+    handleModuleParticipationHttpRequest,
     handleParticipantCourseHttpRequest,
     handleParticipantHttpRequest,
   };
@@ -111,12 +123,21 @@ async function handleWorkerRequest(request, authentication, handlers) {
   }
 
   if (requestURL.pathname.startsWith("/api/participant/")) {
-    return isParticipantCoursePath(requestURL.pathname)
-      ? handlers.handleParticipantCourseHttpRequest(request)
-      : handlers.handleParticipantHttpRequest(request);
+    return handleParticipantRequest(request, requestURL, handlers);
   }
 
   return Response.json({ outcome: "not-found" }, { status: 404 });
+}
+
+/** @returns {Promise<Response>} Dispatch one Participant-context request. */
+function handleParticipantRequest(request, requestURL, handlers) {
+  if (requestURL.pathname.endsWith("/selection")) {
+    return handlers.handleModuleParticipationHttpRequest(request);
+  }
+
+  return isParticipantCoursePath(requestURL.pathname)
+    ? handlers.handleParticipantCourseHttpRequest(request)
+    : handlers.handleParticipantHttpRequest(request);
 }
 
 /** @returns {boolean} Whether the path belongs to Participant Course access. */

@@ -9,4 +9,8 @@ export {
   createGroupPersistence,
   createModulePersistence,
 } from "./course-structure/index.js";
+export {
+  createModuleParticipationHttpHandler,
+  createModuleSelectionPersistence,
+} from "./module-participation/index.js";
 export { createWorkerApplication } from "./createWorkerApplication.js";

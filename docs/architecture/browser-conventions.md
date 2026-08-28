@@ -219,7 +219,11 @@ zero-membership states. Separate Participant Course queries mount only beneath
 the Active Participant gate: the list owns pending/error/empty/populated home
 states, while the stable detail query owns unavailable/technical/detail states.
 Neither query is a public catalogue, and the browser presents the current
-absence of Module Selection without offering a mutation control.
+Participant's own Module Selection or truthful absence. Each eligible Module
+uses an explicit no-default radio choice plus set/change/remove mutations;
+removal requires a keyboard-accessible confirmation Dialog with focus
+restoration. Server-derived availability and mutation outcomes own deadline and
+current-state truth rather than the browser wall clock.
 
 Domain and application failures use machine-readable, language-neutral
 outcomes. Browser code translates those outcomes into localized messages;

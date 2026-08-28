@@ -6,6 +6,7 @@ import {
   createCoursePersistence,
   createGroupPersistence,
   createModulePersistence,
+  createModuleSelectionPersistence,
   createParticipantCoursePersistence,
   createParticipantPersistence,
   createWorkerApplication,
@@ -39,6 +40,7 @@ export default {
       createCourseId: () => crypto.randomUUID(),
       createGroupId: () => crypto.randomUUID(),
       createModuleId: () => crypto.randomUUID(),
+      createModuleSelectionId: () => crypto.randomUUID(),
       createParticipantId: () => crypto.randomUUID(),
       now: () => environment.BOOKING_TEST_NOW,
       adminPersistence: createAdminPersistence(environment.DB),
@@ -46,6 +48,7 @@ export default {
       coursePersistence: createCoursePersistence(environment.DB),
       groupPersistence: createGroupPersistence(environment.DB),
       modulePersistence: createModulePersistence(environment.DB),
+      selectionPersistence: createModuleSelectionPersistence(environment.DB),
       participantCoursePersistence: createParticipantCoursePersistence(
         environment.DB,
       ),

@@ -145,14 +145,37 @@ GET /api/participant/courses/:courseId
 
 List items expose only Course `id`, `name`, optional `description`, `timezone`,
 and Active `state`. Detail adds participant-relevant Module and Active Group
-fields. Each Module exposes `selection: null`, the only truthful own-Selection
-state before `TASK-jvqrk`; no Selection table, default Group, or mutation
-exists.
+fields. Each Module exposes only the current Participant's own Selection or
+`null`; a present Selection contains its stable identity, selected Active
+Group, and derived current-versus-historical meaning and phase. The response
+also derives authoritative `open` or `closed` Selection availability from the
+current Participant, Assignment, Course, Module, and injected instant.
 
 The server derives Participant identity only from the authenticated principal,
 guards D1 reads by current Participant/Assignment/Course state, and never
 exposes a roster, peer profile/email/Selection, Assignment, count, Admin data,
 or public catalogue.
+
+### Participant Module Selection HTTP Surface
+
+The implemented `module-participation` slice adds two operations at one stable
+same-origin resource:
+
+```text
+PUT    /api/participant/courses/:courseId/modules/:moduleId/selection
+DELETE /api/participant/courses/:courseId/modules/:moduleId/selection
+```
+
+| Operation | Authentication and current state | Results |
+| --- | --- | --- |
+| Set or change Selection | Normal session resolving a current Active Participant, current Active Assignment and Course, future Scheduled Module, and explicit Active same-Course `{ groupId }` | `201 created`; `200 changed`/`already-selected`; `401 unauthenticated`; exact Participant `403`; private `404 course-unavailable`; `409 module-not-selectable`/`selection-deadline-reached`/`group-not-selectable`; `422 invalid-group-id`; sanitized `500 technical-error` |
+| Remove Selection | Same participant, membership, Course, Module, and deadline guards; no Group input | `200 removed`/`already-absent`; `401`; exact `403`; private `404`; `409 module-not-selectable`/`selection-deadline-reached`; sanitized `500 technical-error` |
+
+The server derives Participant and Selection identity, preserves one stable
+Participant/Module Selection across replacement, and accepts no default Group.
+The guarded D1 statement rechecks current state and the exact `startsAt`
+deadline at acceptance. Refusal leaves the prior Selection unchanged and
+creates no partial side effect; overlapping Modules remain independent.
 
 ### Course Administration HTTP Surface
 

@@ -147,7 +147,8 @@ describe("Group and Module HTTP creation", () => {
       modules: [module],
     });
     await expect(courseModuleHistory(course.id)).resolves.toBe(1);
-    await expect(hasTable("module_selections")).resolves.toBe(false);
+    await expect(hasTable("module_selections")).resolves.toBe(true);
+    await expect(countRows("module_selections")).resolves.toBe(0);
   });
 
   it("enforces Group validation and normalized uniqueness without a second row", async () => {
@@ -496,11 +497,11 @@ async function hasTable(tableName) {
 /**
  * Count rows in one fixed structure table.
  *
- * @param {"groups" | "modules"} tableName Table to count.
+ * @param {"groups" | "modules" | "module_selections"} tableName Table to count.
  * @returns {Promise<number>} Current row count.
  */
 async function countRows(tableName) {
-  if (!new Set(["groups", "modules"]).has(tableName)) {
+  if (!new Set(["groups", "modules", "module_selections"]).has(tableName)) {
     throw new Error("Unexpected test table.");
   }
 

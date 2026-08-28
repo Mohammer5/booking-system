@@ -81,7 +81,7 @@ describe("Participant onboarding HTTP contract", () => {
     expect(stored.state).toBe("active");
     await expect(countRows("participants")).resolves.toBe(1);
     await expect(countRows("course_assignments")).resolves.toBe(0);
-    await expect(moduleSelectionTables()).resolves.toEqual([]);
+    await expect(countRows("module_selections")).resolves.toBe(0);
   });
 
   it("refuses repeated and duplicate-email onboarding without changing existing profiles", async () => {
@@ -295,19 +295,4 @@ async function countRows(tableName) {
   ).first();
 
   return row.count;
-}
-
-/**
- * Inspect whether the later Module Selection table exists.
- *
- * @returns {Promise<Array<object>>} Matching schema rows.
- */
-async function moduleSelectionTables() {
-  const result = await env.DB.prepare(
-    `select name from sqlite_master
-      where type = 'table'
-        and name = 'module_selections'`,
-  ).all();
-
-  return result.results;
 }

@@ -39,10 +39,10 @@ architectural permissions and runtime graphs remain separate.
 
 ## Current Responsibility Modules
 
-The booking map declares `admin-access`, `course-access`, and
-`course-structure` modules, each with no sibling, third-party, or workspace
-edges. Its root `src/index.js` composition may import only those three module
-interfaces. Tests may import
+The booking map declares `admin-access`, `course-access`, `course-structure`,
+and `module-participation` modules, each with no sibling, third-party, or
+workspace edges. Its root `src/index.js` composition may import only those four
+module interfaces. Tests may import
 Vitest and the declared root composition. Booking production code cannot
 import application, Worker/Cloudflare, D1, Better Auth, HTTP, or browser/UI
 implementation.
@@ -99,6 +99,15 @@ responsibility importing the booking package root, and browser still reaches
 the capability through same-origin HTTP. Both production and non-production
 composition now inject narrow Participant and Assignment persistence plus
 identity-creation capabilities.
+
+Participant-managed Module Selection introduces the dependency-free
+`module-participation` responsibility inside the booking package. Its root
+interface exposes only Selection policy and derived presentation operations,
+with no sibling-module edge. The application implements persistence and HTTP
+through a second-level `module-participation` Worker slice and presents the
+capability through the existing browser `course-access` slice. This adds the
+booking first-level module and root-composition permission but changes no
+first-level application edge or third-party permission.
 
 ## Map Shape
 

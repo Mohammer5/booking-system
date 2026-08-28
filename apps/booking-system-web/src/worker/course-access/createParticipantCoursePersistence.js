@@ -97,7 +97,7 @@ function membershipStatement(database, participantId, courseId) {
 function groupStatement(database, participantId, courseId) {
   return database
     .prepare(
-      `select g.id, g.name, g.details, g.state
+      `select g.id, g.course_id, g.name, g.details, g.state
          from participants p
          join course_assignments a on a.participant_id = p.id
          join courses c on c.id = a.course_id
@@ -114,12 +114,23 @@ function groupStatement(database, participantId, courseId) {
 function moduleStatement(database, participantId, courseId) {
   return database
     .prepare(
-      `select m.id, m.title, m.description, m.instructions,
-              m.starts_at, m.ends_at, m.state
+      `select m.id, m.course_id, m.title, m.description, m.instructions,
+              m.starts_at, m.ends_at, m.state,
+              s.id as selection_id,
+              s.participant_id as selection_participant_id,
+              s.course_id as selection_course_id,
+              s.module_id as selection_module_id,
+              s.group_id as selection_group_id,
+              sg.name as selection_group_name,
+              sg.details as selection_group_details,
+              sg.state as selection_group_state
          from participants p
          join course_assignments a on a.participant_id = p.id
          join courses c on c.id = a.course_id
          join modules m on m.course_id = c.id
+         left join module_selections s
+           on s.participant_id = p.id and s.module_id = m.id
+         left join groups sg on sg.id = s.group_id
         where p.id = ? and p.state = 'active'
           and a.state = 'active' and c.state = 'active'
           and c.id = ?
@@ -151,6 +162,7 @@ function mapMembership(row) {
 function mapGroup(row) {
   return {
     id: row.id,
+    courseId: row.course_id,
     name: row.name,
     details: row.details,
     state: row.state,
@@ -161,11 +173,32 @@ function mapGroup(row) {
 function mapModule(row) {
   return {
     id: row.id,
+    courseId: row.course_id,
     title: row.title,
     description: row.description,
     instructions: row.instructions,
     startsAt: new Date(row.starts_at).toISOString(),
     endsAt: new Date(row.ends_at).toISOString(),
     state: row.state,
+    selection: mapSelection(row),
   };
+}
+
+/** @returns {object | null} Current own Selection and selected Group data. */
+function mapSelection(row) {
+  return row.selection_id === null
+    ? null
+    : {
+        id: row.selection_id,
+        participantId: row.selection_participant_id,
+        courseId: row.selection_course_id,
+        moduleId: row.selection_module_id,
+        groupId: row.selection_group_id,
+        group: {
+          id: row.selection_group_id,
+          name: row.selection_group_name,
+          details: row.selection_group_details,
+          state: row.selection_group_state,
+        },
+      };
 }

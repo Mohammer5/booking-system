@@ -10,6 +10,8 @@ import {
   Typography,
 } from "@mui/material";
 
+import { ModuleSelectionControl } from "./ModuleSelectionControl.jsx";
+
 /**
  * Present ordered Participant-relevant Module and Active Group structure.
  *
@@ -44,6 +46,8 @@ function ParticipantModuleList({ course, translate }) {
           {course.modules.map((module) => (
             <ListItem disablePadding key={module.id} sx={{ mb: 2 }}>
               <ModuleCard
+                courseId={course.id}
+                groups={course.groups}
                 module={module}
                 timezone={course.timezone}
                 translate={translate}
@@ -57,7 +61,7 @@ function ParticipantModuleList({ course, translate }) {
 }
 
 /** @returns {import("react").ReactElement} Read-only Module information. */
-function ModuleCard({ module, timezone, translate }) {
+function ModuleCard({ courseId, groups, module, timezone, translate }) {
   const stateKey =
     module.state === "cancelled" ? "cancelled" : "scheduled";
 
@@ -90,19 +94,12 @@ function ModuleCard({ module, timezone, translate }) {
             timezone={timezone}
             translate={translate}
           />
-          <Stack spacing={1}>
-            <Typography component="h4" variant="h4">
-              {translate("courseAccess.participantCourses.selection.title")}
-            </Typography>
-            <Chip
-              label={translate("courseAccess.participantCourses.selection.none")}
-              sx={{ alignSelf: "flex-start" }}
-              variant="outlined"
-            />
-            <Typography>
-              {translate("courseAccess.participantCourses.selection.noneDescription")}
-            </Typography>
-          </Stack>
+          <ModuleSelectionControl
+            courseId={courseId}
+            groups={groups}
+            module={module}
+            translate={translate}
+          />
         </Stack>
       </CardContent>
     </Card>

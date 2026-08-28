@@ -137,6 +137,17 @@ ordering, stable detail/direct refresh, Module/Active-Group presentation,
 unavailable privacy, pre-Active request refusal, sign-out, desktop/360px,
 keyboard/focus, overflow, and axe evidence.
 
+For Participant-managed Module Selection, booking-domain Vitest owns current
+eligibility, exact `startsAt` closure, explicit Group choice, independent
+overlapping Modules, stable replacement/removal outcomes, and derived
+current-versus-historical meaning. Worker/D1 Vitest owns the additive
+migration, same-Course ownership constraints, unique Participant/Module
+identity, guarded current-state writes, exact HTTP outcomes, privacy, and no
+partial side effects. Playwright owns no-default validation, independent
+selection and replacement, refresh persistence, removal confirmation and
+focus restoration, stale-deadline refusal, private own-Selection presentation,
+responsive layout, and axe evidence.
+
 The implemented integration uses project-pinned `@cloudflare/vitest-plugin`
 with isolated D1 state and the version-controlled migration sequence.
 
@@ -168,8 +179,8 @@ Detailed product invariants remain lower-level-test responsibilities.
 Routine E2E must not automate Google, Apple, Microsoft, or Facebook login UIs.
 The implemented direction is an explicitly non-production Better Auth
 test-capable composition that establishes normal application sessions for the
-fixed `first-admin`, `later-admin`, `participant-a`, and `participant-b`
-identities.
+fixed `first-admin`, `later-admin`, `participant-a`, `participant-b`, and
+`selection-participant` identities.
 Playwright then exercises the normal authenticated application and real
 booking-domain authorization; test authentication must not mock or bypass it or
 permit arbitrary-principal impersonation.

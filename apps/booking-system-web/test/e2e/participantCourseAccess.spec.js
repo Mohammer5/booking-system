@@ -342,7 +342,9 @@ async function expectParticipantCourseDetail(page) {
   await expect(page.getByText("Praxis-Modul")).toBeVisible();
   await expect(page.getByText("Gemeinsame Übungen")).toBeVisible();
   await expect(page.getByText("Bitte Unterlagen mitbringen")).toBeVisible();
-  await expect(page.getByText("Gruppe Nord")).toBeVisible();
+  await expect(
+    page.getByRole("heading", { level: 3, name: "Gruppe Nord" }),
+  ).toBeVisible();
   await expect(page.getByText("Raum 4")).toBeVisible();
   await expect(page.getByText("Keine Auswahl")).toBeVisible();
   await expect(
@@ -350,7 +352,12 @@ async function expectParticipantCourseDetail(page) {
   ).toBeVisible();
   await expect(page.getByText("Cross Course Participant")).toHaveCount(0);
   await expect(page.getByText("cross-course-participant@example.com")).toHaveCount(0);
-  await expect(page.getByRole("button", { name: /zuordnen|erstellen|speichern/i })).toHaveCount(0);
+  await expect(
+    page.getByRole("button", { name: "Modulauswahl speichern" }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: /zuordnen|erstellen/i }),
+  ).toHaveCount(0);
   await expect(page.getByRole("main")).toHaveCount(1);
 }
 

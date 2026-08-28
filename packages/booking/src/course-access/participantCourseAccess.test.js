@@ -97,6 +97,7 @@ describe("Participant Course detail", () => {
       getCourse({ participant: participant("a"), courseId: "course-a" }),
     ).resolves.toEqual({
       outcome: "course-available",
+      assignment: assignment("a", "a"),
       course: course("a"),
       groups: [],
       modules: [],

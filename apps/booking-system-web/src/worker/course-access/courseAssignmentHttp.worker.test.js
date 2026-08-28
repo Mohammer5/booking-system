@@ -196,6 +196,7 @@ describe("direct Assignment HTTP contract", () => {
     await expect(countRows("participants")).resolves.toBe(2);
     await expect(membershipTables()).resolves.toEqual([
       { name: "course_assignments" },
+      { name: "module_selections" },
     ]);
   });
 

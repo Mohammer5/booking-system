@@ -1,12 +1,12 @@
 ---
 id: TASK-jvqrk
 title: Manage Participant Module Selections
-status: backlog
+status: done
 priority: medium
 type: feature
 effort: medium
 epic: EPIC-m22qh
-plan: null
+plan: PLAN-sqii3
 depends_on:
 - TASK-qk47b
 blocks:
@@ -20,7 +20,7 @@ blocks:
 related:
 - TASK-2u7z6
 - TASK-49if4
-assignee: null
+assignee: gerkules
 tags:
 - participant
 - selection
@@ -28,7 +28,7 @@ tags:
 - ui
 position: c60
 created: 2026-08-27
-updated: 2026-08-27
+updated: 2026-08-28
 ---
 
 # Manage Participant Module Selections
@@ -45,32 +45,32 @@ rather than introducing a stored Selection status.
 
 ## Acceptance Criteria
 
-- [ ] For one Participant and Module, exactly zero or one Module Selection
+- [x] For one Participant and Module, exactly zero or one Module Selection
       exists; no Selection means non-participation and Course membership never
       creates one implicitly.
-- [ ] The Participant explicitly chooses the Group; the system does not choose
+- [x] The Participant explicitly chooses the Group; the system does not choose
       a default, preferred, previous, or first available Group.
-- [ ] Creating or changing a Selection requires an Active Participant, Active
+- [x] Creating or changing a Selection requires an Active Participant, Active
       Course Assignment, Active Course, Active Group, and Scheduled Module
       where `now < startsAt`, with the selected Group and Module belonging to
       the same Course.
-- [ ] Selecting the already-selected Group is an idempotent successful no-op,
+- [x] Selecting the already-selected Group is an idempotent successful no-op,
       while choosing another eligible Group replaces the existing Selection
       and leaves exactly the new current choice.
-- [ ] Eligible pre-start removal leaves no Selection and therefore records
+- [x] Eligible pre-start removal leaves no Selection and therefore records
       non-participation.
-- [ ] Replaced or removed pre-start values are not retained merely as audit
+- [x] Replaced or removed pre-start values are not retained merely as audit
       history or represented by a cancelled-booking state.
-- [ ] Creation, replacement, and removal stop at exact `startsAt`; every
+- [x] Creation, replacement, and removal stop at exact `startsAt`; every
       mutation is validated against authoritative current state so a stale
       action cannot bypass current eligibility or the deadline.
 
-- [ ] One Participant may select overlapping Modules within or across Courses;
+- [x] One Participant may select overlapping Modules within or across Courses;
       no warning or conflict prevention is introduced.
-- [ ] D1 enforces at most one Selection per Participant/Module and same-Course
+- [x] D1 enforces at most one Selection per Participant/Module and same-Course
       references. Concurrent valid changes leave one accepted current Group;
       any refused change leaves the prior Selection unchanged.
-- [ ] A retained Selection is presented as live while every live predicate is
+- [x] A retained Selection is presented as live while every live predicate is
       true and `now < endsAt`, and becomes historical at exact `endsAt`; this
       meaning is derived, never persisted as a Selection status.
 
@@ -96,6 +96,13 @@ status behavior are explicit acceptance surfaces.
   or Assignment loss, overlapping Modules, refresh, responsive layouts,
   keyboard/dialog focus, and axe scans.
 - Full `pnpm check`.
+
+Completed locally with 184 booking-domain tests, 118 Worker/D1/migration tests,
+both production builds, and all 25 Chromium E2E tests passing through the final
+canonical `pnpm check`. The composed Module Selection journey covers explicit
+choice, idempotent reselect, replacement, independent overlapping Modules,
+refresh, removal confirmation/focus restoration, missing choice, stale
+deadline refusal, privacy, responsive widths, and axe scans.
 
 ## Out Of Scope / Notes
 

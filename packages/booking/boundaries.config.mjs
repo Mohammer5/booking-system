@@ -19,10 +19,20 @@ export const bookingBoundaryMap = {
       thirdPartyDependencies: [],
       workspaceDependencies: [],
     },
+    "module-participation": {
+      modules: [],
+      thirdPartyDependencies: [],
+      workspaceDependencies: [],
+    },
   },
   compositionFiles: {
     "index.js": {
-      modules: ["admin-access", "course-access", "course-structure"],
+      modules: [
+        "admin-access",
+        "course-access",
+        "course-structure",
+        "module-participation",
+      ],
       thirdPartyDependencies: [],
       workspaceDependencies: [],
     },

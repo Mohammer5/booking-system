@@ -6,10 +6,11 @@ for one concept and update this file when stable terminology changes.
 ## Repository Concepts
 
 The product concepts below are accepted specification truth. The first Admin
-bootstrap, Course/Course-wide-Group/future-Scheduled-Module creation, and
-Participant registration and direct Course Assignment subsets are implemented;
-remaining concepts and later lifecycle behavior are still specifications until
-their delivery tasks complete.
+bootstrap, Course/Course-wide-Group/future-Scheduled-Module creation,
+Participant registration/direct Course Assignment/assigned Course access, and
+Participant-managed Module Selection subsets are implemented; remaining
+concepts and later lifecycle behavior are still specifications until their
+delivery tasks complete.
 
 ### Admin-Assisted Booking
 
@@ -130,6 +131,9 @@ using one Group. Absence means non-participation. A retained Selection is live
 only while Participant, Course, and Assignment are Active, the Module is
 Scheduled, and `now < endsAt`; otherwise it is historical. It does not prove
 attendance. See [Module participation](product/module-participation.md).
+The current local application implements Participant set/change/remove before
+`startsAt` and derives current or historical presentation without storing a
+Selection status; Admin-assisted Selection remains later work.
 
 ### Participant
 
@@ -217,9 +221,11 @@ Its implemented `admin-access` module owns the first Admin behavior, and its
 implemented `course-structure` module owns Course, Course-wide Group, future
 Scheduled Module, and Course-local definite-time creation policy. Its
 implemented `course-access` module owns fresh Participant context and
-registration policy plus direct Course Assignment; later Participant Course
-access, Invite, profile, and lifecycle behavior stays with that module. The
-accepted `module-participation` module arrives with its later product slice. See
+registration policy plus direct Course Assignment and assigned Course access;
+Invite, profile, and lifecycle behavior stays with that module. Its implemented
+`module-participation` module owns Participant Selection eligibility,
+set/change/remove, and derived current/history policy, with Admin-assisted
+behavior still deferred. See
 [Packages](architecture/packages.md#accepted-initial-package).
 
 ### Booking-System Web Application
@@ -228,8 +234,9 @@ The implemented single deployable application
 `@booking-system/booking-system-web` at `apps/booking-system-web`. It owns the
 browser/Vite experience, frontend static assets, Cloudflare Worker and
 same-origin `/api/*` handling including Participant registration/directory,
-Course membership/direct Assignment, and Course-owned Group/Module creation,
-private technical adapters, and composition roots. See
+Course membership/direct Assignment, Participant Module Selection, and
+Course-owned Group/Module creation, private technical adapters, and composition
+roots. See
 [Applications](architecture/applications.md#accepted-initial-boundary).
 
 ### Boundary Map

@@ -16,3 +16,9 @@ export {
   createResolveParticipantContext,
   hasParticipantCourseAccess,
 } from "./course-access/index.js";
+export {
+  createRemoveParticipantModuleSelection,
+  createSetParticipantModuleSelection,
+  deriveModuleSelectionAvailability,
+  deriveModuleSelectionPresentation,
+} from "./module-participation/index.js";

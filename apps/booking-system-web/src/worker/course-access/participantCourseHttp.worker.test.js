@@ -453,6 +453,10 @@ function moduleResponse(suffix, title, state, startsAt) {
     startsAt: new Date(startsAt).toISOString(),
     endsAt: new Date(startsAt + 3_600_000).toISOString(),
     state,
+    selectionAvailability:
+      state === "scheduled" && startsAt > Date.parse(env.BOOKING_TEST_NOW)
+        ? "open"
+        : "closed",
     selection: null,
   };
 }

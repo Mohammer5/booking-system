@@ -34,6 +34,14 @@ const fixturesByPath = new Map([
       email: "participant-b@fixture.invalid",
     },
   ],
+  [
+    "/api/_fixtures/session/selection-participant",
+    {
+      id: "fixture-selection-participant",
+      name: "Selection Participant Fixture",
+      email: "selection-participant@fixture.invalid",
+    },
+  ],
 ]);
 
 /**

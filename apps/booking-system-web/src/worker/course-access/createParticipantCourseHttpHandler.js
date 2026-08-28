@@ -2,6 +2,8 @@ import {
   createGetParticipantCourse,
   createListParticipantCourses,
   createResolveParticipantContext,
+  deriveModuleSelectionAvailability,
+  deriveModuleSelectionPresentation,
 } from "@booking-system/booking";
 
 import {
@@ -78,10 +80,37 @@ async function handleAuthorizedRoute(route, participant, operations) {
 
   return result.outcome === "course-available"
     ? participantCourseJsonResponse(
-        toParticipantCourseDetailResponse(result),
+        toParticipantCourseDetailResponse(
+          presentParticipantCourse(result, participant, operations.now()),
+        ),
         200,
       )
     : participantCourseJsonResponse({ outcome: "course-unavailable" }, 404);
+}
+
+/** @returns {object} Course detail with own Selection meaning derived now. */
+function presentParticipantCourse(result, participant, now) {
+  return {
+    ...result,
+    modules: result.modules.map((module) => ({
+      ...module,
+      selectionAvailability: deriveModuleSelectionAvailability({
+        participant,
+        assignment: result.assignment,
+        course: result.course,
+        module,
+        now,
+      }),
+      selection: deriveModuleSelectionPresentation({
+        selection: module.selection,
+        participant,
+        assignment: result.assignment,
+        course: result.course,
+        module,
+        now,
+      }),
+    })),
+  };
 }
 
 /** @returns {Promise<object>} Current Active Participant or exact refusal. */

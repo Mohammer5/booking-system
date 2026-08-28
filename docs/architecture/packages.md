@@ -35,7 +35,7 @@ modules:
   Course access, and membership; and
 - `module-participation` for Module participation.
 
-`admin-access`, `course-structure`, and `course-access` now exist in source.
+All four responsibility modules now exist in source.
 The first implements the first Admin bootstrap subset; the second implements
 Active Course, Course-wide Group, and future Scheduled Module creation,
 including normalized Group names, IANA-zone local-time resolution, explicit
@@ -45,14 +45,16 @@ explicit Participant registration with complete trimmed-email policy, direct
 Course Assignment for registered Active or Disabled targets, and current
 Active Participant + Active Assignment + Active Course list/detail access.
 Invite, profile-editing, Assignment/Participant lifecycle, and Archived-Course
-access stay with that owner when implemented. `module-participation` is
-introduced only with the later MVP behavior it owns. These are internal
+access stay with that owner when implemented. `module-participation` implements
+Participant Selection eligibility, replacement, removal, and derived
+current-versus-historical presentation; later Admin-assisted behavior remains
+with that owner. These are internal
 responsibility modules within one booking package, not separate workspace
 packages.
 
 Authentication-provider SDK mechanics, browser UI implementation, HTTP, Vite,
 Cloudflare, D1, SQL uniqueness enforcement, and schedule-input presentation
-remain private to `apps/booking-system-web`; the three implemented modules own
+remain private to `apps/booking-system-web`; the four implemented modules own
 only their product policy and conceptual outcomes.
 
 The same prohibition covers Better Auth, OAuth/provider SDKs, cookies,

@@ -31,6 +31,7 @@ export function createGetParticipantCourse({
     return hasAccess
       ? {
           outcome: "course-available",
+          assignment: membership.assignment,
           course: membership.course,
           groups: membership.groups,
           modules: membership.modules,

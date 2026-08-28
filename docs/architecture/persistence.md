@@ -86,9 +86,10 @@ directory, constraint-backed registration, guarded direct-Assignment, and
 assigned Active-Course list/detail capabilities over `participants`,
 `course_assignments`, `courses`, `groups`, and `modules`. The Participant
 Course reads join current Active Participant, Active Assignment, and Active
-Course state before returning private data. Invite and Module Selection schemas
-wait for the work that needs them, while Assignment lifecycle transitions
-remain deferred to their owning slice.
+Course state before returning private data. The implemented
+`module-participation` slice owns guarded Selection set/change/remove over
+`module_selections`; Invite schemas and Assignment lifecycle transitions remain
+deferred to their owning slices.
 
 ## Environment Isolation
 
@@ -130,7 +131,7 @@ change requires an explicit exceptional deployment decision.
 
 ## Current State And Persistence Lifecycle
 
-The application has local/test D1 bindings and five version-controlled
+The application has local/test D1 bindings and six version-controlled
 migrations. `0001_first_admin_foundation.sql` creates the Better Auth `user`,
 `session`, `account`, and `verification` technical tables and indexes plus
 `admin_users` and `admin_bootstrap_history`. `0002_courses.sql` adds the
@@ -139,7 +140,8 @@ optional description, and constrained Active/Archived state.
 `0003_groups_and_modules.sql` adds permanent Course scheduling history plus
 Course-owned Groups and Modules. `0004_participants.sql` adds registered
 Participants. `0005_course_assignments.sql` adds retained ordinary Course
-membership. No remote D1 database exists.
+membership. `0006_module_selections.sql` adds Participant Module Selections
+with same-Course ownership constraints. No remote D1 database exists.
 
 ### Implemented First Schema
 
@@ -176,8 +178,7 @@ principal, required nonblank name, retained trimmed email, a unique lowercase
 whole-email comparison key, and constrained Active/Disabled state. One insert
 is the complete registration outcome: the principal and normalized-email
 constraints decide repeated, concurrent, and duplicate-email attempts without
-pending identity or partial profile state. Module Selection remains absent
-until its owning slice is implemented.
+pending identity or partial profile state.
 
 The fifth additive migration preserves all existing application data and adds
 one `course_assignments` table with stable identity, constrained Active/Revoked
@@ -188,14 +189,17 @@ write acceptance. The unique pair makes repeated and concurrent Active
 assignment idempotent, while a refused write creates no identity or Module
 Selection. Assignment lifecycle transitions remain deferred.
 
-The assigned Participant Course access slice needs no sixth migration. Its
-list and detail capabilities read the existing five-migration schema with
-current-state guards in SQL. Detail returns the Course's current Modules and
-Active Groups only after the Participant, Assignment, and Course are all
-Active. Missing, cross-Participant, unassigned, inactive-Assignment, and
-inactive-Course identifiers share one unavailable outcome. Module Selection
-remains absent from the schema and is represented only as an explicit
-`selection: null` response value until its owning slice is implemented.
+The sixth additive migration preserves existing application data and adds one
+`module_selections` table with stable identity, restrictive ownership, one
+unique Participant/Module pair, and composite references requiring the Module
+and selected Group to belong to the recorded Course. Guarded set/change/remove
+statements recheck an Active Participant, Active Assignment and Course,
+Scheduled Module with `now < startsAt`, and—when setting—an Active same-Course
+Group. Replacement updates only the Group and preserves Selection identity;
+refused or stale writes leave existing state unchanged. Participant Course
+detail joins only the requesting Participant's Selection and derives its live
+or historical meaning from current state and time rather than storing a
+status.
 
 The full migration sequence is applied to clean isolated state in Worker tests
 and before browser E2E. The schema is designed for eventual D1 deployment. A

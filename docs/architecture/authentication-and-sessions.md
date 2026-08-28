@@ -293,8 +293,9 @@ storage are deferred to implementation.
 The application uses a separate explicitly
 [non-production authentication](../DICTIONARY.md#non-production-authentication)
 composition. The authentication-owned fixture interface uses Better Auth's
-`testUtils` plugin to create normal signed D1-backed sessions for four fixed
-identities: `first-admin`, `later-admin`, `participant-a`, and `participant-b`.
+`testUtils` plugin to create normal signed D1-backed sessions for five fixed
+identities: `first-admin`, `later-admin`, `participant-a`, `participant-b`, and
+`selection-participant`.
 
 Production and non-production authentication are different executable
 compositions rather than one production composition conditionally exposing a
@@ -316,7 +317,7 @@ The mechanism must:
 
 - establish normal Better Auth application sessions for deterministic named
   fixture identities, currently `first-admin`, `later-admin`, `participant-a`,
-  and `participant-b`;
+  `participant-b`, and `selection-participant`;
 - let Playwright exercise the normal authenticated application and real domain
   authorization after session establishment;
 - prevent arbitrary-principal impersonation, including a caller-supplied

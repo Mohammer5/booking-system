@@ -53,25 +53,29 @@ implementation backlog in Markplane. Release hardening and hosted staging
 verification remain mandatory before the first production release.
 
 The local application foundation, Course-structure creation, Participant
-registration/direct Course Assignment, and assigned Participant Course-access
-slices are now implemented:
+registration/direct Course Assignment, assigned Participant Course access, and
+Participant Module Selection slices are now implemented:
 
 - `@booking-system/booking` at `packages/booking` owns the implemented
   `admin-access` behavior plus `course-structure` Course, Course-wide Group,
   future Module, and Course-local definite-time creation policy, plus
   `course-access` Participant registration, fresh context, and direct Course
-  Assignment plus assigned Active-Course list/detail access policy;
+  Assignment plus assigned Active-Course list/detail access policy, and
+  `module-participation` Participant selection eligibility, replacement,
+  removal, and current-versus-historical presentation policy;
 - `@booking-system/booking-system-web` at `apps/booking-system-web` owns the
   React `/` Participant Google entry/onboarding/home, `/admin` administration
   flow, Participant directory, nested Course index/create/detail routes,
   Course membership and Assignment interaction, and Group/Module creation
-  forms, plus the Participant `/courses/:courseId` detail and query-driven
-  assigned-Course home, Worker/API handling, Better Auth composition, D1
+  forms, plus the Participant `/courses/:courseId` detail, explicit Module
+  Selection controls, and query-driven assigned-Course home, Worker/API
+  handling, Better Auth composition, D1
   persistence, Vite/Workers Static Assets integration, and local runtime;
-- five version-controlled migrations create the Better Auth/Admin foundation,
+- six version-controlled migrations create the Better Auth/Admin foundation,
   Courses, additive Group/Module schema with permanent first-Module scheduling
-  history, constrained Participants, and constrained Course Assignments, with
-  clean-state construction and data-preserving upgrade evidence;
+  history, constrained Participants, constrained Course Assignments, and
+  same-Course Module Selections, with clean-state construction and
+  data-preserving upgrade evidence;
 - production and explicit non-production Worker compositions structurally
   separate fixed fixture-session establishment from production, while their
   manual-development and fixture/Playwright D1 state use separate generated
@@ -98,8 +102,14 @@ slices are now implemented:
 - Participant Course list/detail reads derive the Participant only from the
   authenticated principal and guard D1 reads by current Active Participant,
   Active Assignment, and Active Course state. They expose ordered Modules,
-  Active Groups, and `selection: null` only, never rosters, peer profiles,
-  emails, counts, Assignments, Admin data, or a public catalogue;
+  Active Groups, and only the current Participant's own Selection when present,
+  never rosters, peer profiles, emails, counts, Assignments, Admin data, or a
+  public catalogue;
+- guarded Selection set/change/remove writes recheck the Participant,
+  Assignment, Course, Scheduled Module, Active same-Course Group, and exact
+  `startsAt` deadline at acceptance; replacement preserves one stable
+  Participant/Module Selection identity, while refusal creates no partial
+  effect;
 - the stable Course detail lists and creates Course-wide Groups with unique
   normalized Active names and future Scheduled Modules, resolves local minute
   input through the Course IANA timezone, rejects DST gaps, requires an
@@ -117,7 +127,9 @@ slices are now implemented:
   Participant privacy, global zero-membership discovery, Course membership
   empty/list/assign/idempotent-repeat states, Disabled targets, Assignment
   stale/technical refusals, assigned-Course list/detail/refresh/privacy,
-  truthful no-Selection state, and overflow;
+  explicit no-default selection, overlapping-Module selections, change/remove
+  confirmation and focus, stale-deadline refusal, truthful own current/history
+  presentation, and overflow;
 - both workspace boundary maps are registered in ESLint with exact module,
   workspace, composition, third-party, and test-only permissions;
 - the root Nix flake supplies NixOS developer-host tooling: Node, pnpm,
@@ -129,7 +141,7 @@ slices are now implemented:
 
 Apple, Microsoft, and Facebook providers, Course/Group/Module editing and
 lifecycle, Participant profile/lifecycle administration, Assignment lifecycle,
-Archived-Course Participant access, Selection persistence/mutation, Invite,
+Archived-Course Participant access, Admin-assisted Module Selection, Invite,
 later Admin capabilities, remote Google credentials and production
 callback/domain configuration, remote Cloudflare staging/production resources,
 release

@@ -27,7 +27,8 @@ This product area remains the implementation-agnostic source of product truth.
 The repository now implements the first Admin bootstrap subset, the first
 [Course](../DICTIONARY.md#course) structure subset, [Participant
 onboarding](../DICTIONARY.md#participant-onboarding), and direct [Course
-Assignment](../DICTIONARY.md#course-assignment). An Active Admin User can
+Assignment](../DICTIONARY.md#course-assignment), plus Participant-managed
+[Module Selection](../DICTIONARY.md#module-selection). An Active Admin User can
 create an Active Course with the canonical minimal fields, add Course-wide
 [Groups](../DICTIONARY.md#group) whose Active names are normalized and unique,
 add future Scheduled [Modules](../DICTIONARY.md#module) through the Course
@@ -41,12 +42,15 @@ email, become one Active Participant, return to the Participant home, and see
 the valid zero-Assignment state without public Course discovery. An Active
 Participant now sees exactly the Active Courses reached through their own
 Active Assignments and may open a stable private detail containing relevant
-Course information, Modules, Active Groups, and only the truthful absence of
-their own Module Selection. Unknown, inactive, unassigned, Revoked, stale, and
-cross-Participant Course identifiers reveal no Course data. Course, Group, and
-Module editing or lifecycle operations; Module Selection persistence/mutation,
-Assignment lifecycle actions, Archived-Course historical access, Invite,
-Participant profile/lifecycle, later Admin onboarding, and later Admin
-management behavior remain unimplemented. Technology, persistence, API,
+Course information, Modules, Active Groups, and only their own current or
+historical Module Selection. Before a Scheduled Module starts, the Participant
+may explicitly select or change to an Active same-Course Group, or remove the
+Selection; overlapping Modules remain independent and no Group is selected by
+default. Unknown, inactive, unassigned, Revoked, stale, and cross-Participant
+Course identifiers reveal no Course data. Course, Group, and Module editing or
+lifecycle operations; Admin-assisted Module Selection, Assignment lifecycle
+actions, Archived-Course historical access, Invite, Participant
+profile/lifecycle, later Admin onboarding, and later Admin management behavior
+remain unimplemented. Technology, persistence, API,
 frontend, and infrastructure mechanics remain outside this product
 specification and do not alter its contracts.

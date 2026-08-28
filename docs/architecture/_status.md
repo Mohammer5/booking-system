@@ -98,7 +98,9 @@
   `course-structure` factories for Course, Course-wide Group, and future
   Module creation and `course-access` factories for fresh Participant context,
   registration, direct Course Assignment, and current assigned Active-Course
-  list/detail access. Course-local time resolution and complete-email
+  list/detail access, plus `module-participation` factories for Participant
+  Selection set/change/remove and derived current/history presentation.
+  Course-local time resolution and complete-email
   normalization remain internal to their owning responsibility modules.
 - The web application has distinct `browser`, `worker`, and `authentication`
   responsibilities plus thin browser, production Worker, and non-production
@@ -113,11 +115,13 @@
   explicit name/email onboarding when missing, and returns an Active
   Participant to a query-driven zero/one/multiple assigned-Course home without
   public discovery. Its stable detail exposes relevant Course, Module, Active-
-  Group, and own no-Selection data only. The Admin Participant directory
+  Group, and own Selection data only, with explicit set/change/remove controls
+  before the Module starts. The Admin Participant directory
   includes registered zero-Assignment Participants. Stable Course detail owns
   Course membership, direct Assignment, Group, and future-Module interactions
   without incidental routes.
-- TanStack Query owns remote Admin, Course, Participant, and Assignment state;
+- TanStack Query owns remote Admin, Course, Participant, Assignment, and
+  Module Selection state;
   React Hook Form owns the Admin-name, Course, Group, Module, and Participant-
   onboarding forms; and German-first slice-owned i18next resources own all
   browser copy.
@@ -139,11 +143,12 @@
 - Better Auth 1.7.2 uses D1-backed normal sessions and crosses into booking
   behavior only as `externalPrincipalId`. Google sign-in uses the one normal
   `/api/auth/callback/google` provider callback and returns to the fixed
-  `/admin` or `/` application context. Four fixed non-production fixture
+  `/admin` or `/` application context. Five fixed non-production fixture
   identities use a separate executable composition.
-- Five version-controlled D1 migrations implement the authentication/Admin
+- Six version-controlled D1 migrations implement the authentication/Admin
   foundation plus additive Course, Group/Module, Participant, and Course
-  Assignment schemas. Manual development and fixture/Playwright runs use
+  Assignment schemas and constrained same-Course Module Selections. Manual
+  development and fixture/Playwright runs use
   separate generated Wrangler persistence roots, so test preparation cannot
   invalidate a running development database. Atomic
   `D1Database.batch()` preserves exactly-one first bootstrap; guarded Course,
@@ -158,6 +163,10 @@
   Participant Course reads join current Active Participant, Active Assignment,
   and Active Course state, order list/Module/Group data deterministically, and
   restrict Participant Groups to Active state without adding a migration.
+  Guarded Selection replacement/removal rechecks current Participant,
+  Assignment, Course, Module, Group, and deadline state in SQL; one unique
+  Participant/Module pair preserves stable identity while composite references
+  prevent cross-Course Module/Group ownership.
 - Both explicit workspace boundary maps are registered in ESLint. The boundary
   converter denies undeclared third-party imports and supports exact test-only
   and composition-interface permissions.
@@ -169,7 +178,9 @@
   refusal, onboarding/zero-membership/sign-out, same-principal dual-context,
   Participant directory and Course membership/Assignment states, Disabled
   targets, idempotent repeat, assigned-Course list/detail/refresh, current-state
-  loss, identifier privacy, truthful no-Selection presentation, Group/Module
+  loss, identifier privacy, explicit no-default Module Selection,
+  overlapping-Module independence, replacement/removal, confirmation focus,
+  stale-deadline refusal, truthful current/history presentation, Group/Module
   creation, DST gap/overlap, exact-instant, and overflow assertions.
 - The root flake supplies Node 24, pnpm 11.17.0, Git, Markplane, Chromium, and
   a Nix-patched official workerd 1.20260826.1 binary for x86_64-linux. It points

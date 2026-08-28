@@ -121,8 +121,12 @@ describe("Public booking package interface", () => {
       "createGetParticipantCourse",
       "createListParticipantCourses",
       "createRegisterParticipant",
+      "createRemoveParticipantModuleSelection",
       "createResolveAdminContext",
       "createResolveParticipantContext",
+      "createSetParticipantModuleSelection",
+      "deriveModuleSelectionAvailability",
+      "deriveModuleSelectionPresentation",
       "hasParticipantCourseAccess",
     ]);
   });

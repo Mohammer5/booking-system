@@ -100,9 +100,9 @@ describe("Participant Course detail persistence", () => {
         state: "active",
       },
       groups: [
-        { id: "group-a", name: "beta", details: "Details a", state: "active" },
-        { id: "group-b", name: "Beta", details: "Details b", state: "active" },
-        { id: "group-z", name: "zeta", details: "Details z", state: "active" },
+        { id: "group-a", courseId: "course-a", name: "beta", details: "Details a", state: "active" },
+        { id: "group-b", courseId: "course-a", name: "Beta", details: "Details b", state: "active" },
+        { id: "group-z", courseId: "course-a", name: "zeta", details: "Details z", state: "active" },
       ],
       modules: [
         moduleResult("a", "First", 1_700_000_000_000, "scheduled"),
@@ -153,7 +153,6 @@ describe("Participant Course detail persistence", () => {
       ),
     ).resolves.toMatchObject({ groups: [], modules: [] });
     await expect(bookingCounts()).resolves.toEqual(before);
-    await expect(selectionTables()).resolves.toEqual([]);
   });
 });
 
@@ -244,20 +243,22 @@ async function insertModules(modules) {
 function moduleResult(suffix, title, startsAt, state) {
   return {
     id: `module-${suffix}`,
+    courseId: "course-a",
     title,
     description: `Description ${suffix}`,
     instructions: `Instructions ${suffix}`,
     startsAt: new Date(startsAt).toISOString(),
     endsAt: new Date(startsAt + 3_600_000).toISOString(),
     state,
+    selection: null,
   };
 }
 
 /** @returns {Promise<object>} Counts proving the read has no side effect. */
 async function bookingCounts() {
-  const [assignments, courses, groups, modules, participants] =
+  const [assignments, courses, groups, modules, participants, selections] =
     await Promise.all(
-      ["course_assignments", "courses", "groups", "modules", "participants"].map(
+      ["course_assignments", "courses", "groups", "modules", "participants", "module_selections"].map(
         async (table) => {
           const row = await env.DB.prepare(
             `select count(*) as count from "${table}"`,
@@ -268,15 +269,5 @@ async function bookingCounts() {
       ),
     );
 
-  return { assignments, courses, groups, modules, participants };
-}
-
-/** @returns {Promise<Array<object>>} Any unexpectedly introduced Selection table. */
-async function selectionTables() {
-  const { results } = await env.DB.prepare(
-    `select name from sqlite_master
-      where type = 'table' and name = 'module_selections'`,
-  ).all();
-
-  return results;
+  return { assignments, courses, groups, modules, participants, selections };
 }

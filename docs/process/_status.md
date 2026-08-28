@@ -29,7 +29,9 @@ Current reality:
   presentation, Participant onboarding/zero membership, Participant directory
   and Course membership/direct-Assignment states, assigned Participant Course
   list/detail, private unavailable identifiers, current Module/Active-Group
-  structure with no Selection mutation, Disabled targets, idempotent repeat,
+  structure with explicit no-default Module Selection, overlapping-Module
+  independence, replacement/removal confirmation, stale-deadline refusal,
+  current/history presentation, Disabled targets, idempotent repeat,
   dual-context session resolution, sign-out, stale/technical refusal, and
   overflow evidence. The tag-gated release policy remains unimplemented.
 - x86_64 NixOS developers can enter a pinned host-tooling environment with

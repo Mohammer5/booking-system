@@ -17,7 +17,8 @@ JavaScript conventions, and ESLint-enforced dependency rules.
 - Path: `docs/architecture/_status.md`
 - Summary: Current implemented application/package foundation, Course
   structure-creation, Participant-registration, direct-Assignment, and
-  assigned Participant Course-access slices, React browser routes and
+  assigned Participant Course-access plus Module-Selection slices, React
+  browser routes and
   responsive Admin/Participant experience, Google
   sign-in, browser-private MUI theme and accessibility baseline,
   functional-composition direction, Cloudflare/Vite/D1 runtime, NixOS
@@ -58,8 +59,8 @@ JavaScript conventions, and ESLint-enforced dependency rules.
 - Summary: Defines application boundaries and the implemented
   `apps/booking-system-web` workspace with responsive Participant/Admin
   contexts, Participant onboarding/assigned-Course access/directory, Course
-  membership, and Course/Group/Module creation as the complete initial
-  same-origin application.
+  membership, Participant Module Selection, and Course/Group/Module creation as
+  the complete initial same-origin application.
 - Read when: A task adds, removes, deploys, or changes an application boundary
   or application manifest ownership.
 - Tags: architecture, applications, deployment, composition, manifests
@@ -81,9 +82,9 @@ JavaScript conventions, and ESLint-enforced dependency rules.
 - Path: `docs/architecture/persistence.md`
 - Summary: Defines SQLite-compatible semantics, implemented local/test D1,
   first-Admin, Course, Group/Module, Participant, and Course Assignment
-  migrations, assigned Participant Course reads, environment isolation,
-  guarded acceptance, uniqueness, permanent scheduling history, and migration
-  constraints.
+  plus Module Selection migrations, assigned Participant Course reads,
+  environment isolation, guarded acceptance, uniqueness, permanent scheduling
+  history, and migration constraints.
 - Read when: A task affects databases, D1, SQL semantics, environment data,
   migrations, or persistence safety.
 - Tags: architecture, persistence, database, d1, sqlite, migrations
@@ -107,7 +108,8 @@ JavaScript conventions, and ESLint-enforced dependency rules.
 - Summary: Defines conceptual package boundaries, the implemented
   `packages/booking` with `admin-access`, Course/Group/Module
   `course-structure`, and Participant-registration/direct-Assignment/assigned-
-  Course `course-access` behavior, accepted later modules, and why technical
+  Course `course-access` plus Participant-Selection `module-participation`
+  behavior, and why technical
   dependency segregation does not justify extraction.
 - Read when: A task adds, removes, extracts, or changes a package boundary or
   proposes a package to segregate technical dependencies.
@@ -117,8 +119,9 @@ JavaScript conventions, and ESLint-enforced dependency rules.
 - Path: `docs/architecture/module-organization.md`
 - Summary: Defines the implemented responsibility modules, Course-structure,
   Participant-registration, direct-Assignment, and assigned Participant Course
-  slices, source roots, manifest ownership, browser/Worker/authentication
-  separation, interfaces, entrypoints, adapters, and dependency direction.
+  plus Module-Selection slices, source roots, manifest ownership,
+  browser/Worker/authentication separation, interfaces, entrypoints, adapters,
+  and dependency direction.
 - Read when: A task affects source placement, workspace manifests, modules,
   runtime responsibilities, slices, imports, interfaces, or tests.
 - Tags: architecture, modules, source-layout, manifests, runtime-boundaries
@@ -136,9 +139,10 @@ JavaScript conventions, and ESLint-enforced dependency rules.
 - Path: `docs/architecture/browser-conventions.md`
 - Summary: React-based browser ownership rules for React Router, TanStack Query,
   React Hook Form, Material UI, responsive shell/Course structure and
-  Participant onboarding/assigned-Course/directory/Course-membership navigation
-  and accessible interaction, Better Auth session actions, classnames, debug,
-  i18next, localization, routes, and vertical-slice placement.
+  Participant onboarding/assigned-Course/directory/Course-membership/Module-
+  Selection navigation and accessible interaction, Better Auth session actions,
+  classnames, debug, i18next, localization, routes, and vertical-slice
+  placement.
 - Read when: A task affects browser routing, navigation, server state, forms,
   frontend validation, conditional classes, diagnostics, localization, or
   browser dependency choices.
@@ -157,8 +161,9 @@ JavaScript conventions, and ESLint-enforced dependency rules.
 ### Dependency Boundaries
 - Path: `docs/architecture/boundaries.md`
 - Summary: Canonical human counterpart to the two implemented per-workspace
-  deny-by-default maps, including exact module, workspace, third-party,
-  composition, test-only, and runtime-graph distinctions.
+  deny-by-default maps, including the booking `module-participation`
+  responsibility and exact workspace, third-party, composition, test-only, and
+  runtime-graph distinctions.
 - Read when: A task changes workspace dependencies, responsibility modules,
   composition permissions, namespaces, package exports, manifests, or runtime
   dependency graphs.

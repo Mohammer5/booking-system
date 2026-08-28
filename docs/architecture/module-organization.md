@@ -6,10 +6,10 @@ The `packages/booking` workspace currently contains `admin-access` for first
 Admin bootstrap, `course-structure` for Course, Course-wide Group, and future
 Scheduled Module creation, and `course-access` for fresh Participant context
 resolution, registration, direct Course Assignment, and assigned Active-Course
-list/detail access. The accepted later
-package scope also names
-`module-participation`; it does not exist until its product behavior is
-implemented. These concepts remain modules inside one domain package rather
+list/detail access. It also contains `module-participation` for Participant
+Selection eligibility, set/change/remove operations, and derived
+current-versus-historical presentation. These concepts remain modules inside
+one domain package rather
 than separate workspaces. The implemented modules own product policy, not
 authentication-provider SDK, HTTP, D1, or browser UI mechanics.
 

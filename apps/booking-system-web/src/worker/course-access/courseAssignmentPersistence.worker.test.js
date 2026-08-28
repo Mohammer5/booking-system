@@ -161,6 +161,7 @@ describe("direct Course Assignment persistence", () => {
     await expect(countRows("course_assignments")).resolves.toBe(1);
     await expect(membershipTables()).resolves.toEqual([
       { name: "course_assignments" },
+      { name: "module_selections" },
     ]);
   });
 });

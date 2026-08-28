@@ -53,7 +53,7 @@ function toParticipantGroupResponse(group) {
   };
 }
 
-/** @returns {object} Narrow Module and truthful current own-Selection state. */
+/** @returns {object} Narrow Module and current own-Selection presentation. */
 function toParticipantModuleResponse(module) {
   return {
     id: module.id,
@@ -63,7 +63,21 @@ function toParticipantModuleResponse(module) {
     startsAt: module.startsAt,
     endsAt: module.endsAt,
     state: module.state,
-    selection: null,
+    selectionAvailability: module.selectionAvailability,
+    selection:
+      module.selection === null
+        ? null
+        : {
+            id: module.selection.id,
+            meaning: module.selection.meaning,
+            phase: module.selection.phase,
+            group: {
+              id: module.selection.group.id,
+              name: module.selection.group.name,
+              details: module.selection.group.details,
+              state: module.selection.group.state,
+            },
+          },
   };
 }
 
