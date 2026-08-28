@@ -52,15 +52,16 @@ pre-implementation planning, and planning may proceed to creation of the real
 implementation backlog in Markplane. Release hardening and hosted staging
 verification remain mandatory before the first production release.
 
-The local application foundation, Course creation/editing and structure
-creation, Participant registration/profile/lifecycle maintenance, Course
-Assignment creation/lifecycle, assigned Participant Course access, and
-Participant Module Selection slices are now implemented:
+The local application foundation, Course creation/editing, Group reversible
+lifecycle and structure creation, Participant registration/profile/lifecycle
+maintenance, Course Assignment creation/lifecycle, assigned Participant
+Course access, and Participant Module Selection slices are now implemented:
 
 - `@booking-system/booking` at `packages/booking` owns the implemented
   `admin-access` behavior plus `course-structure` Course, Course-wide Group,
-  future Module, guarded Course editing with its permanent timezone lock, and
-  Course-local definite-time creation policy, plus
+  future Module, guarded Course editing with its permanent timezone lock,
+  Group complete editing/archival/reactivation with exact retained-Selection
+  policy, and Course-local definite-time creation policy, plus
   `course-access` Participant registration, fresh context, Course Assignment
   creation/revocation/reactivation, assigned Active-Course list/detail, and
   self/Admin profile-edit plus Participant Disable/Re-enable policy, and
@@ -70,7 +71,8 @@ Participant Module Selection slices are now implemented:
   React `/` Participant Google entry/onboarding/home, `/admin` administration
   flow, Participant directory, nested Course index/create/detail/update routes,
   Participant lifecycle, Course membership and Assignment interaction, and
-  Course editing plus Group/Module creation forms, plus the Participant
+  Course editing plus Group/Module creation forms, Group edit/lifecycle cards,
+  and retained selected-Group history, plus the Participant
   `/courses/:courseId`
   detail, explicit Module
   Selection controls, `/profile` self-service and
@@ -101,7 +103,8 @@ Participant Module Selection slices are now implemented:
   responsive shell; one principal/session can reach distinct Participant and
   Admin User identities without a persisted role;
 - each Course HTTP request freshly resolves Active Admin state. Course
-  creation and editing plus nested Group/Module writes use guarded D1
+  creation and editing plus nested Group creation/edit/lifecycle and Module
+  writes use guarded D1
   acceptance so a stale actor or Course creates no row, partial edit, or
   scheduling-history side effect. A Course-timezone edit and concurrent first
   Module creation recheck each other so exactly one timezone interpretation
@@ -131,6 +134,7 @@ Participant Module Selection slices are now implemented:
   authenticated principal and guard D1 reads by current Active Participant,
   Active Assignment, and Active Course state. They expose ordered Modules,
   Active Groups, and only the current Participant's own Selection when present,
+  including that selected Group's retained details/state when Archived,
   never rosters, peer profiles, emails, counts, Assignments, Admin data, or a
   public catalogue;
 - guarded Selection set/change/remove writes recheck the Participant,
@@ -145,6 +149,9 @@ Participant Module Selection slices are now implemented:
   Module Selection. It also edits the Course's complete name, description, and
   timezone, presenting the timezone as permanently read-only after the first
   successful Module even when no Module remains;
+- the same stable Course detail edits Active or Archived Group name/details,
+  archives only without a future Scheduled-Module Selection, and reactivates
+  the retained identity subject to authoritative Active-name uniqueness;
 - free MUI Core and Emotion are pinned for browser use; one application theme
   and `CssBaseline` now style the complete `/admin` flow with responsive,
   visible-focus, semantic-status, and non-color-only presentation;
@@ -166,7 +173,8 @@ Participant Module Selection slices are now implemented:
   explicit no-default selection, overlapping-Module selections, change/remove
   confirmation and focus, stale-deadline refusal, truthful own current/history
   presentation, self/Admin profile editing including Disabled targets,
-  duplicate/stale refusal, direct refresh, and overflow;
+  duplicate/stale refusal, Group edit/archive/reactivate dialog and retention
+  states, direct refresh, and overflow;
 - both workspace boundary maps are registered in ESLint with exact module,
   workspace, composition, third-party, and test-only permissions;
 - the root Nix flake supplies NixOS developer-host tooling: Node, pnpm,
@@ -176,7 +184,8 @@ Participant Module Selection slices are now implemented:
 - the canonical `pnpm check` now runs repository, domain, Worker/D1, migration,
   build, and Chromium browser evidence.
 
-Apple, Microsoft, and Facebook providers, Group/Module editing and lifecycle,
+Apple, Microsoft, and Facebook providers, Group hard deletion, Module editing
+and lifecycle,
 Course lifecycle, Archived-Course Participant access, Admin-assisted Module
 Selection,
 Invite,

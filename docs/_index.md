@@ -16,7 +16,7 @@ This repository uses an indexed global documentation system.
 - Path: `docs/_status.md`
 - Summary: Present accepted product and technical direction, the implemented
   local application, Course creation/editing with permanent timezone locking,
-  Group/future-Module creation, and Participant
+  Group creation/editing/archival/reactivation, future-Module creation, and Participant
   registration/profile/lifecycle/Assignment-lifecycle/assigned-Course-access/
   Module-Selection
   slices, responsive MUI

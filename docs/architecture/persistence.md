@@ -185,6 +185,20 @@ to resolve its local schedule. Consequently, a concurrent timezone edit and
 first Module creation cannot both succeed with inconsistent definite instants,
 and either refusal leaves all Course fields, Module rows, and history unchanged.
 
+Group field and reversible lifecycle operations also require no schema
+migration. One guarded complete-field update preserves Group identity, Course
+ownership, lifecycle state, and every Selection while rechecking the current
+Active Admin/Course, expected Group state, and Active-name uniqueness.
+Archival is one guarded Active-to-Archived update with a `not exists` check for
+a retained Selection joined to a Scheduled Module whose `starts_at` is later
+than the accepted instant. Reactivation is one guarded Archived-to-Active
+update that rechecks the partial Active-name invariant. Neither action updates
+or deletes `module_selections`. The existing guarded Selection write requires
+an Active Group, so a concurrent archive and future Selection cannot both win;
+the partial unique index likewise arbitrates concurrent conflicting edits or
+reactivations. Refusal and trigger failure leave every Group field/state and
+Selection unchanged.
+
 The fourth additive migration preserves all existing application data and adds
 one `participants` table with stable Participant identity, one row per external
 principal, required nonblank name, retained trimmed email, a unique lowercase

@@ -1,8 +1,6 @@
 import {
   Alert,
   Button,
-  Card,
-  CardContent,
   List,
   ListItem,
   Stack,
@@ -13,6 +11,7 @@ import { useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 
+import { GroupManagementCard } from "./GroupManagementCard.jsx";
 import { useCreateGroup } from "./useCourses.js";
 
 /**
@@ -29,7 +28,7 @@ export function GroupCreationSection({ course }) {
       <Typography component="h2" id="course-groups-title" variant="h2">
         {t("courseStructure.group.title")}
       </Typography>
-      <GroupList groups={course.groups} translate={t} />
+      <GroupList courseId={course.id} groups={course.groups} translate={t} />
       <GroupCreationForm courseId={course.id} translate={t} />
     </Stack>
   );
@@ -41,7 +40,7 @@ export function GroupCreationSection({ course }) {
  * @param {object} props Group-list properties.
  * @returns {import("react").ReactElement} Current Group list state.
  */
-function GroupList({ groups, translate }) {
+function GroupList({ courseId, groups, translate }) {
   if (groups.length === 0) {
     return (
       <Alert role="status" severity="info">
@@ -57,19 +56,11 @@ function GroupList({ groups, translate }) {
     >
       {groups.map((group) => (
         <ListItem disablePadding key={group.id} sx={{ mb: 2 }}>
-          <Card sx={{ width: "100%" }} variant="outlined">
-            <CardContent>
-              <Stack spacing={1}>
-                <Typography component="h3" variant="h3">
-                  {group.name}
-                </Typography>
-                <Typography>
-                  {group.details ??
-                    translate("courseStructure.group.noDetails")}
-                </Typography>
-              </Stack>
-            </CardContent>
-          </Card>
+          <GroupManagementCard
+            courseId={courseId}
+            group={group}
+            translate={translate}
+          />
         </ListItem>
       ))}
     </List>

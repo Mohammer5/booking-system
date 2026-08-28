@@ -30,6 +30,35 @@ export function matchCourseRoute(pathname) {
     return { kind: segments[1], courseId: segments[0] };
   }
 
+  if (
+    segments.length === 3 &&
+    segments[0].length > 0 &&
+    segments[1] === "groups" &&
+    segments[2].length > 0
+  ) {
+    return {
+      kind: "group",
+      courseId: segments[0],
+      groupId: segments[2],
+    };
+  }
+
+  if (
+    segments.length === 4 &&
+    segments[0].length > 0 &&
+    segments[1] === "groups" &&
+    segments[2].length > 0 &&
+    new Set(["archival", "reactivation"]).has(segments[3])
+  ) {
+    return {
+      kind: segments[3] === "archival"
+        ? "groupArchival"
+        : "groupReactivation",
+      courseId: segments[0],
+      groupId: segments[2],
+    };
+  }
+
   return null;
 }
 

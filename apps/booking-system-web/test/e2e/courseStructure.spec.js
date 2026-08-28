@@ -89,7 +89,7 @@ test("creates and revisits a Course through the German Admin journey", async ({
     }),
   ).toBeVisible();
 
-  const groupNameInput = page.getByLabel("Gruppenname");
+  const groupNameInput = page.getByLabel("Gruppenname", { exact: true });
   const groupSubmit = page.getByRole("button", { name: "Gruppe speichern" });
 
   await groupNameInput.fill("Gruppe Alpha");

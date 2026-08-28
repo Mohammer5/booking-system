@@ -4,7 +4,8 @@
 
 The `packages/booking` workspace currently contains `admin-access` for first
 Admin bootstrap, `course-structure` for Course creation/editing, Course-wide
-Group, and future Scheduled Module creation, and `course-access` for fresh
+Group creation/editing/archival/reactivation, and future Scheduled Module
+creation, and `course-access` for fresh
 Participant context resolution, registration/profile/lifecycle, Course Assignment lifecycle, and
 assigned Active-Course list/detail access. It also contains
 `module-participation` for
@@ -87,7 +88,7 @@ The implemented Admin, Course-structure, Participant-registration/profile/
 lifecycle, Assignment-lifecycle, and assigned Participant Course-access slices
 preserve three application roles: browser sign-in/onboarding, Participant
 directory/Course membership and private Participant Course presentation, and
-Course editing and Course/Group/Module presentation;
+Course editing plus Course/Group/Module presentation and Group lifecycle;
 Worker-side HTTP and D1 handling organized by the owning conceptual slice; and
 application-private authentication. The browser slices may use Better Auth's
 browser client for session initiation and termination while Google provider

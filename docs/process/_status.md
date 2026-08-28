@@ -27,7 +27,9 @@ Current reality:
   error-association, direct/refresh, pre-authorization privacy, Course-wide
   Group and future-Module creation, complete Course editing, permanent
   timezone locking with zero current Modules, two-sided edit/first-Module race
-  safety, DST gap/overlap and exact-instant
+  safety, Group complete editing/allowed-or-blocked archival/reactivation,
+  retained selected-Group history and Group/Selection/name race safety, DST
+  gap/overlap and exact-instant
   presentation, Participant onboarding/zero membership, Participant directory
   and Course membership/Assignment-lifecycle states, Participant self/Admin
   profile editing and lifecycle, stable Disabled-target detail,

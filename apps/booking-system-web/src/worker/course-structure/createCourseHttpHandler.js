@@ -15,6 +15,11 @@ import {
   toGroupResponse,
   toModuleResponse,
 } from "./courseHttpContract.js";
+import {
+  createGroupManagementOperations,
+  groupManagementResultResponse,
+  resolveGroupManagementRequest,
+} from "./createGroupManagementHttp.js";
 
 /**
  * Create the same-origin Course, Group, and Module HTTP operations.
@@ -54,6 +59,7 @@ export function createCourseHttpHandler(capabilities) {
 function createOperations(capabilities) {
   return {
     ...capabilities,
+    ...createGroupManagementOperations(capabilities),
     createCourse: createCreateCourse({
       createCourseId: capabilities.createCourseId,
       createCourseForActiveAdmin:
@@ -93,6 +99,9 @@ function isSupportedRoute(route, method) {
     courses: new Set(["GET", "POST"]),
     course: new Set(["GET", "PUT"]),
     groups: new Set(["POST"]),
+    group: new Set(["PUT"]),
+    groupArchival: new Set(["POST"]),
+    groupReactivation: new Set(["POST"]),
     modules: new Set(["POST"]),
   };
 
@@ -126,6 +135,14 @@ function handleAuthorizedRoute(context, operations) {
         );
   }
 
+  if (
+    new Set(["group", "groupArchival", "groupReactivation"]).has(
+      route.kind,
+    )
+  ) {
+    return handleGroupManagementRequest(context, operations);
+  }
+
   return route.kind === "groups"
     ? handleCreateGroupRequest(
         { request, courseId: route.courseId, adminUser },
@@ -135,6 +152,21 @@ function handleAuthorizedRoute(context, operations) {
         { request, courseId: route.courseId, adminUser },
         operations,
       );
+}
+
+/** @returns {Promise<Response>} One exact Group field or lifecycle response. */
+async function handleGroupManagementRequest(context, operations) {
+  const resolution = await resolveGroupManagementRequest(context, operations);
+
+  if (resolution.response !== undefined) return resolution.response;
+
+  const staleResponse = await currentStateRefusal(
+    resolution.result,
+    { request: context.request, courseId: context.route.courseId },
+    operations,
+  );
+
+  return staleResponse ?? groupManagementResultResponse(resolution);
 }
 
 /**

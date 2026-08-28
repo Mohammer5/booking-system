@@ -1,12 +1,12 @@
 ---
 id: TASK-kmm36
 title: Edit, archive, and reactivate Groups
-status: backlog
+status: done
 priority: medium
 type: feature
 effort: medium
 epic: EPIC-i2x79
-plan: null
+plan: PLAN-qeb8a
 depends_on:
 - TASK-jvqrk
 blocks:
@@ -14,14 +14,14 @@ blocks:
 - TASK-49if4
 related:
 - TASK-vyj7r
-assignee: null
+assignee: gerkules
 tags:
 - group
 - lifecycle
 - selections
 position: e20
 created: 2026-08-27
-updated: 2026-08-27
+updated: 2026-08-28
 ---
 
 # Edit, archive, and reactivate Groups
@@ -36,22 +36,22 @@ continue identifying the Group and its details.
 
 ## Acceptance Criteria
 
-- [ ] An Active Admin User may edit required non-blank name and optional
+- [x] An Active Admin User may edit required non-blank name and optional
       details for an Active or Archived Group while its Course is Active;
       identity, Course ownership, and retained Selections remain unchanged.
-- [ ] Active Group names remain unique within one Course after trimming and
+- [x] Active Group names remain unique within one Course after trimming and
       case-insensitive comparison. Archived Groups may conflict; an Active
       Group edit or reactivation that would conflict is refused atomically.
-- [ ] Archival is blocked only by a retained Selection for a Scheduled Module
+- [x] Archival is blocked only by a retained Selection for a Scheduled Module
       where `now < startsAt`; retained in-progress, ended, and Cancelled-Module
       Selections do not block it and are neither removed nor rewritten.
-- [ ] An Archived Group is unavailable for new future Selections, while an
+- [x] An Archived Group is unavailable for new future Selections, while an
       already retained in-progress/historical Selection continues to display
       that same Group identity and details.
-- [ ] Reactivation preserves identity/details, restores future eligibility,
+- [x] Reactivation preserves identity/details, restores future eligibility,
       does not restore removed Selections, and revalidates normalized-name
       uniqueness against authoritative current state.
-- [ ] No edit/archive/reactivation is accepted after Course archival; stale
+- [x] No edit/archive/reactivation is accepted after Course archival; stale
       actor, Course, name, or retained-reference state wins at acceptance.
 
 ## UI/UX Expectations
@@ -89,3 +89,19 @@ Create a fresh implementation plan when selected.
 - `docs/product/representative-scenarios.md#t-group-reactivation-and-name-conflict`
 - `docs/product/domain-model.md#time-and-lifecycle`
 - `docs/process/verification.md`
+
+## Completion Evidence
+
+- Focused `course-structure` factories own complete Group editing, exact
+  injected-time archival eligibility, and retained-identity reactivation with
+  normalized Active-name checks.
+- D1 persistence and same-origin HTTP recheck current Admin/Course/Group/name/
+  reference state atomically, preserve every Selection, classify stale and
+  concurrent losers, and prove rollback plus two-sided Selection/name races.
+- Stable German Admin Course detail provides accessible Active/Archived edit
+  cards and lifecycle Dialogs; Participant history retains selected Archived
+  Group identity, details, state, and derived meaning while future choices
+  remain Active-only.
+- `pnpm check` passed on 2026-08-28: ESLint and boundary rules, 272 booking-
+  domain tests, 196 Worker/D1 tests, production build, and 36 Chromium
+  Playwright tests.

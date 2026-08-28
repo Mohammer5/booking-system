@@ -54,6 +54,13 @@ preserves every Assignment and any same-principal Admin User, and immediately
 removes all normal Participant access. Re-enable reuses the Participant,
 preserves Assignment states, restores only currently eligible access, and
 does not restore removed choices.
+An Active Admin User may also edit the complete name/details of an Active or
+Archived Group in an Active Course, archive an Active Group when no retained
+Selection targets a future Scheduled Module, and reactivate that same identity
+subject to current Active-name uniqueness. Archival never removes or rewrites
+a Selection. Active Groups remain the only future choice set, while a retained
+in-progress or historical Selection continues to present its selected Group's
+identity, details, and state.
 A new authenticated principal can
 explicitly supply the required booking-system Participant name and unique
 email, become one Active Participant, return to the Participant home, and see
@@ -68,8 +75,8 @@ default. Unknown, inactive, unassigned, Revoked, stale, and cross-Participant
 Course identifiers reveal no Course data. An Active Participant may edit their
 own required name/email, while an Active Admin User may edit an Active or
 Disabled Participant from a stable detail; both preserve identity, lifecycle,
-relationships, provider data, and any same-principal Admin User. Group and
-Module editing or lifecycle operations; Course lifecycle operations;
+relationships, provider data, and any same-principal Admin User. Group hard
+deletion; Module editing or lifecycle operations; Course lifecycle operations;
 Admin-assisted Module Selection,
 Archived-Course historical access, Invite, later Admin onboarding, and later
 Admin management

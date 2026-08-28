@@ -95,6 +95,37 @@ export function useCreateGroup(courseId) {
 }
 
 /**
+ * Update complete fields for one retained Active or Archived Group.
+ *
+ * @param {string} courseId Parent Course identity.
+ * @param {string} groupId Stable Group identity.
+ * @returns {object} TanStack Group-edit mutation state.
+ */
+export function useUpdateGroup(courseId, groupId) {
+  return useGroupManagementMutation(
+    courseId,
+    `/api/admin/courses/${courseId}/groups/${groupId}`,
+    "PUT",
+  );
+}
+
+/** @returns {object} TanStack Active-to-Archived Group mutation state. */
+export function useArchiveGroup(courseId, groupId) {
+  return useGroupManagementMutation(
+    courseId,
+    `/api/admin/courses/${courseId}/groups/${groupId}/archival`,
+  );
+}
+
+/** @returns {object} TanStack Archived-to-Active Group mutation state. */
+export function useReactivateGroup(courseId, groupId) {
+  return useGroupManagementMutation(
+    courseId,
+    `/api/admin/courses/${courseId}/groups/${groupId}/reactivation`,
+  );
+}
+
+/**
  * Create a future Scheduled Module and refresh its parent Course detail.
  *
  * @param {string} courseId Parent Course identity.
@@ -131,6 +162,41 @@ function useCourseStructureMutation(courseId, resource) {
         await queryClient.invalidateQueries({
           queryKey: ["course-structure", "course", courseId],
         });
+      }
+    },
+  });
+}
+
+/**
+ * Mutate one Group resource and reconcile Admin and Participant Course views.
+ *
+ * @param {string} courseId Parent Course identity.
+ * @param {string} path Exact same-origin Group resource path.
+ * @param {"POST" | "PUT"} [method] HTTP mutation method.
+ * @returns {object} TanStack Group management mutation state.
+ */
+function useGroupManagementMutation(courseId, path, method = "POST") {
+  const queryClient = useQueryClient();
+  const detailQueryKey = ["course-structure", "course", courseId];
+
+  return useMutation({
+    mutationFn: (input) =>
+      requestJson(path, {
+        method,
+        headers: input === undefined ? {} : { "content-type": "application/json" },
+        body: input === undefined ? undefined : JSON.stringify(input),
+      }),
+    async onSuccess() {
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: detailQueryKey }),
+        queryClient.invalidateQueries({
+          queryKey: ["course-access", "participant-course", courseId],
+        }),
+      ]);
+    },
+    async onError(error) {
+      if (error.status === 409) {
+        await queryClient.invalidateQueries({ queryKey: detailQueryKey });
       }
     },
   });

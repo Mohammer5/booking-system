@@ -112,6 +112,7 @@ describe("Public booking package interface", () => {
     const publicInterface = await import("../index.js");
 
     expect(Object.keys(publicInterface).sort()).toEqual([
+      "createArchiveGroup",
       "createAssignParticipantToCourse",
       "createBootstrapFirstAdmin",
       "createCreateCourse",
@@ -121,6 +122,7 @@ describe("Public booking package interface", () => {
       "createGetAdminAuthenticationEntry",
       "createGetParticipantCourse",
       "createListParticipantCourses",
+      "createReactivateGroup",
       "createReenableParticipant",
       "createRegisterParticipant",
       "createRemoveParticipantModuleSelection",
@@ -129,6 +131,7 @@ describe("Public booking package interface", () => {
       "createRevokeCourseAssignment",
       "createSetParticipantModuleSelection",
       "createUpdateCourse",
+      "createUpdateGroup",
       "createUpdateOwnParticipantProfile",
       "createUpdateParticipantProfileAsAdmin",
       "deriveModuleSelectionAvailability",

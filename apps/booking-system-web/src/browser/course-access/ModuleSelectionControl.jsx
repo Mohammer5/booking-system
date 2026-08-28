@@ -142,6 +142,21 @@ function SelectionSummary({ module, translate }) {
               group: module.selection.group.name,
             })}
           </Typography>
+          <Typography>
+            {module.selection.group.details ??
+              translate(
+                "courseAccess.participantCourses.selection.groupNoDetails",
+              )}
+          </Typography>
+          <Chip
+            label={translate(
+              `courseAccess.participantCourses.selection.groupState.${
+                module.selection.group.state
+              }`,
+            )}
+            sx={{ alignSelf: "flex-start" }}
+            variant="outlined"
+          />
           <Chip
             color={module.selection.meaning === "live" ? "success" : "default"}
             label={translate(

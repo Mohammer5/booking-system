@@ -4,10 +4,13 @@ export {
   createResolveAdminContext,
 } from "./admin-access/index.js";
 export {
+  createArchiveGroup,
   createCreateCourse,
   createCreateGroup,
   createCreateModule,
+  createReactivateGroup,
   createUpdateCourse,
+  createUpdateGroup,
 } from "./course-structure/index.js";
 export {
   createAssignParticipantToCourse,

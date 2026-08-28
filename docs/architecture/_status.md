@@ -68,8 +68,9 @@
   Active Super Admin is one atomic persistence outcome.
 - The implemented application slices have a same-origin Admin entry, Google
   sign-in and Better Auth sign-out, bootstrap/current-context HTTP, and
-  freshly authorized Course index/create/detail/update plus nested Group/Module
-  creation HTTP, plus fresh Participant context, explicit onboarding and
+  freshly authorized Course index/create/detail/update plus nested Group
+  creation/edit/archival/reactivation and Module creation HTTP, plus fresh
+  Participant context, explicit onboarding and
   self-profile maintenance, the global Admin Participant directory and stable
   profile detail plus Disable/Re-enable HTTP, Course Assignment list/create/
   reactivate/revoke HTTP, and private assigned Participant Course list/detail
@@ -97,8 +98,9 @@
   modern-ESM workspaces with one manifest each.
 - The booking package exposes the three `admin-access` operation factories
   required by first Admin bootstrap/fresh context resolution plus
-  `course-structure` factories for Course creation/editing, Course-wide Group,
-  and future Module creation and `course-access` factories for fresh
+  `course-structure` factories for Course creation/editing, Course-wide Group
+  creation/editing/archival/reactivation, and future Module creation and
+  `course-access` factories for fresh
   Participant context,
   registration, self/Admin Participant profile maintenance, Participant
   Disable/Re-enable, Course Assignment creation/revocation/reactivation, and
@@ -123,19 +125,20 @@
   Participant to a query-driven zero/one/multiple assigned-Course home without
   public discovery. Its stable detail exposes relevant Course, Module, Active-
   Group, and own Selection data only, with explicit set/change/remove controls
-  before the Module starts. The Admin Participant directory includes
+  before the Module starts; a retained Selection still presents its selected
+  Archived Group details/state. The Admin Participant directory includes
   registered zero-Assignment Participants and links to guarded profile-only
   maintenance plus the one current Disable/Re-enable action for Active and
   Disabled targets. The Participant gate presents a freshly Disabled target
   with safe sign-out and mounts no private Participant view. Stable Course
   detail owns complete Course editing, its permanent timezone lock, Course
-  membership creation/lifecycle, Group, and future-Module interactions without
-  incidental routes. Membership cards expose only current
+  membership creation/lifecycle, Group creation/edit/lifecycle, and future-
+  Module interactions without incidental routes. Membership cards expose only current
   permitted revoke/reactivate actions with confirmation and accurate retention
   copy.
 - TanStack Query owns remote Admin, Course, Participant profile, Assignment,
   and Module Selection state;
-  React Hook Form owns the Admin-name, Course, Group, Module, and Participant-
+  React Hook Form owns the Admin-name, Course, Group create/edit, Module, and Participant-
   onboarding/profile forms; and German-first slice-owned i18next resources own
   all browser copy.
   Native local date/time fields and MUI radio groups expose IANA-zone DST
@@ -198,6 +201,12 @@
   Assignment, Course, Module, Group, and deadline state in SQL; one unique
   Participant/Module pair preserves stable identity while composite references
   prevent cross-Course Module/Group ownership.
+  Guarded Group updates and lifecycle transitions reuse the existing schema,
+  recheck Active Admin/Course, expected Group state, normalized Active-name
+  uniqueness, and exact future Scheduled-Selection references, and never
+  rewrite a Selection. The accepting predicates, partial unique index, and
+  existing Active-Group Selection guard give one valid winner to concurrent
+  archive/Selection and conflicting-name attempts.
 - Both explicit workspace boundary maps are registered in ESLint. The boundary
   converter denies undeclared third-party imports and supports exact test-only
   and composition-interface permissions.
@@ -218,7 +227,8 @@
   Module Selection,
   overlapping-Module independence, replacement/removal, confirmation focus,
   stale-deadline refusal, truthful current/history presentation, Group/Module
-  creation, Course editing, permanent timezone locking with zero current
+  creation, Group editing/allowed-or-blocked archival/reactivation and retained
+  historical details, Course editing, permanent timezone locking with zero current
   Modules, DST gap/overlap, exact-instant, and overflow assertions.
 - The root flake supplies Node 24, pnpm 11.17.0, Git, Markplane, Chromium, and
   a Nix-patched official workerd 1.20260826.1 binary for x86_64-linux. It points

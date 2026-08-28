@@ -1,3 +1,5 @@
+import { createGroupLifecyclePersistence } from "./createGroupLifecyclePersistence.js";
+
 /**
  * Create the narrow D1 capabilities owned by Course-wide Groups.
  *
@@ -6,6 +8,7 @@
  */
 export function createGroupPersistence(database) {
   return {
+    ...createGroupLifecyclePersistence(database),
     async createGroupForActiveAdmin({ adminUserId, group }) {
       try {
         const result = await insertGroup(database, adminUserId, group);
@@ -41,6 +44,36 @@ export function createGroupPersistence(database) {
 
       return results.map(mapGroup);
     },
+
+    async findGroupById(courseId, groupId) {
+      const row = await database
+        .prepare(
+          `select id, course_id, name, normalized_name, details, state
+             from groups
+            where course_id = ? and id = ?`,
+        )
+        .bind(courseId, groupId)
+        .first();
+
+      return row === null ? null : mapGroup(row);
+    },
+
+    async listSelectionContextsByGroupId(courseId, groupId) {
+      const { results } = await database
+        .prepare(
+          `select m.state as module_state, m.starts_at
+             from module_selections s
+             join modules m
+               on m.id = s.module_id and m.course_id = s.course_id
+            where s.course_id = ? and s.group_id = ?
+            order by m.starts_at, m.id, s.id`,
+        )
+        .bind(courseId, groupId)
+        .all();
+
+      return results.map(mapSelectionContext);
+    },
+
   };
 }
 
@@ -143,5 +176,13 @@ function mapGroup(row) {
     normalizedName: row.normalized_name,
     details: row.details,
     state: row.state,
+  };
+}
+
+/** @returns {object} Retained Selection Module context without Participant data. */
+function mapSelectionContext(row) {
+  return {
+    moduleState: row.module_state,
+    startsAt: new Date(row.starts_at).toISOString(),
   };
 }

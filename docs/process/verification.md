@@ -115,6 +115,18 @@ Course-detail empty/create/list/refresh journeys, duplicate and time errors,
 explicit overlap selection, exact-instant presentation, stale/technical
 refusal focus, responsive layout, and axe scans.
 
+For Group editing and reversible lifecycle, booking-domain Vitest owns
+complete Active/Archived fields, Course-local normalized Active-name rules,
+injected time, the exact future/exact-start/in-progress/ended/Cancelled
+archival matrix, identity/detail retention, and reactivation without Selection
+restoration. Worker/D1 Vitest owns guarded complete updates, exact reference
+and state classification, Active-name and archive/Selection races, rollback,
+authorization, narrow HTTP/privacy contracts, and retained Archived selected-
+Group detail. Playwright owns German field editing, allowed/blocked archival,
+reactivation conflict/rename/success, refresh, retained Admin and bounded
+Participant historical detail, stale/technical refusals, keyboard/Dialog/
+result focus, desktop/360px layout, and axe scans.
+
 For Participant registration, booking-domain Vitest owns required name,
 complete trimmed-email validation, case-insensitive comparison, and the absence
 of provider alias normalization. Worker/D1 Vitest owns the additive migration,
@@ -202,6 +214,9 @@ with isolated D1 state and the version-controlled migration sequence.
 
 Playwright is the initial browser E2E tool. Routine CI starts with Chromium
 only; more browsers or devices require a demonstrated compatibility need.
+Locator assertions allow ten seconds for production-like local Worker/D1
+responses, while tests remain single-worker and retry-free so a real failure
+is not hidden by automatic reruns.
 On x86_64 NixOS, the development flake supplies Chromium and uses the existing
 `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH` configuration seam; this local provision
 does not change the Playwright project or CI browser installation.
@@ -271,7 +286,7 @@ onboarding/assigned-Course/zero-membership/privacy states, Participant
 directory and Course membership/Assignment-lifecycle states, Participant
 self/Admin profile editing and lifecycle, Course editing and permanent
 timezone-lock presentation, Disabled-target detail, and absence of horizontal
-overflow. The current 34-test browser suite also proves that one
+overflow. The current 36-test browser suite also proves that one
 fixed normal session remains usable while navigating between Participant and
 Admin contexts, successful sign-out terminates that session, an Active Admin
 can create, edit, and revisit a Course with Groups, a future Module, a
@@ -283,6 +298,9 @@ same-principal Admin continuity, Re-enable without future-Selection
 restoration, and retained historical/live presentation. An Active Participant
 can access only assigned Active Courses while missing or inactive Participant
 context causes no private Course-access request.
+It also proves retained-identity Group editing, allowed and exact-blocked
+archival, Active-name-conflicted then successful reactivation, and retained
+Archived Group details/state in Participant history.
 
 On browser-test failure, CI should retain short-lived useful diagnostics such
 as the Playwright report, traces, screenshots, and relevant logs. Artifacts

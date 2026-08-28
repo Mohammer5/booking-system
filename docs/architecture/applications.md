@@ -52,8 +52,9 @@ Participant detail/edit/lifecycle at `/admin/participants/:participantId`, and
 nested Course index/create/detail routes through one responsive MUI shell.
 Stable Admin Course detail contains complete Course editing with its permanent
 timezone lock, Course membership creation, revocation, and reactivation plus
-the owned Group and future-Module lists and creation forms rather than adding
-incidental routes. Navigation
+the owned Group list, creation and complete field forms, current lifecycle
+actions, and future-Module list/creation form rather than adding incidental
+routes. Navigation
 preserves the same browser cookie and Better Auth principal; Participant
 context resolves its own
 current domain identity without selecting a role or revealing Course data
@@ -170,8 +171,9 @@ GET /api/participant/courses/:courseId
 List items expose only Course `id`, `name`, optional `description`, `timezone`,
 and Active `state`. Detail adds participant-relevant Module and Active Group
 fields. Each Module exposes only the current Participant's own Selection or
-`null`; a present Selection contains its stable identity, selected Active
-Group, and derived current-versus-historical meaning and phase. The response
+`null`; a present Selection contains its stable identity, selected Group
+including retained details/state even when Archived, and derived current-
+versus-historical meaning and phase. The response
 also derives authoritative `open` or `closed` Selection availability from the
 current Participant, Assignment, Course, Module, and injected instant.
 
@@ -203,7 +205,7 @@ creates no partial side effect; overlapping Modules remain independent.
 
 ### Course Administration HTTP Surface
 
-The implemented `course-structure` slices use six concrete
+The implemented `course-structure` slices use nine concrete
 same-origin operations:
 
 ```text
@@ -212,6 +214,9 @@ POST /api/admin/courses
 GET  /api/admin/courses/:courseId
 PUT  /api/admin/courses/:courseId
 POST /api/admin/courses/:courseId/groups
+PUT  /api/admin/courses/:courseId/groups/:groupId
+POST /api/admin/courses/:courseId/groups/:groupId/archival
+POST /api/admin/courses/:courseId/groups/:groupId/reactivation
 POST /api/admin/courses/:courseId/modules
 ```
 
@@ -222,6 +227,9 @@ POST /api/admin/courses/:courseId/modules
 | Course detail | Normal session resolving a current Active Admin | `200` Course with ordered `groups` and `modules`; `401`; exact `403`; `404 course-not-found` |
 | Course update | Same plus guarded current Active Admin and Active Course acceptance, complete `{ name, description, timezone }`, and permanent timezone history | `200` updated Course; `401`; exact `403`; `404 course-not-found`; `409` stale Course or locked/stale timezone; `422` field outcome; sanitized `500 technical-error` |
 | Group creation | Same plus guarded current Active Admin and Active Course acceptance | `201` narrow Active Group; `401`; exact `403`; `404`; `409` stale Course/name conflict; `422` field outcome |
+| Group update | Same plus one same-Course Active/Archived Group and complete `{ name, details }` | `200` narrow updated Group; `401`; exact `403`; `404` Course/Group; `409` stale state or Active-name conflict; `422` field outcome; sanitized `500 technical-error` |
+| Group archival | Same plus current Active Group and no retained Selection for a Scheduled Module with `now < startsAt` | `200 { outcome: "archived", group }`; `401`; exact `403`; `404`; `409` exact blocker or stale Group/Course state; sanitized `500 technical-error` |
+| Group reactivation | Same plus current Archived Group and authoritative Active-name uniqueness | `200 { outcome: "reactivated", group }`; `401`; exact `403`; `404`; `409` name or stale state; sanitized `500 technical-error` |
 | Module creation | Same plus guarded current Active Admin and Active Course acceptance | `201` narrow Scheduled Module with definite instants; `401`; exact `403`; `404`; `409` stale Course; `422` field/time/overlap outcome |
 
 Course representations contain only `id`, `name`, `description`, `timezone`,
@@ -234,8 +242,11 @@ no field partially. A Course update accepts all three editable fields but
 changes timezone only before any successful Module creation. Module insertion
 rechecks the exact Course timezone used to resolve its local schedule, so a
 concurrent timezone edit and first Module creation have one consistent winner.
-Group responses
-omit the persistence normalization key. Module responses preserve exact ISO
+Group responses omit the persistence normalization key. Group lifecycle
+actions accept no browser-supplied instant, state, Course ownership, or
+Selection data; the server derives retained-reference context and the guarded
+accepting D1 statement rechecks it. Archival and reactivation retain the row
+and never update a Selection. Module responses preserve exact ISO
 instants; local input, DST gap rejection, and overlap choices remain request
 mechanics interpreted through the persisted Course timezone. The browser nests
 `/admin/courses`, `/admin/courses/new`, and

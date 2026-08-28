@@ -168,6 +168,11 @@ export const courseAccessTranslations = {
         none: "Keine Auswahl",
         noneDescription: "Für dieses Modul ist keine Gruppe ausgewählt.",
         current: "Ausgewählte Gruppe: {{group}}",
+        groupNoDetails: "Keine weiteren Angaben zur ausgewählten Gruppe",
+        groupState: {
+          active: "Gruppenstatus: Aktiv",
+          archived: "Gruppenstatus: Archiviert",
+        },
         live: "Aktuelle Teilnahme",
         historical: "Historische Teilnahme",
         deadline: "Änderbar bis zum Modulbeginn: {{instant}}",

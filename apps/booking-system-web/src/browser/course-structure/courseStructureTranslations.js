@@ -6,6 +6,7 @@ export const courseStructureTranslations = {
     },
     state: {
       active: "Aktiv",
+      archived: "Archiviert",
     },
     status: {
       unavailable:
@@ -85,6 +86,35 @@ export const courseStructureTranslations = {
       submit: "Gruppe speichern",
       submitting: "Gruppe wird gespeichert …",
       success: "Die Gruppe wurde erfolgreich angelegt.",
+      editTitle: "Gruppe bearbeiten",
+      editNameLabel: "Gruppenname bearbeiten",
+      editDetailsLabel: "Gruppendetails bearbeiten",
+      editSubmit: "Gruppenänderungen speichern",
+      editPending: "Gruppenänderungen werden gespeichert …",
+      editSuccess: "Die Gruppenänderungen wurden gespeichert.",
+      editUnavailable:
+        "Die Gruppe hat sich geändert oder kann nicht mehr bearbeitet werden. Die aktuellen Kursdaten wurden neu geladen.",
+      archiveAction: "Gruppe archivieren",
+      reactivateAction: "Gruppe reaktivieren",
+      archiveTitle: "Gruppe archivieren?",
+      reactivateTitle: "Gruppe reaktivieren?",
+      archiveDescription:
+        "Die Gruppe steht danach nicht mehr für neue zukünftige Modulauswahlen zur Verfügung. Bestehende Auswahlen werden weder entfernt noch geändert. Eine Auswahl für ein noch nicht begonnenes geplantes Modul verhindert die Archivierung.",
+      reactivateDescription:
+        "Die Gruppe steht danach wieder für neue zukünftige Modulauswahlen zur Verfügung. Zuvor entfernte Auswahlen werden nicht wiederhergestellt.",
+      lifecycleCancel: "Abbrechen",
+      archiveConfirm: "Gruppe endgültig archivieren",
+      reactivateConfirm: "Gruppe reaktivieren",
+      archivePending: "Gruppe wird archiviert …",
+      reactivatePending: "Gruppe wird reaktiviert …",
+      archivalBlocked:
+        "Die Gruppe kann nicht archiviert werden, weil sie für mindestens ein noch nicht begonnenes geplantes Modul ausgewählt ist.",
+      lifecycleUnavailable:
+        "Der Gruppenstatus kann wegen eines geänderten Administrations-, Kurs- oder Gruppenstatus nicht bearbeitet werden.",
+      archived:
+        "Die Gruppe wurde archiviert. Bestehende Auswahlen blieben unverändert.",
+      reactivated:
+        "Die Gruppe wurde reaktiviert. Zuvor entfernte Auswahlen wurden nicht wiederhergestellt.",
     },
     module: {
       title: "Module",
