@@ -1,12 +1,12 @@
 ---
 id: TASK-z6hut
 title: Assign Participants to Courses
-status: backlog
+status: in-progress
 priority: medium
 type: feature
 effort: medium
 epic: EPIC-m22qh
-plan: null
+plan: PLAN-p6dvs
 depends_on:
 - TASK-ubm2q
 - TASK-7uxjj
@@ -14,7 +14,7 @@ blocks:
 - TASK-qk47b
 - TASK-ca46j
 related: []
-assignee: null
+assignee: gerkules
 tags:
 - participant
 - assignment
@@ -22,7 +22,7 @@ tags:
 - ui
 position: c40
 created: 2026-08-27
-updated: 2026-08-27
+updated: 2026-08-28
 ---
 
 # Assign Participants to Courses
