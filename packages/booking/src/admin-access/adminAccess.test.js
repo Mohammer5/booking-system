@@ -118,9 +118,12 @@ describe("Public booking package interface", () => {
       "createCreateGroup",
       "createCreateModule",
       "createGetAdminAuthenticationEntry",
+      "createGetParticipantCourse",
+      "createListParticipantCourses",
       "createRegisterParticipant",
       "createResolveAdminContext",
       "createResolveParticipantContext",
+      "hasParticipantCourseAccess",
     ]);
   });
 });

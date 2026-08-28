@@ -1,7 +1,7 @@
 ---
 id: TASK-qk47b
 title: Access an assigned Course as a Participant
-status: in-progress
+status: done
 priority: medium
 type: feature
 effort: medium
@@ -39,25 +39,25 @@ current Participant and Assignment state rather than cached session authority.
 
 ## Acceptance Criteria
 
-- [ ] Participant-facing access to the Active Course requires both an Active
+- [x] Participant-facing access to the Active Course requires both an Active
       Participant and an Active Course Assignment.
-- [ ] An eligible Participant can see relevant Course information, its
+- [x] An eligible Participant can see relevant Course information, its
       Modules, Active Groups with relevant details, and that Participant's own
       Module Selection state.
-- [ ] Course access exposes no global Participant directory, other
+- [x] Course access exposes no global Participant directory, other
       Participant profile or email, other Participant Selection, full roster,
       or administrative data.
-- [ ] A person without current Admin access or Active Participant plus Active
+- [x] A person without current Admin access or Active Participant plus Active
       Assignment access cannot publicly discover or view the Course.
 
-- [ ] Participant home lists only Courses reached through that Participant's
+- [x] Participant home lists only Courses reached through that Participant's
       current Active Assignments, preserves the truthful zero-membership
       state, and keeps independent memberships in multiple Courses separate.
-- [ ] Every read re-resolves the current Participant and Assignment; Disabled
+- [x] Every read re-resolves the current Participant and Assignment; Disabled
       Participant, Revoked/missing Assignment, stale navigation, and a
       cross-Participant/Course identifier receive an unavailable/not-found
       result without leaking whether private data exists.
-- [ ] Direct Course navigation and refresh work through the same-origin SPA
+- [x] Direct Course navigation and refresh work through the same-origin SPA
       route without exposing another Participant's roster, profile, email,
       Selection, or administrative data in browser or API representations.
 
@@ -87,6 +87,13 @@ Archived-Course historical access is owned by `TASK-fzniz`. Selection mutation
 is owned by `TASK-jvqrk`; Course Invites remain separate. No public discovery,
 rosters, Group counts, or Participant-visible peer profiles are added. Create
 a fresh implementation plan when selected.
+
+Completed locally with 153 booking-domain tests, 104 Worker/D1/migration tests,
+both production builds, and 23 Chromium E2E tests passing through the final
+canonical `pnpm check`. Focused evidence includes 21 domain access-policy tests,
+23 Worker/D1/HTTP tests, the 2-test Participant Course Playwright spec, and the
+4-test Participant registration regression spec with privacy, axe, focus,
+keyboard, responsive, refresh, and overflow assertions intact.
 
 ## References
 

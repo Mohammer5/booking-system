@@ -16,9 +16,9 @@ This repository uses an indexed global documentation system.
 - Path: `docs/_status.md`
 - Summary: Present accepted product and technical direction, the implemented
   local application, Course/Group/future-Module creation and Participant
-  registration/direct-Assignment slices, responsive MUI Admin/Participant
-  experience, Google authentication, live tooling, and intentionally deferred
-  release surfaces.
+  registration/direct-Assignment/assigned-Course-access slices, responsive MUI
+  Admin/Participant experience, Google authentication, live tooling, and
+  intentionally deferred release surfaces.
 - Read when: You need the current documentation or repository baseline.
 - Tags: docs, status, template
 
@@ -49,7 +49,7 @@ This repository uses an indexed global documentation system.
 - Path: `docs/process/_index.md`
 - Summary: Documentation workflow, Markplane tracking, verification including
   local-tool provisioning, Course-structure, Participant-registration, and
-  direct-Assignment evidence, CI, and release rules.
+  direct-Assignment/assigned-Participant-Course evidence, CI, and release rules.
 - Read when: A task affects documentation, Markplane, tests, CI, releases,
   routing, indexes, or terminology maintenance.
 - Tags: process, docs, tracking, verification, ci, release
@@ -59,10 +59,10 @@ This repository uses an indexed global documentation system.
 - Summary: Conceptual-domain-first source organization, JavaScript functional
   composition and MUI-based browser conventions including the responsive
   Admin/Participant shell, Participant onboarding/directory, Course
-  membership/direct Assignment, and Course/Group/Module creation experience,
-  implemented runtime/persistence, Google authentication direction, NixOS
-  developer-host tooling, ESLint enforcement, and explicit dependency
-  boundaries.
+  membership/direct Assignment, assigned Participant Course access, and
+  Course/Group/Module creation experience, implemented runtime/persistence,
+  Google authentication direction, NixOS developer-host tooling, ESLint
+  enforcement, and explicit dependency boundaries.
 - Read when: A task affects source layout, dependencies, modules, exports,
   applications, packages, JavaScript or browser conventions, runtime,
   persistence, authentication, sessions, ESLint, or boundary maps.

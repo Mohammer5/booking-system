@@ -1,6 +1,7 @@
 import { createAdminHttpHandler } from "./admin-bootstrap/index.js";
 import {
   createCourseAccessHttpHandler,
+  createParticipantCourseHttpHandler,
   createParticipantHttpHandler,
 } from "./course-access/index.js";
 import { createCourseHttpHandler } from "./course-structure/index.js";
@@ -55,11 +56,17 @@ function createWorkerHandlers(capabilities) {
     createParticipantId: capabilities.createParticipantId,
     persistence: capabilities.participantPersistence,
   });
+  const handleParticipantCourseHttpRequest = createParticipantCourseHttpHandler({
+    authenticate: authentication.authenticate,
+    participantPersistence: capabilities.participantPersistence,
+    persistence: capabilities.participantCoursePersistence,
+  });
 
   return {
     handleAdminHttpRequest,
     handleCourseAccessHttpRequest,
     handleCourseHttpRequest,
+    handleParticipantCourseHttpRequest,
     handleParticipantHttpRequest,
   };
 }
@@ -104,10 +111,20 @@ async function handleWorkerRequest(request, authentication, handlers) {
   }
 
   if (requestURL.pathname.startsWith("/api/participant/")) {
-    return handlers.handleParticipantHttpRequest(request);
+    return isParticipantCoursePath(requestURL.pathname)
+      ? handlers.handleParticipantCourseHttpRequest(request)
+      : handlers.handleParticipantHttpRequest(request);
   }
 
   return Response.json({ outcome: "not-found" }, { status: 404 });
+}
+
+/** @returns {boolean} Whether the path belongs to Participant Course access. */
+function isParticipantCoursePath(pathname) {
+  return (
+    pathname === "/api/participant/courses" ||
+    pathname.startsWith("/api/participant/courses/")
+  );
 }
 
 /**

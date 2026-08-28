@@ -421,8 +421,11 @@ The Participant HTTP and browser slices reuse the same session, resolve the
 current Participant fresh by external principal, and create one Active
 Participant only after explicit valid booking-system name and email input.
 Authentication and abandoned onboarding create no Participant, Assignment, or
-Selection. The `/` route returns an Active Participant to a truthful
-zero-membership state without public Course discovery.
+Selection. The Active Participant gate then permits private assigned-Course
+list/detail requests that freshly recheck the current Participant, Assignment,
+and Course state; a zero-Assignment Participant receives a truthful empty list
+without public Course discovery. Course identifiers and access remain absent
+from the session.
 
 Google is configured from environment-owned values, and the `/admin` and `/`
 browsers use Better Auth's supported client to start Google sign-in with their

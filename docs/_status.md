@@ -53,19 +53,21 @@ implementation backlog in Markplane. Release hardening and hosted staging
 verification remain mandatory before the first production release.
 
 The local application foundation, Course-structure creation, Participant
-registration, and direct Course Assignment slices are now implemented:
+registration/direct Course Assignment, and assigned Participant Course-access
+slices are now implemented:
 
 - `@booking-system/booking` at `packages/booking` owns the implemented
   `admin-access` behavior plus `course-structure` Course, Course-wide Group,
   future Module, and Course-local definite-time creation policy, plus
   `course-access` Participant registration, fresh context, and direct Course
-  Assignment policy;
+  Assignment plus assigned Active-Course list/detail access policy;
 - `@booking-system/booking-system-web` at `apps/booking-system-web` owns the
   React `/` Participant Google entry/onboarding/home, `/admin` administration
   flow, Participant directory, nested Course index/create/detail routes,
   Course membership and Assignment interaction, and Group/Module creation
-  forms, plus Worker/API handling, Better Auth composition, D1 persistence,
-  Vite/Workers Static Assets integration, and local runtime;
+  forms, plus the Participant `/courses/:courseId` detail and query-driven
+  assigned-Course home, Worker/API handling, Better Auth composition, D1
+  persistence, Vite/Workers Static Assets integration, and local runtime;
 - five version-controlled migrations create the Better Auth/Admin foundation,
   Courses, additive Group/Module schema with permanent first-Module scheduling
   history, constrained Participants, and constrained Course Assignments, with
@@ -79,13 +81,13 @@ registration, and direct Course Assignment slices are now implemented:
   sign-out in every authenticated Admin-route outcome;
 - the `/` browser flow starts fixed-destination Google sign-in, explicitly
   collects the booking-system Participant name/email, resolves current
-  Participant state fresh, and supports refresh, zero membership, and sign-out
-  without public Course discovery;
+  Participant state fresh, and supports refresh, zero/one/multiple assigned
+  Active Courses, private Course detail, and sign-out without public discovery;
 - `/`, `/admin`, `/admin/participants`, `/admin/courses`,
-  `/admin/courses/new`, and stable Course detail routes are direct/refresh-safe
-  German MUI contexts within one responsive shell; one principal/session can
-  reach distinct Participant and Admin User identities without a persisted
-  role;
+  `/admin/courses/new`, `/admin/courses/:courseId`, and Participant
+  `/courses/:courseId` are direct/refresh-safe German MUI contexts within one
+  responsive shell; one principal/session can reach distinct Participant and
+  Admin User identities without a persisted role;
 - each Course HTTP request freshly resolves Active Admin state, and Course
   creation plus nested Group/Module writes use guarded D1 inserts so a stale
   actor or Course creates no row or scheduling-history side effect;
@@ -93,6 +95,11 @@ registration, and direct Course Assignment slices are now implemented:
   Participant independently of membership, while guarded direct Assignment
   accepts only current Active Admin/Active Course/registered-Participant state,
   preserves one Participant/Course pair, and creates no Module Selection;
+- Participant Course list/detail reads derive the Participant only from the
+  authenticated principal and guard D1 reads by current Active Participant,
+  Active Assignment, and Active Course state. They expose ordered Modules,
+  Active Groups, and `selection: null` only, never rosters, peer profiles,
+  emails, counts, Assignments, Admin data, or a public catalogue;
 - the stable Course detail lists and creates Course-wide Groups with unique
   normalized Active names and future Scheduled Modules, resolves local minute
   input through the Course IANA timezone, rejects DST gaps, requires an
@@ -109,7 +116,8 @@ registration, and direct Course Assignment slices are now implemented:
   Participant onboarding/zero membership, dual-context identity, sign-out,
   Participant privacy, global zero-membership discovery, Course membership
   empty/list/assign/idempotent-repeat states, Disabled targets, Assignment
-  stale/technical refusals, and overflow;
+  stale/technical refusals, assigned-Course list/detail/refresh/privacy,
+  truthful no-Selection state, and overflow;
 - both workspace boundary maps are registered in ESLint with exact module,
   workspace, composition, third-party, and test-only permissions;
 - the root Nix flake supplies NixOS developer-host tooling: Node, pnpm,
@@ -120,10 +128,11 @@ registration, and direct Course Assignment slices are now implemented:
   build, and Chromium browser evidence.
 
 Apple, Microsoft, and Facebook providers, Course/Group/Module editing and
-lifecycle, Participant profile/lifecycle administration, Assignment lifecycle
-and participant-facing Course access, Selection, Invite, later Admin
-capabilities, remote Google credentials and production callback/domain
-configuration, remote Cloudflare staging/production resources, release
+lifecycle, Participant profile/lifecycle administration, Assignment lifecycle,
+Archived-Course Participant access, Selection persistence/mutation, Invite,
+later Admin capabilities, remote Google credentials and production
+callback/domain configuration, remote Cloudflare staging/production resources,
+release
 automation, deployment credentials, and production deployment remain absent.
 The account-bound release surfaces are intentionally deferred until release
 hardening. No co-located `*.docs.md` file exists.

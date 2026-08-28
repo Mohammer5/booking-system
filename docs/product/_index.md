@@ -17,8 +17,8 @@ domain and behavior.
 - Path: `docs/product/_status.md`
 - Summary: Closed first-release product-contract state, explicit v1 scope
   boundaries, implemented Admin-bootstrap, Course/Group/future-Module creation,
-  Participant onboarding, and direct Course Assignment subsets, and the
-  remaining product implementation gap.
+  Participant onboarding, direct Course Assignment, and assigned Active-Course
+  access subsets, and the remaining product implementation gap.
 - Read when: You need to distinguish accepted first-release behavior and
   non-goals from implementation state.
 - Tags: product, status, current-state, v1, implementation

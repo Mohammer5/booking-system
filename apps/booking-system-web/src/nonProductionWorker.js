@@ -6,6 +6,7 @@ import {
   createCoursePersistence,
   createGroupPersistence,
   createModulePersistence,
+  createParticipantCoursePersistence,
   createParticipantPersistence,
   createWorkerApplication,
 } from "./worker/index.js";
@@ -45,6 +46,9 @@ export default {
       coursePersistence: createCoursePersistence(environment.DB),
       groupPersistence: createGroupPersistence(environment.DB),
       modulePersistence: createModulePersistence(environment.DB),
+      participantCoursePersistence: createParticipantCoursePersistence(
+        environment.DB,
+      ),
       participantPersistence: createParticipantPersistence(environment.DB),
     });
 

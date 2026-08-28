@@ -141,9 +141,11 @@ deployment and fallback behavior. The current independently navigable routes
 are the Participant entry at `/`, administration entry at `/admin`, global
 Participant directory at `/admin/participants`, Course index at
 `/admin/courses`, creation at `/admin/courses/new`, and stable detail at
-`/admin/courses/:courseId`. Course membership, Group and Module lists, and
-their owned actions remain on stable Course detail because they are not
-independently navigable views.
+`/admin/courses/:courseId`. Assigned Participant Course detail is independently
+navigable at `/courses/:courseId` beneath the Participant gate. Course
+membership and its owned actions remain on stable Admin Course detail because
+they are not independently navigable views; assigned Participant Module and
+Group structure remains on stable Participant Course detail.
 
 ## Browser Authentication
 
@@ -213,8 +215,11 @@ The Participant registration slice is the current example: TanStack Query owns
 fresh `/api/participant/me` state and invalidation, React Hook Form owns the
 explicit booking-system name/email controls, and Worker/domain outcomes drive
 localized validation, conflict, loading, disabled, technical, success, and
-zero-membership states. The Active home issues no Course request until a later
-Assignment/access slice authorizes one.
+zero-membership states. Separate Participant Course queries mount only beneath
+the Active Participant gate: the list owns pending/error/empty/populated home
+states, while the stable detail query owns unavailable/technical/detail states.
+Neither query is a public catalogue, and the browser presents the current
+absence of Module Selection without offering a mutation control.
 
 Domain and application failures use machine-readable, language-neutral
 outcomes. Browser code translates those outcomes into localized messages;

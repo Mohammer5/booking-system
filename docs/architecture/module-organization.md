@@ -5,7 +5,8 @@
 The `packages/booking` workspace currently contains `admin-access` for first
 Admin bootstrap, `course-structure` for Course, Course-wide Group, and future
 Scheduled Module creation, and `course-access` for fresh Participant context
-resolution, registration, and direct Course Assignment. The accepted later
+resolution, registration, direct Course Assignment, and assigned Active-Course
+list/detail access. The accepted later
 package scope also names
 `module-participation`; it does not exist until its product behavior is
 implemented. These concepts remain modules inside one domain package rather
@@ -81,16 +82,19 @@ test-authentication implementation imports from entering `packages/booking`.
 The first slice uses `browser`, `worker`, and `authentication` as its initial
 first-level names, introduced together with real source and map declarations.
 
-The implemented Admin, Course-structure, Participant-registration, and direct
-Assignment slices preserve three application roles: browser sign-in/onboarding,
-Participant directory/Course membership, and Course/Group/Module presentation;
+The implemented Admin, Course-structure, Participant-registration/direct-
+Assignment, and assigned Participant Course-access slices preserve three
+application roles: browser sign-in/onboarding, Participant directory/Course
+membership and private Participant Course presentation, and Course/Group/Module
+presentation;
 Worker-side HTTP and D1 handling organized by the owning conceptual slice; and
 application-private authentication. The browser slices may use Better Auth's
 browser client for session initiation and termination while Google provider
 configuration stays in the authentication and Worker composition roles.
-Participant entry remains a second-level `participant-entry` browser slice;
-direct Assignment adds second-level `course-access` slices inside both browser
-and Worker without creating a new first-level application module. A thin
+Participant entry remains a second-level `participant-entry` browser slice and
+provides the shared current-context route gate. Direct Assignment and assigned-
+Course access use second-level `course-access` slices inside both browser and
+Worker without creating a new first-level application module. A thin
 composition entry may join only the roles required for its executable graph.
 The browser communicates with Worker behavior through same-origin HTTP rather
 than importing Worker implementation to share transport data.

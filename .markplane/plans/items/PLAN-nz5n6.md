@@ -1,7 +1,7 @@
 ---
 id: PLAN-nz5n6
 title: Implement assigned Participant Course access
-status: in-progress
+status: done
 implements:
 - TASK-qk47b
 related: []
@@ -167,10 +167,10 @@ catalogue, roster, peer data, administrative data, or booking mutation.
 
 ### Phase 1: Domain Access Policy
 
-- [ ] Implement/test the shared access predicate plus list/detail factories for
+- [x] Implement/test the shared access predicate plus list/detail factories for
       Active/missing/Disabled Participant, Active/missing/Revoked Assignment,
       Active/inactive Course, identifier mismatch, and zero/one/multiple Courses.
-- [ ] Prove read-only operations receive no Assignment/Selection write capability
+- [x] Prove read-only operations receive no Assignment/Selection write capability
       and create no side effect.
 
 **Checkpoint**: focused booking Vitest proves exact access and refusal policy
@@ -178,10 +178,10 @@ without HTTP, D1, browser, or mutation concerns.
 
 ### Phase 2: Guarded D1 And Worker HTTP
 
-- [ ] Implement/test narrow deterministic list/detail persistence over migrations
+- [x] Implement/test narrow deterministic list/detail persistence over migrations
       0001-0005, with Active joins, identifier isolation, Active Groups, all
       Modules, empty structures, privacy fields, and no schema/write side effect.
-- [ ] Implement/test exact routes/methods/status/JSON, fresh authentication and
+- [x] Implement/test exact routes/methods/status/JSON, fresh authentication and
       Participant resolution, trust-field resistance, sanitized failures, both
       Worker compositions, and production fixture exclusion.
 
@@ -190,10 +190,10 @@ produces narrow Participant Course data and all private identifiers fail alike.
 
 ### Phase 3: Participant Browser Experience
 
-- [ ] Implement nested context gating, query-driven `/` Course list, stable
+- [x] Implement nested context gating, query-driven `/` Course list, stable
       `/courses/:courseId` detail, separate TanStack keys, German i18n, and
       read-only Module/Group/Selection presentation.
-- [ ] Add focused Playwright for real onboarding/Admin direct Assignment,
+- [x] Add focused Playwright for real onboarding/Admin direct Assignment,
       zero/one/multiple order, detail/refresh, empty/populated structure, stale/
       technical/unavailable/privacy states, request ordering, sign-out,
       desktop/360px, keyboard/focus, semantic structure, axe, and overflow.
@@ -203,11 +203,11 @@ and opens/refreshes its private detail without exposing adjacent data.
 
 ### Phase 4: Documentation, Verification, And Closure
 
-- [ ] Use global docs maintenance to update product/architecture/process current
+- [x] Use global docs maintenance to update product/architecture/process current
       state, routes, responsibility, persistence reads, browser server state,
       verification ownership/count wording, indexes where material, and the
       dictionary coverage pass; update no nonexistent co-located docs.
-- [ ] Run focused lint/domain/Worker/Playwright checks, canonical `pnpm check`,
+- [x] Run focused lint/domain/Worker/Playwright checks, canonical `pnpm check`,
       `markplane sync`, `markplane check`, and `git diff --check`; record actual
       evidence, close only proven acceptance/task/plan/KR2, review the complete
       diff, and create the semantic implementation commit.
@@ -240,17 +240,29 @@ compatible; no down migration or data rewrite is needed.
 
 ## Execution State
 
-- Current phase/checkpoint: planning complete; implementation has not started.
-- Completed phase checkboxes: none.
-- Next exact action: run Markplane sync/check, review and commit this standalone
-  plan, then begin Phase 1 domain policy.
+- Current phase/checkpoint: Phases 1-4 and Markplane closure are complete; final
+  diff review and the semantic implementation commit remain.
+- Completed phase checkboxes: all Phase 1-4 items.
+- Next exact action: review the complete task diff, create the semantic
+  implementation commit, and verify clean Git history.
 - Persisted decisions: dedicated Participant handler/persistence; guarded Active
   joins; nested current-context gate; one privacy-safe detail outcome; per-Module
   `selection: null`; no migration/dependency/boundary edge.
-- Verification observed: baseline checkout and complete diff are clean; both
-  prerequisites are done; current source confirms the reported unconditional
-  empty-state root cause and absence of Participant Course routes/Selection table.
-- Working tree: only `TASK-qk47b` tracking activation and this plan are expected.
+- Verification observed: focused domain ESLint and 21 domain tests pass. Focused
+  Worker lint and 23 tests across the new D1/HTTP suites pass, covering guarded
+  ordering/structure, exact routes and outcomes, fresh state loss, privacy/trust
+  probes, both compositions, sanitized failures, and no migration/write effect.
+  Browser lint and both production builds pass. The final focused Participant
+  Course Playwright run passes 2/2 in 20.9s; the updated Participant registration
+  spec passes 4/4. The canonical `pnpm check` passes lint, 9 local-rule tests, 13
+  boundary tests, 153 domain tests, 104 Worker/D1/migration tests, both production
+  builds, and all 23 Chromium tests. Axe, focus, semantics, privacy,
+  desktop/360px, refresh, sign-out, and overflow assertions remain intact.
+- Remaining verification: final diff review, semantic implementation commit,
+  and clean-tree verification.
+- Working tree: the complete uncommitted assigned Participant Course-access
+  slice, canonical docs, tests, and tracking closure are present on top of
+  planning commit `0f64373`; no unrelated change is known.
 
 ## Pre-Approval Checklist
 

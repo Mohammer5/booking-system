@@ -41,10 +41,11 @@ Active Course, Course-wide Group, and future Scheduled Module creation,
 including normalized Group names, IANA-zone local-time resolution, explicit
 DST-overlap choice, definite instants, and current Admin/Course acceptance
 outcomes. `course-access` now implements fresh Participant-context resolution,
-explicit Participant registration with complete trimmed-email policy, and
-direct Course Assignment for registered Active or Disabled targets. Participant
-Course access, Invite, profile-editing, and Assignment/Participant lifecycle
-behavior stay with that owner when implemented. `module-participation` is
+explicit Participant registration with complete trimmed-email policy, direct
+Course Assignment for registered Active or Disabled targets, and current
+Active Participant + Active Assignment + Active Course list/detail access.
+Invite, profile-editing, Assignment/Participant lifecycle, and Archived-Course
+access stay with that owner when implemented. `module-participation` is
 introduced only with the later MVP behavior it owns. These are internal
 responsibility modules within one booking package, not separate workspace
 packages.

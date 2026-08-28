@@ -31,7 +31,7 @@ participation.
 
 - [x] KR1: A first Active Super Admin can bootstrap administration and create
       an Active Course with Groups and a future Scheduled Module.
-- [ ] KR2: A new Active Participant can register, be discovered and assigned
+- [x] KR2: A new Active Participant can register, be discovered and assigned
       to that Course by an Active Admin User, and access the participation
       information allowed by that Assignment without exposing other
       Participants' private information.
@@ -64,9 +64,10 @@ on every request. No selected role, domain authority, Course Assignment, or
 other booking authorization is stored in the session.
 
 `TASK-7uxjj` completes explicit Participant registration and the
-zero-Assignment Participant home. `TASK-z6hut` now completes Admin discovery
-and direct Course Assignment. KR2 remains open until the separate
-assigned-Participant Course-access work, including `TASK-qk47b`, is complete.
+zero-Assignment Participant home. `TASK-z6hut` completes Admin discovery and
+direct Course Assignment. `TASK-qk47b` completes private assigned-Participant
+Course list/detail access, so KR2 is complete. KR3 and the epic remain open
+until the separate Participant Module Selection work is implemented.
 
 The following concerns are intentionally deferred beyond this epic:
 

@@ -82,10 +82,13 @@ state, permanent bootstrap history, and integrity constraints required by this
 slice. The implemented Course slice separately owns narrow list, stable-detail,
 and guarded-create capabilities over `courses`, `groups`, and `modules`. The
 implemented `course-access` slices own narrow Participant fresh-resolution,
-directory, constraint-backed registration, and guarded direct-Assignment
-capabilities over `participants` and `course_assignments`. Invite and Module
-Selection schemas wait for the work that needs them, while Assignment
-lifecycle transitions remain deferred to their owning slice.
+directory, constraint-backed registration, guarded direct-Assignment, and
+assigned Active-Course list/detail capabilities over `participants`,
+`course_assignments`, `courses`, `groups`, and `modules`. The Participant
+Course reads join current Active Participant, Active Assignment, and Active
+Course state before returning private data. Invite and Module Selection schemas
+wait for the work that needs them, while Assignment lifecycle transitions
+remain deferred to their owning slice.
 
 ## Environment Isolation
 
@@ -184,6 +187,15 @@ Active Admin, Active Course, and fully registered Active or Disabled target at
 write acceptance. The unique pair makes repeated and concurrent Active
 assignment idempotent, while a refused write creates no identity or Module
 Selection. Assignment lifecycle transitions remain deferred.
+
+The assigned Participant Course access slice needs no sixth migration. Its
+list and detail capabilities read the existing five-migration schema with
+current-state guards in SQL. Detail returns the Course's current Modules and
+Active Groups only after the Participant, Assignment, and Course are all
+Active. Missing, cross-Participant, unassigned, inactive-Assignment, and
+inactive-Course identifiers share one unavailable outcome. Module Selection
+remains absent from the schema and is represented only as an explicit
+`selection: null` response value until its owning slice is implemented.
 
 The full migration sequence is applied to clean isolated state in Worker tests
 and before browser E2E. The schema is designed for eventual D1 deployment. A

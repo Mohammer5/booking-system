@@ -70,7 +70,8 @@
   sign-in and Better Auth sign-out, bootstrap/current-context HTTP, and
   freshly authorized Course index/create/detail plus nested Group/Module
   creation HTTP, plus fresh Participant context, explicit onboarding, the
-  global Admin Participant directory, and Course Assignment list/create HTTP.
+  global Admin Participant directory, Course Assignment list/create HTTP, and
+  private assigned Participant Course list/detail HTTP.
   Application destinations remain fixed and browser input cannot select
   principal, authority, Assignment identity/state, lifecycle state,
   normalized email, definite instant, or permanent scheduling history.
@@ -96,24 +97,26 @@
   required by first Admin bootstrap/fresh context resolution plus
   `course-structure` factories for Course, Course-wide Group, and future
   Module creation and `course-access` factories for fresh Participant context,
-  registration, and direct Course Assignment. Course-local time resolution
-  and complete-email normalization remain internal to their owning
-  responsibility modules.
+  registration, direct Course Assignment, and current assigned Active-Course
+  list/detail access. Course-local time resolution and complete-email
+  normalization remain internal to their owning responsibility modules.
 - The web application has distinct `browser`, `worker`, and `authentication`
   responsibilities plus thin browser, production Worker, and non-production
   Worker compositions.
 - React Router serves the independently navigable `/` Participant entry,
+  Participant `/courses/:courseId` detail,
   `/admin` administration entry, `/admin/participants`, and nested
   `/admin/courses`, `/admin/courses/new`, and `/admin/courses/:courseId` views.
   They use one responsive browser-owned MUI shell with desktop list navigation,
   a narrow modal Drawer, a skip link, and stable route titles. The Participant
   route resolves current state, offers fixed-destination Google entry, requires
   explicit name/email onboarding when missing, and returns an Active
-  Participant to the zero-membership home without Course-data exposure or
-  public discovery. The Admin Participant directory includes registered
-  zero-Assignment Participants. Stable Course detail owns Course membership,
-  direct Assignment, Group, and future-Module interactions without incidental
-  routes.
+  Participant to a query-driven zero/one/multiple assigned-Course home without
+  public discovery. Its stable detail exposes relevant Course, Module, Active-
+  Group, and own no-Selection data only. The Admin Participant directory
+  includes registered zero-Assignment Participants. Stable Course detail owns
+  Course membership, direct Assignment, Group, and future-Module interactions
+  without incidental routes.
 - TanStack Query owns remote Admin, Course, Participant, and Assignment state;
   React Hook Form owns the Admin-name, Course, Group, Module, and Participant-
   onboarding forms; and German-first slice-owned i18next resources own all
@@ -121,7 +124,8 @@
   Native local date/time fields and MUI radio groups expose IANA-zone DST
   gap/overlap resolution without a date library or MUI X. The current-Admin
   page is a nested route gate, so no Course query mounts before an Active Admin
-  resolves, while the zero-membership Participant home issues no Course query.
+  resolves. Participant entry is the equivalent nested current-context gate,
+  so list/detail queries mount only after an Active Participant resolves.
 - Free MUI Core 9.4.0 and its Emotion styling dependencies are pinned in the
   application manifest. One browser-owned theme and `CssBaseline` establish
   typography, spacing, surfaces, responsive breakpoints, and visible focus;
@@ -150,7 +154,10 @@
   uniqueness constraints make one insert the complete registration outcome.
   Assignment foreign keys and a unique Participant/Course pair preserve one
   ordinary membership, while a guarded insert rechecks current Active Admin,
-  Active Course, and registered Active/Disabled target state.
+  Active Course, and registered Active/Disabled target state. Separate narrow
+  Participant Course reads join current Active Participant, Active Assignment,
+  and Active Course state, order list/Module/Group data deterministically, and
+  restrict Participant Groups to Active state without adding a migration.
 - Both explicit workspace boundary maps are registered in ESLint. The boundary
   converter denies undeclared third-party imports and supports exact test-only
   and composition-interface permissions.
@@ -161,8 +168,9 @@
   navigation, name/label, error-association, direct/refresh, privacy, stale
   refusal, onboarding/zero-membership/sign-out, same-principal dual-context,
   Participant directory and Course membership/Assignment states, Disabled
-  targets, idempotent repeat, Group/Module creation, DST gap/overlap,
-  exact-instant, and overflow assertions.
+  targets, idempotent repeat, assigned-Course list/detail/refresh, current-state
+  loss, identifier privacy, truthful no-Selection presentation, Group/Module
+  creation, DST gap/overlap, exact-instant, and overflow assertions.
 - The root flake supplies Node 24, pnpm 11.17.0, Git, Markplane, Chromium, and
   a Nix-patched official workerd 1.20260826.1 binary for x86_64-linux. It points
   Miniflare and Playwright at the Nix executables and supplies Miniflare with

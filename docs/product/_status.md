@@ -38,10 +38,15 @@ shows current Assignment state, while the independent Participant directory
 still includes zero-Assignment Participants. A new authenticated principal can
 explicitly supply the required booking-system Participant name and unique
 email, become one Active Participant, return to the Participant home, and see
-the valid zero-Assignment state without public Course discovery. Course,
-Group, and Module editing or lifecycle operations; participant-facing Course
-access, Module Selection, Assignment lifecycle actions, Invite, Participant
-profile/lifecycle, later Admin onboarding, and later Admin management behavior
-remain unimplemented. Technology, persistence, API, frontend, and
-infrastructure mechanics remain outside this product specification and do not
-alter its contracts.
+the valid zero-Assignment state without public Course discovery. An Active
+Participant now sees exactly the Active Courses reached through their own
+Active Assignments and may open a stable private detail containing relevant
+Course information, Modules, Active Groups, and only the truthful absence of
+their own Module Selection. Unknown, inactive, unassigned, Revoked, stale, and
+cross-Participant Course identifiers reveal no Course data. Course, Group, and
+Module editing or lifecycle operations; Module Selection persistence/mutation,
+Assignment lifecycle actions, Archived-Course historical access, Invite,
+Participant profile/lifecycle, later Admin onboarding, and later Admin
+management behavior remain unimplemented. Technology, persistence, API,
+frontend, and infrastructure mechanics remain outside this product
+specification and do not alter its contracts.

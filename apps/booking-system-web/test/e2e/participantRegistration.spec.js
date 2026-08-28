@@ -7,13 +7,13 @@ const narrowViewport = { width: 360, height: 800 };
 test("registers and returns as a Participant through the German browser journey", async ({
   page,
 }) => {
-  const privateCourseRequests = [];
+  const participantCourseRequests = [];
 
   page.on("request", (request) => {
     const pathname = new URL(request.url()).pathname;
 
     if (pathname.includes("courses")) {
-      privateCourseRequests.push(pathname);
+      participantCourseRequests.push(pathname);
     }
   });
   await page.setViewportSize(desktopViewport);
@@ -84,6 +84,7 @@ test("registers and returns as a Participant through the German browser journey"
     "Bitte geben Sie eine gültige E-Mail-Adresse ein.",
   );
   await expectAccessibleLayout(page);
+  expect(participantCourseRequests).toEqual([]);
 
   await emailInput.fill(" Alice.Registration@Example.COM ");
   await submitButton.focus();
@@ -102,7 +103,12 @@ test("registers and returns as a Participant through the German browser journey"
   ).toBeVisible();
   await expect(page.getByText("Aktiv", { exact: true })).toBeVisible();
   await expectZeroMembership(page);
-  expect(privateCourseRequests).toEqual([]);
+  expect(participantCourseRequests).toContain("/api/participant/courses");
+  expect(
+    participantCourseRequests.every(
+      (pathname) => pathname === "/api/participant/courses",
+    ),
+  ).toBe(true);
   await expectAccessibleLayout(page);
 
   await page.reload();
@@ -148,7 +154,11 @@ test("registers and returns as a Participant through the German browser journey"
   await page.reload();
   await expect(page.getByText("Alice Participant")).toBeVisible();
   await expectZeroMembership(page);
-  expect(privateCourseRequests).toEqual([]);
+  expect(
+    participantCourseRequests.every(
+      (pathname) => pathname === "/api/participant/courses",
+    ),
+  ).toBe(true);
 });
 
 test("refuses a duplicate Participant email without creating a profile", async ({
@@ -296,6 +306,7 @@ for (const [viewportName, viewport] of Object.entries({
         email: "ada@example.com",
         state: "active",
       },
+      courses: { status: 200, body: { courses: [] } },
     });
     await expect(page.getByText("Ada Participant")).toBeVisible();
     await expectZeroMembership(page);
@@ -332,11 +343,21 @@ for (const [viewportName, viewport] of Object.entries({
  * @param {object} state Stubbed response and optional destination.
  * @returns {Promise<void>} Completion after the route is rendered.
  */
-async function showParticipantState(page, { status, body, url = "/" }) {
+async function showParticipantState(
+  page,
+  { status, body, courses, url = "/" },
+) {
   await page.unrouteAll({ behavior: "wait" });
   await page.route("**/api/participant/me", (route) =>
     fulfillJson(route, status, body),
   );
+
+  if (courses !== undefined) {
+    await page.route("**/api/participant/courses", (route) =>
+      fulfillJson(route, courses.status, courses.body),
+    );
+  }
+
   await page.goto(url);
   await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
 }

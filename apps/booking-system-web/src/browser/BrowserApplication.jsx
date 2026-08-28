@@ -5,13 +5,19 @@ import {
   AdministrationContextRoute,
 } from "./admin-bootstrap/index.js";
 import { ResponsiveApplicationShell } from "./application-shell/index.js";
-import { ParticipantDirectoryPage } from "./course-access/index.js";
+import {
+  ParticipantCourseDetailPage,
+  ParticipantDirectoryPage,
+} from "./course-access/index.js";
 import {
   CourseCreatePage,
   CourseDetailPage,
   CourseIndexPage,
 } from "./course-structure/index.js";
-import { ParticipantEntryPage } from "./participant-entry/index.js";
+import {
+  ParticipantEntryPage,
+  ParticipantHomePage,
+} from "./participant-entry/index.js";
 
 /**
  * Define the language-independent browser route tree.
@@ -28,7 +34,13 @@ export function BrowserApplication() {
             <ParticipantEntryPage />
           </ResponsiveApplicationShell>
         }
-      />
+      >
+        <Route index element={<ParticipantHomePage />} />
+        <Route
+          path="courses/:courseId"
+          element={<ParticipantCourseDetailPage />}
+        />
+      </Route>
       <Route
         path="/admin"
         element={

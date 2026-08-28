@@ -44,16 +44,19 @@ workspaces, and their two audiences do not by themselves justify permanent
 audience-first source buckets. See [browser conventions](browser-conventions.md)
 for the accepted browser libraries and their responsibilities.
 
-The implemented browser exposes Participant Google entry, onboarding, and home
-at `/`, the administration entry at `/admin`, the Participant directory at
-`/admin/participants`, and nested Course index/create/detail routes through one
-responsive MUI shell. Stable Course detail contains Course membership and
-direct Assignment plus the owned Group and future-Module lists and creation
-forms rather than adding incidental routes. Navigation preserves the same
-browser cookie and Better Auth principal; Participant context resolves its own
+The implemented browser exposes Participant Google entry, onboarding, and
+assigned-Course home at `/`, private Participant Course detail at
+`/courses/:courseId`, the administration entry at `/admin`, the Participant
+directory at `/admin/participants`, and nested Course index/create/detail
+routes through one responsive MUI shell. Stable Admin Course detail contains
+Course membership and direct Assignment plus the owned Group and future-Module
+lists and creation forms rather than adding incidental routes. Navigation
+preserves the same browser cookie and Better Auth principal; Participant
+context resolves its own
 current domain identity without selecting a role or revealing Course data
-before a later access slice authorizes it. Every route is direct-navigation
-and refresh-safe through the application-owned SPA fallback.
+before current Active Participant/Assignment/Course access authorizes it.
+Every route is direct-navigation and refresh-safe through the
+application-owned SPA fallback.
 
 Better Auth remains private to this application and resolves a request to one
 stable external principal. The application then uses participant or
@@ -120,11 +123,36 @@ case-insensitive whole-email comparison key, and Active state; browser trust
 fields are ignored. One constraint-backed insert decides repeated or
 concurrent principal/email conflicts without partially changing a profile.
 Authentication or abandoned onboarding creates no Participant, Course
-Assignment, or Module Selection. The `/` browser resolves this HTTP state on
-direct navigation and refresh, presents the mandatory German profile form when
-the Participant is missing, and presents the truthful zero-membership home
-after registration without issuing Course requests or offering public
-discovery.
+Assignment, or Module Selection. The Participant route gate resolves this HTTP
+state on direct navigation and refresh, presents the mandatory German profile
+form when the Participant is missing, and mounts private assigned-Course list
+or detail queries only after an Active Participant resolves.
+
+### Participant Course Access HTTP Surface
+
+The implemented read-only `course-access` slice adds two concrete same-origin
+operations:
+
+```text
+GET /api/participant/courses
+GET /api/participant/courses/:courseId
+```
+
+| Operation | Authentication and current state | Results |
+| --- | --- | --- |
+| Assigned Course list | Normal session resolving a current Active Participant, then current Active Assignments and Active Courses | `200 { courses }`, including truthful empty; `401 unauthenticated`; `403 no-participant`/`disabled-participant`; sanitized `500 technical-error` |
+| Assigned Course detail | Same plus a current Active Assignment to the requested current Active Course | `200` narrow Course with ordered `modules` and Active `groups`; `401`; exact `403`; one `404 course-unavailable` for malformed, unknown, inactive, unassigned, Revoked, stale, or cross-Participant identifiers; sanitized `500 technical-error` |
+
+List items expose only Course `id`, `name`, optional `description`, `timezone`,
+and Active `state`. Detail adds participant-relevant Module and Active Group
+fields. Each Module exposes `selection: null`, the only truthful own-Selection
+state before `TASK-jvqrk`; no Selection table, default Group, or mutation
+exists.
+
+The server derives Participant identity only from the authenticated principal,
+guards D1 reads by current Participant/Assignment/Course state, and never
+exposes a roster, peer profile/email/Selection, Assignment, count, Admin data,
+or public catalogue.
 
 ### Course Administration HTTP Surface
 

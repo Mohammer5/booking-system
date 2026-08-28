@@ -126,6 +126,17 @@ and repeat journeys, Disabled-target presentation, stale/technical refusal,
 direct refresh, Admin-gate privacy, desktop/360px, Dialog keyboard/focus, and
 axe evidence.
 
+For assigned Participant Course access, booking-domain Vitest owns the shared
+Active Participant/Assignment/Course predicate, eligibility filtering, stable
+adapter order, and one private unavailable outcome. Worker/D1 Vitest owns
+guarded ordered list/detail reads, current-state refusal, exact HTTP contracts,
+missing/cross-Participant/unassigned identifier privacy, technical-error
+sanitization, and the explicit absence of Selection persistence. Playwright
+owns truthful empty/loading/error/populated list states, one/multiple Course
+ordering, stable detail/direct refresh, Module/Active-Group presentation,
+unavailable privacy, pre-Active request refusal, sign-out, desktop/360px,
+keyboard/focus, overflow, and axe evidence.
+
 The implemented integration uses project-pinned `@cloudflare/vitest-plugin`
 with isolated D1 state and the version-controlled migration sequence.
 
@@ -185,8 +196,9 @@ preview artifacts.
 
 The Participant browser flow proves authentication alone creates no booking
 identity, mandatory profile input creates one Active Participant, duplicate
-email and stale outcomes have no partial effect, the zero-Assignment home
-issues no Course request, and the same normal session resolves distinct
+email and stale outcomes have no partial effect, no Course request occurs before
+the Participant becomes Active, and the Active gate returns a truthful private
+assigned-Course list or zero state. The same normal session resolves distinct
 Participant/Admin identities. Real Google provider interaction for both
 contexts remains a documented manual smoke in [authentication and
 sessions](../architecture/authentication-and-sessions.md#manual-local-google-smoke).
@@ -197,13 +209,15 @@ viewports. Axe supplements rather than replaces assertions for
 landmarks/headings, named list navigation, control names, keyboard-only
 activation, visible focus, field/error association, Drawer/Dialog trapping and
 restoration, result/error focus, direct navigation and refresh, Participant
-onboarding/zero-membership/privacy states, Participant directory and Course
-membership/direct-Assignment states, and absence of horizontal overflow. The
-current twenty-one-test browser suite also proves that one fixed normal session
-remains usable while navigating between Participant and Admin contexts,
-successful sign-out terminates that session, and an Active Admin can create
-and revisit a Course with Groups, a future Module, and direct Participant
-membership while missing Admin context causes no private Course-access request.
+onboarding/assigned-Course/zero-membership/privacy states, Participant
+directory and Course membership/direct-Assignment states, and absence of
+horizontal overflow. The current 23-test browser suite also proves that one fixed
+normal session remains usable while navigating between Participant and Admin
+contexts, successful sign-out terminates that session, an Active Admin can
+create and revisit a Course with Groups, a future Module, and direct
+Participant membership, and an Active Participant can access only assigned
+Active Courses while missing or inactive Participant context causes no private
+Course-access request.
 
 On browser-test failure, CI should retain short-lived useful diagnostics such
 as the Playwright report, traces, screenshots, and relevant logs. Artifacts

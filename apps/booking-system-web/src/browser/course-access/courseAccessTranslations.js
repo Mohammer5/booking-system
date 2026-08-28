@@ -48,5 +48,50 @@ export const courseAccessTranslations = {
       submit: "Kurszuordnung speichern",
       submitting: "Kurszuordnung wird gespeichert …",
     },
+    participantCourses: {
+      status: {
+        unavailable:
+          "Dieser Kursbereich ist für Ihr aktuelles Teilnahmeprofil nicht verfügbar.",
+        technicalError:
+          "Die Kursdaten konnten nicht geladen werden. Bitte versuchen Sie es erneut.",
+      },
+      state: {
+        active: "Aktiv",
+      },
+      list: {
+        title: "Meine Kurse",
+        loading: "Kurszuordnungen werden geladen …",
+        emptyTitle: "Noch keinen Kursen zugeordnet",
+        emptyDescription:
+          "Ihr aktives Teilnahmeprofil ist noch keinem Kurs zugeordnet. Es gibt kein öffentliches Kursverzeichnis.",
+        label: "Zugeordnete Kurse",
+      },
+      detail: {
+        title: "Kursdetails",
+        loading: "Kursdetails werden geladen …",
+        toList: "Zurück zu meinen Kursen",
+        timezone: "Zeitzone",
+        state: "Status",
+      },
+      modules: {
+        title: "Module",
+        empty: "Für diesen Kurs sind noch keine Module vorhanden.",
+        label: "Module dieses Kurses",
+        scheduled: "Geplant",
+        cancelled: "Abgesagt",
+        startsAt: "Beginn",
+        endsAt: "Ende",
+      },
+      groups: {
+        title: "Gruppen",
+        empty: "Für diesen Kurs sind keine aktiven Gruppen vorhanden.",
+        label: "Aktive Gruppen dieses Kurses",
+      },
+      selection: {
+        title: "Eigene Modulauswahl",
+        none: "Keine Auswahl",
+        noneDescription: "Für dieses Modul ist keine Gruppe ausgewählt.",
+      },
+    },
   },
 };
