@@ -226,10 +226,10 @@ Authentication alone never creates a Participant or Course Assignment.
 
 Google is the implemented normal provider inside
 `apps/booking-system-web`. Better Auth owns the one provider callback at
-`/api/auth/callback/google`; the Admin browser starts sign-in with `/admin` as
-its fixed application destination. Administration and future Participant
-contexts do not create provider-specific callback endpoints or separate
-sessions.
+`/api/auth/callback/google`. The Admin browser starts sign-in with `/admin` as
+its fixed application destination, and the Participant browser uses `/`.
+Neither context creates a provider-specific callback endpoint or separate
+session.
 
 Google Client ID, Google Client Secret, and `BETTER_AUTH_SECRET` values enter
 the Worker through environment configuration. They are absent from browser
@@ -290,11 +290,11 @@ storage are deferred to implementation.
 
 ## Non-Production Authentication
 
-The first slice uses a separate explicitly
+The application uses a separate explicitly
 [non-production authentication](../DICTIONARY.md#non-production-authentication)
 composition. The authentication-owned fixture interface uses Better Auth's
-`testUtils` plugin to create normal signed D1-backed sessions for two fixed
-identities: `first-admin` and `later-admin`.
+`testUtils` plugin to create normal signed D1-backed sessions for four fixed
+identities: `first-admin`, `later-admin`, `participant-a`, and `participant-b`.
 
 Production and non-production authentication are different executable
 compositions rather than one production composition conditionally exposing a
@@ -315,8 +315,8 @@ explicit non-production composition
 The mechanism must:
 
 - establish normal Better Auth application sessions for deterministic named
-  fixture identities, currently `first-admin` and `later-admin`, while leaving
-  room for Participant fixtures when those flows exist;
+  fixture identities, currently `first-admin`, `later-admin`, `participant-a`,
+  and `participant-b`;
 - let Playwright exercise the normal authenticated application and real domain
   authorization after session establishment;
 - prevent arbitrary-principal impersonation, including a caller-supplied
@@ -368,6 +368,38 @@ discipline as other application D1 changes. Local/test, staging, and production
 data remain isolated, and production regression tests never mutate production
 identity or session data.
 
+## Manual Local Google Smoke
+
+Google's hosted UI remains outside automated tests. Verify the real local
+provider and both application contexts manually as follows:
+
+1. Copy `apps/booking-system-web/.env.example` to the ignored
+   `apps/booking-system-web/.env`. Set a high-entropy `BETTER_AUTH_SECRET` of at
+   least 32 characters plus the Google Client ID and Client Secret.
+2. In the Google OAuth client, register `http://localhost:5173` as an
+   authorized JavaScript origin and
+   `http://localhost:5173/api/auth/callback/google` as the local redirect URI.
+3. On x86_64 NixOS, enter `nix develop`. Install the locked dependencies with
+   `pnpm install --frozen-lockfile` when needed.
+4. Prepare a fresh local database with
+   `pnpm --filter @booking-system/booking-system-web run dev:prepare`, then
+   start the normal application with
+   `pnpm --filter @booking-system/booking-system-web run dev`.
+5. Open `http://localhost:5173/admin`, continue with Google, supply the
+   required booking-system Admin name when the fresh database offers
+   bootstrap, verify the Active Super Admin result, and sign out.
+6. Open `http://localhost:5173/`, continue with Google, explicitly supply the
+   booking-system Participant name and email, and verify the Active profile,
+   zero-Course state, absence of public Course discovery, and refresh-safe
+   return. Navigate to `/admin` in the same signed-in session to confirm one
+   principal reaches distinct Participant and Admin User identities, then sign
+   out.
+
+Automated tests structurally verify provider configuration, the single
+callback, fixed application destinations, sanitized failures, normal fixture
+sessions, and production fixture exclusion. Only the real Google interaction
+above is manual.
+
 ## Current State And Implementation Trigger
 
 The local authentication foundation is implemented inside
@@ -385,10 +417,17 @@ state, and authority remain absent from the session; the Course insert also
 guards against an Admin becoming Disabled between initial resolution and write
 acceptance.
 
-Google is configured from environment-owned values, and the `/admin` browser
-uses Better Auth's supported client to start Google sign-in with fixed success
-and sanitized same-origin failure destinations and to terminate sessions on
-sign-out. Normal local Vite development is fixed to
+The Participant HTTP and browser slices reuse the same session, resolve the
+current Participant fresh by external principal, and create one Active
+Participant only after explicit valid booking-system name and email input.
+Authentication and abandoned onboarding create no Participant, Assignment, or
+Selection. The `/` route returns an Active Participant to a truthful
+zero-membership state without public Course discovery.
+
+Google is configured from environment-owned values, and the `/admin` and `/`
+browsers use Better Auth's supported client to start Google sign-in with their
+fixed success and sanitized same-origin failure destinations and to terminate
+sessions on sign-out. Normal local Vite development is fixed to
 `http://localhost:5173`, matching the one local Google callback at
 `http://localhost:5173/api/auth/callback/google`.
 

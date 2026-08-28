@@ -52,30 +52,35 @@ pre-implementation planning, and planning may proceed to creation of the real
 implementation backlog in Markplane. Release hardening and hosted staging
 verification remain mandatory before the first production release.
 
-The local application foundation and Course-structure creation slice are now
-implemented:
+The local application foundation, Course-structure creation, and Participant
+registration slices are now implemented:
 
 - `@booking-system/booking` at `packages/booking` owns the implemented
   `admin-access` behavior plus `course-structure` Course, Course-wide Group,
-  future Module, and Course-local definite-time creation policy;
+  future Module, and Course-local definite-time creation policy, plus
+  `course-access` Participant registration and fresh context policy;
 - `@booking-system/booking-system-web` at `apps/booking-system-web` owns the
-  React `/` Participant entry, `/admin` administration flow, nested Course
-  index/create/detail routes and Group/Module creation forms, Worker/API
-  handling, Better Auth composition, D1 persistence, Vite/Workers Static
-  Assets integration, and local runtime;
-- three version-controlled migrations create the Better Auth/Admin foundation,
-  Courses, and additive Group/Module schema with permanent first-Module
-  scheduling history, clean-state construction, and data-preserving upgrade
-  evidence;
+  React `/` Participant Google entry/onboarding/home, `/admin` administration
+  flow, nested Course index/create/detail routes and Group/Module creation
+  forms, Worker/API handling, Better Auth composition, D1 persistence,
+  Vite/Workers Static Assets integration, and local runtime;
+- four version-controlled migrations create the Better Auth/Admin foundation,
+  Courses, additive Group/Module schema with permanent first-Module scheduling
+  history, and constrained Participants, with clean-state construction and
+  data-preserving upgrade evidence;
 - production and explicit non-production Worker compositions structurally
   separate fixed fixture-session establishment from production;
 - the `/admin` browser flow starts fixed-destination Google sign-in, requires
   authentication before the first-Admin name form, and supports Better Auth
   sign-out in every authenticated Admin-route outcome;
+- the `/` browser flow starts fixed-destination Google sign-in, explicitly
+  collects the booking-system Participant name/email, resolves current
+  Participant state fresh, and supports refresh, zero membership, and sign-out
+  without public Course discovery;
 - `/`, `/admin`, `/admin/courses`, `/admin/courses/new`, and stable Course
   detail routes are direct/refresh-safe German MUI contexts within one
-  responsive shell; the request-free Participant entry creates no domain
-  identity or membership and navigation preserves one principal/session;
+  responsive shell; one principal/session can reach distinct Participant and
+  Admin User identities without a persisted role;
 - each Course HTTP request freshly resolves Active Admin state, and Course
   creation plus nested Group/Module writes use guarded D1 inserts so a stale
   actor or Course creates no row or scheduling-history side effect;
@@ -92,6 +97,7 @@ implemented:
   navigation, Drawer/Dialog focus trapping and restoration, labels/names,
   field-error association, direct/refresh behavior, Group/Module empty and
   creation states, DST gap/overlap handling, stale/technical refusals,
+  Participant onboarding/zero membership, dual-context identity, sign-out,
   Participant privacy, and overflow;
 - both workspace boundary maps are registered in ESLint with exact module,
   workspace, composition, third-party, and test-only permissions;
@@ -103,10 +109,11 @@ implemented:
   build, and Chromium browser evidence.
 
 Apple, Microsoft, and Facebook providers, Course/Group/Module editing and
-lifecycle, Participant, Assignment, Selection, Invite, later Admin
-capabilities, remote Google credentials and production callback/domain
-configuration, remote Cloudflare staging/production resources, release
-automation, deployment credentials, and production deployment remain absent.
+lifecycle, Participant profile/lifecycle and administration, Assignment,
+Course access, Selection, Invite, later Admin capabilities, remote Google
+credentials and production callback/domain configuration, remote Cloudflare
+staging/production resources, release automation, deployment credentials, and
+production deployment remain absent.
 The account-bound release surfaces are intentionally deferred until release
 hardening. No co-located `*.docs.md` file exists.
 

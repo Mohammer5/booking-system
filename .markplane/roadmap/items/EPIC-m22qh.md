@@ -63,6 +63,10 @@ context and resolved with their authorization from authoritative current state
 on every request. No selected role, domain authority, Course Assignment, or
 other booking authorization is stored in the session.
 
+`TASK-7uxjj` now completes explicit Participant registration and the
+zero-Assignment Participant home. KR2 remains open until the separate direct
+Assignment and assigned-Course access tasks are complete.
+
 The following concerns are intentionally deferred beyond this epic:
 
 - Course Invites, Admin Invites, and additional administrator onboarding;

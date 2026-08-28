@@ -8,3 +8,7 @@ export {
   createCreateGroup,
   createCreateModule,
 } from "./course-structure/index.js";
+export {
+  createRegisterParticipant,
+  createResolveParticipantContext,
+} from "./course-access/index.js";

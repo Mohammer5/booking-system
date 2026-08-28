@@ -18,6 +18,22 @@ const fixturesByPath = new Map([
       email: "later-admin@fixture.invalid",
     },
   ],
+  [
+    "/api/_fixtures/session/participant-a",
+    {
+      id: "fixture-participant-a",
+      name: "Participant A Fixture",
+      email: "participant-a@fixture.invalid",
+    },
+  ],
+  [
+    "/api/_fixtures/session/participant-b",
+    {
+      id: "fixture-participant-b",
+      name: "Participant B Fixture",
+      email: "participant-b@fixture.invalid",
+    },
+  ],
 ]);
 
 /**

@@ -64,6 +64,16 @@ describe("Google authorization boundary", () => {
     );
 
     expect(externalDestination.status).toBe(403);
+
+    const participantResponse = await initiateGoogleSignIn("/");
+    const participantAuthorizationURL = new URL(
+      (await participantResponse.json()).url,
+    );
+
+    expect(participantResponse.status).toBe(200);
+    expect(participantAuthorizationURL.searchParams.get("redirect_uri")).toBe(
+      "http://localhost/api/auth/callback/google",
+    );
   });
 
   it("removes provider callback payloads before returning to Admin UI", async () => {
@@ -77,6 +87,22 @@ describe("Google authorization boundary", () => {
     expect(response.status).toBe(303);
     expect(response.headers.get("location")).toBe(
       "http://localhost/admin?authentication=failed",
+    );
+    expect(response.headers.get("cache-control")).toBe("no-store");
+    await expect(response.text()).resolves.toBe("");
+  });
+
+  it("removes provider payloads before returning to the fixed Participant destination", async () => {
+    const response = await productionWorker.fetch(
+      new Request(
+        "http://localhost/api/auth/participant-error?error=provider-error&error_description=private-payload",
+      ),
+      env,
+    );
+
+    expect(response.status).toBe(303);
+    expect(response.headers.get("location")).toBe(
+      "http://localhost/?authentication=failed",
     );
     expect(response.headers.get("cache-control")).toBe("no-store");
     await expect(response.text()).resolves.toBe("");

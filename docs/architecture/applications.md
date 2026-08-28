@@ -44,14 +44,15 @@ workspaces, and their two audiences do not by themselves justify permanent
 audience-first source buckets. See [browser conventions](browser-conventions.md)
 for the accepted browser libraries and their responsibilities.
 
-The implemented browser exposes a request-free Participant entry at `/`, the
-administration entry at `/admin`, and nested Course index/create/detail routes
-through one responsive MUI shell. Stable Course detail contains the owned Group
-and future-Module lists and creation forms rather than adding incidental
-routes. Navigation preserves the same browser cookie and Better Auth principal;
-the Participant entry neither selects a role nor creates or reveals booking
-domain records. Every route is direct-navigation and refresh-safe through the
-application-owned SPA fallback.
+The implemented browser exposes Participant Google entry, onboarding, and home
+at `/`, the administration entry at `/admin`, and nested Course
+index/create/detail routes through one responsive MUI shell. Stable Course
+detail contains the owned Group and future-Module lists and creation forms
+rather than adding incidental routes. Navigation preserves the same browser
+cookie and Better Auth principal; Participant context resolves its own current
+domain identity without selecting a role or revealing Course data before a
+later Assignment authorizes access. Every route is direct-navigation and
+refresh-safe through the application-owned SPA fallback.
 
 Better Auth remains private to this application and resolves a request to one
 stable external principal. The application then uses participant or
@@ -96,6 +97,33 @@ dependencies, Worker/API runtime dependencies, application build and
 development tooling, and the dependency on `packages/booking`. Sharing that
 manifest does not make each dependency architecturally available to every
 source responsibility or include it in every runtime output.
+
+### Participant Registration HTTP Surface
+
+The implemented `course-access` registration slice uses two concrete
+same-origin operations:
+
+```text
+GET  /api/participant/me
+POST /api/participant/onboarding
+```
+
+| Operation | Authentication and current state | Results |
+| --- | --- | --- |
+| Current Participant | Normal session resolving the current Participant fresh by external principal | `200` narrow Active Participant; `401 unauthenticated`; `403 no-participant`; `403 disabled-participant` |
+| Participant onboarding | Normal session plus explicit `{ name, email }` booking profile | `201` narrow Active Participant; `401`; `422 invalid-name`/`invalid-email`; `409 participant-already-exists`/`email-already-exists` |
+
+Participant success representations contain only `id`, `name`, `email`, and
+`state`. The server derives the external principal, Participant identity,
+case-insensitive whole-email comparison key, and Active state; browser trust
+fields are ignored. One constraint-backed insert decides repeated or
+concurrent principal/email conflicts without partially changing a profile.
+Authentication or abandoned onboarding creates no Participant, Course
+Assignment, or Module Selection. The `/` browser resolves this HTTP state on
+direct navigation and refresh, presents the mandatory German profile form when
+the Participant is missing, and presents the truthful zero-membership home
+after registration without issuing Course requests or offering public
+discovery.
 
 ### Course Administration HTTP Surface
 

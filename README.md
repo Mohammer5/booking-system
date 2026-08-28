@@ -8,8 +8,9 @@ booking system. It currently includes:
 - an indexed, maintainable documentation process;
 - a conceptual-domain-first architecture philosophy with ESLint enforcement;
 - a locally runnable React/Vite and Cloudflare Worker application with D1;
-- real Google authentication, Admin sign-in/sign-out, and the first-Admin
-  bootstrap vertical slice with its booking-domain package;
+- real Google authentication with Admin and Participant sign-in/sign-out, the
+  first-Admin bootstrap, and explicit Participant registration with a
+  zero-membership home;
 - GitHub Actions verification for pull requests and `main`; and
 - a repository-local Markplane development backlog.
 
@@ -51,11 +52,16 @@ repository has no Docker-based development path.
 
 ## Real Local Google Authentication
 
-Create `apps/booking-system-web/.env` from the committed example. Keep its
-values local and supply a high-entropy `BETTER_AUTH_SECRET` of at least 32
-characters together with the Google Client ID and Client Secret. The normal
-local application uses exactly `http://localhost:5173`; startup fails if that
-port is occupied so the registered OAuth origin cannot drift.
+Create the ignored application environment file from the committed example:
+
+```sh
+cp apps/booking-system-web/.env.example apps/booking-system-web/.env
+```
+
+Keep its values local and supply a high-entropy `BETTER_AUTH_SECRET` of at
+least 32 characters together with the Google Client ID and Client Secret. The
+normal local application uses exactly `http://localhost:5173`; startup fails
+if that port is occupied so the registered OAuth origin cannot drift.
 
 To prepare a clean local D1 database and start the normal application:
 
@@ -64,12 +70,26 @@ pnpm --filter @booking-system/booking-system-web run dev:prepare
 pnpm --filter @booking-system/booking-system-web run dev
 ```
 
-Open `http://localhost:5173/admin`. Google must have
-`http://localhost:5173` as an authorized JavaScript origin and
+Google must have `http://localhost:5173` as an authorized JavaScript origin and
 `http://localhost:5173/api/auth/callback/google` as its one local redirect URI.
 The preparation command intentionally resets only the application's generated
 local Wrangler state and applies all migrations; it provisions no remote
 Cloudflare resource.
+
+For the Admin smoke journey, open `http://localhost:5173/admin`, continue with
+Google, supply the required booking-system Admin name when the fresh database
+offers bootstrap, verify the Active Super Admin, and sign out. For the
+Participant journey, open `http://localhost:5173/`, continue with Google,
+explicitly supply the booking-system name and email, and verify the Active
+profile, truthful zero-Course state, absence of public Course discovery, and
+refresh-safe return. While signed in as the same Google principal, navigating
+between `/` and `/admin` must reach the two independent domain identities
+rather than selecting or storing a role. Sign out when finished.
+
+Automated verification covers provider wiring, fixed destinations, the one
+callback, sanitized failures, normal fixed fixture sessions, the Participant
+onboarding/application journey, and structural production exclusion of fixture
+authentication. It does not automate Google's hosted UI.
 
 ## Deterministic Fixture Authentication
 

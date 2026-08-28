@@ -1,7 +1,7 @@
 ---
 id: PLAN-n8a29
 title: Implement Participant registration
-status: draft
+status: done
 implements:
 - TASK-7uxjj
 related: []
@@ -151,9 +151,9 @@ Assignment, Selection, or pending record.
 
 ### Phase 1: Domain Responsibility
 
-- [ ] Implement/test Participant context, onboarding validation, complete-email
+- [x] Implement/test Participant context, onboarding validation, complete-email
       normalization, language-neutral outcomes, and validation-before-effect.
-- [ ] Register `course-access` in package exports/boundary map and update the
+- [x] Register `course-access` in package exports/boundary map and update the
       canonical boundary documentation in the same change.
 
 **Checkpoint**: booking Vitest proves validation, alias non-normalization,
@@ -161,11 +161,11 @@ uniqueness outcome translation, distinct identities, and no invalid effect.
 
 ### Phase 2: Migration, Persistence, Worker, And Authentication
 
-- [ ] Add migration 0004 plus clean/upgrade/constraint evidence.
-- [ ] Implement/test Participant persistence and exact HTTP contracts,
+- [x] Add migration 0004 plus clean/upgrade/constraint evidence.
+- [x] Implement/test Participant persistence and exact HTTP contracts,
       atomic/repeated/concurrent outcomes, fresh state, ignored trust fields,
       dual Admin/Participant identity, and zero partial records.
-- [ ] Add fixed Participant fixtures and fixed Google/error destinations with
+- [x] Add fixed Participant fixtures and fixed Google/error destinations with
       structural production-exclusion evidence.
 
 **Checkpoint**: isolated D1/Worker tests prove one valid registration per
@@ -173,9 +173,9 @@ principal/email and no domain identity from authentication alone.
 
 ### Phase 3: Participant Browser Journey
 
-- [ ] Implement the German MUI entry/onboarding/home/refusal/sign-out flow with
+- [x] Implement the German MUI entry/onboarding/home/refusal/sign-out flow with
       query/form ownership, complete states, predictable focus, and privacy.
-- [ ] Replace outdated request-free shell evidence with real Participant
+- [x] Replace outdated request-free shell evidence with real Participant
       session/onboarding/refresh/zero-membership/dual-context E2E plus
       duplicate/stale/technical state tests at desktop and 360px.
 
@@ -184,13 +184,12 @@ association, direct refresh, no-Course-request, overflow, and axe assertions.
 
 ### Phase 4: Documentation And Completion
 
-- [ ] Update canonical product/architecture/process status, application/API,
+- [x] Update canonical product/architecture/process status, application/API,
       persistence, auth/manual-Google-smoke, package/module/browser/boundary,
       verification, index, and dictionary implementation wording; update no
       nonexistent co-located docs.
-- [ ] Run focused checks and canonical `nix develop -c corepack pnpm check`,
-      close task/plan/epic state where warranted, validate Markplane/diff, and
-      commit one semantic implementation change ending in `TASK-7uxjj`.
+- [x] Run focused checks and canonical `nix develop -c corepack pnpm check`,
+      close task/plan/epic state where warranted, and validate Markplane/diff.
 
 **Checkpoint**: schema, code, docs, tracking, tests, and Git agree Participant
 registration is locally complete while later membership/release work is absent.
@@ -223,20 +222,25 @@ using a destructive down migration. No remote database exists in this task.
 
 ## Execution State
 
-- Current phase/checkpoint: fresh code-grounded plan created; implementation
-  has not begun.
-- Completed phase checkboxes: none.
-- Next exact action: validate and commit this planning checkpoint, then begin
-  Phase 1 domain tests and operations.
+- Current phase/checkpoint: Phases 1–4 and Markplane closure are complete; the
+  final semantic implementation commit remains.
+- Completed phase checkboxes: all Phase 1–4 items.
+- Next exact action: stage the reviewed task diff, create the semantic
+  implementation commit, and verify the working tree is clean.
 - Persisted decisions: canonical product/authentication behavior remains in
   the cited docs; implementation/API/schema/UI decisions are recorded above.
-- Focused verification: rehydration, dependency readiness, current source/test/
-  migration/config inspection, and adjacent-doc check complete; no applicable
-  adjacent `*.docs.md` exists.
-- Remaining verification: all focused layers, canonical `pnpm check`,
-  Markplane checks, task acceptance closure, and clean-tree verification.
-- Working tree: only `TASK-7uxjj` start/plan tracking changes; no unrelated
-  changes are present.
+- Focused verification: booking Vitest passes 120 tests; full lint and 13
+  boundary tests pass; all 66 Worker/D1/migration/auth tests pass in
+  `nix develop`. Focused browser runs first exposed an ambiguous status locator
+  and then a 4.48:1 filled-Snackbar contrast failure; the exact locator and
+  standard success Alert now yield 9/9 passing Chromium tests. The canonical
+  `nix develop -c corepack pnpm check` also passes 9 repository-rule, 13
+  boundary, 120 domain, 66 Worker/D1/auth/migration, both production-build, and
+  17 Chromium E2E checks. No applicable adjacent `*.docs.md` exists.
+- Remaining verification: final synchronized Markplane/diff validation,
+  implementation commit, and clean-tree verification.
+- Working tree: the complete uncommitted Participant vertical slice and its
+  durable plan update are present; no unrelated changes are present.
 
 ## Pre-Approval Checklist
 

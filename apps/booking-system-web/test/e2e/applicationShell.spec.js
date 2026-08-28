@@ -8,10 +8,14 @@ for (const [viewportName, viewport] of Object.entries({
   desktop: desktopViewport,
   narrow: narrowViewport,
 })) {
-  test(`serves the request-free Participant shell at the ${viewportName} viewport`, async ({
+  test(`serves the Participant entry shell at the ${viewportName} viewport`, async ({
     page,
   }) => {
     const apiRequests = [];
+
+    await page.route("**/api/participant/me", (route) =>
+      fulfillJson(route, 401, { outcome: "unauthenticated" }),
+    );
 
     page.on("request", (request) => {
       if (new URL(request.url()).pathname.startsWith("/api/")) {
@@ -33,7 +37,13 @@ for (const [viewportName, viewport] of Object.entries({
     await page.reload();
     await expectParticipantEntry(page);
     await expectAccessibleLayout(page);
-    expect(apiRequests).toEqual([]);
+    expect(apiRequests.length).toBeGreaterThanOrEqual(2);
+    expect(
+      apiRequests.every(
+        (requestURL) =>
+          new URL(requestURL).pathname === "/api/participant/me",
+      ),
+    ).toBe(true);
   });
 
   test(`serves the Admin shell directly at the ${viewportName} viewport`, async ({
@@ -74,9 +84,19 @@ test("reuses one session across contexts and restores focus around sign-out", as
   const bootstrapResponse = await page.request.post("/api/admin/bootstrap", {
     data: { name: "Jane Doe" },
   });
+  const participantResponse = await page.request.post(
+    "/api/participant/onboarding",
+    {
+      data: {
+        name: "Jane Participant",
+        email: "jane.shell.participant@example.com",
+      },
+    },
+  );
 
   expect(fixtureResponse.status()).toBe(204);
   expect([201, 409]).toContain(bootstrapResponse.status());
+  expect([201, 409]).toContain(participantResponse.status());
 
   await page.goto("/admin");
   await expect(
@@ -84,7 +104,15 @@ test("reuses one session across contexts and restores focus around sign-out", as
   ).toBeVisible();
   await page.getByRole("link", { name: "Teilnahme" }).click();
   await expect(page).toHaveURL("/");
-  await expectParticipantEntry(page);
+  await expect(
+    page.getByRole("heading", { name: "Teilnahmebereich" }),
+  ).toBeVisible();
+  await expect(page.getByText("Jane Participant")).toBeVisible();
+  await expect(
+    page.getByRole("status").filter({
+      hasText: "Noch keinen Kursen zugeordnet",
+    }),
+  ).toBeVisible();
   await page
     .getByRole("link", { name: "Administration", exact: true })
     .click();
@@ -135,7 +163,7 @@ test("reuses one session across contexts and restores focus around sign-out", as
 });
 
 /**
- * Assert the concrete Participant context and its truthful empty state.
+ * Assert the unauthenticated Participant context entry.
  *
  * @param {import("@playwright/test").Page} page Browser page.
  * @returns {Promise<void>} Completion after the route assertions.
@@ -148,9 +176,7 @@ async function expectParticipantEntry(page) {
     page.getByRole("heading", { name: "Teilnahmebereich" }),
   ).toBeVisible();
   await expect(
-    page.getByRole("status").filter({
-      hasText: "Noch keine Kursdaten verfügbar",
-    }),
+    page.getByRole("button", { name: "Weiter mit Google" }),
   ).toBeVisible();
 }
 

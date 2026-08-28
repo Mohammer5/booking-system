@@ -39,9 +39,10 @@ architectural permissions and runtime graphs remain separate.
 
 ## Current Responsibility Modules
 
-The booking map declares `admin-access` and `course-structure` modules, each
-with no sibling, third-party, or workspace edges. Its root `src/index.js`
-composition may import only those two module interfaces. Tests may import
+The booking map declares `admin-access`, `course-access`, and
+`course-structure` modules, each with no sibling, third-party, or workspace
+edges. Its root `src/index.js` composition may import only those three module
+interfaces. Tests may import
 Vitest and the declared root composition. Booking production code cannot
 import application, Worker/Cloudflare, D1, Better Auth, HTTP, or browser/UI
 implementation.
@@ -82,6 +83,20 @@ responsibilities. They change no first-level application-module edge: Worker
 source continues to use only the exact booking package root, and browser
 source continues to reach Course-structure behavior only over same-origin
 HTTP. The local-time resolver adds no date/time or MUI X dependency.
+
+Participant registration introduces the accepted dependency-free
+`course-access` responsibility inside the booking package. Its root interface
+exposes only Participant registration and fresh Participant-context operation
+factories. It has no edge to `admin-access`, authentication, Worker, D1,
+Better Auth, HTTP, or browser code; the application continues to consume only
+the exact booking package root.
+
+The application implements this capability as second-level `course-access`
+inside `worker` and `participant-entry` inside `browser`. Those folders add no
+first-level edge: Worker remains the only application responsibility importing
+the booking package root, browser still reaches the capability through
+same-origin HTTP, and both production and non-production composition inject
+only the narrow Participant persistence and identity-creation capabilities.
 
 ## Map Shape
 

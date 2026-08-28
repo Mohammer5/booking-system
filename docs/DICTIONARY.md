@@ -6,9 +6,10 @@ for one concept and update this file when stable terminology changes.
 ## Repository Concepts
 
 The product concepts below are accepted specification truth. The first Admin
-bootstrap and Course, Course-wide Group, and future Scheduled Module creation
-subsets are implemented; remaining concepts and later lifecycle behavior are
-still specifications until their delivery tasks complete.
+bootstrap, Course/Course-wide-Group/future-Scheduled-Module creation, and
+Participant registration subsets are implemented; remaining concepts and
+later lifecycle behavior are still specifications until their delivery tasks
+complete.
 
 ### Admin-Assisted Booking
 
@@ -167,6 +168,8 @@ The mandatory participant registration step after a new external principal
 authenticates in participant context. Valid Participant name and email complete
 registration and create an Active Participant. Incomplete onboarding is not a
 Participant lifecycle state and grants no normal application or Course access.
+The local application implements this explicit registration and the truthful
+zero-Assignment home.
 See [Participant registration and
 onboarding](product/course-access.md#participant-registration-and-onboarding).
 
@@ -209,9 +212,11 @@ model](architecture/authentication-and-sessions.md#session-model).
 The conceptual domain package `@booking-system/booking` at `packages/booking`.
 Its implemented `admin-access` module owns the first Admin behavior, and its
 implemented `course-structure` module owns Course, Course-wide Group, future
-Scheduled Module, and Course-local definite-time creation policy. The accepted
-`course-access` and `module-participation` modules arrive with later product
-slices. See
+Scheduled Module, and Course-local definite-time creation policy. Its
+implemented `course-access` module owns fresh Participant context and
+registration policy; later Assignment/access/profile/lifecycle behavior stays
+with that module. The accepted `module-participation` module arrives with its
+later product slice. See
 [Packages](architecture/packages.md#accepted-initial-package).
 
 ### Booking-System Web Application
@@ -219,8 +224,9 @@ slices. See
 The implemented single deployable application
 `@booking-system/booking-system-web` at `apps/booking-system-web`. It owns the
 browser/Vite experience, frontend static assets, Cloudflare Worker and
-same-origin `/api/*` handling including Course-owned Group/Module creation,
-private technical adapters, and composition roots. See
+same-origin `/api/*` handling including Participant registration and
+Course-owned Group/Module creation, private technical adapters, and composition
+roots. See
 [Applications](architecture/applications.md#accepted-initial-boundary).
 
 ### Boundary Map
@@ -290,8 +296,9 @@ indexes.
 
 The implemented, separately composed test-only mechanism that establishes normal
 [authentication sessions](#authentication-session) for deterministic named
-fixture identities without automating third-party provider UIs or bypassing
-booking-domain authorization. It must be unavailable in production. See
+fixed Admin and Participant fixture identities without automating third-party
+provider UIs or bypassing booking-domain authorization. It must be unavailable
+in production. See
 [Non-production authentication](architecture/authentication-and-sessions.md#non-production-authentication).
 
 ### Production

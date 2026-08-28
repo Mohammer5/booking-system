@@ -80,9 +80,11 @@ These capabilities do not justify a generic repository,
 infrastructure package. The initial booking schema is limited to the Admin User
 state, permanent bootstrap history, and integrity constraints required by this
 slice. The implemented Course slice separately owns narrow list, stable-detail,
-and guarded-create capabilities over `courses`, `groups`, and `modules`;
-future Invite, Participant, Course Assignment, and Module Selection schema
-waits for the work that needs it.
+and guarded-create capabilities over `courses`, `groups`, and `modules`. The
+implemented Participant-registration slice owns narrow fresh-resolution and
+constraint-backed registration capabilities over `participants`. Invite,
+Course Assignment, and Module Selection schema waits for the work that needs
+it.
 
 ## Environment Isolation
 
@@ -120,14 +122,15 @@ change requires an explicit exceptional deployment decision.
 
 ## Current State And Persistence Lifecycle
 
-The application has local/test D1 bindings and three version-controlled
+The application has local/test D1 bindings and four version-controlled
 migrations. `0001_first_admin_foundation.sql` creates the Better Auth `user`,
 `session`, `account`, and `verification` technical tables and indexes plus
 `admin_users` and `admin_bootstrap_history`. `0002_courses.sql` adds the
 booking-owned `courses` table with stable identity, required name/timezone,
 optional description, and constrained Active/Archived state.
 `0003_groups_and_modules.sql` adds permanent Course scheduling history plus
-Course-owned Groups and Modules. No remote D1 database exists.
+Course-owned Groups and Modules. `0004_participants.sql` adds registered
+Participants. No remote D1 database exists.
 
 ### Implemented First Schema
 
@@ -157,6 +160,15 @@ updates one-way Course scheduling history through an `after insert` trigger in
 the same statement; a refused guarded write or failed interval constraint
 leaves both Module rows and history unchanged. Module instants are stored as
 integer epoch milliseconds and returned as exact ISO instants.
+
+The fourth additive migration preserves all existing application data and adds
+one `participants` table with stable Participant identity, one row per external
+principal, required nonblank name, retained trimmed email, a unique lowercase
+whole-email comparison key, and constrained Active/Disabled state. One insert
+is the complete registration outcome: the principal and normalized-email
+constraints decide repeated, concurrent, and duplicate-email attempts without
+pending identity or partial profile state. Course Assignment and Module
+Selection tables remain absent until their owning slices are implemented.
 
 The full migration sequence is applied to clean isolated state in Worker tests
 and before browser E2E. The schema is designed for eventual D1 deployment. A

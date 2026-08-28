@@ -5,6 +5,7 @@ import {
   createCoursePersistence,
   createGroupPersistence,
   createModulePersistence,
+  createParticipantPersistence,
   createWorkerApplication,
 } from "./worker/index.js";
 
@@ -35,11 +36,13 @@ export default {
       createCourseId: () => crypto.randomUUID(),
       createGroupId: () => crypto.randomUUID(),
       createModuleId: () => crypto.randomUUID(),
+      createParticipantId: () => crypto.randomUUID(),
       now: () => environment.BOOKING_TEST_NOW,
       adminPersistence: createAdminPersistence(environment.DB),
       coursePersistence: createCoursePersistence(environment.DB),
       groupPersistence: createGroupPersistence(environment.DB),
       modulePersistence: createModulePersistence(environment.DB),
+      participantPersistence: createParticipantPersistence(environment.DB),
     });
 
     return handleWorkerRequest(request);

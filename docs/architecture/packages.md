@@ -35,20 +35,22 @@ modules:
   Course access, and membership; and
 - `module-participation` for Module participation.
 
-`admin-access` and `course-structure` now exist in source. The former implements
-the first Admin bootstrap subset; the latter implements Active Course,
-Course-wide Group, and future Scheduled Module creation, including normalized
-Group names, IANA-zone local-time resolution, explicit DST-overlap choice,
-definite instants, and current Admin/Course acceptance outcomes. Later editing
-and lifecycle behavior stays in the same owner when implemented. The remaining
-modules are introduced only with the later MVP behavior they own. These are
-internal responsibility modules within one booking package, not separate
-workspace packages.
+`admin-access`, `course-structure`, and `course-access` now exist in source.
+The first implements the first Admin bootstrap subset; the second implements
+Active Course, Course-wide Group, and future Scheduled Module creation,
+including normalized Group names, IANA-zone local-time resolution, explicit
+DST-overlap choice, definite instants, and current Admin/Course acceptance
+outcomes. `course-access` now implements fresh Participant-context resolution
+and explicit Participant registration with complete trimmed-email policy;
+Assignment, Course access, Invite, profile-editing, and lifecycle behavior stay
+with that owner when implemented. `module-participation` is introduced only
+with the later MVP behavior it owns. These are internal responsibility modules
+within one booking package, not separate workspace packages.
 
-Authentication-provider SDK mechanics, Admin UI implementation, HTTP, Vite,
-Cloudflare, D1, SQL normalization enforcement, and schedule-input presentation
-remain private to `apps/booking-system-web`; `admin-access` and
-`course-structure` own only their product policy and conceptual outcomes.
+Authentication-provider SDK mechanics, browser UI implementation, HTTP, Vite,
+Cloudflare, D1, SQL uniqueness enforcement, and schedule-input presentation
+remain private to `apps/booking-system-web`; the three implemented modules own
+only their product policy and conceptual outcomes.
 
 The same prohibition covers Better Auth, OAuth/provider SDKs, cookies,
 sessions, Cloudflare authentication integration, and non-production

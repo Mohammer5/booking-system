@@ -69,9 +69,10 @@
 - The implemented application slices have a same-origin Admin entry, Google
   sign-in and Better Auth sign-out, bootstrap/current-context HTTP, and
   freshly authorized Course index/create/detail plus nested Group/Module
-  creation HTTP. Application destinations remain fixed and browser input
-  cannot select principal, authority, Course-owned identity, lifecycle state,
-  definite instant, or permanent scheduling history.
+  creation HTTP, plus fresh Participant context and explicit onboarding HTTP.
+  Application destinations remain fixed and browser input cannot select
+  principal, authority, Participant or Course-owned identity, lifecycle state,
+  normalized email, definite instant, or permanent scheduling history.
 - The initial infrastructure boundary is Worker, Workers Static Assets, and D1.
 - MVP implementation and local acceptance use Worker/D1-compatible tooling,
   configuration, and semantics from the beginning; a conventional
@@ -93,8 +94,9 @@
 - The booking package exposes the three `admin-access` operation factories
   required by first Admin bootstrap/fresh context resolution plus
   `course-structure` factories for Course, Course-wide Group, and future
-  Module creation. Course-local time resolution remains internal to that
-  responsibility module.
+  Module creation and `course-access` factories for fresh Participant context
+  and registration. Course-local time resolution and complete-email
+  normalization remain internal to their owning responsibility modules.
 - The web application has distinct `browser`, `worker`, and `authentication`
   responsibilities plus thin browser, production Worker, and non-production
   Worker compositions.
@@ -102,16 +104,19 @@
   `/admin` administration entry, and nested `/admin/courses`,
   `/admin/courses/new`, and `/admin/courses/:courseId` views. They use one
   responsive browser-owned MUI shell with desktop list navigation, a narrow
-  modal Drawer, a skip link, and stable route titles. The request-free
-  Participant entry creates no identity, membership, role, or Course-data
-  exposure. Stable Course detail now owns the Group and future-Module lists and
-  forms without another route.
-- TanStack Query owns remote Admin and Course state, React Hook Form owns the
-  Admin-name, Course, Group, and Module forms, and German-first slice-owned
-  i18next resources own all browser copy. Native local date/time fields and
-  MUI radio groups expose IANA-zone DST gap/overlap resolution without a date
-  library or MUI X. The current-Admin page is a nested route gate, so no Course
-  query mounts before an Active Admin resolves.
+  modal Drawer, a skip link, and stable route titles. The Participant route
+  resolves current state, offers fixed-destination Google entry, requires
+  explicit name/email onboarding when missing, and returns an Active
+  Participant to the zero-membership home without Course-data exposure or
+  public discovery. Stable Course detail owns the Group and future-Module lists
+  and forms without another route.
+- TanStack Query owns remote Admin, Course, and Participant state; React Hook
+  Form owns the Admin-name, Course, Group, Module, and Participant-onboarding
+  forms; and German-first slice-owned i18next resources own all browser copy.
+  Native local date/time fields and MUI radio groups expose IANA-zone DST
+  gap/overlap resolution without a date library or MUI X. The current-Admin
+  page is a nested route gate, so no Course query mounts before an Active Admin
+  resolves, while the zero-membership Participant home issues no Course query.
 - Free MUI Core 9.4.0 and its Emotion styling dependencies are pinned in the
   application manifest. One browser-owned theme and `CssBaseline` establish
   typography, spacing, surfaces, responsive breakpoints, and visible focus;
@@ -124,24 +129,28 @@
   Workers Static Assets provides SPA fallback while `/api/*` runs Worker-first.
 - Better Auth 1.7.2 uses D1-backed normal sessions and crosses into booking
   behavior only as `externalPrincipalId`. Google sign-in uses the one normal
-  `/api/auth/callback/google` provider callback and returns to `/admin`. Fixed
-  non-production fixture identities use a separate executable composition.
-- Three version-controlled D1 migrations implement the authentication/Admin
-  foundation, additive Course schema, and additive Group/Module schema. Atomic
+  `/api/auth/callback/google` provider callback and returns to the fixed
+  `/admin` or `/` application context. Four fixed non-production fixture
+  identities use a separate executable composition.
+- Four version-controlled D1 migrations implement the authentication/Admin
+  foundation, additive Course schema, additive Group/Module schema, and
+  additive Participant schema. Atomic
   `D1Database.batch()` preserves exactly-one first bootstrap; guarded Course,
   Group, and Module inserts recheck Active Admin and applicable Course state at
   write acceptance. Constraints preserve stable ownership and normalized
   Active Group uniqueness, while a Module-insert trigger records permanent
-  Course scheduling history atomically.
+  Course scheduling history atomically. Participant principal and whole-email
+  uniqueness constraints make one insert the complete registration outcome.
 - Both explicit workspace boundary maps are registered in ESLint. The boundary
   converter denies undeclared third-party imports and supports exact test-only
   and composition-interface permissions.
 - Repository, domain, Worker/D1, migration, production-composition, build, and
   Chromium E2E verification are integrated into `pnpm check` and CI. Critical
-  Admin, Course, and shell states receive axe scans plus explicit
+  Admin, Course, Participant, and shell states receive axe scans plus explicit
   desktop/narrow, keyboard, modal focus/trapping/restoration, semantic
   navigation, name/label, error-association, direct/refresh, privacy, stale
-  refusal, Group/Module creation, DST gap/overlap, exact-instant, and overflow
+  refusal, onboarding/zero-membership/sign-out, same-principal dual-context,
+  Group/Module creation, DST gap/overlap, exact-instant, and overflow
   assertions.
 - The root flake supplies Node 24, pnpm 11.17.0, Git, Markplane, Chromium, and
   a Nix-patched official workerd 1.20260826.1 binary for x86_64-linux. It points

@@ -105,6 +105,16 @@ Course-detail empty/create/list/refresh journeys, duplicate and time errors,
 explicit overlap selection, exact-instant presentation, stale/technical
 refusal focus, responsive layout, and axe scans.
 
+For Participant registration, booking-domain Vitest owns required name,
+complete trimmed-email validation, case-insensitive comparison, and the absence
+of provider alias normalization. Worker/D1 Vitest owns the additive migration,
+principal/email uniqueness and concurrency, fresh Participant resolution,
+narrow HTTP outcomes, separate Admin/Participant identities, no partial
+profile, and structural production fixture exclusion. Playwright owns the
+German Google entry, explicit onboarding, validation/conflict, Active
+zero-membership home, direct refresh, same-principal context switching,
+sign-out, privacy, desktop/360px, keyboard/focus, and axe evidence.
+
 The implemented integration uses project-pinned `@cloudflare/vitest-plugin`
 with isolated D1 state and the version-controlled migration sequence.
 
@@ -131,9 +141,10 @@ developer's database. Representative flows should eventually cover:
 Detailed product invariants remain lower-level-test responsibilities.
 
 Routine E2E must not automate Google, Apple, Microsoft, or Facebook login UIs.
-The implemented direction is an explicitly non-production Better Auth test-capable
-composition that establishes normal application sessions for deterministic
-named fixture identities such as Admin User, Participant A, and Participant B.
+The implemented direction is an explicitly non-production Better Auth
+test-capable composition that establishes normal application sessions for the
+fixed `first-admin`, `later-admin`, `participant-a`, and `participant-b`
+identities.
 Playwright then exercises the normal authenticated application and real
 booking-domain authorization; test authentication must not mock or bypass it or
 permit arbitrary-principal impersonation.
@@ -158,14 +169,23 @@ Worker-test, and Playwright-server commands disable local `.env` loading so a
 developer's provider secrets cannot become automated-test inputs or generated
 preview artifacts.
 
+The Participant browser flow proves authentication alone creates no booking
+identity, mandatory profile input creates one Active Participant, duplicate
+email and stale outcomes have no partial effect, the zero-Assignment home
+issues no Course request, and the same normal session resolves distinct
+Participant/Admin identities. Real Google provider interaction for both
+contexts remains a documented manual smoke in [authentication and
+sessions](../architecture/authentication-and-sessions.md#manual-local-google-smoke).
+
 The browser harness declares `@axe-core/playwright` and scans each critical
 Admin state plus both application contexts at normal desktop and 360px-wide
 viewports. Axe supplements rather than replaces assertions for
 landmarks/headings, named list navigation, control names, keyboard-only
 activation, visible focus, field/error association, Drawer/Dialog trapping and
-restoration, result/error focus, direct navigation and refresh, request-free
-Participant entry, and absence of horizontal overflow. The current
-thirteen-test suite also proves that one fixed normal session remains usable
+restoration, result/error focus, direct navigation and refresh, Participant
+onboarding/zero-membership/privacy states, and absence of horizontal overflow.
+The current seventeen-test browser suite also proves that one fixed normal
+session remains usable
 while navigating between Participant and Admin contexts, successful sign-out
 terminates that session, and an Active Admin can create and revisit a Course
 with Groups and a future Module while missing Admin context causes no Course

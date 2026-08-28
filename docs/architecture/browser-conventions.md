@@ -83,9 +83,10 @@ scans of critical Admin/Course states and both application contexts at desktop
 and 360px widths. Explicit assertions separately cover landmarks and headings,
 accessible names, keyboard activation, visible focus, field/error association,
 Drawer/Dialog trapping and restoration, result/error focus, direct navigation
-and refresh, pre-authorization Course privacy, request-free Participant entry,
-Group/Module empty and creation states, definite-instant display, DST
-gap/overlap interaction, stale/technical refusals, and horizontal overflow.
+and refresh, pre-authorization Course privacy, Participant
+authentication/onboarding/home/sign-out, zero membership without public
+discovery, Group/Module empty and creation states, definite-instant display,
+DST gap/overlap interaction, stale/technical refusals, and horizontal overflow.
 
 MUI X Community may be introduced only for a concrete need such as date/time
 input; its Community packages are MIT-licensed, while Pro and Premium packages
@@ -155,6 +156,13 @@ the existing TanStack Admin queries so `/admin` returns to the current public
 unauthenticated entry. The browser does not create another session concept or
 read provider tokens, profile data, session tokens, or cookies.
 
+The Participant slice uses a separate browser-owned Better Auth client only to
+start and terminate that same normal session. Its Google success destination
+is fixed to `/`, and its sanitized application failure destination is fixed to
+`/api/auth/participant-error`; callers cannot provide either destination. The
+current Participant is always queried from `/api/participant/me`, so navigating
+between Participant and Admin contexts never stores a selected role.
+
 Authentication initiation and callback failures are language-neutral
 application state mapped to localized copy. Raw provider error descriptions
 are discarded before returning to browser UI and security-sensitive OAuth or
@@ -196,6 +204,13 @@ Business and domain invariants remain authoritative on the Worker and booking
 domain side. Browser validation exists for user experience and may duplicate
 simple authoritative validation. Prefer that small duplication to a generic
 cross-layer validation abstraction.
+
+The Participant registration slice is the current example: TanStack Query owns
+fresh `/api/participant/me` state and invalidation, React Hook Form owns the
+explicit booking-system name/email controls, and Worker/domain outcomes drive
+localized validation, conflict, loading, disabled, technical, success, and
+zero-membership states. The Active home issues no Course request until a later
+Assignment/access slice authorizes one.
 
 Domain and application failures use machine-readable, language-neutral
 outcomes. Browser code translates those outcomes into localized messages;

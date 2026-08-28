@@ -117,7 +117,9 @@ describe("Public booking package interface", () => {
       "createCreateGroup",
       "createCreateModule",
       "createGetAdminAuthenticationEntry",
+      "createRegisterParticipant",
       "createResolveAdminContext",
+      "createResolveParticipantContext",
     ]);
   });
 });
