@@ -8,9 +8,10 @@ for one concept and update this file when stable terminology changes.
 The product concepts below are accepted specification truth. The first Admin
 bootstrap, Course/Course-wide-Group/future-Scheduled-Module creation,
 Participant registration/profile maintenance, Course Assignment creation/
-revocation/reactivation, assigned Course access, and Participant-managed Module
-Selection subsets are implemented; remaining concepts and later lifecycle
-behavior are still specifications until their delivery tasks complete.
+revocation/reactivation, Participant Disable/Re-enable, assigned Course access,
+and Participant-managed Module Selection subsets are implemented; remaining
+concepts and later lifecycle behavior are still specifications until their
+delivery tasks complete.
 
 ### Admin-Assisted Booking
 
@@ -150,8 +151,11 @@ model](product/domain-model.md#participant).
 The reversible global state that removes normal participant-facing access
 without deleting Participant identity or changing Course Assignment states.
 Disable removes future Scheduled-Module Selections and retains in-progress,
-ended, and Cancelled-Module Selections as history. See [Participant global
-access state](product/course-access.md#participant-global-access-state).
+ended, and Cancelled-Module Selections as history. Re-enable restores only
+currently eligible access and never restores removed Selections. The local
+application implements guarded atomic Disable and retained-identity Re-enable
+with fresh access state. See [Participant global access
+state](product/course-access.md#participant-global-access-state).
 
 ### Participant Email
 
@@ -227,7 +231,7 @@ implemented `course-structure` module owns Course, Course-wide Group, future
 Scheduled Module, and Course-local definite-time creation policy. Its
 implemented `course-access` module owns fresh Participant context and
 registration/profile policy plus Course Assignment creation/lifecycle and
-assigned Course access; Invite and Participant lifecycle behavior stays with
+Participant lifecycle plus assigned Course access; Invite behavior stays with
 that module. Its implemented
 `module-participation` module owns Participant Selection eligibility,
 set/change/remove, and derived current/history policy, with Admin-assisted
@@ -241,8 +245,9 @@ The implemented single deployable application
 browser/Vite experience, frontend static assets, Cloudflare Worker and
 same-origin `/api/*` handling including Participant registration/directory,
 Participant profile maintenance, Course membership/direct Assignment,
-Assignment revocation/reactivation, Participant Module Selection, and Course-
-owned Group/Module creation, private technical adapters, and composition roots.
+Assignment revocation/reactivation, Participant Disable/Re-enable, Participant
+Module Selection, and Course-owned Group/Module creation, private technical
+adapters, and composition roots.
 See
 [Applications](architecture/applications.md#accepted-initial-boundary).
 

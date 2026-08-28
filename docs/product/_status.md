@@ -43,6 +43,14 @@ Participants. Revocation in an Active or Archived Course removes future
 Scheduled-Module Selections, retains begun Scheduled and Cancelled-Module
 Selections, and immediately removes Participant access. Active-Course
 reactivation reuses the stable Assignment without restoring removed choices.
+An Active Admin User can also Disable an Active Participant or Re-enable a
+Disabled Participant from stable Participant administration. Disable removes
+only future Scheduled-Module Selections across every Course in one atomic
+outcome, retains exact-start/begun/ended Scheduled and all Cancelled history,
+preserves every Assignment and any same-principal Admin User, and immediately
+removes all normal Participant access. Re-enable reuses the Participant,
+preserves Assignment states, restores only currently eligible access, and
+does not restore removed choices.
 A new authenticated principal can
 explicitly supply the required booking-system Participant name and unique
 email, become one Active Participant, return to the Participant home, and see
@@ -59,8 +67,8 @@ own required name/email, while an Active Admin User may edit an Active or
 Disabled Participant from a stable detail; both preserve identity, lifecycle,
 relationships, provider data, and any same-principal Admin User. Course, Group,
 and Module editing or lifecycle operations; Admin-assisted Module Selection,
-Archived-Course historical access, Invite, Participant lifecycle, later Admin
-onboarding, and later Admin management
+Archived-Course historical access, Invite, later Admin onboarding, and later
+Admin management
 behavior remain unimplemented. Technology, persistence, API,
 frontend, and infrastructure mechanics remain outside this product
 specification and do not alter its contracts.

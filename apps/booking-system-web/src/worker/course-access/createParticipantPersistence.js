@@ -6,6 +6,8 @@
  */
 export function createParticipantPersistence(database) {
   return {
+    disableActiveParticipant: (input) =>
+      disableActiveParticipant(database, input),
     findParticipantById: (participantId) =>
       findParticipantById(database, participantId),
     findParticipantByExternalPrincipalId: (externalPrincipalId) =>
@@ -13,10 +15,130 @@ export function createParticipantPersistence(database) {
     listParticipants: () => listParticipants(database),
     registerParticipant: (candidate) =>
       registerParticipant(database, candidate),
+    reenableDisabledParticipant: (input) =>
+      reenableDisabledParticipant(database, input),
     updateActiveParticipantProfile: (input) =>
       updateActiveParticipantProfile(database, input),
     updateParticipantProfileAsActiveAdmin: (input) =>
       updateParticipantProfileAsActiveAdmin(database, input),
+  };
+}
+
+/**
+ * Atomically Disable one Participant and remove only future Scheduled choices.
+ *
+ * @param {object} database The application D1 binding.
+ * @param {object} input Actor, target, and definite current epoch.
+ * @returns {Promise<object>} Disabled result or authoritative refusal.
+ */
+async function disableActiveParticipant(database, input) {
+  const [selectionResult, participantResult] = await database.batch([
+    deleteParticipantFutureSelectionsStatement(database, input),
+    disableParticipantStatement(database, input),
+  ]);
+
+  if (participantResult.meta.changes === 1) {
+    return {
+      outcome: "disabled",
+      removedSelectionCount: selectionResult.meta.changes,
+    };
+  }
+
+  return classifyParticipantLifecycleOutcome(database, input, "disable");
+}
+
+/** @returns {object} Guarded global future Scheduled-Selection deletion. */
+function deleteParticipantFutureSelectionsStatement(database, input) {
+  return database
+    .prepare(
+      `delete from module_selections
+        where participant_id = ?
+          and exists (
+            select 1 from participants
+             where id = ? and state = 'active'
+          )
+          and exists (
+            select 1 from admin_users
+             where id = ? and state = 'active'
+          )
+          and exists (
+            select 1 from modules
+             where id = module_selections.module_id
+               and state = 'scheduled' and starts_at > ?
+          )`,
+    )
+    .bind(
+      input.participantId,
+      input.participantId,
+      input.adminUserId,
+      input.nowEpoch,
+    );
+}
+
+/** @returns {object} Guarded Active-to-Disabled Participant statement. */
+function disableParticipantStatement(database, input) {
+  return database
+    .prepare(
+      `update participants
+          set state = 'disabled'
+        where id = ? and state = 'active'
+          and exists (
+            select 1 from admin_users
+             where id = ? and state = 'active'
+          )`,
+    )
+    .bind(input.participantId, input.adminUserId);
+}
+
+/**
+ * Re-enable one retained Participant without reconstructing relationships.
+ *
+ * @param {object} database The application D1 binding.
+ * @param {object} input Actor and target identities.
+ * @returns {Promise<object>} Re-enabled result or authoritative refusal.
+ */
+async function reenableDisabledParticipant(database, input) {
+  const result = await database
+    .prepare(
+      `update participants
+          set state = 'active'
+        where id = ? and state = 'disabled'
+          and exists (
+            select 1 from admin_users
+             where id = ? and state = 'active'
+          )`,
+    )
+    .bind(input.participantId, input.adminUserId)
+    .run();
+
+  return result.meta.changes === 1
+    ? { outcome: "re-enabled" }
+    : classifyParticipantLifecycleOutcome(database, input, "re-enable");
+}
+
+/** @returns {Promise<object>} Exact actor, target, or unexpected refusal. */
+async function classifyParticipantLifecycleOutcome(database, input, action) {
+  const [adminUser, participant] = await Promise.all([
+    database
+      .prepare("select state from admin_users where id = ?")
+      .bind(input.adminUserId)
+      .first(),
+    findParticipantById(database, input.participantId),
+  ]);
+
+  if (adminUser?.state !== "active") {
+    return { outcome: "admin-not-active" };
+  }
+
+  if (participant === null) {
+    return { outcome: "participant-not-editable" };
+  }
+
+  return {
+    outcome:
+      action === "disable"
+        ? "participant-not-active"
+        : "participant-not-disabled",
   };
 }
 

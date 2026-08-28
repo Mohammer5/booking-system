@@ -48,9 +48,9 @@ The implemented browser exposes Participant Google entry, onboarding, and
 assigned-Course home at `/`, self-profile maintenance at `/profile`, private
 Participant Course detail at `/courses/:courseId`, the administration entry at
 `/admin`, the Participant directory at `/admin/participants`, stable
-Participant detail/edit at `/admin/participants/:participantId`, and nested
-Course index/create/detail routes through one responsive MUI shell. Stable
-Admin Course detail contains Course membership creation, revocation, and
+Participant detail/edit/lifecycle at `/admin/participants/:participantId`, and
+nested Course index/create/detail routes through one responsive MUI shell.
+Stable Admin Course detail contains Course membership creation, revocation, and
 reactivation plus the owned Group and future-Module lists and creation forms
 rather than adding incidental routes. Navigation
 preserves the same browser cookie and Better Auth principal; Participant
@@ -236,13 +236,15 @@ authorization remains authoritative for every operation.
 
 ### Participant Administration And Course Assignment HTTP Surface
 
-The implemented `course-access` administration slice adds six concrete
+The implemented `course-access` administration slice adds eight concrete
 same-origin operations:
 
 ```text
 GET  /api/admin/participants
 GET  /api/admin/participants/:participantId
 PUT  /api/admin/participants/:participantId
+POST /api/admin/participants/:participantId/disablement
+POST /api/admin/participants/:participantId/reenablement
 GET  /api/admin/courses/:courseId/assignments
 POST /api/admin/courses/:courseId/assignments
 POST /api/admin/courses/:courseId/assignments/:assignmentId/revocation
@@ -253,6 +255,8 @@ POST /api/admin/courses/:courseId/assignments/:assignmentId/revocation
 | Participant directory | Normal session resolving a current Active Admin | `200 { participants }`; `401 unauthenticated`; exact `403` missing/Disabled Admin |
 | Participant detail | Same plus an existing registered Active or Disabled Participant | `200` narrow Participant; `401`; exact `403`; `404 participant-not-found`; sanitized `500 technical-error` |
 | Admin profile update | Same plus explicit complete `{ name, email }` profile and guarded current Active-Admin/current-target acceptance | `200` narrow updated Participant; `401`; exact `403`; `404 participant-not-found`; `422 invalid-name`/`invalid-email`; `409 email-already-exists`/`profile-not-updated`; sanitized `500 technical-error` |
+| Participant Disable | Same plus a current Active Participant and guarded exact current instant | `200 { outcome: "disabled", participant, removedSelectionCount }`; `401`; exact `403`; `404 participant-not-found`; `409 participant-not-active`; sanitized `500 technical-error` |
+| Participant Re-enable | Same plus a current Disabled Participant | `200 { outcome: "re-enabled", participant }`; `401`; exact `403`; `404 participant-not-found`; `409 participant-not-disabled`; sanitized `500 technical-error` |
 | Course membership | Same plus an existing Active or Archived Course | `200 { assignments }`; `401`; exact `403`; `404 course-not-found` |
 | Direct Assignment or reactivation | Same plus guarded current Active Admin, Active Course, and fully registered Active/Disabled Participant acceptance | `201 { outcome: "created", assignment }`; `200` `already-active` no-op or retained-row `reactivated`; `401`; exact `403`; `404` Course/Participant; `409` stale Course/target; `422 invalid-participant-id` |
 | Assignment revocation | Same plus the requested retained Assignment in an Active or Archived Course | `200` `revoked` or `already-revoked` with the retained Assignment and exact future-Selection removal count; `401`; exact `403`; private `404 assignment-not-found`; `409` stale Course/Assignment; sanitized `500 technical-error` |
@@ -261,7 +265,13 @@ Participant list and detail items expose only `id`, `name`, `email`, and global
 `state`. Profile writes change only name/email and preserve Participant
 identity, state, principal, relationships, history, and same-principal Admin
 data. Assignment items expose only `id`, Assignment `state`, and that same
-minimum Participant representation. The browser supplies only
+minimum Participant representation. Lifecycle action resources accept no
+browser-selected state, instant, Assignment, or Selection data. Disable uses
+one guarded D1 batch to remove only future Scheduled-Module Selections across
+all Courses and change the retained Participant to Disabled; exact-start,
+begun, ended, and Cancelled history plus all Assignment states and same-
+principal Admin data remain. Re-enable changes only that retained Participant
+to Active and restores no removed Selection. The browser supplies only
 `participantId`; the server derives Assignment identity and state, ignores
 trust fields, freshly authorizes every request, and uses one guarded
 uniqueness-backed upsert so a stale or concurrent attempt cannot create a
@@ -274,8 +284,9 @@ is a successful no-op. Reactivation restores current assigned-Course access
 when all current predicates permit it but never restores removed Selections.
 `/admin/participants`
 remains independent of membership so zero-Assignment Participants stay
-discoverable, `/admin/participants/:participantId` owns stable profile
-maintenance, and Course membership stays on the stable Course detail route.
+discoverable, `/admin/participants/:participantId` owns stable profile and
+lifecycle maintenance, and Course membership stays on the stable Course detail
+route.
 
 ### No Separate API Application
 

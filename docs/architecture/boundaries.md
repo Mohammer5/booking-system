@@ -87,9 +87,9 @@ HTTP. The local-time resolver adds no date/time or MUI X dependency.
 Participant registration introduces the accepted dependency-free
 `course-access` responsibility inside the booking package. Its root interface
 exposes Participant registration, fresh Participant-context, distinct
-self-service and Admin Participant-profile update factories, and Course
-Assignment creation/revocation/reactivation operation factories. It has no
-edge to `admin-access`,
+self-service and Admin Participant-profile update factories, Participant
+Disable/Re-enable factories, and Course Assignment creation/revocation/
+reactivation operation factories. It has no edge to `admin-access`,
 authentication, Worker, D1, Better Auth, HTTP, or browser code; the application
 continues to consume only the exact booking package root.
 
@@ -106,6 +106,11 @@ Participant profile maintenance remains inside these existing second-level
 `course-access` slices. It adds no first-level module, workspace, third-party,
 or composition edge: Worker still imports only the booking package root, and
 browser still reaches profile behavior only through same-origin HTTP.
+
+Participant lifecycle remains in those same `course-access` slices. Atomic
+Disable, retained-row Re-enable, browser confirmation, and query invalidation
+add no first-level module, workspace, third-party, boundary-map, or composition
+edge.
 
 Assignment lifecycle also remains inside the existing second-level
 `course-access` slices. Retained-row reactivation, atomic revocation, browser

@@ -228,12 +228,18 @@ function ParticipantOnboarding({ participantFlow, translate }) {
  * @returns {import("react").ReactElement} Unavailable state.
  */
 function ParticipantUnavailable({ participantFlow, translate }) {
+  const unavailableRef = useRef(null);
+
+  useEffect(() => {
+    unavailableRef.current?.focus();
+  }, []);
+
   return (
     <Stack component="section" spacing={3}>
       <Typography component="h1" variant="h1">
         {translate("participantEntry.title")}
       </Typography>
-      <Alert severity="warning">
+      <Alert ref={unavailableRef} severity="warning" tabIndex={-1}>
         {translate("participantEntry.status.disabled")}
       </Alert>
       <ParticipantSignOutButton

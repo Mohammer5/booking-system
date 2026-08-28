@@ -5,8 +5,9 @@
 The `packages/booking` workspace currently contains `admin-access` for first
 Admin bootstrap, `course-structure` for Course, Course-wide Group, and future
 Scheduled Module creation, and `course-access` for fresh Participant context
-resolution, registration, Course Assignment creation/lifecycle, and assigned
-Active-Course list/detail access. It also contains `module-participation` for
+resolution, registration/profile/lifecycle, Course Assignment lifecycle, and
+assigned Active-Course list/detail access. It also contains
+`module-participation` for
 Participant Selection eligibility, set/change/remove operations, and derived
 current-versus-historical presentation. These concepts remain modules inside
 one domain package rather
@@ -83,19 +84,19 @@ The first slice uses `browser`, `worker`, and `authentication` as its initial
 first-level names, introduced together with real source and map declarations.
 
 The implemented Admin, Course-structure, Participant-registration/profile/
-Assignment-lifecycle, and assigned Participant Course-access slices preserve
-three application roles: browser sign-in/onboarding, Participant directory/Course
-membership and private Participant Course presentation, and Course/Group/Module
-presentation;
+lifecycle, Assignment-lifecycle, and assigned Participant Course-access slices
+preserve three application roles: browser sign-in/onboarding, Participant
+directory/Course membership and private Participant Course presentation, and
+Course/Group/Module presentation;
 Worker-side HTTP and D1 handling organized by the owning conceptual slice; and
 application-private authentication. The browser slices may use Better Auth's
 browser client for session initiation and termination while Google provider
 configuration stays in the authentication and Worker composition roles.
 Participant entry remains a second-level `participant-entry` browser slice and
-provides the shared current-context route gate. Assignment creation/lifecycle,
-assigned-Course access, and self/Admin Participant profile maintenance use
-second-level `course-access` slices inside both browser and Worker without
-creating a new first-level application module. A thin
+provides the shared current-context route gate. Participant profile/lifecycle,
+Assignment creation/lifecycle, and assigned-Course access use second-level
+`course-access` slices inside both browser and Worker without creating a new
+first-level application module. A thin
 composition entry may join only the roles required for its executable graph.
 The browser communicates with Worker behavior through same-origin HTTP rather
 than importing Worker implementation to share transport data.

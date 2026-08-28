@@ -53,23 +53,24 @@ implementation backlog in Markplane. Release hardening and hosted staging
 verification remain mandatory before the first production release.
 
 The local application foundation, Course-structure creation, Participant
-registration/profile maintenance, Course Assignment creation/lifecycle,
-assigned Participant Course access, and Participant Module Selection slices
-are now implemented:
+registration/profile/lifecycle maintenance, Course Assignment creation/
+lifecycle, assigned Participant Course access, and Participant Module
+Selection slices are now implemented:
 
 - `@booking-system/booking` at `packages/booking` owns the implemented
   `admin-access` behavior plus `course-structure` Course, Course-wide Group,
   future Module, and Course-local definite-time creation policy, plus
   `course-access` Participant registration, fresh context, Course Assignment
   creation/revocation/reactivation, assigned Active-Course list/detail, and
-  self/Admin profile-edit policy, and
+  self/Admin profile-edit plus Participant Disable/Re-enable policy, and
   `module-participation` Participant selection eligibility, replacement,
   removal, and current-versus-historical presentation policy;
 - `@booking-system/booking-system-web` at `apps/booking-system-web` owns the
   React `/` Participant Google entry/onboarding/home, `/admin` administration
   flow, Participant directory, nested Course index/create/detail routes,
-  Course membership and Assignment interaction, and Group/Module creation
-  forms, plus the Participant `/courses/:courseId` detail, explicit Module
+  Participant lifecycle, Course membership and Assignment interaction, and
+  Group/Module creation forms, plus the Participant `/courses/:courseId`
+  detail, explicit Module
   Selection controls, `/profile` self-service and
   `/admin/participants/:participantId` administration, and query-driven
   assigned-Course home, Worker/API
@@ -110,6 +111,12 @@ are now implemented:
   Selections, retains exact-start/begun Scheduled and Cancelled selections,
   changes no other Course, and immediately removes Participant access. Active-
   Course reactivation reuses the row without restoring removed selections;
+- guarded Participant Disable atomically changes the retained Participant row
+  and removes only future Scheduled-Module Selections across every Course;
+  exact-start/begun/ended Scheduled and all Cancelled Selections, Active or
+  Revoked Assignments, profile/principal data, Course structure, and any same-
+  principal Admin User remain. Guarded Re-enable restores only eligible access
+  without restoring removed Selections;
 - Participant self-edit and Admin Participant-detail writes use the existing
   case-insensitive complete-email constraint and guarded profile-only updates;
   they recheck current actor/target state, preserve Participant identity,
@@ -144,6 +151,9 @@ are now implemented:
   empty/list/assign/idempotent-repeat states, Disabled targets, Assignment
   revoke/repeat/reactivate confirmation and focus, Archived refusal,
   multi-Course isolation, access loss/restoration, retained-history copy,
+  Participant Disable/Re-enable confirmation, global access refusal, safe
+  sign-out, future non-restoration, retained historical/live presentation,
+  same-principal Admin isolation,
   stale/technical refusals, assigned-Course list/detail/refresh/privacy,
   explicit no-default selection, overlapping-Module selections, change/remove
   confirmation and focus, stale-deadline refusal, truthful own current/history
@@ -159,8 +169,8 @@ are now implemented:
   build, and Chromium browser evidence.
 
 Apple, Microsoft, and Facebook providers, Course/Group/Module editing and
-lifecycle, Participant lifecycle administration, Archived-Course Participant
-access, Admin-assisted Module Selection, Invite,
+lifecycle, Archived-Course Participant access, Admin-assisted Module Selection,
+Invite,
 later Admin capabilities, remote Google credentials and production
 callback/domain configuration, remote Cloudflare staging/production resources,
 release

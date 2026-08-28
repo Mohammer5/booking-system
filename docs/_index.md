@@ -16,8 +16,8 @@ This repository uses an indexed global documentation system.
 - Path: `docs/_status.md`
 - Summary: Present accepted product and technical direction, the implemented
   local application, Course/Group/future-Module creation and Participant
-  registration/profile-maintenance/Assignment-lifecycle/assigned-Course-
-  access/Module-Selection
+  registration/profile/lifecycle/Assignment-lifecycle/assigned-Course-access/
+  Module-Selection
   slices, responsive MUI
   Admin/Participant experience, Google authentication, live tooling, and
   intentionally deferred release surfaces.
@@ -50,9 +50,9 @@ This repository uses an indexed global documentation system.
 ### Process
 - Path: `docs/process/_index.md`
 - Summary: Documentation workflow, Markplane tracking, verification including
-  local-tool provisioning, Course-structure, Participant-registration/profile,
-  and Assignment-lifecycle/assigned-Participant-Course/Module-Selection
-  evidence,
+  local-tool provisioning, Course-structure, Participant-registration/profile/
+  lifecycle, and Assignment-lifecycle/assigned-Participant-Course/Module-
+  Selection evidence,
   CI, and release rules.
 - Read when: A task affects documentation, Markplane, tests, CI, releases,
   routing, indexes, or terminology maintenance.
@@ -63,9 +63,9 @@ This repository uses an indexed global documentation system.
 - Summary: Conceptual-domain-first source organization, JavaScript functional
   composition and MUI-based browser conventions including the responsive
   Admin/Participant shell, Participant onboarding/profile/directory, Course
-  Assignment creation/revocation/reactivation, assigned Participant Course
-  access, and
-  Participant Module Selection plus Course/Group/Module creation experience,
+  Assignment creation/revocation/reactivation, Participant lifecycle, assigned
+  Participant Course access, and Participant Module Selection plus Course/
+  Group/Module creation experience,
   implemented runtime/persistence,
   Google authentication direction, NixOS developer-host tooling, ESLint
   enforcement, and explicit dependency boundaries.

@@ -189,6 +189,41 @@ describe("derived Module Selection presentation", () => {
       deriveModuleSelectionPresentation({ ...input, selection: null }),
     ).toBeNull();
   });
+
+  it("makes retained in-progress participation live only after eligible Re-enable", () => {
+    const input = {
+      ...eligibleInput(),
+      module: {
+        ...moduleData(),
+        startsAt: "2026-09-01T09:00:00.000Z",
+      },
+      selection: selection(),
+      now: "2026-09-01T10:30:00.000Z",
+    };
+
+    expect(
+      deriveModuleSelectionPresentation({
+        ...input,
+        participant: participant("disabled"),
+      }),
+    ).toMatchObject({ meaning: "historical", phase: "historical" });
+    expect(deriveModuleSelectionPresentation(input)).toMatchObject({
+      meaning: "live",
+      phase: "in-progress",
+    });
+    expect(
+      deriveModuleSelectionPresentation({
+        ...input,
+        now: input.module.endsAt,
+      }),
+    ).toMatchObject({ meaning: "historical", phase: "historical" });
+    expect(
+      deriveModuleSelectionPresentation({
+        ...input,
+        assignment: assignment("revoked"),
+      }),
+    ).toMatchObject({ meaning: "historical", phase: "historical" });
+  });
 });
 
 /** @returns {object} Deterministic set-operation capabilities. */

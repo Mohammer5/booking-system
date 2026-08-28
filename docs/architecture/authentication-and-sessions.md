@@ -428,6 +428,11 @@ and Course state; a zero-Assignment Participant receives a truthful empty list
 without public Course discovery. Course identifiers and access remain absent
 from the session.
 
+Admin Participant Disable/Re-enable changes only booking-domain Participant
+state. The same opaque session immediately resolves Disabled Participant
+refusal or newly eligible Active access without changing authentication; a
+same-principal Admin User remains independently authorized and unchanged.
+
 Google is configured from environment-owned values, and the `/admin` and `/`
 browsers use Better Auth's supported client to start Google sign-in with their
 fixed success and sanitized same-origin failure destinations and to terminate

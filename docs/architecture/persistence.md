@@ -83,8 +83,8 @@ slice. The implemented Course slice separately owns narrow list, stable-detail,
 and guarded-create capabilities over `courses`, `groups`, and `modules`. The
 implemented `course-access` slices own narrow Participant fresh-resolution,
 directory/detail, constraint-backed registration, guarded self/Admin
-profile-only updates, guarded direct-Assignment, and assigned Active-Course
-list/detail capabilities over `participants`,
+profile-only updates, guarded Participant lifecycle, guarded direct-Assignment,
+and assigned Active-Course list/detail capabilities over `participants`,
 `course_assignments`, `courses`, `groups`, and `modules`. The Participant
 Course reads join current Active Participant, Active Assignment, and Active
 Course state before returning private data. The implemented
@@ -187,6 +187,13 @@ rechecks the current Active Participant; Admin service rechecks a current
 Active Admin and registered Active or Disabled target. A stale or conflicting
 write changes nothing and never mutates identity, principal, state,
 Assignments, Selections, or same-principal Admin data.
+Participant lifecycle also requires no migration. Disable uses one guarded D1
+batch to delete every target Selection joined to a Scheduled Module with
+`startsAt > now` across all Courses and then change the same still-Active
+Participant to Disabled. Exact-start, in-progress, exact-end, ended, and every
+Cancelled-Module Selection remain, as do all Assignment states and same-
+principal Admin data; a refused or failed batch removes nothing. Re-enable is
+one guarded Disabled-to-Active update and never reconstructs a Selection.
 
 The fifth additive migration preserves all existing application data and adds
 one `course_assignments` table with stable identity, constrained Active/Revoked

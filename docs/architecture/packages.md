@@ -46,9 +46,10 @@ Course Assignment plus retained-row revocation/reactivation for registered
 Active or Disabled targets, and current Active Participant + Active Assignment
 + Active Course list/detail access. It
 also implements Active-Participant self profile editing and Active-Admin edits
-of Active/Disabled Participant profiles with the same complete-email policy.
-Invite, Participant lifecycle, and Archived-Course access stay with that owner
-when implemented. `module-participation` implements
+of Active/Disabled Participant profiles with the same complete-email policy,
+plus guarded global Participant Disable/Re-enable with exact Selection
+retention and fresh access effects. Invite and Archived-Course access stay with
+that owner when implemented. `module-participation` implements
 Participant Selection eligibility, replacement, removal, and derived
 current-versus-historical presentation; later Admin-assisted behavior remains
 with that owner. These are internal

@@ -126,6 +126,19 @@ self/Admin edit journeys, stable direct routes and refresh, Disabled-target
 presentation, local/duplicate/stale refusal and focus, privacy,
 desktop/360px responsiveness, and axe evidence.
 
+For Participant lifecycle, booking-domain Vitest owns Active-Admin and exact
+Active/Disabled target policy, injected-time propagation, retained identity,
+and future/exact-start/in-progress/exact-end/ended/Cancelled live-history
+derivation. Worker/D1 Vitest owns atomic future-Scheduled-Selection removal
+across all Courses, Active/Revoked Assignment preservation, same-principal
+Admin isolation, guarded Re-enable, concurrency, stale refusal, failed-batch
+rollback, exact HTTP outcomes, participant-side refusal, and production
+authentication. Playwright owns German confirmation, current applicable
+actions, global Disabled entry/profile/Course refusal, safe sign-out, Re-enable
+access, future non-restoration, retained historical/live presentation, same-
+principal Admin continuity, direct refresh, stale/technical focus,
+desktop/360px responsiveness, and axe evidence.
+
 For direct Course Assignment, booking-domain Vitest owns Active/Disabled target
 eligibility, Active-assignment idempotence, current actor/Course refusal, and
 membership-only outcomes. Worker/D1 Vitest owns the additive migration,
@@ -246,16 +259,18 @@ activation, visible focus, field/error association, Drawer/Dialog trapping and
 restoration, result/error focus, direct navigation and refresh, Participant
 onboarding/assigned-Course/zero-membership/privacy states, Participant
 directory and Course membership/Assignment-lifecycle states, Participant
-self/Admin profile editing and Disabled-target detail, and absence of
-horizontal overflow. The current 30-test browser suite also proves that one
-fixed normal session remains usable while navigating between Participant and Admin
-contexts, successful sign-out terminates that session, an Active Admin can
-create and revisit a Course with Groups, a future Module, and direct
+self/Admin profile editing and lifecycle, Disabled-target detail, and absence
+of horizontal overflow. The current 32-test browser suite also proves that one
+fixed normal session remains usable while navigating between Participant and
+Admin contexts, successful sign-out terminates that session, an Active Admin
+can create and revisit a Course with Groups, a future Module, and direct
 Participant membership, revoke and reactivate that retained Assignment without
 restoring removed future Selections, and preserve independent other-Course
-access. An Active Participant can access only assigned Active Courses while
-missing or inactive Participant context causes no private Course-access
-request.
+access. It also proves global Participant Disable, safe Disabled sign-out,
+same-principal Admin continuity, Re-enable without future-Selection
+restoration, and retained historical/live presentation. An Active Participant
+can access only assigned Active Courses while missing or inactive Participant
+context causes no private Course-access request.
 
 On browser-test failure, CI should retain short-lived useful diagnostics such
 as the Playwright report, traces, screenshots, and relevant logs. Artifacts

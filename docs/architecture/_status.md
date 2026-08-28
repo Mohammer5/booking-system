@@ -71,8 +71,9 @@
   freshly authorized Course index/create/detail plus nested Group/Module
   creation HTTP, plus fresh Participant context, explicit onboarding and
   self-profile maintenance, the global Admin Participant directory and stable
-  profile detail, Course Assignment list/create/reactivate/revoke HTTP, and
-  private assigned Participant Course list/detail HTTP.
+  profile detail plus Disable/Re-enable HTTP, Course Assignment list/create/
+  reactivate/revoke HTTP, and private assigned Participant Course list/detail
+  HTTP.
   Application destinations remain fixed and browser input cannot select
   principal, authority, Assignment identity/state, lifecycle state,
   normalized email, definite instant, or permanent scheduling history.
@@ -98,8 +99,9 @@
   required by first Admin bootstrap/fresh context resolution plus
   `course-structure` factories for Course, Course-wide Group, and future
   Module creation and `course-access` factories for fresh Participant context,
-  registration, self/Admin Participant profile maintenance, Course Assignment
-  creation/revocation/reactivation, and current assigned Active-Course
+  registration, self/Admin Participant profile maintenance, Participant
+  Disable/Re-enable, Course Assignment creation/revocation/reactivation, and
+  current assigned Active-Course
   list/detail access, plus
   `module-participation` factories for Participant Selection set/change/remove
   and derived current/history presentation.
@@ -122,10 +124,13 @@
   Group, and own Selection data only, with explicit set/change/remove controls
   before the Module starts. The Admin Participant directory includes
   registered zero-Assignment Participants and links to guarded profile-only
-  maintenance for Active and Disabled targets. Stable Course detail owns
-  Course membership creation/lifecycle, Group, and future-Module interactions
-  without incidental routes. Membership cards expose only current permitted
-  revoke/reactivate actions with confirmation and accurate retention copy.
+  maintenance plus the one current Disable/Re-enable action for Active and
+  Disabled targets. The Participant gate presents a freshly Disabled target
+  with safe sign-out and mounts no private Participant view. Stable Course
+  detail owns Course membership creation/lifecycle, Group, and future-Module
+  interactions without incidental routes. Membership cards expose only current
+  permitted revoke/reactivate actions with confirmation and accurate retention
+  copy.
 - TanStack Query owns remote Admin, Course, Participant profile, Assignment,
   and Module Selection state;
   React Hook Form owns the Admin-name, Course, Group, Module, and Participant-
@@ -167,6 +172,11 @@
   an Active self actor or Active Admin plus registered Active/Disabled target,
   and leave identity, state, principal, Assignments, Selections, and
   same-principal Admin data unchanged. They require no schema migration.
+  Atomic guarded Participant Disable removes only future Scheduled Selections
+  across all Courses before changing the retained Participant state; exact-
+  start/begun/ended Scheduled, Cancelled, Assignment, same-principal Admin,
+  stale, and failed-batch data remains. Guarded Re-enable changes only the
+  retained Participant and restores no removed Selection.
   Assignment foreign keys and a unique Participant/Course pair preserve one
   ordinary membership. A guarded upsert rechecks current Active Admin, Active
   Course, and registered Active/Disabled target state while reusing a Revoked
@@ -191,10 +201,12 @@
   navigation, name/label, error-association, direct/refresh, privacy, stale
   refusal, onboarding/zero-membership/sign-out, same-principal dual-context,
   Participant directory and Course membership/Assignment states, Disabled
-  targets, Assignment revoke/repeat/reactivate, Archived refusal, access
-  loss/restoration, multi-Course isolation, idempotent repeat, assigned-Course
-  list/detail/refresh, current-state loss, identifier privacy, self/Admin
-  Participant profile editing,
+  targets, Participant Disable/Re-enable, global refusal and safe sign-out,
+  future non-restoration, retained historical/live presentation, same-
+  principal Admin isolation, Assignment revoke/repeat/reactivate, Archived
+  refusal, access loss/restoration, multi-Course isolation, idempotent repeat,
+  assigned-Course list/detail/refresh, current-state loss, identifier privacy,
+  self/Admin Participant profile editing,
   Disabled-target detail, duplicate/stale profile refusal, explicit no-default
   Module Selection,
   overlapping-Module independence, replacement/removal, confirmation focus,

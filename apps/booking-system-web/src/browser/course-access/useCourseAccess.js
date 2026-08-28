@@ -56,6 +56,49 @@ export function useUpdateParticipantProfileAsAdmin(participantId) {
   });
 }
 
+/** @returns {object} Active-Admin Participant Disable mutation. */
+export function useDisableParticipant(participantId) {
+  return useParticipantLifecycleMutation(participantId, "disablement");
+}
+
+/** @returns {object} Active-Admin Participant Re-enable mutation. */
+export function useReenableParticipant(participantId) {
+  return useParticipantLifecycleMutation(participantId, "reenablement");
+}
+
+/** @returns {object} One explicit Participant lifecycle mutation. */
+function useParticipantLifecycleMutation(participantId, action) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: () =>
+      requestJson(
+        `/api/admin/participants/${participantId}/${action}`,
+        { method: "POST" },
+      ),
+    async onSuccess() {
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: participantDirectoryQueryKey }),
+        queryClient.invalidateQueries({
+          queryKey: ["course-access", "participant", participantId],
+        }),
+        queryClient.invalidateQueries({
+          queryKey: ["course-access", "assignments"],
+        }),
+        queryClient.invalidateQueries({
+          queryKey: ["course-access", "current-participant"],
+        }),
+        queryClient.invalidateQueries({
+          queryKey: ["course-access", "participant-courses"],
+        }),
+        queryClient.invalidateQueries({
+          queryKey: ["course-access", "participant-course"],
+        }),
+      ]);
+    },
+  });
+}
+
 /**
  * Read one Course's current Assignments after fresh Admin authorization.
  *

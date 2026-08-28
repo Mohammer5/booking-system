@@ -14,11 +14,24 @@ export function matchCourseAccessRoute(pathname) {
   }
 
   if (pathname.startsWith(participantPrefix)) {
-    const participantId = pathname.slice(participantPrefix.length);
+    const segments = pathname.slice(participantPrefix.length).split("/");
 
-    return participantId.length > 0 && !participantId.includes("/")
-      ? { kind: "participant", participantId }
-      : null;
+    if (segments.length === 1 && segments[0].length > 0) {
+      return { kind: "participant", participantId: segments[0] };
+    }
+
+    if (
+      segments.length === 2 &&
+      segments[0].length > 0 &&
+      new Set(["disablement", "reenablement"]).has(segments[1])
+    ) {
+      return {
+        kind: `participant-${segments[1]}`,
+        participantId: segments[0],
+      };
+    }
+
+    return null;
   }
 
   if (!pathname.startsWith(coursePrefix)) {

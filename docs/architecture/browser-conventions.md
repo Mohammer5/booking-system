@@ -247,6 +247,16 @@ profile data, moves focus to field or result/error feedback, and uses stable
 direct routes for self service and Admin maintenance of Active or Disabled
 Participants.
 
+Participant lifecycle stays on the same stable Admin detail. One current
+Disable or Re-enable action opens a keyboard-accessible confirmation Dialog;
+Disable copy explains global access loss and exact future-Selection removal,
+while Re-enable promises only currently eligible access and no restoration.
+TanStack Query invalidates Participant detail/directory, Course membership,
+current Participant, and assigned-Course caches after success. The existing
+Participant route gate presents the fresh Disabled state as a focusable
+unavailable alert with safe Better Auth sign-out instead of mounting normal
+Participant, profile, Course, or Selection views.
+
 Domain and application failures use machine-readable, language-neutral
 outcomes. Browser code translates those outcomes into localized messages;
 domain packages do not return German or other presentation strings.

@@ -14,6 +14,27 @@ export const courseAccessTranslations = {
       active: "Teilnahmeprofil: Aktiv",
       disabled: "Teilnahmeprofil: Deaktiviert",
     },
+    participantLifecycle: {
+      disableAction: "Teilnahmeprofil deaktivieren",
+      reenableAction: "Teilnahmeprofil wieder aktivieren",
+      disableTitle: "Teilnahmeprofil deaktivieren?",
+      reenableTitle: "Teilnahmeprofil wieder aktivieren?",
+      disableDescription:
+        "Der normale Teilnahmezugriff endet in allen Kursen. Künftige Auswahlen für noch nicht begonnene geplante Module werden entfernt. Kurszuordnungen sowie bereits begonnene, beendete oder abgesagte Teilnahmehistorie bleiben erhalten.",
+      reenableDescription:
+        "Der Teilnahmezugriff wird wieder verfügbar, soweit eine aktive Kurszuordnung ihn erlaubt. Zuvor entfernte künftige Modulauswahlen kehren nicht zurück.",
+      cancel: "Abbrechen",
+      disableConfirm: "Teilnahmeprofil endgültig deaktivieren",
+      reenableConfirm: "Teilnahmeprofil wieder aktivieren",
+      disablePending: "Teilnahmeprofil wird deaktiviert …",
+      reenablePending: "Teilnahmeprofil wird wieder aktiviert …",
+      disabled:
+        "Das Teilnahmeprofil wurde deaktiviert. Entfernte künftige Modulauswahlen: {{count}}.",
+      "re-enabled":
+        "Das Teilnahmeprofil wurde wieder aktiviert. Zuvor entfernte Modulauswahlen wurden nicht wiederhergestellt.",
+      unavailable:
+        "Der Teilnahmestatus kann wegen eines geänderten Administrations- oder Profilstatus nicht bearbeitet werden.",
+    },
     assignmentState: {
       active: "Kurszuordnung: Aktiv",
       revoked: "Kurszuordnung: Widerrufen",

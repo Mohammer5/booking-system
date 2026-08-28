@@ -10,9 +10,11 @@ export {
 } from "./course-structure/index.js";
 export {
   createAssignParticipantToCourse,
+  createDisableParticipant,
   createGetParticipantCourse,
   createListParticipantCourses,
   createRegisterParticipant,
+  createReenableParticipant,
   createRevokeCourseAssignment,
   createResolveParticipantContext,
   createUpdateOwnParticipantProfile,

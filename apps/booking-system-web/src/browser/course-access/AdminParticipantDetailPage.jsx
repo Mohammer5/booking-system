@@ -12,6 +12,7 @@ import { useTranslation } from "react-i18next";
 import { Link as RouterLink, useParams } from "react-router";
 
 import { ParticipantProfileForm } from "./ParticipantProfileForm.jsx";
+import { ParticipantLifecycleControl } from "./ParticipantLifecycleControl.jsx";
 import {
   useParticipantDetail,
   useUpdateParticipantProfileAsAdmin,
@@ -87,6 +88,11 @@ function AdminParticipantDetailState(props) {
           `courseAccess.participantState.${props.participantQuery.data.state}`,
         )}
         sx={{ alignSelf: "flex-start" }}
+        variant="outlined"
+      />
+      <ParticipantLifecycleControl
+        participant={props.participantQuery.data}
+        translate={props.translate}
       />
       <ParticipantProfileForm
         mode="admin"

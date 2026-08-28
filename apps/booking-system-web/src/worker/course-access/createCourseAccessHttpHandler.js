@@ -1,5 +1,7 @@
 import {
   createAssignParticipantToCourse,
+  createDisableParticipant,
+  createReenableParticipant,
   createResolveAdminContext,
   createRevokeCourseAssignment,
   createUpdateParticipantProfileAsAdmin,
@@ -12,6 +14,7 @@ import {
   toAssignmentResponse,
   toParticipantResponse,
 } from "./courseAccessHttpContract.js";
+import { handleParticipantLifecycleRequest } from "./handleParticipantLifecycleRequest.js";
 
 /**
  * Create Admin Participant-directory and Course-membership HTTP operations.
@@ -60,6 +63,15 @@ function createOperations(capabilities) {
       assignParticipantToActiveCourse:
         capabilities.assignmentPersistence.assignParticipantToActiveCourse,
     }),
+    disableParticipant: createDisableParticipant({
+      now: capabilities.now,
+      disableActiveParticipant:
+        capabilities.participantPersistence.disableActiveParticipant,
+    }),
+    reenableParticipant: createReenableParticipant({
+      reenableDisabledParticipant:
+        capabilities.participantPersistence.reenableDisabledParticipant,
+    }),
     resolveAdminContext: createResolveAdminContext({
       findAdminUserByExternalPrincipalId:
         capabilities.adminPersistence.findAdminUserByExternalPrincipalId,
@@ -93,6 +105,10 @@ function isSupportedRoute(route, method) {
     return method === "POST";
   }
 
+  if (isParticipantLifecycleRoute(route)) {
+    return method === "POST";
+  }
+
   return route.kind === "participant"
     ? new Set(["GET", "PUT"]).has(method)
     : new Set(["GET", "POST"]).has(method);
@@ -114,6 +130,14 @@ function handleAuthorizedRoute(context, operations) {
     return handleParticipantDetailRequest(context, operations);
   }
 
+  if (isParticipantLifecycleRoute(context.route)) {
+    return handleParticipantLifecycleRequest(
+      context,
+      operations,
+      staleAdminResponse,
+    );
+  }
+
   if (context.route.kind === "assignment-revocation") {
     return handleAssignmentRevocationRequest(context, operations);
   }
@@ -121,6 +145,14 @@ function handleAuthorizedRoute(context, operations) {
   return context.request.method === "GET"
     ? handleAssignmentListRequest(context.route.courseId, operations)
     : handleAssignmentRequest(context, operations);
+}
+
+/** @returns {boolean} Whether one matched route is a Participant state action. */
+function isParticipantLifecycleRoute(route) {
+  return new Set([
+    "participant-disablement",
+    "participant-reenablement",
+  ]).has(route.kind);
 }
 
 /** @returns {Promise<Response>} Revoke one retained Course Assignment. */
