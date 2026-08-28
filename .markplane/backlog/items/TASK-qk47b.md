@@ -1,12 +1,12 @@
 ---
 id: TASK-qk47b
 title: Access an assigned Course as a Participant
-status: backlog
+status: in-progress
 priority: medium
 type: feature
 effort: medium
 epic: EPIC-m22qh
-plan: null
+plan: PLAN-nz5n6
 depends_on:
 - TASK-6tfxd
 - TASK-z6hut
@@ -14,7 +14,7 @@ blocks:
 - TASK-jvqrk
 - TASK-fzniz
 related: []
-assignee: null
+assignee: gerkules
 tags:
 - participant
 - course-access
@@ -22,7 +22,7 @@ tags:
 - ui
 position: c50
 created: 2026-08-27
-updated: 2026-08-27
+updated: 2026-08-28
 ---
 
 # Access an assigned Course as a Participant
