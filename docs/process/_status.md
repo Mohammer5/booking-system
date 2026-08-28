@@ -28,7 +28,9 @@ Current reality:
   Group and future-Module creation, complete Course editing, permanent
   timezone locking with zero current Modules, two-sided edit/first-Module race
   safety, Group complete editing/allowed-or-blocked archival/reactivation,
-  retained selected-Group history and Group/Selection/name race safety, DST
+  guarded permanent deletion after Selection removal, retained historical and
+  Cancelled-reference blockers, selected-Group history, and Group/Selection/name
+  race safety, DST
   gap/overlap and exact-instant
   presentation, Participant onboarding/zero membership, Participant directory
   and Course membership/Assignment-lifecycle states, Participant self/Admin

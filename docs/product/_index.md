@@ -18,7 +18,7 @@ domain and behavior.
 - Summary: Closed first-release product-contract state, explicit v1 scope
   boundaries, implemented Admin-bootstrap, Course creation/editing with its
   permanent timezone lock, Group creation/editing/archival/reactivation and
-  future-Module creation,
+  retained-reference deletion plus future-Module creation,
   Participant onboarding, Course Assignment creation/lifecycle, and assigned
   Active-Course access plus Participant profile/lifecycle maintenance and
   Module Selection subsets, and the remaining product implementation gap.

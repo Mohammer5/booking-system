@@ -16,7 +16,7 @@ JavaScript conventions, and ESLint-enforced dependency rules.
 ### Architecture Status
 - Path: `docs/architecture/_status.md`
 - Summary: Current implemented application/package foundation, Course
-  creation/editing, Group reversible lifecycle and structure creation,
+  creation/editing, Group reversible lifecycle/permanent deletion and structure creation,
   Participant-registration/profile/
   lifecycle, Assignment-
   lifecycle, and assigned Participant Course-access plus Module-Selection
@@ -63,7 +63,7 @@ JavaScript conventions, and ESLint-enforced dependency rules.
   contexts, Participant onboarding/profile/lifecycle/assigned-Course access/
   directory, Course Assignment creation/revocation/reactivation, Participant
   Module Selection, guarded Course editing, Course/Group/Module creation, and
-  Group editing/archival/reactivation as the complete initial same-origin application.
+  Group editing/archival/reactivation/deletion as the current same-origin application.
 - Read when: A task adds, removes, deploys, or changes an application boundary
   or application manifest ownership.
 - Tags: architecture, applications, deployment, composition, manifests
@@ -88,7 +88,7 @@ JavaScript conventions, and ESLint-enforced dependency rules.
   first-Admin, Course, Group/Module, Participant, Course Assignment, and Module
   Selection migrations, assigned Participant Course reads, guarded Participant
   profile/lifecycle updates, retained Assignment lifecycle with atomic
-  Selection retention, guarded Course and Group editing/lifecycle with
+  Selection retention, guarded Course and Group editing/lifecycle/deletion with
   Group/Selection/name and first-Module/timezone races,
   environment isolation, guarded acceptance, uniqueness, permanent scheduling
   history, and migration constraints.
@@ -114,7 +114,7 @@ JavaScript conventions, and ESLint-enforced dependency rules.
 - Path: `docs/architecture/packages.md`
 - Summary: Defines conceptual package boundaries, the implemented
   `packages/booking` with `admin-access`, Course editing and Course/Group/Module
-  `course-structure` including Group lifecycle, and Participant-registration/profile/lifecycle/
+  `course-structure` including Group lifecycle/deletion, and Participant-registration/profile/lifecycle/
   Assignment-lifecycle/assigned-Course `course-access` plus Participant-
   Selection `module-participation` behavior, and why technical
   dependency segregation does not justify extraction.
@@ -125,7 +125,7 @@ JavaScript conventions, and ESLint-enforced dependency rules.
 ### Module Organization
 - Path: `docs/architecture/module-organization.md`
 - Summary: Defines the implemented responsibility modules, Course creation/
-  editing, Group lifecycle and structure,
+  editing, Group lifecycle/deletion and structure,
   Participant-registration/profile/lifecycle, Assignment-lifecycle, and
   assigned Participant Course plus Module-Selection slices, source roots,
   manifest ownership,
@@ -148,7 +148,7 @@ JavaScript conventions, and ESLint-enforced dependency rules.
 - Path: `docs/architecture/browser-conventions.md`
 - Summary: React-based browser ownership rules for React Router, TanStack Query,
   React Hook Form, Material UI, responsive shell/Course structure and
-  editing with permanent timezone-lock and Group lifecycle presentation, and
+  editing with permanent timezone-lock and Group lifecycle/deletion presentation, and
   Participant onboarding/profile/lifecycle/assigned-Course/directory/Course-
   Assignment-lifecycle/Module-Selection navigation and accessible interaction,
   Better Auth session
@@ -176,7 +176,7 @@ JavaScript conventions, and ESLint-enforced dependency rules.
   deny-by-default maps, including profile maintenance and Assignment lifecycle
   plus Participant lifecycle within existing `course-access`, the booking
   `module-participation` responsibility, Course editing within existing
-  `course-structure` including Group lifecycle, and exact
+  `course-structure` including Group lifecycle/deletion, and exact
   workspace, third-party, composition, test-only, and runtime-graph
   distinctions.
 - Read when: A task changes workspace dependencies, responsibility modules,

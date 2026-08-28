@@ -61,6 +61,11 @@ subject to current Active-name uniqueness. Archival never removes or rewrites
 a Selection. Active Groups remain the only future choice set, while a retained
 in-progress or historical Selection continues to present its selected Group's
 identity, details, and state.
+The Admin may permanently delete an Active or Archived Group only while the
+Course remains Active and no currently retained Selection references it.
+Upcoming, in-progress, ended, and Cancelled-Module references all block; a
+removed or replaced pre-start Selection does not, because no separate complete
+past-reference audit exists. Successful deletion changes only the Group row.
 A new authenticated principal can
 explicitly supply the required booking-system Participant name and unique
 email, become one Active Participant, return to the Participant home, and see
@@ -75,8 +80,8 @@ default. Unknown, inactive, unassigned, Revoked, stale, and cross-Participant
 Course identifiers reveal no Course data. An Active Participant may edit their
 own required name/email, while an Active Admin User may edit an Active or
 Disabled Participant from a stable detail; both preserve identity, lifecycle,
-relationships, provider data, and any same-principal Admin User. Group hard
-deletion; Module editing or lifecycle operations; Course lifecycle operations;
+relationships, provider data, and any same-principal Admin User. Module editing
+or lifecycle operations; Course lifecycle operations;
 Admin-assisted Module Selection,
 Archived-Course historical access, Invite, later Admin onboarding, and later
 Admin management

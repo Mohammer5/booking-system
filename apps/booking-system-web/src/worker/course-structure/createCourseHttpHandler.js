@@ -99,7 +99,7 @@ function isSupportedRoute(route, method) {
     courses: new Set(["GET", "POST"]),
     course: new Set(["GET", "PUT"]),
     groups: new Set(["POST"]),
-    group: new Set(["PUT"]),
+    group: new Set(["DELETE", "PUT"]),
     groupArchival: new Set(["POST"]),
     groupReactivation: new Set(["POST"]),
     modules: new Set(["POST"]),

@@ -85,9 +85,9 @@ source continues to reach Course-structure behavior only over same-origin
 HTTP. The local-time resolver adds no date/time or MUI X dependency.
 Guarded Course editing and its two-sided first-Module/timezone acceptance add
 no workspace, first-level module, third-party, or composition edge.
-Group editing/archival/reactivation follows the same boundary: focused domain
-factories stay in booking `course-structure`, while D1/HTTP, German MUI forms
-and Dialogs, cache reconciliation, and browser tests stay application-private.
+Group editing/archival/reactivation/deletion follows the same boundary: focused
+domain factories stay in booking `course-structure`, while D1/HTTP, German MUI
+forms and Dialogs, cache reconciliation, and browser tests stay application-private.
 Participant history presentation continues consuming only the existing
 same-origin selected-Group representation. No dependency, map permission,
 composition file, workspace, or first-level responsibility changes.

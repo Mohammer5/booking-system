@@ -9,7 +9,9 @@ import {
   Typography,
 } from "@mui/material";
 
+import { GroupDeletionDialog } from "./GroupDeletionDialog.jsx";
 import { GroupLifecycleDialog } from "./GroupLifecycleDialog.jsx";
+import { useGroupDeletion } from "./useGroupDeletion.js";
 import { useGroupManagement } from "./useGroupManagement.js";
 
 /**
@@ -18,8 +20,9 @@ import { useGroupManagement } from "./useGroupManagement.js";
  * @param {object} props Current Group, parent Course, and translation function.
  * @returns {import("react").ReactElement} Group management card.
  */
-export function GroupManagementCard({ courseId, group, translate }) {
+export function GroupManagementCard({ courseId, group, onDeleted, translate }) {
   const state = useGroupManagement(courseId, group, translate);
+  const deletion = useGroupDeletion(courseId, group, onDeleted);
   const titleId = `group-${group.id}-title`;
   const editTitleId = `group-${group.id}-edit-title`;
 
@@ -41,21 +44,55 @@ export function GroupManagementCard({ courseId, group, translate }) {
             state={state}
             translate={translate}
           />
-          <Button
-            color={group.state === "active" ? "error" : "primary"}
-            onClick={state.openLifecycle}
-            ref={state.actionRef}
-            sx={{ alignSelf: "flex-start" }}
-            type="button"
-            variant="outlined"
-          >
-            {translate(
-              `courseStructure.group.${state.currentAction}Action`,
-            )}
-          </Button>
+          <GroupManagementActions
+            deletion={deletion}
+            group={group}
+            state={state}
+            translate={translate}
+          />
           <GroupLifecycleResult state={state} translate={translate} />
         </Stack>
       </CardContent>
+      <GroupManagementDialogs
+        deletion={deletion}
+        group={group}
+        state={state}
+        translate={translate}
+      />
+    </Card>
+  );
+}
+
+/** @returns {import("react").ReactElement} Separate lifecycle and deletion actions. */
+function GroupManagementActions({ deletion, group, state, translate }) {
+  return (
+    <Stack direction={{ xs: "column", sm: "row" }} spacing={1}>
+      <Button
+        color={group.state === "active" ? "error" : "primary"}
+        onClick={state.openLifecycle}
+        ref={state.actionRef}
+        type="button"
+        variant="outlined"
+      >
+        {translate(`courseStructure.group.${state.currentAction}Action`)}
+      </Button>
+      <Button
+        color="error"
+        onClick={deletion.open}
+        ref={deletion.actionRef}
+        type="button"
+        variant="outlined"
+      >
+        {translate("courseStructure.group.deleteAction")}
+      </Button>
+    </Stack>
+  );
+}
+
+/** @returns {import("react").ReactElement} Current Group management Dialogs. */
+function GroupManagementDialogs({ deletion, group, state, translate }) {
+  return (
+    <>
       {state.dialogAction === null ? null : (
         <GroupLifecycleDialog
           action={state.dialogAction}
@@ -66,7 +103,16 @@ export function GroupManagementCard({ courseId, group, translate }) {
           translate={translate}
         />
       )}
-    </Card>
+      {deletion.isOpen ? (
+        <GroupDeletionDialog
+          group={group}
+          mutation={deletion.mutation}
+          onCancel={deletion.cancel}
+          onConfirm={deletion.confirm}
+          translate={translate}
+        />
+      ) : null}
+    </>
   );
 }
 

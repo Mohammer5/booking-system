@@ -199,6 +199,15 @@ the partial unique index likewise arbitrates concurrent conflicting edits or
 reactivations. Refusal and trigger failure leave every Group field/state and
 Selection unchanged.
 
+Permanent Group deletion also requires no migration. One guarded delete
+rechecks the current Active Admin, Active Course, same-Course Active or
+Archived Group, and the absence of every currently retained Selection,
+regardless of Module state or time. The existing restrictive composite
+`module_selections` foreign key protects the inverse concurrent write, so
+deletion and creation of a new Selection have exactly one valid winner.
+Successful deletion removes only the Group row, cascades nothing, and consults
+no separate audit of removed or replaced Selections.
+
 The fourth additive migration preserves all existing application data and adds
 one `participants` table with stable Participant identity, one row per external
 principal, required nonblank name, retained trimmed email, a unique lowercase

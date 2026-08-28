@@ -1,5 +1,6 @@
 import {
   createArchiveGroup,
+  createDeleteGroup,
   createReactivateGroup,
   createUpdateGroup,
 } from "@booking-system/booking";
@@ -21,6 +22,10 @@ export function createGroupManagementOperations(capabilities) {
     archiveGroup: createArchiveGroup({
       now: capabilities.now,
       archiveActiveGroup: capabilities.groupPersistence?.archiveActiveGroup,
+    }),
+    deleteGroup: createDeleteGroup({
+      deleteUnreferencedGroup:
+        capabilities.groupPersistence?.deleteUnreferencedGroup,
     }),
     reactivateGroup: createReactivateGroup({
       reactivateArchivedGroup:
@@ -60,10 +65,11 @@ export async function resolveGroupManagementRequest(context, operations) {
   }
 
   if (route.kind === "group") {
-    return resolveGroupUpdate(
-      { request, route, adminUser, course, group },
-      operations,
-    );
+    const itemContext = { request, route, adminUser, course, group };
+
+    return request.method === "DELETE"
+      ? resolveGroupDeletion(itemContext, operations)
+      : resolveGroupUpdate(itemContext, operations);
   }
 
   if (route.kind === "groupArchival") {
@@ -77,6 +83,23 @@ export async function resolveGroupManagementRequest(context, operations) {
     { route, adminUser, course, group },
     operations,
   );
+}
+
+/** @returns {Promise<object>} One permanent Group deletion result. */
+async function resolveGroupDeletion(context, operations) {
+  const selectionContexts =
+    await operations.groupPersistence.listSelectionContextsByGroupId(
+      context.route.courseId,
+      context.route.groupId,
+    );
+  const result = await operations.deleteGroup({
+    adminUser: context.adminUser,
+    course: context.course,
+    group: context.group,
+    selectionContexts,
+  });
+
+  return { result };
 }
 
 /** @returns {Promise<object>} One complete Group update result. */
@@ -140,7 +163,7 @@ export function groupManagementResultResponse({ result }) {
     return jsonResponse(toGroupResponse(result.group), 200);
   }
 
-  if (new Set(["archived", "reactivated"]).has(result.outcome)) {
+  if (new Set(["archived", "deleted", "reactivated"]).has(result.outcome)) {
     return jsonResponse(
       { outcome: result.outcome, group: toGroupResponse(result.group) },
       200,

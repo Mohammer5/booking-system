@@ -118,6 +118,7 @@ describe("Public booking package interface", () => {
       "createCreateCourse",
       "createCreateGroup",
       "createCreateModule",
+      "createDeleteGroup",
       "createDisableParticipant",
       "createGetAdminAuthenticationEntry",
       "createGetParticipantCourse",

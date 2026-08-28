@@ -90,7 +90,7 @@ authentication/onboarding/home/sign-out, zero membership without public
 discovery, global Participant directory and Course membership states, direct
 Assignment/repeat/Disabled-target interaction, Participant self/Admin profile
 editing, duplicate/stale refusal and stable Disabled-target detail, Group/Module
-empty and creation states, Group edit/archive/reactivate and retained-history
+empty and creation states, Group edit/archive/reactivate/delete and retained-history
 states, Course editing and permanent timezone lock even
 with zero current Modules, definite-instant display, DST gap/overlap
 interaction, stale/technical refusals, and horizontal overflow.
@@ -250,9 +250,9 @@ states that revocation removes only future Scheduled Selections and that
 reactivation does not restore them; server outcomes remain authoritative for
 stale, repeated, and technical results.
 
-Group lifecycle remains on stable Admin Course detail. TanStack Query
+Group lifecycle and deletion remain on stable Admin Course detail. TanStack Query
 invalidates the Admin and Participant Course detail caches after a complete
-field edit, archival, or reactivation. React Hook Form owns one complete
+field edit, archival, reactivation, or deletion. React Hook Form owns one complete
 name/details form per retained Active or Archived Group; an authoritative
 Active-name conflict is associated with its name field. The current lifecycle
 action opens a keyboard-accessible MUI Dialog, focuses cancellation initially,
@@ -261,6 +261,10 @@ conflict to the field. German copy explains that archival changes future
 eligibility but neither removes nor rewrites a Selection. Participant Course
 detail lists only Active Groups as new choices while presenting the retained
 selected Group's identity, details, and state in current/history summary.
+Permanent deletion uses a separate destructive Dialog naming the Group and
+permanence. It focuses cancellation first, restores the invoking action on
+cancel, keeps privacy-safe retained-reference failures in the Dialog, and
+announces success from the parent Group section after the deleted card unmounts.
 
 Participant profile maintenance reuses this ownership split: TanStack Query
 owns current self/detail profile state and targeted invalidation, React Hook

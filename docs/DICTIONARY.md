@@ -7,7 +7,7 @@ for one concept and update this file when stable terminology changes.
 
 The product concepts below are accepted specification truth. The first Admin
 bootstrap, Course creation/editing, Course-wide-Group creation/editing/
-archival/reactivation, future-Scheduled-Module creation,
+archival/reactivation/deletion, future-Scheduled-Module creation,
 Participant registration/profile maintenance, Course Assignment creation/
 revocation/reactivation, Participant Disable/Re-enable, assigned Course access,
 and Participant-managed Module Selection subsets are implemented; remaining
@@ -124,6 +124,11 @@ editing in either state, archival blocked only by a retained Selection for a
 future Scheduled Module, and retained-identity reactivation with current
 Active-name uniqueness. Archival never removes or rewrites a Selection, and a
 retained selected Group keeps its identity and details in Participant history.
+An Active Admin User may permanently delete an Active or Archived Group in an
+Active Course only when no currently retained Module Selection references it.
+Every retained live or historical Selection blocks deletion; a removed or
+replaced Selection that no longer exists does not, and the application invents
+no separate complete reference audit.
 See [Groups](product/course-structure.md#groups).
 
 ### Module
@@ -237,7 +242,8 @@ The conceptual domain package `@booking-system/booking` at `packages/booking`.
 Its implemented `admin-access` module owns the first Admin behavior, and its
 implemented `course-structure` module owns Course, Course-wide Group, future
 Scheduled Module, Course editing with its permanent timezone lock, and
-Group editing/archival/reactivation with retained Selection policy, plus
+Group editing/archival/reactivation/permanent deletion with retained Selection
+policy, plus
 Course-local definite-time creation policy. Its
 implemented `course-access` module owns fresh Participant context and
 registration/profile policy plus Course Assignment creation/lifecycle and
@@ -257,8 +263,8 @@ same-origin `/api/*` handling including Participant registration/directory,
 Participant profile maintenance, Course membership/direct Assignment,
 Assignment revocation/reactivation, Participant Disable/Re-enable, Participant
 Module Selection, Course creation/editing, and Course-owned Group/Module
-creation plus Group editing/archival/reactivation, private technical adapters,
-and composition roots.
+creation plus Group editing/archival/reactivation and permanent deletion of
+unreferenced Groups, private technical adapters, and composition roots.
 See
 [Applications](architecture/applications.md#accepted-initial-boundary).
 

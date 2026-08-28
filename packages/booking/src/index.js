@@ -8,6 +8,7 @@ export {
   createCreateCourse,
   createCreateGroup,
   createCreateModule,
+  createDeleteGroup,
   createReactivateGroup,
   createUpdateCourse,
   createUpdateGroup,

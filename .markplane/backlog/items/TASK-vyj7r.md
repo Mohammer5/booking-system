@@ -1,26 +1,26 @@
 ---
 id: TASK-vyj7r
 title: Delete unreferenced Groups
-status: backlog
+status: done
 priority: medium
 type: feature
 effort: medium
 epic: EPIC-i2x79
-plan: null
+plan: PLAN-scxe4
 depends_on:
 - TASK-kmm36
 blocks:
 - TASK-fzniz
 related:
 - TASK-kmm36
-assignee: null
+assignee: gerkules
 tags:
 - group
 - deletion
 - history
 position: e30
 created: 2026-08-27
-updated: 2026-08-27
+updated: 2026-08-29
 ---
 
 # Delete unreferenced Groups
@@ -34,16 +34,16 @@ historical retained relationship.
 
 ## Acceptance Criteria
 
-- [ ] An Active or Archived Group may be deleted only while its Course is
+- [x] An Active or Archived Group may be deleted only while its Course is
       Active and no currently retained Selection references it.
-- [ ] Any retained upcoming, in-progress, ended, or Cancelled-Module Selection
+- [x] Any retained upcoming, in-progress, ended, or Cancelled-Module Selection
       blocks deletion regardless of whether that Selection is currently live
       or historical.
-- [ ] A pre-start Selection that was removed or replaced and no longer exists
+- [x] A pre-start Selection that was removed or replaced and no longer exists
       does not block deletion; no separate past-reference audit is consulted.
-- [ ] Successful deletion removes only the Group and does not mutate Course,
+- [x] Successful deletion removes only the Group and does not mutate Course,
       Module, Participant, Assignment, Invite, or unrelated Selection state.
-- [ ] Current actor, Course, and retained-reference state are revalidated at
+- [x] Current actor, Course, and retained-reference state are revalidated at
       acceptance; a stale/concurrent new reference makes deletion lose with no
       partial effect.
 
@@ -79,3 +79,21 @@ fresh implementation plan when selected.
 - `docs/product/representative-scenarios.md#u-group-deletion`
 - `docs/product/module-participation.md#history-attendance-and-notifications`
 - `docs/process/verification.md`
+
+## Completion Evidence
+
+- A focused booking-domain operation permits only Active/Archived same-Course
+  Groups for an Active Admin and Active Course, blocks every current Selection
+  row identically, and contains no past-reference rule.
+- One guarded D1 delete plus the existing restrictive Selection foreign key
+  rechecks actor, Course, Group, and references, gives concurrent deletion/new-
+  Selection attempts one valid winner, and preserves every other row/history.
+- `DELETE /api/admin/courses/:courseId/groups/:groupId` derives all state
+  server-side and returns narrow privacy-safe outcomes with stale and technical
+  failures sanitized.
+- German MUI Group cards provide a distinct permanent-deletion Dialog with
+  Cancel-first focus, restoration, private blockers, parent-owned success,
+  Admin/Participant cache reconciliation, refresh, and responsive axe evidence.
+- `pnpm check` passed on 2026-08-29: ESLint and boundary rules, 286 booking-
+  domain tests, 217 Worker/D1 tests, production builds, and 38 Chromium
+  Playwright tests.

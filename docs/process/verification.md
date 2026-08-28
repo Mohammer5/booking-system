@@ -127,6 +127,17 @@ reactivation conflict/rename/success, refresh, retained Admin and bounded
 Participant historical detail, stale/technical refusals, keyboard/Dialog/
 result focus, desktop/360px layout, and axe scans.
 
+For permanent Group deletion, booking-domain Vitest owns Active/Archived
+eligibility, the complete upcoming/exact-start/in-progress/ended/Cancelled
+retained-reference matrix, and the explicit absence of a past-reference rule.
+Worker/D1 Vitest owns the guarded delete, restrictive foreign-key protection,
+non-cascade behavior, exact private HTTP outcomes, stale actor/Course state,
+technical rollback, and the two-sided deletion/new-Selection race. Playwright
+owns German destructive confirmation, cancel/focus restoration, deletion after
+real Selection removal, bounded historical/Cancelled blockers without private
+Participant data, parent-owned success focus, refresh persistence,
+desktop/360px layout, and axe scans.
+
 For Participant registration, booking-domain Vitest owns required name,
 complete trimmed-email validation, case-insensitive comparison, and the absence
 of provider alias normalization. Worker/D1 Vitest owns the additive migration,
@@ -286,7 +297,7 @@ onboarding/assigned-Course/zero-membership/privacy states, Participant
 directory and Course membership/Assignment-lifecycle states, Participant
 self/Admin profile editing and lifecycle, Course editing and permanent
 timezone-lock presentation, Disabled-target detail, and absence of horizontal
-overflow. The current 36-test browser suite also proves that one
+overflow. The current 38-test browser suite also proves that one
 fixed normal session remains usable while navigating between Participant and
 Admin contexts, successful sign-out terminates that session, an Active Admin
 can create, edit, and revisit a Course with Groups, a future Module, a
@@ -300,7 +311,10 @@ can access only assigned Active Courses while missing or inactive Participant
 context causes no private Course-access request.
 It also proves retained-identity Group editing, allowed and exact-blocked
 archival, Active-name-conflicted then successful reactivation, and retained
-Archived Group details/state in Participant history.
+Archived Group details/state in Participant history. Permanent Group deletion
+is proven after a real Selection removal, with target-only persistence,
+confirmation/cancel focus, refresh, and privacy-safe historical/Cancelled
+reference blockers.
 
 On browser-test failure, CI should retain short-lived useful diagnostics such
 as the Playwright report, traces, screenshots, and relevant logs. Artifacts

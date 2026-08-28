@@ -69,7 +69,7 @@
 - The implemented application slices have a same-origin Admin entry, Google
   sign-in and Better Auth sign-out, bootstrap/current-context HTTP, and
   freshly authorized Course index/create/detail/update plus nested Group
-  creation/edit/archival/reactivation and Module creation HTTP, plus fresh
+  creation/edit/archival/reactivation/deletion and Module creation HTTP, plus fresh
   Participant context, explicit onboarding and
   self-profile maintenance, the global Admin Participant directory and stable
   profile detail plus Disable/Re-enable HTTP, Course Assignment list/create/
@@ -99,7 +99,7 @@
 - The booking package exposes the three `admin-access` operation factories
   required by first Admin bootstrap/fresh context resolution plus
   `course-structure` factories for Course creation/editing, Course-wide Group
-  creation/editing/archival/reactivation, and future Module creation and
+  creation/editing/archival/reactivation/permanent deletion, and future Module creation and
   `course-access` factories for fresh
   Participant context,
   registration, self/Admin Participant profile maintenance, Participant
@@ -132,7 +132,7 @@
   Disabled targets. The Participant gate presents a freshly Disabled target
   with safe sign-out and mounts no private Participant view. Stable Course
   detail owns complete Course editing, its permanent timezone lock, Course
-  membership creation/lifecycle, Group creation/edit/lifecycle, and future-
+  membership creation/lifecycle, Group creation/edit/lifecycle/deletion, and future-
   Module interactions without incidental routes. Membership cards expose only current
   permitted revoke/reactivate actions with confirmation and accurate retention
   copy.
@@ -207,6 +207,10 @@
   rewrite a Selection. The accepting predicates, partial unique index, and
   existing Active-Group Selection guard give one valid winner to concurrent
   archive/Selection and conflicting-name attempts.
+  Permanent Group deletion reuses the schema and one guarded delete to recheck
+  Active Admin/Course state and the absence of every retained Selection. The
+  restrictive Selection foreign key arbitrates a concurrent new reference;
+  success cascades nothing and no removed-reference audit is introduced.
 - Both explicit workspace boundary maps are registered in ESLint. The boundary
   converter denies undeclared third-party imports and supports exact test-only
   and composition-interface permissions.
@@ -227,7 +231,8 @@
   Module Selection,
   overlapping-Module independence, replacement/removal, confirmation focus,
   stale-deadline refusal, truthful current/history presentation, Group/Module
-  creation, Group editing/allowed-or-blocked archival/reactivation and retained
+  creation, Group editing/allowed-or-blocked archival/reactivation, permanent
+  deletion after removal, historical/Cancelled reference blockers, and retained
   historical details, Course editing, permanent timezone locking with zero current
   Modules, DST gap/overlap, exact-instant, and overflow assertions.
 - The root flake supplies Node 24, pnpm 11.17.0, Git, Markplane, Chromium, and

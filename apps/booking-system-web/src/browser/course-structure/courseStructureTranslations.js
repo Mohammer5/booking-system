@@ -115,6 +115,18 @@ export const courseStructureTranslations = {
         "Die Gruppe wurde archiviert. Bestehende Auswahlen blieben unverändert.",
       reactivated:
         "Die Gruppe wurde reaktiviert. Zuvor entfernte Auswahlen wurden nicht wiederhergestellt.",
+      deleteAction: "Gruppe löschen",
+      deleteTitle: "Gruppe endgültig löschen?",
+      deleteDescription:
+        "Diese Aktion kann nicht rückgängig gemacht werden. Die Gruppe kann nur gelöscht werden, wenn keine aktuelle Teilnahmeauswahl mehr auf sie verweist.",
+      deleteCancel: "Abbrechen",
+      deleteConfirm: "Gruppe endgültig löschen",
+      deletePending: "Gruppe wird gelöscht …",
+      deletionBlocked:
+        "Die Gruppe kann nicht gelöscht werden, weil mindestens eine aktuelle Teilnahmeauswahl auf sie verweist. Entfernen oder ändern Sie zuerst alle betreffenden Auswahlen.",
+      deletionUnavailable:
+        "Die Gruppe kann wegen eines geänderten Administrations-, Kurs- oder Gruppenstatus nicht gelöscht werden. Die aktuellen Kursdaten wurden neu geladen.",
+      deleted: "Die Gruppe „{{name}}“ wurde endgültig gelöscht.",
     },
     module: {
       title: "Module",

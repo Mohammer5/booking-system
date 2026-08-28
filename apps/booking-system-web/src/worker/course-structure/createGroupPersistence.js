@@ -1,3 +1,4 @@
+import { createGroupDeletionPersistence } from "./createGroupDeletionPersistence.js";
 import { createGroupLifecyclePersistence } from "./createGroupLifecyclePersistence.js";
 
 /**
@@ -8,6 +9,7 @@ import { createGroupLifecyclePersistence } from "./createGroupLifecyclePersisten
  */
 export function createGroupPersistence(database) {
   return {
+    ...createGroupDeletionPersistence(database),
     ...createGroupLifecyclePersistence(database),
     async createGroupForActiveAdmin({ adminUserId, group }) {
       try {
@@ -30,34 +32,12 @@ export function createGroupPersistence(database) {
         throw error;
       }
     },
-
     async listGroupsByCourseId(courseId) {
-      const { results } = await database
-        .prepare(
-          `select id, course_id, name, normalized_name, details, state
-             from groups
-            where course_id = ?
-            order by name collate nocase, id`,
-        )
-        .bind(courseId)
-        .all();
-
-      return results.map(mapGroup);
+      return listGroupsByCourseId(database, courseId);
     },
-
     async findGroupById(courseId, groupId) {
-      const row = await database
-        .prepare(
-          `select id, course_id, name, normalized_name, details, state
-             from groups
-            where course_id = ? and id = ?`,
-        )
-        .bind(courseId, groupId)
-        .first();
-
-      return row === null ? null : mapGroup(row);
+      return findGroupById(database, courseId, groupId);
     },
-
     async listSelectionContextsByGroupId(courseId, groupId) {
       const { results } = await database
         .prepare(
@@ -73,8 +53,36 @@ export function createGroupPersistence(database) {
 
       return results.map(mapSelectionContext);
     },
-
   };
+}
+
+/** @returns {Promise<Array<object>>} Course-wide Groups in stable order. */
+async function listGroupsByCourseId(database, courseId) {
+  const { results } = await database
+    .prepare(
+      `select id, course_id, name, normalized_name, details, state
+         from groups
+        where course_id = ?
+        order by name collate nocase, id`,
+    )
+    .bind(courseId)
+    .all();
+
+  return results.map(mapGroup);
+}
+
+/** @returns {Promise<object | null>} One Course-owned Group or null. */
+async function findGroupById(database, courseId, groupId) {
+  const row = await database
+    .prepare(
+      `select id, course_id, name, normalized_name, details, state
+         from groups
+        where course_id = ? and id = ?`,
+    )
+    .bind(courseId, groupId)
+    .first();
+
+  return row === null ? null : mapGroup(row);
 }
 
 /**

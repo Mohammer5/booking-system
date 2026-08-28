@@ -7,7 +7,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 
@@ -22,13 +22,40 @@ import { useCreateGroup } from "./useCourses.js";
  */
 export function GroupCreationSection({ course }) {
   const { t } = useTranslation();
+  const [deletionResult, setDeletionResult] = useState(null);
+  const deletionSuccessRef = useRef(null);
+  const deletedGroupName = deletionResult?.courseId === course.id
+    ? deletionResult.groupName
+    : null;
+
+  useEffect(() => {
+    if (deletedGroupName !== null) deletionSuccessRef.current?.focus();
+  }, [deletedGroupName, deletionResult]);
 
   return (
     <Stack aria-labelledby="course-groups-title" component="section" spacing={3}>
       <Typography component="h2" id="course-groups-title" variant="h2">
         {t("courseStructure.group.title")}
       </Typography>
-      <GroupList courseId={course.id} groups={course.groups} translate={t} />
+      {deletedGroupName === null ? null : (
+        <Alert
+          ref={deletionSuccessRef}
+          role="status"
+          severity="success"
+          tabIndex={-1}
+        >
+          {t("courseStructure.group.deleted", { name: deletedGroupName })}
+        </Alert>
+      )}
+      <GroupList
+        courseId={course.id}
+        groups={course.groups}
+        onDeleted={(result) => setDeletionResult({
+          courseId: course.id,
+          groupName: result.group.name,
+        })}
+        translate={t}
+      />
       <GroupCreationForm courseId={course.id} translate={t} />
     </Stack>
   );
@@ -40,7 +67,7 @@ export function GroupCreationSection({ course }) {
  * @param {object} props Group-list properties.
  * @returns {import("react").ReactElement} Current Group list state.
  */
-function GroupList({ courseId, groups, translate }) {
+function GroupList({ courseId, groups, onDeleted, translate }) {
   if (groups.length === 0) {
     return (
       <Alert role="status" severity="info">
@@ -59,6 +86,7 @@ function GroupList({ courseId, groups, translate }) {
           <GroupManagementCard
             courseId={courseId}
             group={group}
+            onDeleted={onDeleted}
             translate={translate}
           />
         </ListItem>

@@ -53,15 +53,15 @@ implementation backlog in Markplane. Release hardening and hosted staging
 verification remain mandatory before the first production release.
 
 The local application foundation, Course creation/editing, Group reversible
-lifecycle and structure creation, Participant registration/profile/lifecycle
+lifecycle/permanent deletion and structure creation, Participant registration/profile/lifecycle
 maintenance, Course Assignment creation/lifecycle, assigned Participant
 Course access, and Participant Module Selection slices are now implemented:
 
 - `@booking-system/booking` at `packages/booking` owns the implemented
   `admin-access` behavior plus `course-structure` Course, Course-wide Group,
   future Module, guarded Course editing with its permanent timezone lock,
-  Group complete editing/archival/reactivation with exact retained-Selection
-  policy, and Course-local definite-time creation policy, plus
+  Group complete editing/archival/reactivation/permanent deletion with exact
+  retained-Selection policy, and Course-local definite-time creation policy, plus
   `course-access` Participant registration, fresh context, Course Assignment
   creation/revocation/reactivation, assigned Active-Course list/detail, and
   self/Admin profile-edit plus Participant Disable/Re-enable policy, and
@@ -71,7 +71,7 @@ Course access, and Participant Module Selection slices are now implemented:
   React `/` Participant Google entry/onboarding/home, `/admin` administration
   flow, Participant directory, nested Course index/create/detail/update routes,
   Participant lifecycle, Course membership and Assignment interaction, and
-  Course editing plus Group/Module creation forms, Group edit/lifecycle cards,
+  Course editing plus Group/Module creation forms, Group edit/lifecycle/delete cards,
   and retained selected-Group history, plus the Participant
   `/courses/:courseId`
   detail, explicit Module
@@ -150,8 +150,10 @@ Course access, and Participant Module Selection slices are now implemented:
   timezone, presenting the timezone as permanently read-only after the first
   successful Module even when no Module remains;
 - the same stable Course detail edits Active or Archived Group name/details,
-  archives only without a future Scheduled-Module Selection, and reactivates
-  the retained identity subject to authoritative Active-name uniqueness;
+  archives only without a future Scheduled-Module Selection, reactivates the
+  retained identity subject to authoritative Active-name uniqueness, and
+  permanently deletes either state only when no retained Selection references
+  it; deletion uses no invented past-reference audit and mutates no related row;
 - free MUI Core and Emotion are pinned for browser use; one application theme
   and `CssBaseline` now style the complete `/admin` flow with responsive,
   visible-focus, semantic-status, and non-color-only presentation;
@@ -173,8 +175,8 @@ Course access, and Participant Module Selection slices are now implemented:
   explicit no-default selection, overlapping-Module selections, change/remove
   confirmation and focus, stale-deadline refusal, truthful own current/history
   presentation, self/Admin profile editing including Disabled targets,
-  duplicate/stale refusal, Group edit/archive/reactivate dialog and retention
-  states, direct refresh, and overflow;
+  duplicate/stale refusal, Group edit/archive/reactivate/delete dialogs,
+  retained-reference blockers, direct refresh, and overflow;
 - both workspace boundary maps are registered in ESLint with exact module,
   workspace, composition, third-party, and test-only permissions;
 - the root Nix flake supplies NixOS developer-host tooling: Node, pnpm,
@@ -184,8 +186,7 @@ Course access, and Participant Module Selection slices are now implemented:
 - the canonical `pnpm check` now runs repository, domain, Worker/D1, migration,
   build, and Chromium browser evidence.
 
-Apple, Microsoft, and Facebook providers, Group hard deletion, Module editing
-and lifecycle,
+Apple, Microsoft, and Facebook providers, Module editing and lifecycle,
 Course lifecycle, Archived-Course Participant access, Admin-assisted Module
 Selection,
 Invite,
