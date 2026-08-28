@@ -62,8 +62,9 @@ JavaScript conventions, and ESLint-enforced dependency rules.
   `apps/booking-system-web` workspace with responsive Participant/Admin
   contexts, Participant onboarding/profile/lifecycle/assigned-Course access/
   directory, Course Assignment creation/revocation/reactivation, Participant
-  Module Selection, guarded Course editing, Course/Group/Module creation, and
-  Group editing/archival/reactivation/deletion as the current same-origin application.
+  Module Selection, guarded Course editing, Course/Group/Module creation,
+  Module editing/rescheduling, and Group editing/archival/reactivation/deletion
+  as the current same-origin application.
 - Read when: A task adds, removes, deploys, or changes an application boundary
   or application manifest ownership.
 - Tags: architecture, applications, deployment, composition, manifests
@@ -89,7 +90,8 @@ JavaScript conventions, and ESLint-enforced dependency rules.
   Selection migrations, assigned Participant Course reads, guarded Participant
   profile/lifecycle updates, retained Assignment lifecycle with atomic
   Selection retention, guarded Course and Group editing/lifecycle/deletion with
-  Group/Selection/name and first-Module/timezone races,
+  Group/Selection/name and first-Module/timezone races, plus guarded Module
+  descriptive/schedule updates and current-start races,
   environment isolation, guarded acceptance, uniqueness, permanent scheduling
   history, and migration constraints.
 - Read when: A task affects databases, D1, SQL semantics, environment data,
@@ -148,7 +150,8 @@ JavaScript conventions, and ESLint-enforced dependency rules.
 - Path: `docs/architecture/browser-conventions.md`
 - Summary: React-based browser ownership rules for React Router, TanStack Query,
   React Hook Form, Material UI, responsive shell/Course structure and
-  editing with permanent timezone-lock and Group lifecycle/deletion presentation, and
+  editing with permanent timezone-lock, Module editing/rescheduling, and Group
+  lifecycle/deletion presentation plus
   Participant onboarding/profile/lifecycle/assigned-Course/directory/Course-
   Assignment-lifecycle/Module-Selection navigation and accessible interaction,
   Better Auth session
@@ -176,7 +179,8 @@ JavaScript conventions, and ESLint-enforced dependency rules.
   deny-by-default maps, including profile maintenance and Assignment lifecycle
   plus Participant lifecycle within existing `course-access`, the booking
   `module-participation` responsibility, Course editing within existing
-  `course-structure` including Group lifecycle/deletion, and exact
+  `course-structure` including Group lifecycle/deletion and Module
+  editing/rescheduling, and exact
   workspace, third-party, composition, test-only, and runtime-graph
   distinctions.
 - Read when: A task changes workspace dependencies, responsibility modules,

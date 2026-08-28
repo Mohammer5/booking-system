@@ -30,24 +30,33 @@ export function matchCourseRoute(pathname) {
     return { kind: segments[1], courseId: segments[0] };
   }
 
+  return matchCourseItemRoute(segments) ?? matchCourseActionRoute(segments);
+}
+
+/** @returns {object | null} One nested Group or Module item route. */
+function matchCourseItemRoute(segments) {
   if (
-    segments.length === 3 &&
-    segments[0].length > 0 &&
-    segments[1] === "groups" &&
-    segments[2].length > 0
+    segments.length !== 3 ||
+    segments[0].length === 0 ||
+    !new Set(["groups", "modules"]).has(segments[1]) ||
+    segments[2].length === 0
   ) {
-    return {
-      kind: "group",
-      courseId: segments[0],
-      groupId: segments[2],
-    };
+    return null;
+  }
+
+  return segments[1] === "groups"
+    ? { kind: "group", courseId: segments[0], groupId: segments[2] }
+    : { kind: "module", courseId: segments[0], moduleId: segments[2] };
+}
+
+/** @returns {object | null} One nested lifecycle or schedule action route. */
+function matchCourseActionRoute(segments) {
+  if (segments.length !== 4 || segments[0].length === 0 || segments[2].length === 0) {
+    return null;
   }
 
   if (
-    segments.length === 4 &&
-    segments[0].length > 0 &&
     segments[1] === "groups" &&
-    segments[2].length > 0 &&
     new Set(["archival", "reactivation"]).has(segments[3])
   ) {
     return {
@@ -59,7 +68,9 @@ export function matchCourseRoute(pathname) {
     };
   }
 
-  return null;
+  return segments[1] === "modules" && segments[3] === "schedule"
+    ? { kind: "moduleSchedule", courseId: segments[0], moduleId: segments[2] }
+    : null;
 }
 
 /**
@@ -100,15 +111,16 @@ export function toCourseResponse(course) {
  * Compose one Course detail with its owned Groups and Modules.
  *
  * @param {object} course Booking-domain Course.
- * @param {Array<object>} groups Course-owned Groups.
- * @param {Array<object>} modules Course-owned Modules.
+ * @param {object} structures Groups, Modules, and definite response instant.
  * @returns {object} Narrow complete Course-detail representation.
  */
-export function toCourseDetailResponse(course, groups, modules) {
+export function toCourseDetailResponse(course, structures) {
   return {
     ...toCourseResponse(course),
-    groups: groups.map(toGroupResponse),
-    modules: modules.map(toModuleResponse),
+    groups: structures.groups.map(toGroupResponse),
+    modules: structures.modules.map((module) =>
+      toModuleResponse(module, structures.currentInstant),
+    ),
   };
 }
 
@@ -132,9 +144,10 @@ export function toGroupResponse(group) {
  * Preserve definite Module instants in the browser response.
  *
  * @param {object} module Booking-domain Module.
+ * @param {string} currentInstant Definite response instant.
  * @returns {object} Narrow browser Module representation.
  */
-export function toModuleResponse(module) {
+export function toModuleResponse(module, currentInstant) {
   return {
     id: module.id,
     courseId: module.courseId,
@@ -144,6 +157,9 @@ export function toModuleResponse(module) {
     startsAt: module.startsAt,
     endsAt: module.endsAt,
     state: module.state,
+    isScheduleEditable:
+      module.state === "scheduled" &&
+      Date.parse(currentInstant) < Date.parse(module.startsAt),
   };
 }
 

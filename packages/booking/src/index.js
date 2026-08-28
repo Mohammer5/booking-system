@@ -10,8 +10,10 @@ export {
   createCreateModule,
   createDeleteGroup,
   createReactivateGroup,
+  createRescheduleModule,
   createUpdateCourse,
   createUpdateGroup,
+  createUpdateModuleDetails,
 } from "./course-structure/index.js";
 export {
   createAssignParticipantToCourse,

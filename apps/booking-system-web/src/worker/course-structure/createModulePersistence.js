@@ -1,3 +1,5 @@
+import { createModuleEditingPersistence } from "./createModuleEditingPersistence.js";
+
 /**
  * Create the narrow D1 capabilities owned by Scheduled Modules.
  *
@@ -6,6 +8,7 @@
  */
 export function createModulePersistence(database) {
   return {
+    ...createModuleEditingPersistence(database),
     async createModuleForActiveAdmin({
       adminUserId,
       courseTimezone,
@@ -49,21 +52,42 @@ export function createModulePersistence(database) {
           );
     },
 
-    async listModulesByCourseId(courseId) {
-      const { results } = await database
-        .prepare(
-          `select id, course_id, title, description, instructions,
-                  starts_at, ends_at, state
-             from modules
-            where course_id = ?
-            order by starts_at, id`,
-        )
-        .bind(courseId)
-        .all();
-
-      return results.map(mapModule);
-    },
+    listModulesByCourseId: (courseId) =>
+      listModulesByCourseId(database, courseId),
+    findModuleById: (courseId, moduleId) =>
+      findModuleById(database, courseId, moduleId),
   };
+}
+
+/** @returns {Promise<Array<object>>} Course Modules in schedule order. */
+async function listModulesByCourseId(database, courseId) {
+  const { results } = await database
+    .prepare(
+      `select id, course_id, title, description, instructions,
+              starts_at, ends_at, state
+         from modules
+        where course_id = ?
+        order by starts_at, id`,
+    )
+    .bind(courseId)
+    .all();
+
+  return results.map(mapModule);
+}
+
+/** @returns {Promise<object | null>} One Course-owned Module or null. */
+async function findModuleById(database, courseId, moduleId) {
+  const row = await database
+    .prepare(
+      `select id, course_id, title, description, instructions,
+              starts_at, ends_at, state
+         from modules
+        where course_id = ? and id = ?`,
+    )
+    .bind(courseId, moduleId)
+    .first();
+
+  return row === null ? null : mapModule(row);
 }
 
 /**

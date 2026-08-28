@@ -69,7 +69,8 @@
 - The implemented application slices have a same-origin Admin entry, Google
   sign-in and Better Auth sign-out, bootstrap/current-context HTTP, and
   freshly authorized Course index/create/detail/update plus nested Group
-  creation/edit/archival/reactivation/deletion and Module creation HTTP, plus fresh
+  creation/edit/archival/reactivation/deletion and Module creation/descriptive-
+  edit/pre-start-reschedule HTTP, plus fresh
   Participant context, explicit onboarding and
   self-profile maintenance, the global Admin Participant directory and stable
   profile detail plus Disable/Re-enable HTTP, Course Assignment list/create/
@@ -99,7 +100,8 @@
 - The booking package exposes the three `admin-access` operation factories
   required by first Admin bootstrap/fresh context resolution plus
   `course-structure` factories for Course creation/editing, Course-wide Group
-  creation/editing/archival/reactivation/permanent deletion, and future Module creation and
+  creation/editing/archival/reactivation/permanent deletion, and future Module
+  creation, lifetime descriptive editing, and pre-start rescheduling;
   `course-access` factories for fresh
   Participant context,
   registration, self/Admin Participant profile maintenance, Participant
@@ -231,7 +233,8 @@
   Module Selection,
   overlapping-Module independence, replacement/removal, confirmation focus,
   stale-deadline refusal, truthful current/history presentation, Group/Module
-  creation, Group editing/allowed-or-blocked archival/reactivation, permanent
+  creation, Module descriptive editing/pre-start rescheduling/locked states,
+  Group editing/allowed-or-blocked archival/reactivation, permanent
   deletion after removal, historical/Cancelled reference blockers, and retained
   historical details, Course editing, permanent timezone locking with zero current
   Modules, DST gap/overlap, exact-instant, and overflow assertions.

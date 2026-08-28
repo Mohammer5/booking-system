@@ -66,6 +66,14 @@ Course remains Active and no currently retained Selection references it.
 Upcoming, in-progress, ended, and Cancelled-Module references all block; a
 removed or replaced pre-start Selection does not, because no separate complete
 past-reference audit exists. Successful deletion changes only the Group row.
+An Active Admin User may edit a Module's complete title, description, and
+instructions throughout its Scheduled or Cancelled lifetime while the Course
+remains Active. Before the current start, a Scheduled Module may also move to
+another strictly future Course-local interval using the same DST gap and
+explicit-overlap rules as creation. At exact current start or later, and for
+every Cancelled Module, both instants remain immutable. Either accepted edit
+preserves Module identity and retained Selections; a successful reschedule
+makes the new stored `startsAt` the Selection deadline immediately.
 A new authenticated principal can
 explicitly supply the required booking-system Participant name and unique
 email, become one Active Participant, return to the Participant home, and see
@@ -80,8 +88,8 @@ default. Unknown, inactive, unassigned, Revoked, stale, and cross-Participant
 Course identifiers reveal no Course data. An Active Participant may edit their
 own required name/email, while an Active Admin User may edit an Active or
 Disabled Participant from a stable detail; both preserve identity, lifecycle,
-relationships, provider data, and any same-principal Admin User. Module editing
-or lifecycle operations; Course lifecycle operations;
+relationships, provider data, and any same-principal Admin User. Remaining
+Module lifecycle operations; Course lifecycle operations;
 Admin-assisted Module Selection,
 Archived-Course historical access, Invite, later Admin onboarding, and later
 Admin management

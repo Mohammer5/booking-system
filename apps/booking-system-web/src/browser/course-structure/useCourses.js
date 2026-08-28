@@ -153,6 +153,34 @@ export function useCreateModule(courseId) {
 }
 
 /**
+ * Update complete descriptive fields for one retained Module.
+ *
+ * @param {string} courseId Parent Course identity.
+ * @param {string} moduleId Stable Module identity.
+ * @returns {object} TanStack Module-detail mutation state.
+ */
+export function useUpdateModuleDetails(courseId, moduleId) {
+  return useModuleManagementMutation({
+    courseId,
+    path: `/api/admin/courses/${courseId}/modules/${moduleId}`,
+  });
+}
+
+/**
+ * Replace the future schedule of one editable Scheduled Module.
+ *
+ * @param {string} courseId Parent Course identity.
+ * @param {string} moduleId Stable Module identity.
+ * @returns {object} TanStack Module-schedule mutation state.
+ */
+export function useRescheduleModule(courseId, moduleId) {
+  return useModuleManagementMutation({
+    courseId,
+    path: `/api/admin/courses/${courseId}/modules/${moduleId}/schedule`,
+  });
+}
+
+/**
  * Create one nested Course-structure mutation with detail reconciliation.
  *
  * @param {string} courseId Parent Course identity.
@@ -210,6 +238,39 @@ function useGroupManagementMutation(input) {
         }),
       ]);
       input.onDeleted?.(result);
+    },
+    async onError(error) {
+      if (error.status === 409) {
+        await queryClient.invalidateQueries({ queryKey: detailQueryKey });
+      }
+    },
+  });
+}
+
+/**
+ * Mutate one Module and reconcile Admin and Participant Course views.
+ *
+ * @param {object} input Module request properties.
+ * @returns {object} TanStack Module management mutation state.
+ */
+function useModuleManagementMutation(input) {
+  const queryClient = useQueryClient();
+  const detailQueryKey = ["course-structure", "course", input.courseId];
+
+  return useMutation({
+    mutationFn: (body) =>
+      requestJson(input.path, {
+        method: "PUT",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify(body),
+      }),
+    async onSuccess() {
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: detailQueryKey }),
+        queryClient.invalidateQueries({
+          queryKey: ["course-access", "participant-course", input.courseId],
+        }),
+      ]);
     },
     async onError(error) {
       if (error.status === 409) {

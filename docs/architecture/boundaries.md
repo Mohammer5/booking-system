@@ -92,6 +92,13 @@ Participant history presentation continues consuming only the existing
 same-origin selected-Group representation. No dependency, map permission,
 composition file, workspace, or first-level responsibility changes.
 
+Module descriptive editing and pre-start rescheduling also remain inside the
+existing `course-structure` slices. Shared booking-domain text and Course-local
+time resolution stay dependency-free; guarded D1/HTTP adapters and separate
+German MUI forms remain application-private. The added root exports are
+already permitted public `course-structure` interfaces and introduce no map,
+dependency, composition, workspace, or first-level responsibility change.
+
 Participant registration introduces the accepted dependency-free
 `course-access` responsibility inside the booking package. Its root interface
 exposes Participant registration, fresh Participant-context, distinct

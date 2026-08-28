@@ -192,6 +192,7 @@ function ScheduleResolution({ state, translate }) {
       <ModuleScheduleChoice
         field="startsAt"
         focusRef={startNeedsChoice ? state.choiceRef : undefined}
+        idPrefix="create-module"
         onSelect={state.selectOccurrence}
         resolution={state.disambiguation.startsAt}
         selected={state.occurrences.startsAt}
@@ -200,6 +201,7 @@ function ScheduleResolution({ state, translate }) {
       <ModuleScheduleChoice
         field="endsAt"
         focusRef={startNeedsChoice ? undefined : state.choiceRef}
+        idPrefix="create-module"
         onSelect={state.selectOccurrence}
         resolution={state.disambiguation.endsAt}
         selected={state.occurrences.endsAt}

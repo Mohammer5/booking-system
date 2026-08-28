@@ -1,12 +1,12 @@
 ---
 id: TASK-2u7z6
 title: Edit and reschedule Modules
-status: backlog
+status: done
 priority: medium
 type: feature
 effort: medium
 epic: EPIC-i2x79
-plan: null
+plan: PLAN-jmucf
 depends_on:
 - TASK-6tfxd
 - TASK-jvqrk
@@ -14,14 +14,14 @@ blocks:
 - TASK-vwciv
 related:
 - TASK-jvqrk
-assignee: null
+assignee: gerkules
 tags:
 - module
 - scheduling
 - time
 position: e40
 created: 2026-08-27
-updated: 2026-08-27
+updated: 2026-08-29
 ---
 
 # Edit and reschedule Modules
@@ -36,21 +36,21 @@ the new deadline immediately.
 
 ## Acceptance Criteria
 
-- [ ] An Active Admin User may edit required non-blank title and optional
+- [x] An Active Admin User may edit required non-blank title and optional
       description/instructions in an Active Course before start, in progress,
       after end, or after cancellation without changing Module identity or
       retained Selections.
-- [ ] A Scheduled Module may be rescheduled only while `now < current
+- [x] A Scheduled Module may be rescheduled only while `now < current
       startsAt`; the result requires `newStartsAt > now` and `newEndsAt >
       newStartsAt` as definite instants.
-- [ ] At exact current `startsAt` or later, both schedule fields are immutable,
+- [x] At exact current `startsAt` or later, both schedule fields are immutable,
       including an attempt to move the Module back into the future. A
       Cancelled Module's schedule is always immutable.
-- [ ] Local input uses the Course timezone, rejects nonexistent DST times, and
+- [x] Local input uses the Course timezone, rejects nonexistent DST times, and
       requires explicit occurrence/offset choice for ambiguous times.
-- [ ] Rescheduling preserves identity and retained Selections; Participant and
+- [x] Rescheduling preserves identity and retained Selections; Participant and
       Admin booking deadlines immediately follow the new `startsAt`.
-- [ ] Course archival, stale actor state, a concurrent start/cancellation, or
+- [x] Course archival, stale actor state, a concurrent start/cancellation, or
       invalid interval causes a complete refusal without partial descriptive
       or schedule mutation.
 
@@ -88,3 +88,23 @@ Create a fresh implementation plan when selected.
 - `docs/product/representative-scenarios.md#p-module-deadline-and-schedule-immutability`
 - `docs/product/module-participation.md#startsat-deadline`
 - `docs/process/verification.md`
+
+## Completion Evidence
+
+- Focused booking-domain operations share the creation resolver while proving
+  complete descriptive lifetime, before/exact/after-current-start, future
+  interval, cancellation, DST gap/overlap, identity, and refusal behavior.
+- Guarded D1 descriptive and schedule updates recheck current actor/Course,
+  exact prior interval, Scheduled state, accepted instant, and unchanged
+  timezone; real tests preserve every retained Selection and prove the stored
+  `startsAt` becomes the new mutation deadline without reference rewrites.
+- Two nested `PUT` resources derive Course/Module/time state server-side,
+  ignore trust fields, return narrow current editability, and cover stale,
+  cross-Course, technical, cancellation, and concurrent acceptance outcomes.
+- German stable-detail Module cards keep descriptive and schedule forms
+  independent, expose explicit DST choices and lock copy, reconcile Admin and
+  Participant caches, preserve refresh context, and have unique accessible
+  form landmarks at desktop and 360px widths.
+- `pnpm check` passed on 2026-08-29: ESLint and boundary rules, 315 booking-
+  domain tests, 250 Worker/D1 tests, production builds, and 40 Chromium
+  Playwright tests.

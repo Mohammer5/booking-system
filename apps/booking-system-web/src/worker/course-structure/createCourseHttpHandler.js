@@ -13,13 +13,17 @@ import {
   toCourseDetailResponse,
   toCourseResponse,
   toGroupResponse,
-  toModuleResponse,
 } from "./courseHttpContract.js";
 import {
   createGroupManagementOperations,
   groupManagementResultResponse,
   resolveGroupManagementRequest,
 } from "./createGroupManagementHttp.js";
+import {
+  createModuleManagementOperations,
+  handleModuleManagementRequest,
+  moduleCreationResultResponse,
+} from "./createModuleManagementHttp.js";
 
 /**
  * Create the same-origin Course, Group, and Module HTTP operations.
@@ -60,6 +64,7 @@ function createOperations(capabilities) {
   return {
     ...capabilities,
     ...createGroupManagementOperations(capabilities),
+    ...createModuleManagementOperations(capabilities),
     createCourse: createCreateCourse({
       createCourseId: capabilities.createCourseId,
       createCourseForActiveAdmin:
@@ -103,6 +108,8 @@ function isSupportedRoute(route, method) {
     groupArchival: new Set(["POST"]),
     groupReactivation: new Set(["POST"]),
     modules: new Set(["POST"]),
+    module: new Set(["PUT"]),
+    moduleSchedule: new Set(["PUT"]),
   };
 
   return methodsByKind[route.kind].has(method);
@@ -141,6 +148,12 @@ function handleAuthorizedRoute(context, operations) {
     )
   ) {
     return handleGroupManagementRequest(context, operations);
+  }
+
+  if (new Set(["module", "moduleSchedule"]).has(route.kind)) {
+    return handleModuleManagementRequest(
+      context, operations, currentStateRefusal,
+    );
   }
 
   return route.kind === "groups"
@@ -269,7 +282,14 @@ async function handleCourseDetailRequest(courseId, operations) {
     operations.modulePersistence.listModulesByCourseId(courseId),
   ]);
 
-  return jsonResponse(toCourseDetailResponse(course, groups, modules), 200);
+  return jsonResponse(
+    toCourseDetailResponse(course, {
+      groups,
+      modules,
+      currentInstant: operations.now(),
+    }),
+    200,
+  );
 }
 
 /**
@@ -332,7 +352,10 @@ async function handleCreateModuleRequest(context, operations) {
     operations,
   );
 
-  return staleResponse ?? moduleResultResponse(result);
+  return staleResponse ?? moduleCreationResultResponse(
+    result,
+    operations.now(),
+  );
 }
 
 /**
@@ -363,22 +386,6 @@ function groupResultResponse(result) {
   const status = result.outcome === "group-name-conflict" ? 409 : 422;
 
   return jsonResponse(result, status);
-}
-
-/**
- * Map one Module result to its exact non-stale HTTP response.
- *
- * @returns {Response} Module result response.
- */
-function moduleResultResponse(result) {
-  if (result.outcome === "created") {
-    return jsonResponse(toModuleResponse(result.module), 201);
-  }
-
-  return jsonResponse(
-    result,
-    result.outcome === "course-timezone-changed" ? 409 : 422,
-  );
 }
 
 /**

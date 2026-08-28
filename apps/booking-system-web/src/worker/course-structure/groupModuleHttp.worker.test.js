@@ -132,6 +132,7 @@ describe("Group and Module HTTP creation", () => {
       startsAt: "2027-01-15T09:30:00.000Z",
       endsAt: "2027-01-15T10:30:00.000Z",
       state: "scheduled",
+      isScheduleEditable: true,
     });
     expect(module.id).not.toBe("browser-module");
 

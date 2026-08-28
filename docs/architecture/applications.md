@@ -53,8 +53,8 @@ nested Course index/create/detail routes through one responsive MUI shell.
 Stable Admin Course detail contains complete Course editing with its permanent
 timezone lock, Course membership creation, revocation, and reactivation plus
 the owned Group list, creation and complete field forms, current lifecycle
-actions, and future-Module list/creation form rather than adding incidental
-routes. Navigation
+actions, and Module list/creation plus separate descriptive and pre-start
+schedule forms rather than adding incidental routes. Navigation
 preserves the same browser cookie and Better Auth principal; Participant
 context resolves its own
 current domain identity without selecting a role or revealing Course data
@@ -205,7 +205,7 @@ creates no partial side effect; overlapping Modules remain independent.
 
 ### Course Administration HTTP Surface
 
-The implemented `course-structure` slices use ten concrete
+The implemented `course-structure` slices use twelve concrete
 same-origin operations:
 
 ```text
@@ -219,6 +219,8 @@ DELETE /api/admin/courses/:courseId/groups/:groupId
 POST /api/admin/courses/:courseId/groups/:groupId/archival
 POST /api/admin/courses/:courseId/groups/:groupId/reactivation
 POST /api/admin/courses/:courseId/modules
+PUT  /api/admin/courses/:courseId/modules/:moduleId
+PUT  /api/admin/courses/:courseId/modules/:moduleId/schedule
 ```
 
 | Operation | Authentication and current state | Results |
@@ -233,6 +235,8 @@ POST /api/admin/courses/:courseId/modules
 | Group archival | Same plus current Active Group and no retained Selection for a Scheduled Module with `now < startsAt` | `200 { outcome: "archived", group }`; `401`; exact `403`; `404`; `409` exact blocker or stale Group/Course state; sanitized `500 technical-error` |
 | Group reactivation | Same plus current Archived Group and authoritative Active-name uniqueness | `200 { outcome: "reactivated", group }`; `401`; exact `403`; `404`; `409` name or stale state; sanitized `500 technical-error` |
 | Module creation | Same plus guarded current Active Admin and Active Course acceptance | `201` narrow Scheduled Module with definite instants; `401`; exact `403`; `404`; `409` stale Course; `422` field/time/overlap outcome |
+| Module descriptive update | Same plus one same-Course Scheduled/Cancelled Module and complete `{ title, description, instructions }` | `200` narrow updated Module; `401`; exact `403`; `404` Course/Module; `409` stale actor/Course/Module state; `422` field outcome; sanitized `500 technical-error` |
+| Module reschedule | Same plus one same-Course Scheduled Module before its current start, local start/end fields, and optional explicit overlap occurrences | `200` narrow rescheduled Module; `401`; exact `403`; `404` Course/Module; `409` locked or stale actor/Course/timezone/state/schedule; `422` field/DST/interval outcome; sanitized `500 technical-error` |
 
 Course representations contain only `id`, `name`, `description`, `timezone`,
 `state`, and derived `isTimezoneEditable`; detail adds only its Course-owned
@@ -244,14 +248,20 @@ no field partially. A Course update accepts all three editable fields but
 changes timezone only before any successful Module creation. Module insertion
 rechecks the exact Course timezone used to resolve its local schedule, so a
 concurrent timezone edit and first Module creation have one consistent winner.
-Group responses omit the persistence normalization key. Group lifecycle and
+Group responses omit the persistence normalization key. Module responses add
+only the server-derived `isScheduleEditable` capability to stable identity,
+content, lifecycle, and exact instants. Descriptive writes preserve identity,
+state, schedule, and every Selection. Rescheduling preserves identity,
+content, state, and every Selection while the guarded write rechecks the
+expected old interval, current Scheduled state, captured current instant, and
+unchanged Course timezone; Selection deadlines therefore follow the stored
+new `startsAt` without rewriting references. Group lifecycle and
 deletion actions accept no browser-supplied instant, state, Course ownership,
 or Selection data; the server derives retained-reference context and the
 guarded accepting D1 statement rechecks it. Archival and reactivation retain
 the row and never update a Selection. Deletion removes only an Active or
 Archived Group with no retained Selection and consults no past-reference
-audit. Module responses preserve exact ISO
-instants; local input, DST gap rejection, and overlap choices remain request
+audit. Local Module input, DST gap rejection, and overlap choices remain request
 mechanics interpreted through the persisted Course timezone. The browser nests
 `/admin/courses`, `/admin/courses/new`, and
 `/admin/courses/:courseId` behind its current-Admin gate, while Worker

@@ -17,7 +17,15 @@ import {
  * @returns {import("react").ReactElement} Resolution presentation.
  */
 export function ModuleScheduleChoice(props) {
-  const { field, resolution, selected, onSelect, translate, focusRef } = props;
+  const {
+    field,
+    focusRef,
+    idPrefix,
+    onSelect,
+    resolution,
+    selected,
+    translate,
+  } = props;
 
   if (resolution.outcome === "resolved") {
     return (
@@ -31,7 +39,7 @@ export function ModuleScheduleChoice(props) {
     );
   }
 
-  const labelId = `${field}-occurrence-label`;
+  const labelId = `${idPrefix}-${field}-occurrence-label`;
 
   return (
     <FormControl ref={focusRef} required>
@@ -42,7 +50,7 @@ export function ModuleScheduleChoice(props) {
       </FormLabel>
       <RadioGroup
         aria-labelledby={labelId}
-        name={`${field}Occurrence`}
+        name={`${idPrefix}-${field}Occurrence`}
         onChange={(event) => onSelect(field, event.target.value)}
         value={selected ?? ""}
       >

@@ -115,6 +115,20 @@ Course-detail empty/create/list/refresh journeys, duplicate and time errors,
 explicit overlap selection, exact-instant presentation, stale/technical
 refusal focus, responsive layout, and axe scans.
 
+For Module descriptive editing and rescheduling, booking-domain Vitest owns
+complete text fields across upcoming/in-progress/ended/Cancelled Modules,
+injected before/exact/after-current-start boundaries, new future interval
+rules, shared Course-local DST gap/overlap resolution, stable identity, and
+exact persistence inputs. Worker/D1 Vitest owns guarded text/schedule updates,
+expected-interval and current-time acceptance, stale actor/Course/timezone/
+cancellation races, trigger rollback, retained Selection references, and the
+immediate shifted Selection deadline. Worker HTTP evidence owns both nested
+`PUT` contracts, trust-field rejection, server-derived schedule editability,
+privacy, exact outcomes, and technical sanitization. Playwright owns separate
+German forms, real content/reschedule/DST/refresh behavior, bounded exact-
+start/in-progress/ended/Cancelled locks with descriptive availability,
+conflict focus, desktop/360px layout, unique form landmarks, and axe scans.
+
 For Group editing and reversible lifecycle, booking-domain Vitest owns
 complete Active/Archived fields, Course-local normalized Active-name rules,
 injected time, the exact future/exact-start/in-progress/ended/Cancelled
@@ -297,7 +311,7 @@ onboarding/assigned-Course/zero-membership/privacy states, Participant
 directory and Course membership/Assignment-lifecycle states, Participant
 self/Admin profile editing and lifecycle, Course editing and permanent
 timezone-lock presentation, Disabled-target detail, and absence of horizontal
-overflow. The current 38-test browser suite also proves that one
+overflow. The current 40-test browser suite also proves that one
 fixed normal session remains usable while navigating between Participant and
 Admin contexts, successful sign-out terminates that session, an Active Admin
 can create, edit, and revisit a Course with Groups, a future Module, a
@@ -314,7 +328,11 @@ archival, Active-name-conflicted then successful reactivation, and retained
 Archived Group details/state in Participant history. Permanent Group deletion
 is proven after a real Selection removal, with target-only persistence,
 confirmation/cancel focus, refresh, and privacy-safe historical/Cancelled
-reference blockers.
+reference blockers. It also proves Module descriptive editing, Course-local
+pre-start rescheduling, DST gap and explicit overlap handling, exact/in-
+progress/ended/Cancelled schedule locking without content lockout, stale-
+schedule focus, refresh persistence, unique form landmarks, and deadline-
+sensitive definite instants.
 
 On browser-test failure, CI should retain short-lived useful diagnostics such
 as the Playwright report, traces, screenshots, and relevant logs. Artifacts

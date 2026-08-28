@@ -8,6 +8,7 @@ for one concept and update this file when stable terminology changes.
 The product concepts below are accepted specification truth. The first Admin
 bootstrap, Course creation/editing, Course-wide-Group creation/editing/
 archival/reactivation/deletion, future-Scheduled-Module creation,
+Module descriptive editing and pre-start rescheduling,
 Participant registration/profile maintenance, Course Assignment creation/
 revocation/reactivation, Participant Disable/Re-enable, assigned Course access,
 and Participant-managed Module Selection subsets are implemented; remaining
@@ -136,7 +137,11 @@ See [Groups](product/course-structure.md#groups).
 One non-recurring Scheduled or terminal Cancelled occurrence in exactly one
 Course. It has required title, `startsAt`, and `endsAt`, optional description
 and instructions, and no separate timezone. Its definite interval determines
-upcoming, in-progress, and ended descriptions. See
+upcoming, in-progress, and ended descriptions. Descriptive fields remain
+editable in an Active Course throughout its lifetime. A Scheduled interval is
+editable only before its current start and only to another strictly future
+valid interval; Cancelled or begun schedules are immutable. Either edit
+preserves identity and retained Selections. See
 [Modules](product/course-structure.md#modules).
 
 ### Module Selection
@@ -243,8 +248,8 @@ Its implemented `admin-access` module owns the first Admin behavior, and its
 implemented `course-structure` module owns Course, Course-wide Group, future
 Scheduled Module, Course editing with its permanent timezone lock, and
 Group editing/archival/reactivation/permanent deletion with retained Selection
-policy, plus
-Course-local definite-time creation policy. Its
+policy, plus Course-local definite-time creation and pre-start-rescheduling
+policy with lifetime Module descriptive editing. Its
 implemented `course-access` module owns fresh Participant context and
 registration/profile policy plus Course Assignment creation/lifecycle and
 Participant lifecycle plus assigned Course access; Invite behavior stays with
@@ -264,7 +269,8 @@ Participant profile maintenance, Course membership/direct Assignment,
 Assignment revocation/reactivation, Participant Disable/Re-enable, Participant
 Module Selection, Course creation/editing, and Course-owned Group/Module
 creation plus Group editing/archival/reactivation and permanent deletion of
-unreferenced Groups, private technical adapters, and composition roots.
+unreferenced Groups plus Module descriptive editing/pre-start rescheduling,
+private technical adapters, and composition roots.
 See
 [Applications](architecture/applications.md#accepted-initial-boundary).
 

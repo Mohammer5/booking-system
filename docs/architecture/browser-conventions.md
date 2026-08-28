@@ -71,9 +71,9 @@ theme and `CssBaseline` once. The Admin authentication/bootstrap,
 current-context, refusal, failure, and sign-out states plus the Participant
 directory, Course membership/Assignment Dialog, Course index/create/detail,
 Course editing and permanent timezone-lock presentation, Course-wide Group
-creation/editing/lifecycle, and future Module creation states use free MUI Core
-components directly without changing their HTTP, authentication, or domain
-ownership. Native `datetime-local` fields collect
+creation/editing/lifecycle, and Module creation/descriptive-edit/schedule-edit
+states use free MUI Core components directly without changing their HTTP,
+authentication, or domain ownership. Native `datetime-local` fields collect
 local minutes; MUI radio groups expose server-resolved DST-overlap occurrences,
 so no MUI X or date/time dependency is present. The Participant and Admin
 routes share one responsive browser-owned shell with a banner, named list
@@ -91,7 +91,8 @@ discovery, global Participant directory and Course membership states, direct
 Assignment/repeat/Disabled-target interaction, Participant self/Admin profile
 editing, duplicate/stale refusal and stable Disabled-target detail, Group/Module
 empty and creation states, Group edit/archive/reactivate/delete and retained-history
-states, Course editing and permanent timezone lock even
+states, Module lifetime descriptive editing and future-only rescheduling,
+Course editing and permanent timezone lock even
 with zero current Modules, definite-instant display, DST gap/overlap
 interaction, stale/technical refusals, and horizontal overflow.
 
@@ -239,6 +240,16 @@ first-Module timezone lock. The timezone is editable only when the derived
 Course representation permits it; otherwise the browser presents accurate
 permanent-lock copy while continuing to permit descriptive edits. A conflict
 refreshes the detail so stale forms cannot keep presenting old editability.
+
+Module management follows the same stable-detail ownership without adding a
+Module route. Every retained Module card has one descriptive form that remains
+available for Scheduled or Cancelled Modules and one distinct schedule area.
+The schedule form appears only for the server-derived pre-start Scheduled
+capability; exact-start, elapsed, and Cancelled Modules instead receive
+explicit non-color-only lock copy. Course-local `datetime-local` fields and
+per-Module radio-group identities reuse server-resolved DST candidates.
+Successful mutations reconcile both Admin and Participant Course detail, while
+a schedule conflict refreshes authoritative editability and current instants.
 
 Course Assignment lifecycle uses the same ownership split. TanStack Query
 owns membership-list and assigned-Course invalidation after reactivation or

@@ -4,5 +4,7 @@ export { createCreateGroup } from "./createCreateGroup.js";
 export { createCreateModule } from "./createCreateModule.js";
 export { createDeleteGroup } from "./createDeleteGroup.js";
 export { createReactivateGroup } from "./createReactivateGroup.js";
+export { createRescheduleModule } from "./createRescheduleModule.js";
 export { createUpdateCourse } from "./createUpdateCourse.js";
 export { createUpdateGroup } from "./createUpdateGroup.js";
+export { createUpdateModuleDetails } from "./createUpdateModuleDetails.js";

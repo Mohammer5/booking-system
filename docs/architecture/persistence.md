@@ -208,6 +208,19 @@ deletion and creation of a new Selection have exactly one valid winner.
 Successful deletion removes only the Group row, cascades nothing, and consults
 no separate audit of removed or replaced Selections.
 
+Module editing and rescheduling require no migration. One guarded descriptive
+update rechecks the current Active Admin and Course plus a same-Course
+Scheduled or Cancelled Module, then changes only title, description, and
+instructions. One guarded schedule update rechecks those actor/Course
+predicates, unchanged Course timezone, Scheduled state, expected old start/end,
+`current starts_at > accepted now`, `new starts_at > accepted now`, and
+`new ends_at > new starts_at` before replacing both instants. Either update
+preserves Module identity and every `module_selections` row. Because Selection
+writes read the Module's current stored `starts_at`, a successful reschedule
+changes their deadline immediately without a reference rewrite. Stale
+interval, cancellation, exact-start, Course archival, actor change, invalid
+interval, or trigger failure leaves every Module field and Selection unchanged.
+
 The fourth additive migration preserves all existing application data and adds
 one `participants` table with stable Participant identity, one row per external
 principal, required nonblank name, retained trimmed email, a unique lowercase
