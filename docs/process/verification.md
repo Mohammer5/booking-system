@@ -140,7 +140,10 @@ does not change the Playwright project or CI browser installation.
 Normal pull-request CI runs Playwright against a local production-like
 application composed from Vite/static assets, the Worker API, and an isolated
 local D1 database. Tests must start from deterministic state rather than a
-developer's database. Representative flows should eventually cover:
+developer's database. The fixture/Playwright server and migration preparation
+use a dedicated generated Wrangler persistence root; resetting it must leave
+normal manual-development state untouched. Representative flows should
+eventually cover:
 
 - an Admin User creating and configuring a Course;
 - a Participant joining and accessing a Course;

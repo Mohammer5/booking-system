@@ -93,12 +93,16 @@ The persistence lifecycle must distinguish at least these environments:
 
 | Environment | Database responsibility |
 | --- | --- |
-| local/test | Disposable, deterministic state owned by local development or one test run. |
+| local development | Disposable state owned by manual local development. |
+| automated test | Deterministic generated state owned by one test run and isolated from manual development. |
 | staging | Once provisioned during release hardening, pre-production test data in a dedicated remote D1 database. |
 | production | Once provisioned during release hardening, live data in a dedicated remote D1 database that regression tests never mutate. |
 
 Staging and production must never share a D1 database. Local or staging E2E
-tests must not point at production data.
+tests must not point at production data. Automated local fixture/Playwright
+preparation must also use a generated persistence root separate from manual
+development, so resetting a test run cannot invalidate or replace a running
+developer database.
 
 ## Migration Contract
 

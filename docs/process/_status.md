@@ -19,7 +19,9 @@ Current reality:
   targeting `main` and pushes to `main` through the stable `verify` job.
 - Layered local application verification is implemented through domain Vitest,
   Workers Vitest with D1, the production build, and Chromium Playwright in the
-  canonical `pnpm check`. Critical Admin, Course, Participant, and
+  canonical `pnpm check`. Fixture/Playwright preparation resets a dedicated
+  generated Wrangler state root rather than manual-development state. Critical
+  Admin, Course, Participant, and
   application-shell states include axe scans and explicit desktop/narrow,
   keyboard, modal focus/trapping and restoration, semantic navigation/name,
   error-association, direct/refresh, pre-authorization privacy, Course-wide

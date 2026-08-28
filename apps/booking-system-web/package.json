@@ -6,11 +6,11 @@
   "scripts": {
     "build": "CLOUDFLARE_LOAD_DEV_VARS_FROM_DOT_ENV=false vite build",
     "dev": "vite",
-    "dev:prepare": "node ./test/prepareE2eState.js && wrangler d1 migrations apply DB --local --config wrangler.jsonc",
+    "dev:prepare": "node ./test/prepareDevelopmentState.js && wrangler d1 migrations apply DB --local --config wrangler.jsonc",
     "dev:fixtures": "CLOUDFLARE_LOAD_DEV_VARS_FROM_DOT_ENV=false vite --config vite.non-production.config.js",
     "test:worker": "CLOUDFLARE_LOAD_DEV_VARS_FROM_DOT_ENV=false vitest run --config vitest.worker.config.js",
     "test:e2e": "playwright test",
-    "e2e:prepare": "node ./test/prepareE2eState.js && wrangler d1 migrations apply DB --local --config wrangler.non-production.jsonc",
+    "e2e:prepare": "node ./test/prepareE2eState.js && wrangler d1 migrations apply DB --local --persist-to .wrangler/e2e-state --config wrangler.non-production.jsonc",
     "e2e:serve": "corepack pnpm run e2e:prepare && CLOUDFLARE_LOAD_DEV_VARS_FROM_DOT_ENV=false vite --config vite.non-production.config.js --host 127.0.0.1 --port 4173 --strictPort"
   },
   "dependencies": {

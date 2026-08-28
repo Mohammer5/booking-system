@@ -71,7 +71,9 @@ registration, and direct Course Assignment slices are now implemented:
   history, constrained Participants, and constrained Course Assignments, with
   clean-state construction and data-preserving upgrade evidence;
 - production and explicit non-production Worker compositions structurally
-  separate fixed fixture-session establishment from production;
+  separate fixed fixture-session establishment from production, while their
+  manual-development and fixture/Playwright D1 state use separate generated
+  Wrangler roots;
 - the `/admin` browser flow starts fixed-destination Google sign-in, requires
   authentication before the first-Admin name form, and supports Better Auth
   sign-out in every authenticated Admin-route outcome;

@@ -73,8 +73,10 @@ pnpm --filter @booking-system/booking-system-web run dev
 Google must have `http://localhost:5173` as an authorized JavaScript origin and
 `http://localhost:5173/api/auth/callback/google` as its one local redirect URI.
 The preparation command intentionally resets only the application's generated
-local Wrangler state and applies all migrations; it provisions no remote
-Cloudflare resource.
+development Wrangler state and applies all migrations; it provisions no remote
+Cloudflare resource. Fixture and Playwright runs use a separate generated
+`.wrangler/e2e-state` root, so automated verification cannot reset or replace a
+running manual development database.
 
 For the Admin smoke journey, open `http://localhost:5173/admin`, continue with
 Google, supply the required booking-system Admin name when the fresh database
@@ -105,7 +107,8 @@ Its committed authentication values are visibly non-secret test-only values.
 It establishes only fixed normal Better Auth sessions and is structurally
 absent from production composition. Build and automated-test commands disable
 local `.env` loading; only the normal `dev` command consumes the real local
-provider and Better Auth secrets.
+provider and Better Auth secrets. `e2e:prepare` resets only the generated
+fixture/Playwright state and leaves normal development state untouched.
 
 ## Development Tracking
 

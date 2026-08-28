@@ -188,6 +188,12 @@ Playwright exercise Cloudflare-compatible runtime and D1 semantics rather than
 a conventional long-running Node server. No remote Cloudflare resource is
 required for this local lifecycle.
 
+Normal manual Vite development persists generated bindings under
+`.wrangler/state`. The explicit fixture/Playwright Vite composition and its
+migration preparation use `.wrangler/e2e-state` instead. Each preparation
+command resets only its own root, so running automated verification cannot
+delete or replace the D1 state held by a manual development process.
+
 Normal manual Vite development binds strictly to `localhost:5173`; it fails
 instead of selecting another port when that port is occupied. This keeps the
 same-origin application aligned with the registered local Google origin and

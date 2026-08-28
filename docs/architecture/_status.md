@@ -139,7 +139,9 @@
   identities use a separate executable composition.
 - Five version-controlled D1 migrations implement the authentication/Admin
   foundation plus additive Course, Group/Module, Participant, and Course
-  Assignment schemas. Atomic
+  Assignment schemas. Manual development and fixture/Playwright runs use
+  separate generated Wrangler persistence roots, so test preparation cannot
+  invalidate a running development database. Atomic
   `D1Database.batch()` preserves exactly-one first bootstrap; guarded Course,
   Group, and Module inserts recheck Active Admin and applicable Course state at
   write acceptance. Constraints preserve stable ownership and normalized

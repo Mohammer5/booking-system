@@ -1,8 +1,5 @@
 import fs from "node:fs/promises";
 
-const generatedStateDirectory = new URL(
-  "../.wrangler/e2e-state",
-  import.meta.url,
-);
+const generatedStateDirectory = new URL("../.wrangler/state", import.meta.url);
 
 await fs.rm(generatedStateDirectory, { recursive: true, force: true });
