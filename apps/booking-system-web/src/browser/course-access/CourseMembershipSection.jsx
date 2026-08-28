@@ -1,9 +1,6 @@
 import {
   Alert,
   Button,
-  Card,
-  CardContent,
-  Chip,
   CircularProgress,
   List,
   ListItem,
@@ -14,6 +11,8 @@ import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import { CourseAssignmentDialog } from "./CourseAssignmentDialog.jsx";
+import { CourseAssignmentLifecycleDialog } from "./CourseAssignmentLifecycleDialog.jsx";
+import { CourseMembershipCard } from "./CourseMembershipCard.jsx";
 import { useCourseAssignments } from "./useCourseAccess.js";
 
 /**
@@ -41,13 +40,18 @@ function useCourseMembershipState(courseId) {
   const openerRef = useRef(null);
   const successRef = useRef(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [lifecycleAction, setLifecycleAction] = useState(null);
   const [assignmentResult, setAssignmentResult] = useState(null);
 
   useEffect(() => {
-    if (assignmentResult !== null && !isDialogOpen) {
+    if (
+      assignmentResult !== null &&
+      !isDialogOpen &&
+      lifecycleAction === null
+    ) {
       successRef.current?.focus();
     }
-  }, [assignmentResult, isDialogOpen]);
+  }, [assignmentResult, isDialogOpen, lifecycleAction]);
 
   useEffect(() => {
     if (assignments.isError) {
@@ -61,6 +65,7 @@ function useCourseMembershipState(courseId) {
   const acceptAssignment = (result) => {
     setAssignmentResult(result);
     setIsDialogOpen(false);
+    setLifecycleAction(null);
   };
 
   return {
@@ -70,11 +75,17 @@ function useCourseMembershipState(courseId) {
     closeDialog,
     errorRef,
     isDialogOpen,
+    lifecycleAction,
     openDialog: () => {
       setAssignmentResult(null);
       setIsDialogOpen(true);
     },
     openerRef,
+    openLifecycleAction: (action, assignment) => {
+      setAssignmentResult(null);
+      setLifecycleAction({ action, assignment });
+    },
+    closeLifecycleAction: () => setLifecycleAction(null),
     successRef,
   };
 }
@@ -97,10 +108,13 @@ function CourseMembershipSurface({ course, state, translate }) {
       <MembershipSuccess state={state} translate={translate} />
       <CourseMembershipState
         assignmentQuery={state.assignments}
+        course={course}
         errorRef={state.errorRef}
+        onAction={state.openLifecycleAction}
         translate={translate}
       />
       <MembershipDialog courseId={course.id} state={state} />
+      <MembershipLifecycleDialog courseId={course.id} state={state} />
     </Stack>
   );
 }
@@ -147,11 +161,7 @@ function MembershipSuccess({ state, translate }) {
 
   return (
     <Alert ref={state.successRef} role="status" severity="success" tabIndex={-1}>
-      {translate(
-        state.assignmentResult.isCreated
-          ? "courseAccess.membership.created"
-          : "courseAccess.membership.alreadyActive",
-      )}
+      {translate(`courseAccess.membership.${state.assignmentResult.outcome}`)}
     </Alert>
   );
 }
@@ -177,13 +187,36 @@ function MembershipDialog({ courseId, state }) {
   );
 }
 
+/** @returns {import("react").ReactElement | null} Current lifecycle dialog. */
+function MembershipLifecycleDialog({ courseId, state }) {
+  if (state.lifecycleAction === null) {
+    return null;
+  }
+
+  return (
+    <CourseAssignmentLifecycleDialog
+      action={state.lifecycleAction.action}
+      assignment={state.lifecycleAction.assignment}
+      courseId={courseId}
+      onCancel={state.closeLifecycleAction}
+      onSuccess={state.acceptAssignment}
+    />
+  );
+}
+
 /**
  * Present loading, unavailable, empty, or populated Course membership state.
  *
  * @param {object} props Membership state properties.
  * @returns {import("react").ReactElement} Current membership state.
  */
-function CourseMembershipState({ assignmentQuery, errorRef, translate }) {
+function CourseMembershipState({
+  assignmentQuery,
+  course,
+  errorRef,
+  onAction,
+  translate,
+}) {
   if (assignmentQuery.isPending) {
     return (
       <Stack aria-live="polite" role="status" spacing={2} sx={{ alignItems: "center" }}>
@@ -212,6 +245,8 @@ function CourseMembershipState({ assignmentQuery, errorRef, translate }) {
   return (
     <MembershipList
       assignments={assignmentQuery.data.assignments}
+      course={course}
+      onAction={onAction}
       translate={translate}
     />
   );
@@ -223,53 +258,20 @@ function CourseMembershipState({ assignmentQuery, errorRef, translate }) {
  * @param {object} props Membership list properties.
  * @returns {import("react").ReactElement} Semantic membership list.
  */
-function MembershipList({ assignments, translate }) {
+function MembershipList({ assignments, course, onAction, translate }) {
   return (
     <List aria-label={translate("courseAccess.membership.listLabel")} disablePadding>
       {assignments.map((assignment) => (
         <ListItem disablePadding key={assignment.id} sx={{ mb: 2 }}>
-          <MembershipCard assignment={assignment} translate={translate} />
+          <CourseMembershipCard
+            assignment={assignment}
+            course={course}
+            onAction={onAction}
+            translate={translate}
+          />
         </ListItem>
       ))}
     </List>
-  );
-}
-
-/**
- * Present one Assignment with distinct Participant and membership states.
- *
- * @param {object} props Membership card properties.
- * @returns {import("react").ReactElement} One membership card.
- */
-function MembershipCard({ assignment, translate }) {
-  const participant = assignment.participant;
-  const isParticipantActive = participant.state === "active";
-
-  return (
-    <Card sx={{ width: "100%" }} variant="outlined">
-      <CardContent>
-        <Stack spacing={1.5}>
-          <Typography component="h3" variant="h3">
-            {participant.name}
-          </Typography>
-          <Typography sx={{ overflowWrap: "anywhere" }}>
-            {participant.email}
-          </Typography>
-          <Stack direction="row" spacing={1} sx={{ flexWrap: "wrap" }}>
-            <Chip
-              color={isParticipantActive ? "success" : "default"}
-              label={translate(`courseAccess.participantState.${participant.state}`)}
-              variant={isParticipantActive ? "filled" : "outlined"}
-            />
-            <Chip
-              color={assignment.state === "active" ? "success" : "default"}
-              label={translate(`courseAccess.assignmentState.${assignment.state}`)}
-              variant="outlined"
-            />
-          </Stack>
-        </Stack>
-      </CardContent>
-    </Card>
   );
 }
 

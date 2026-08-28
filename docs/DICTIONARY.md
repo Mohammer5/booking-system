@@ -7,10 +7,10 @@ for one concept and update this file when stable terminology changes.
 
 The product concepts below are accepted specification truth. The first Admin
 bootstrap, Course/Course-wide-Group/future-Scheduled-Module creation,
-Participant registration/direct Course Assignment/assigned Course access, and
-Participant profile maintenance/Participant-managed Module Selection subsets
-are implemented; remaining concepts and later lifecycle behavior are still
-specifications until their delivery tasks complete.
+Participant registration/profile maintenance, Course Assignment creation/
+revocation/reactivation, assigned Course access, and Participant-managed Module
+Selection subsets are implemented; remaining concepts and later lifecycle
+behavior are still specifications until their delivery tasks complete.
 
 ### Admin-Assisted Booking
 
@@ -64,8 +64,9 @@ Course. It is Course-specific membership and remains distinct from Participant
 global state and Module participation. Participant Course access requires both
 an Active Participant and an Active Assignment. The local application
 implements Admin discovery, Course membership reads, and direct creation or
-idempotent retention of an Active Assignment; participant-facing access and
-Assignment lifecycle transitions remain later slices. See [Course
+idempotent retention of an Active Assignment, plus retained-row revocation and
+Active-Course reactivation with exact future-Selection removal. Participant-
+facing access follows fresh Assignment state. See [Course
 access](product/course-access.md#administrative-assignment).
 
 ### Course Invite
@@ -225,8 +226,9 @@ Its implemented `admin-access` module owns the first Admin behavior, and its
 implemented `course-structure` module owns Course, Course-wide Group, future
 Scheduled Module, and Course-local definite-time creation policy. Its
 implemented `course-access` module owns fresh Participant context and
-registration/profile policy plus direct Course Assignment and assigned Course
-access; Invite and lifecycle behavior stays with that module. Its implemented
+registration/profile policy plus Course Assignment creation/lifecycle and
+assigned Course access; Invite and Participant lifecycle behavior stays with
+that module. Its implemented
 `module-participation` module owns Participant Selection eligibility,
 set/change/remove, and derived current/history policy, with Admin-assisted
 behavior still deferred. See
@@ -239,8 +241,9 @@ The implemented single deployable application
 browser/Vite experience, frontend static assets, Cloudflare Worker and
 same-origin `/api/*` handling including Participant registration/directory,
 Participant profile maintenance, Course membership/direct Assignment,
-Participant Module Selection, and Course-owned Group/Module creation, private
-technical adapters, and composition roots. See
+Assignment revocation/reactivation, Participant Module Selection, and Course-
+owned Group/Module creation, private technical adapters, and composition roots.
+See
 [Applications](architecture/applications.md#accepted-initial-boundary).
 
 ### Boundary Map

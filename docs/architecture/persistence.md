@@ -89,8 +89,9 @@ list/detail capabilities over `participants`,
 Course reads join current Active Participant, Active Assignment, and Active
 Course state before returning private data. The implemented
 `module-participation` slice owns guarded Selection set/change/remove over
-`module_selections`; Invite schemas and Assignment lifecycle transitions remain
-deferred to their owning slices.
+`module_selections`. The same `course-access` persistence owns retained-row
+Assignment reactivation and atomic revocation with exact future-Selection
+removal; Invite schemas remain deferred to their owning slices.
 
 ## Environment Isolation
 
@@ -193,8 +194,14 @@ state, restrictive Participant/Course foreign keys, permanent ownership, and
 one unique Participant/Course pair. A guarded insert rechecks the current
 Active Admin, Active Course, and fully registered Active or Disabled target at
 write acceptance. The unique pair makes repeated and concurrent Active
-assignment idempotent, while a refused write creates no identity or Module
-Selection. Assignment lifecycle transitions remain deferred.
+assignment idempotent, while a conflict update reactivates the retained row
+without changing its identity. A refused write creates no identity or Module
+Selection. Assignment lifecycle requires no schema migration: one guarded D1
+batch revokes an Assignment in an Active or Archived Course and removes only
+its Scheduled Selections with `startsAt > now`. Exact-start and begun
+Scheduled Selections, all Cancelled Selections, and all other-Course data stay
+retained. Repeated revocation is idempotent, and any failed batch rolls both
+the Selection removal and Assignment transition back.
 
 The sixth additive migration preserves existing application data and adds one
 `module_selections` table with stable identity, restrictive ownership, one

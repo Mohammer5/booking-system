@@ -27,10 +27,24 @@ export function matchCourseAccessRoute(pathname) {
 
   const segments = pathname.slice(coursePrefix.length).split("/");
 
-  return segments.length === 2 &&
+  if (
+    segments.length === 2 &&
     segments[0].length > 0 &&
     segments[1] === "assignments"
-    ? { kind: "assignments", courseId: segments[0] }
+  ) {
+    return { kind: "assignments", courseId: segments[0] };
+  }
+
+  return segments.length === 4 &&
+    segments[0].length > 0 &&
+    segments[1] === "assignments" &&
+    segments[2].length > 0 &&
+    segments[3] === "revocation"
+    ? {
+        kind: "assignment-revocation",
+        courseId: segments[0],
+        assignmentId: segments[2],
+      }
     : null;
 }
 

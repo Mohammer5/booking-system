@@ -166,7 +166,10 @@ test("presents Disabled assignment plus stale and technical refusals predictably
 
       if (assignmentMode === "created") {
         assignments = [disabledAssignment];
-        await fulfillJson(route, 201, disabledAssignment);
+        await fulfillJson(route, 201, {
+          outcome: "created",
+          assignment: disabledAssignment,
+        });
         return;
       }
 

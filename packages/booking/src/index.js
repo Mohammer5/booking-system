@@ -13,6 +13,7 @@ export {
   createGetParticipantCourse,
   createListParticipantCourses,
   createRegisterParticipant,
+  createRevokeCourseAssignment,
   createResolveParticipantContext,
   createUpdateOwnParticipantProfile,
   createUpdateParticipantProfileAsAdmin,

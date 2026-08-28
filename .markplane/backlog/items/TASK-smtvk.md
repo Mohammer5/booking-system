@@ -1,12 +1,12 @@
 ---
 id: TASK-smtvk
 title: Revoke and reactivate Course Assignments
-status: backlog
+status: done
 priority: medium
 type: feature
 effort: medium
 epic: EPIC-bh5dj
-plan: null
+plan: PLAN-gzu8z
 depends_on:
 - TASK-jvqrk
 blocks:
@@ -15,7 +15,7 @@ blocks:
 - TASK-49if4
 related:
 - TASK-2nh3b
-assignee: null
+assignee: gerkules
 tags:
 - assignment
 - membership
@@ -23,7 +23,7 @@ tags:
 - authorization
 position: d20
 created: 2026-08-27
-updated: 2026-08-27
+updated: 2026-08-28
 ---
 
 # Revoke and reactivate Course Assignments
@@ -38,26 +38,26 @@ Course-specific and independent across Courses.
 
 ## Acceptance Criteria
 
-- [ ] Course administration represents each current Participant Assignment as
+- [x] Course administration represents each current Participant Assignment as
       Active or Revoked and offers only actions permitted by current Course,
       actor, and Assignment state.
-- [ ] Revoking an Active Assignment in an Active or Archived Course removes
+- [x] Revoking an Active Assignment in an Active or Archived Course removes
       Scheduled-Module Selections where `now < startsAt`, retains Scheduled
       Selections where `startsAt <= now`, retains Cancelled-Module Selections,
       and makes all retained Selections historical.
-- [ ] Revoking an already-Revoked Assignment is an idempotent successful no-op
+- [x] Revoking an already-Revoked Assignment is an idempotent successful no-op
       and never changes another Course's Assignment or Selection state.
-- [ ] Direct assignment/reactivation in an Active Course reuses the one
+- [x] Direct assignment/reactivation in an Active Course reuses the one
       retained Assignment, is an idempotent no-op when already Active, and may
       target an Active or Disabled fully registered Participant.
-- [ ] Reactivation never restores removed future Selections. A retained
+- [x] Reactivation never restores removed future Selections. A retained
       in-progress Selection becomes live again only when Participant, Course,
       Assignment, and Module predicates are currently eligible before
       `endsAt`.
-- [ ] A Revoked Assignment cannot be reactivated in an Archived Course; no
+- [x] A Revoked Assignment cannot be reactivated in an Archived Course; no
       Assignment can be added there. Refusal leaves membership and Selection
       state unchanged.
-- [ ] Participant access and privacy update immediately from fresh Assignment
+- [x] Participant access and privacy update immediately from fresh Assignment
       state: revocation removes Course access and blocks self-reactivation via
       Invite; reactivation restores only eligible access.
 
@@ -80,6 +80,17 @@ non-color-only. Direct Course-member URLs refresh safely.
   changes, retained history, Archived refusal, multi-Course isolation,
   responsive widths, keyboard/dialog focus, and axe scans.
 - Full `pnpm check`.
+
+## Completion Evidence
+
+- Added one retained Active/Revoked Assignment lifecycle with guarded
+  reactivation and atomic revocation/future-Scheduled-Selection removal.
+- Added exact domain, Worker/D1, HTTP/privacy, rollback, concurrency, fresh
+  access, German MUI, responsive, focus, retained-history, and axe coverage.
+- Updated canonical implementation status, architecture, persistence, browser,
+  verification, dictionary, and index documentation.
+- `pnpm check` passes: 214 booking-domain tests, 146 Worker/D1 tests, production
+  build, and 30 Chromium Playwright tests.
 
 ## Out Of Scope / Notes
 

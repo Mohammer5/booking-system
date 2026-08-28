@@ -137,7 +137,7 @@ describe("direct Course Assignment persistence", () => {
     },
   );
 
-  it("leaves a retained Revoked Assignment unchanged for later lifecycle work", async () => {
+  it("reactivates a retained Revoked Assignment without replacing its identity", async () => {
     await insertAdmin("admin-a", "active");
     await insertCourse("course-a", "active");
     await insertParticipants([participant("a", "Participant A", "active")]);
@@ -152,11 +152,14 @@ describe("direct Course Assignment persistence", () => {
         adminUserId: "admin-a",
         assignment: assignment("replacement", "participant-a"),
       }),
-    ).resolves.toEqual({ outcome: "assignment-not-active" });
+    ).resolves.toEqual({
+      outcome: "reactivated",
+      assignment: assignment("retained", "participant-a"),
+    });
     await expect(
       persistence.listAssignmentsByCourseId("course-a"),
     ).resolves.toMatchObject([
-      { id: "assignment-retained", state: "revoked" },
+      { id: "assignment-retained", state: "active" },
     ]);
     await expect(countRows("course_assignments")).resolves.toBe(1);
     await expect(membershipTables()).resolves.toEqual([

@@ -10,18 +10,26 @@ export function createCourseAssignmentPersistence(database) {
       const result = await insertAssignment(database, adminUserId, assignment);
 
       if (result.meta.changes === 1) {
+        const retainedAssignment = await findAssignmentByPair(
+          database,
+          assignment.participantId,
+          assignment.courseId,
+        );
+
         return {
-          outcome: "created",
-          assignment: await findAssignmentByPair(
-            database,
-            assignment.participantId,
-            assignment.courseId,
-          ),
+          outcome:
+            retainedAssignment.id === assignment.id
+              ? "created"
+              : "reactivated",
+          assignment: retainedAssignment,
         };
       }
 
       return classifyAssignmentOutcome(database, adminUserId, assignment);
     },
+
+    findAssignmentById: (assignmentId) =>
+      findAssignmentById(database, assignmentId),
 
     async listAssignmentsByCourseId(courseId) {
       const { results } = await database
@@ -40,6 +48,9 @@ export function createCourseAssignmentPersistence(database) {
 
       return results.map(mapAssignmentWithParticipant);
     },
+
+    revokeActiveCourseAssignment: (input) =>
+      revokeActiveCourseAssignment(database, input),
   };
 }
 
@@ -69,7 +80,9 @@ function insertAssignment(database, adminUserId, assignment) {
             select 1 from participants
              where id = ? and state in ('active', 'disabled')
           )
-       on conflict (participant_id, course_id) do nothing`,
+       on conflict (participant_id, course_id) do update
+         set state = 'active'
+       where course_assignments.state = 'revoked'`,
     )
     .bind(
       assignment.id,
@@ -81,6 +94,120 @@ function insertAssignment(database, adminUserId, assignment) {
       assignment.participantId,
     )
     .run();
+}
+
+/**
+ * Atomically revoke one retained Assignment and remove only future Scheduled choices.
+ *
+ * @param {object} database The application D1 binding.
+ * @param {object} input Actor, Assignment, Course, and definite current epoch.
+ * @returns {Promise<object>} Revoked, idempotent, or current-state refusal.
+ */
+async function revokeActiveCourseAssignment(database, input) {
+  const [selectionResult, assignmentResult] = await database.batch([
+    deleteFutureScheduledSelectionsStatement(database, input),
+    revokeAssignmentStatement(database, input),
+  ]);
+
+  if (assignmentResult.meta.changes === 1) {
+    return {
+      outcome: "revoked",
+      assignment: await findAssignmentById(database, input.assignmentId),
+      removedSelectionCount: selectionResult.meta.changes,
+    };
+  }
+
+  return classifyRevocationOutcome(database, input);
+}
+
+/** @returns {object} Guarded future Scheduled-Selection deletion statement. */
+function deleteFutureScheduledSelectionsStatement(database, input) {
+  return database
+    .prepare(
+      `delete from module_selections
+        where id in (
+          select s.id
+            from module_selections s
+            join course_assignments a
+              on a.participant_id = s.participant_id
+             and a.course_id = s.course_id
+            join courses c on c.id = a.course_id
+            join modules m
+              on m.id = s.module_id and m.course_id = s.course_id
+           where a.id = ? and a.course_id = ? and a.state = 'active'
+             and c.state in ('active', 'archived')
+             and m.state = 'scheduled' and m.starts_at > ?
+             and exists (
+               select 1 from admin_users
+                where id = ? and state = 'active'
+             )
+        )`,
+    )
+    .bind(
+      input.assignmentId,
+      input.courseId,
+      input.nowEpoch,
+      input.adminUserId,
+    );
+}
+
+/** @returns {object} Guarded retained Assignment state-transition statement. */
+function revokeAssignmentStatement(database, input) {
+  return database
+    .prepare(
+      `update course_assignments
+          set state = 'revoked'
+        where id = ? and course_id = ? and state = 'active'
+          and exists (
+            select 1 from courses
+             where id = ? and state in ('active', 'archived')
+          )
+          and exists (
+            select 1 from admin_users
+             where id = ? and state = 'active'
+          )`,
+    )
+    .bind(
+      input.assignmentId,
+      input.courseId,
+      input.courseId,
+      input.adminUserId,
+    );
+}
+
+/** @returns {Promise<object>} Exact current-state revocation result. */
+async function classifyRevocationOutcome(database, input) {
+  const [adminUser, course, assignment] = await Promise.all([
+    database
+      .prepare("select state from admin_users where id = ?")
+      .bind(input.adminUserId)
+      .first(),
+    database
+      .prepare("select state from courses where id = ?")
+      .bind(input.courseId)
+      .first(),
+    findAssignmentById(database, input.assignmentId),
+  ]);
+
+  if (adminUser?.state !== "active") {
+    return { outcome: "admin-not-active" };
+  }
+
+  if (!new Set(["active", "archived"]).has(course?.state)) {
+    return { outcome: "course-not-revocable" };
+  }
+
+  if (assignment?.courseId !== input.courseId) {
+    return { outcome: "assignment-not-revocable" };
+  }
+
+  return assignment.state === "revoked"
+    ? {
+        outcome: "already-revoked",
+        assignment,
+        removedSelectionCount: 0,
+      }
+    : { outcome: "assignment-not-revoked" };
 }
 
 /**
@@ -152,6 +279,26 @@ async function findAssignmentByPair(database, participantId, courseId) {
         where participant_id = ? and course_id = ?`,
     )
     .bind(participantId, courseId)
+    .first();
+
+  return row === null ? null : mapAssignment(row);
+}
+
+/**
+ * Resolve one retained Assignment by stable identity.
+ *
+ * @param {object} database The application D1 binding.
+ * @param {string} assignmentId Stable Assignment identity.
+ * @returns {Promise<object | null>} Current Assignment or null.
+ */
+async function findAssignmentById(database, assignmentId) {
+  const row = await database
+    .prepare(
+      `select id, participant_id, course_id, state
+         from course_assignments
+        where id = ?`,
+    )
+    .bind(assignmentId)
     .first();
 
   return row === null ? null : mapAssignment(row);

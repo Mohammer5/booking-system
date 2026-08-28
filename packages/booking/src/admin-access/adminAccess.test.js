@@ -124,6 +124,7 @@ describe("Public booking package interface", () => {
       "createRemoveParticipantModuleSelection",
       "createResolveAdminContext",
       "createResolveParticipantContext",
+      "createRevokeCourseAssignment",
       "createSetParticipantModuleSelection",
       "createUpdateOwnParticipantProfile",
       "createUpdateParticipantProfileAsAdmin",

@@ -163,6 +163,32 @@ describe("derived Module Selection presentation", () => {
       }),
     ).toBeNull();
   });
+
+  it("makes a retained in-progress Selection live only after Assignment reactivation", () => {
+    const input = {
+      ...eligibleInput(),
+      module: {
+        ...moduleData(),
+        startsAt: "2026-09-01T09:00:00.000Z",
+      },
+      selection: selection(),
+      now: "2026-09-01T10:30:00.000Z",
+    };
+
+    expect(
+      deriveModuleSelectionPresentation({
+        ...input,
+        assignment: assignment("revoked"),
+      }),
+    ).toMatchObject({ meaning: "historical", phase: "historical" });
+    expect(deriveModuleSelectionPresentation(input)).toMatchObject({
+      meaning: "live",
+      phase: "in-progress",
+    });
+    expect(
+      deriveModuleSelectionPresentation({ ...input, selection: null }),
+    ).toBeNull();
+  });
 });
 
 /** @returns {object} Deterministic set-operation capabilities. */

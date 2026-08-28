@@ -174,23 +174,32 @@ describe("direct Assignment HTTP contract", () => {
     });
 
     expect(created.status).toBe(201);
-    expect(createdBody.id).not.toBe("browser-id");
+    expect(createdBody.assignment.id).not.toBe("browser-id");
     expect(createdBody).toEqual({
-      id: createdBody.id,
-      state: "active",
-      participant: {
-        id: "participant-active",
-        name: "Active Participant",
-        email: "active@example.com",
+      outcome: "created",
+      assignment: {
+        id: createdBody.assignment.id,
         state: "active",
+        participant: {
+          id: "participant-active",
+          name: "Active Participant",
+          email: "active@example.com",
+          state: "active",
+        },
       },
     });
     expect(repeated.status).toBe(200);
-    await expect(repeated.json()).resolves.toEqual(createdBody);
+    await expect(repeated.json()).resolves.toEqual({
+      ...createdBody,
+      outcome: "already-active",
+    });
     expect(disabled.status).toBe(201);
     await expect(disabled.json()).resolves.toMatchObject({
-      state: "active",
-      participant: { id: "participant-disabled", state: "disabled" },
+      outcome: "created",
+      assignment: {
+        state: "active",
+        participant: { id: "participant-disabled", state: "disabled" },
+      },
     });
     await expect(countRows("course_assignments")).resolves.toBe(2);
     await expect(countRows("participants")).resolves.toBe(2);
@@ -214,11 +223,15 @@ describe("direct Assignment HTTP contract", () => {
     const bodies = await Promise.all(responses.map((response) => response.json()));
 
     expect(responses.map(({ status }) => status).sort()).toEqual([200, 201]);
-    expect(bodies[0]).toEqual(bodies[1]);
+    expect(bodies.map(({ outcome }) => outcome).sort()).toEqual([
+      "already-active",
+      "created",
+    ]);
+    expect(bodies[0].assignment).toEqual(bodies[1].assignment);
     await expect(countRows("course_assignments")).resolves.toBe(1);
   });
 
-  it("rejects invalid, unknown, Archived, and retained Revoked targets exactly", async () => {
+  it("rejects invalid/unknown/Archived input and reactivates a retained row", async () => {
     const cookie = await activeAdminCookie();
     await insertCourse("course-a", "active");
     await insertParticipants([
@@ -256,7 +269,11 @@ describe("direct Assignment HTTP contract", () => {
     await expectHttpOutcome(missingParticipant, 404, "participant-not-found");
     await expectHttpOutcome(missingCourse, 404, "course-not-found");
     await expectHttpOutcome(archived, 409, "course-not-active");
-    await expectHttpOutcome(retained, 409, "assignment-not-active");
+    expect(retained.status).toBe(200);
+    await expect(retained.json()).resolves.toMatchObject({
+      outcome: "reactivated",
+      assignment: { id: "assignment-retained", state: "active" },
+    });
     await expect(countRows("course_assignments")).resolves.toBe(1);
   });
 });

@@ -71,8 +71,8 @@
   freshly authorized Course index/create/detail plus nested Group/Module
   creation HTTP, plus fresh Participant context, explicit onboarding and
   self-profile maintenance, the global Admin Participant directory and stable
-  profile detail, Course Assignment list/create HTTP, and private assigned
-  Participant Course list/detail HTTP.
+  profile detail, Course Assignment list/create/reactivate/revoke HTTP, and
+  private assigned Participant Course list/detail HTTP.
   Application destinations remain fixed and browser input cannot select
   principal, authority, Assignment identity/state, lifecycle state,
   normalized email, definite instant, or permanent scheduling history.
@@ -98,8 +98,9 @@
   required by first Admin bootstrap/fresh context resolution plus
   `course-structure` factories for Course, Course-wide Group, and future
   Module creation and `course-access` factories for fresh Participant context,
-  registration, self/Admin Participant profile maintenance, direct Course
-  Assignment, and current assigned Active-Course list/detail access, plus
+  registration, self/Admin Participant profile maintenance, Course Assignment
+  creation/revocation/reactivation, and current assigned Active-Course
+  list/detail access, plus
   `module-participation` factories for Participant Selection set/change/remove
   and derived current/history presentation.
   Course-local time resolution and complete-email
@@ -122,8 +123,9 @@
   before the Module starts. The Admin Participant directory includes
   registered zero-Assignment Participants and links to guarded profile-only
   maintenance for Active and Disabled targets. Stable Course detail owns
-  Course membership, direct Assignment, Group, and future-Module interactions
-  without incidental routes.
+  Course membership creation/lifecycle, Group, and future-Module interactions
+  without incidental routes. Membership cards expose only current permitted
+  revoke/reactivate actions with confirmation and accurate retention copy.
 - TanStack Query owns remote Admin, Course, Participant profile, Assignment,
   and Module Selection state;
   React Hook Form owns the Admin-name, Course, Group, Module, and Participant-
@@ -166,8 +168,12 @@
   and leave identity, state, principal, Assignments, Selections, and
   same-principal Admin data unchanged. They require no schema migration.
   Assignment foreign keys and a unique Participant/Course pair preserve one
-  ordinary membership, while a guarded insert rechecks current Active Admin,
-  Active Course, and registered Active/Disabled target state. Separate narrow
+  ordinary membership. A guarded upsert rechecks current Active Admin, Active
+  Course, and registered Active/Disabled target state while reusing a Revoked
+  row. Atomic guarded revocation deletes only future Scheduled Selections and
+  changes that retained row in Active or Archived Courses; exact-start/begun,
+  Cancelled, other-Course, repeated, stale, and failed-batch data remains.
+  Separate narrow
   Participant Course reads join current Active Participant, Active Assignment,
   and Active Course state, order list/Module/Group data deterministically, and
   restrict Participant Groups to Active state without adding a migration.
@@ -185,8 +191,10 @@
   navigation, name/label, error-association, direct/refresh, privacy, stale
   refusal, onboarding/zero-membership/sign-out, same-principal dual-context,
   Participant directory and Course membership/Assignment states, Disabled
-  targets, idempotent repeat, assigned-Course list/detail/refresh, current-state
-  loss, identifier privacy, self/Admin Participant profile editing,
+  targets, Assignment revoke/repeat/reactivate, Archived refusal, access
+  loss/restoration, multi-Course isolation, idempotent repeat, assigned-Course
+  list/detail/refresh, current-state loss, identifier privacy, self/Admin
+  Participant profile editing,
   Disabled-target detail, duplicate/stale profile refusal, explicit no-default
   Module Selection,
   overlapping-Module independence, replacement/removal, confirmation focus,

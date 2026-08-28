@@ -2,6 +2,7 @@ export { createAssignParticipantToCourse } from "./createAssignParticipantToCour
 export { createGetParticipantCourse } from "./createGetParticipantCourse.js";
 export { createListParticipantCourses } from "./createListParticipantCourses.js";
 export { createRegisterParticipant } from "./createRegisterParticipant.js";
+export { createRevokeCourseAssignment } from "./createRevokeCourseAssignment.js";
 export { createResolveParticipantContext } from "./createResolveParticipantContext.js";
 export { createUpdateOwnParticipantProfile } from "./createUpdateOwnParticipantProfile.js";
 export { createUpdateParticipantProfileAsAdmin } from "./createUpdateParticipantProfileAsAdmin.js";

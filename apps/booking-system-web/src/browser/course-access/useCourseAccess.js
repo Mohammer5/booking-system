@@ -83,9 +83,28 @@ export function useAssignParticipant(courseId) {
   return useMutation({
     mutationFn: (participantId) => assignParticipant(courseId, participantId),
     async onSuccess() {
-      await queryClient.invalidateQueries({
-        queryKey: ["course-access", "assignments", courseId],
-      });
+      await invalidateMembershipQueries(queryClient, courseId);
+    },
+  });
+}
+
+/**
+ * Revoke one retained Assignment and reconcile Admin/Participant Course state.
+ *
+ * @param {string} courseId Stable Course identity.
+ * @returns {object} TanStack Assignment-revocation mutation state.
+ */
+export function useRevokeCourseAssignment(courseId) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (assignmentId) =>
+      requestJson(
+        `/api/admin/courses/${courseId}/assignments/${assignmentId}/revocation`,
+        { method: "POST" },
+      ),
+    async onSuccess() {
+      await invalidateMembershipQueries(queryClient, courseId);
     },
   });
 }
@@ -107,10 +126,22 @@ async function assignParticipant(courseId, participantId) {
     },
   );
 
-  return {
-    assignment: response.body,
-    isCreated: response.status === 201,
-  };
+  return response.body;
+}
+
+/** @returns {Promise<void>} Refresh membership and any same-session private reads. */
+async function invalidateMembershipQueries(queryClient, courseId) {
+  await Promise.all([
+    queryClient.invalidateQueries({
+      queryKey: ["course-access", "assignments", courseId],
+    }),
+    queryClient.invalidateQueries({
+      queryKey: ["course-access", "participant-courses"],
+    }),
+    queryClient.invalidateQueries({
+      queryKey: ["course-access", "participant-course", courseId],
+    }),
+  ]);
 }
 
 /** @returns {Promise<object>} Replace one complete Participant profile. */

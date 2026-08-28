@@ -1,6 +1,7 @@
 import {
   createAssignParticipantToCourse,
   createResolveAdminContext,
+  createRevokeCourseAssignment,
   createUpdateParticipantProfileAsAdmin,
 } from "@booking-system/booking";
 
@@ -63,6 +64,11 @@ function createOperations(capabilities) {
       findAdminUserByExternalPrincipalId:
         capabilities.adminPersistence.findAdminUserByExternalPrincipalId,
     }),
+    revokeCourseAssignment: createRevokeCourseAssignment({
+      now: capabilities.now,
+      revokeActiveCourseAssignment:
+        capabilities.assignmentPersistence.revokeActiveCourseAssignment,
+    }),
     updateParticipantProfileAsAdmin: createUpdateParticipantProfileAsAdmin({
       updateParticipantProfileAsActiveAdmin:
         capabilities.participantPersistence
@@ -81,6 +87,10 @@ function createOperations(capabilities) {
 function isSupportedRoute(route, method) {
   if (route.kind === "participants") {
     return method === "GET";
+  }
+
+  if (route.kind === "assignment-revocation") {
+    return method === "POST";
   }
 
   return route.kind === "participant"
@@ -104,9 +114,66 @@ function handleAuthorizedRoute(context, operations) {
     return handleParticipantDetailRequest(context, operations);
   }
 
+  if (context.route.kind === "assignment-revocation") {
+    return handleAssignmentRevocationRequest(context, operations);
+  }
+
   return context.request.method === "GET"
     ? handleAssignmentListRequest(context.route.courseId, operations)
     : handleAssignmentRequest(context, operations);
+}
+
+/** @returns {Promise<Response>} Revoke one retained Course Assignment. */
+async function handleAssignmentRevocationRequest(context, operations) {
+  const [course, assignment] = await Promise.all([
+    operations.coursePersistence.findCourseById(context.route.courseId),
+    operations.assignmentPersistence.findAssignmentById(
+      context.route.assignmentId,
+    ),
+  ]);
+
+  if (course === null) {
+    return jsonResponse({ outcome: "course-not-found" }, 404);
+  }
+
+  if (assignment?.courseId !== course.id) {
+    return jsonResponse({ outcome: "assignment-not-found" }, 404);
+  }
+
+  const result = await operations.revokeCourseAssignment({
+    adminUser: context.adminUser,
+    course,
+    assignment,
+  });
+
+  return assignmentRevocationResultResponse(
+    context.request,
+    result,
+    operations,
+  );
+}
+
+/** @returns {Promise<Response>} Exact Assignment-revocation HTTP result. */
+async function assignmentRevocationResultResponse(request, result, operations) {
+  if (new Set(["revoked", "already-revoked"]).has(result.outcome)) {
+    return jsonResponse(
+      {
+        outcome: result.outcome,
+        assignment: {
+          id: result.assignment.id,
+          state: result.assignment.state,
+        },
+        removedSelectionCount: result.removedSelectionCount,
+      },
+      200,
+    );
+  }
+
+  if (result.outcome === "admin-not-active") {
+    return staleAdminResponse(request, operations);
+  }
+
+  return jsonResponse(result, 409);
 }
 
 /** @returns {Promise<Response>} Read or edit one Admin-visible Participant. */
@@ -246,9 +313,14 @@ async function handleAssignmentRequest(context, operations) {
 async function assignmentResultResponse(context, operations) {
   const { result, participant, request } = context;
 
-  if (new Set(["created", "already-active"]).has(result.outcome)) {
+  if (
+    new Set(["created", "reactivated", "already-active"]).has(result.outcome)
+  ) {
     return jsonResponse(
-      toAssignmentResponse(result.assignment, participant),
+      {
+        outcome: result.outcome,
+        assignment: toAssignmentResponse(result.assignment, participant),
+      },
       result.outcome === "created" ? 201 : 200,
     );
   }

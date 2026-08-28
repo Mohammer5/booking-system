@@ -228,6 +228,16 @@ removal requires a keyboard-accessible confirmation Dialog with focus
 restoration. Server-derived availability and mutation outcomes own deadline and
 current-state truth rather than the browser wall clock.
 
+Course Assignment lifecycle uses the same ownership split. TanStack Query
+owns membership-list and assigned-Course invalidation after reactivation or
+revocation, while a keyboard-accessible confirmation Dialog owns only the
+transient decision and restores focus on cancellation. Membership cards expose
+revocation for Active Assignments in Active or Archived Courses and
+reactivation only for Revoked Assignments in Active Courses. Localized copy
+states that revocation removes only future Scheduled Selections and that
+reactivation does not restore them; server outcomes remain authoritative for
+stale, repeated, and technical results.
+
 Participant profile maintenance reuses this ownership split: TanStack Query
 owns current self/detail profile state and targeted invalidation, React Hook
 Form owns the name/email controls, and the Worker/domain remains authoritative

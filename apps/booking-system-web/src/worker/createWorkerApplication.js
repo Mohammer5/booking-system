@@ -47,6 +47,7 @@ function createWorkerHandlers(capabilities) {
   const handleCourseAccessHttpRequest = createCourseAccessHttpHandler({
     authenticate: authentication.authenticate,
     createCourseAssignmentId: capabilities.createCourseAssignmentId,
+    now: capabilities.now,
     adminPersistence: capabilities.adminPersistence,
     assignmentPersistence: capabilities.assignmentPersistence,
     coursePersistence: capabilities.coursePersistence,
@@ -106,7 +107,7 @@ async function handleWorkerRequest(request, authentication, handlers) {
   if (
     requestURL.pathname.startsWith("/api/admin/participants") ||
     (requestURL.pathname.startsWith("/api/admin/courses/") &&
-      requestURL.pathname.endsWith("/assignments"))
+      requestURL.pathname.split("/").includes("assignments"))
   ) {
     return handlers.handleCourseAccessHttpRequest(request);
   }

@@ -63,8 +63,33 @@ export const courseAccessTranslations = {
       empty: "Diesem Kurs wurden noch keine Teilnehmenden zugeordnet.",
       listLabel: "Teilnehmende dieses Kurses",
       created: "Die Kurszuordnung wurde erfolgreich angelegt.",
-      alreadyActive:
+      "already-active":
         "Die aktive Kurszuordnung bestand bereits und blieb unverändert.",
+      reactivated:
+        "Die bestehende Kurszuordnung wurde reaktiviert. Zuvor entfernte künftige Modulauswahlen wurden nicht wiederhergestellt.",
+      revoked:
+        "Die Kurszuordnung wurde widerrufen und der Kurszugriff entfernt.",
+      "already-revoked":
+        "Die Kurszuordnung war bereits widerrufen und blieb unverändert.",
+    },
+    lifecycle: {
+      revokeAction: "Kurszuordnung widerrufen",
+      reactivateAction: "Kurszuordnung reaktivieren",
+      revokeTitle: "Kurszuordnung widerrufen?",
+      reactivateTitle: "Kurszuordnung reaktivieren?",
+      revokeDescription:
+        "Der Kurszugriff endet sofort. Künftige Auswahlen für noch nicht begonnene geplante Module werden entfernt; bereits begonnene oder abgesagte Modulauswahlen bleiben als Historie erhalten.",
+      reactivateDescription:
+        "Der zulässige Kurszugriff wird wiederhergestellt. Beim Widerruf entfernte künftige Modulauswahlen kehren nicht zurück.",
+      cancel: "Abbrechen",
+      revokeConfirm: "Zuordnung endgültig widerrufen",
+      reactivateConfirm: "Zuordnung reaktivieren",
+      revokePending: "Kurszuordnung wird widerrufen …",
+      reactivatePending: "Kurszuordnung wird reaktiviert …",
+      unavailable:
+        "Die Kurszuordnung kann wegen eines geänderten Administrations-, Kurs- oder Zuordnungsstatus nicht bearbeitet werden.",
+      archivedReactivationUnavailable:
+        "Eine widerrufene Zuordnung kann in einem archivierten Kurs nicht reaktiviert werden.",
     },
     assignmentDialog: {
       title: "Teilnehmende zum Kurs zuordnen",
