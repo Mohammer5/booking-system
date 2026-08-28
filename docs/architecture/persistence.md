@@ -82,8 +82,9 @@ state, permanent bootstrap history, and integrity constraints required by this
 slice. The implemented Course slice separately owns narrow list, stable-detail,
 and guarded-create capabilities over `courses`, `groups`, and `modules`. The
 implemented `course-access` slices own narrow Participant fresh-resolution,
-directory, constraint-backed registration, guarded direct-Assignment, and
-assigned Active-Course list/detail capabilities over `participants`,
+directory/detail, constraint-backed registration, guarded self/Admin
+profile-only updates, guarded direct-Assignment, and assigned Active-Course
+list/detail capabilities over `participants`,
 `course_assignments`, `courses`, `groups`, and `modules`. The Participant
 Course reads join current Active Participant, Active Assignment, and Active
 Course state before returning private data. The implemented
@@ -178,7 +179,13 @@ principal, required nonblank name, retained trimmed email, a unique lowercase
 whole-email comparison key, and constrained Active/Disabled state. One insert
 is the complete registration outcome: the principal and normalized-email
 constraints decide repeated, concurrent, and duplicate-email attempts without
-pending identity or partial profile state.
+pending identity or partial profile state. Participant profile maintenance
+requires no further migration: guarded updates reuse the same constraint and
+change only name, retained email, and its comparison key. Self-service
+rechecks the current Active Participant; Admin service rechecks a current
+Active Admin and registered Active or Disabled target. A stale or conflicting
+write changes nothing and never mutates identity, principal, state,
+Assignments, Selections, or same-principal Admin data.
 
 The fifth additive migration preserves all existing application data and adds
 one `course_assignments` table with stable identity, constrained Active/Revoked

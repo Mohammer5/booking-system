@@ -1,26 +1,26 @@
 ---
 id: TASK-ca46j
 title: Maintain Participant profiles
-status: backlog
+status: done
 priority: medium
 type: feature
 effort: medium
 epic: EPIC-bh5dj
-plan: null
+plan: PLAN-a9qhr
 depends_on:
 - TASK-z6hut
 blocks:
 - TASK-25j4s
 related:
 - TASK-45jmb
-assignee: null
+assignee: gerkules
 tags:
 - participant
 - profile
 - ui
 position: d10
 created: 2026-08-27
-updated: 2026-08-27
+updated: 2026-08-28
 ---
 
 # Maintain Participant profiles
@@ -35,21 +35,21 @@ preserve the Participant's lifecycle and relationships.
 
 ## Acceptance Criteria
 
-- [ ] An Active Participant can view and edit only their own required name and
+- [x] An Active Participant can view and edit only their own required name and
       email; a Disabled Participant has no participant-side profile access.
-- [ ] A freshly resolved Active Admin User can edit an Active or Disabled
+- [x] A freshly resolved Active Admin User can edit an Active or Disabled
       Participant through the administration directory/detail experience.
-- [ ] Name is non-blank after trimming for validation. Email is trimmed for
+- [x] Name is non-blank after trimming for validation. Email is trimmed for
       storage, validated as the complete resulting address, and unique among
       Participants by case-insensitive comparison of that complete address.
-- [ ] Provider-specific transformations are absent: dots, `+tag` suffixes,
+- [x] Provider-specific transformations are absent: dots, `+tag` suffixes,
       aliases, and mailbox/provider equivalence are not inferred. Provider
       profile changes never mutate booking-system profile values.
-- [ ] Successful edits preserve Participant identity, state, external
+- [x] Successful edits preserve Participant identity, state, external
       principal relationship, Assignments, Selections, and history. A
       duplicate/invalid/stale/concurrent refusal leaves all current values
       unchanged.
-- [ ] Matching names or emails never merge Participants or authentication
+- [x] Matching names or emails never merge Participants or authentication
       principals, and editing a Participant never changes an Admin User backed
       by the same principal.
 
@@ -74,6 +74,14 @@ screens and do not imply provider-verified email.
   profiles, duplicate and stale refusal, direct refresh, responsive widths,
   keyboard/focus/error association, privacy, and axe scans.
 - Full `pnpm check`.
+
+Completed locally with 203 booking-domain tests, 132 Worker/D1/migration tests,
+both production builds, and all 28 Chromium E2E tests passing through the final
+canonical `pnpm check`. Evidence covers real Participant self-edit followed by
+Admin edit of the same stable identity, Active and Disabled Admin targets,
+case-insensitive duplicate/concurrent refusal, unchanged stale/invalid losers,
+preserved Assignment/Selection/principal/Admin data, direct refresh,
+desktop/360px layouts, predictable focus, privacy, and axe scans.
 
 ## Out Of Scope / Notes
 

@@ -6,8 +6,10 @@ import {
 } from "./admin-bootstrap/index.js";
 import { ResponsiveApplicationShell } from "./application-shell/index.js";
 import {
+  AdminParticipantDetailPage,
   ParticipantCourseDetailPage,
   ParticipantDirectoryPage,
+  ParticipantProfilePage,
 } from "./course-access/index.js";
 import {
   CourseCreatePage,
@@ -36,6 +38,7 @@ export function BrowserApplication() {
         }
       >
         <Route index element={<ParticipantHomePage />} />
+        <Route path="profile" element={<ParticipantProfilePage />} />
         <Route
           path="courses/:courseId"
           element={<ParticipantCourseDetailPage />}
@@ -51,6 +54,10 @@ export function BrowserApplication() {
       >
         <Route index element={<AdministrationContextRoute />} />
         <Route path="participants" element={<ParticipantDirectoryPage />} />
+        <Route
+          path="participants/:participantId"
+          element={<AdminParticipantDetailPage />}
+        />
         <Route path="courses" element={<CourseIndexPage />} />
         <Route path="courses/new" element={<CourseCreatePage />} />
         <Route path="courses/:courseId" element={<CourseDetailPage />} />

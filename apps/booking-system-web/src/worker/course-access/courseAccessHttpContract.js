@@ -1,4 +1,5 @@
 const participantsPath = "/api/admin/participants";
+const participantPrefix = `${participantsPath}/`;
 const coursePrefix = "/api/admin/courses/";
 
 /**
@@ -10,6 +11,14 @@ const coursePrefix = "/api/admin/courses/";
 export function matchCourseAccessRoute(pathname) {
   if (pathname === participantsPath) {
     return { kind: "participants" };
+  }
+
+  if (pathname.startsWith(participantPrefix)) {
+    const participantId = pathname.slice(participantPrefix.length);
+
+    return participantId.length > 0 && !participantId.includes("/")
+      ? { kind: "participant", participantId }
+      : null;
   }
 
   if (!pathname.startsWith(coursePrefix)) {

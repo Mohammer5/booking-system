@@ -69,9 +69,10 @@
 - The implemented application slices have a same-origin Admin entry, Google
   sign-in and Better Auth sign-out, bootstrap/current-context HTTP, and
   freshly authorized Course index/create/detail plus nested Group/Module
-  creation HTTP, plus fresh Participant context, explicit onboarding, the
-  global Admin Participant directory, Course Assignment list/create HTTP, and
-  private assigned Participant Course list/detail HTTP.
+  creation HTTP, plus fresh Participant context, explicit onboarding and
+  self-profile maintenance, the global Admin Participant directory and stable
+  profile detail, Course Assignment list/create HTTP, and private assigned
+  Participant Course list/detail HTTP.
   Application destinations remain fixed and browser input cannot select
   principal, authority, Assignment identity/state, lifecycle state,
   normalized email, definite instant, or permanent scheduling history.
@@ -97,17 +98,19 @@
   required by first Admin bootstrap/fresh context resolution plus
   `course-structure` factories for Course, Course-wide Group, and future
   Module creation and `course-access` factories for fresh Participant context,
-  registration, direct Course Assignment, and current assigned Active-Course
-  list/detail access, plus `module-participation` factories for Participant
-  Selection set/change/remove and derived current/history presentation.
+  registration, self/Admin Participant profile maintenance, direct Course
+  Assignment, and current assigned Active-Course list/detail access, plus
+  `module-participation` factories for Participant Selection set/change/remove
+  and derived current/history presentation.
   Course-local time resolution and complete-email
   normalization remain internal to their owning responsibility modules.
 - The web application has distinct `browser`, `worker`, and `authentication`
   responsibilities plus thin browser, production Worker, and non-production
   Worker compositions.
 - React Router serves the independently navigable `/` Participant entry,
-  Participant `/courses/:courseId` detail,
-  `/admin` administration entry, `/admin/participants`, and nested
+  Participant `/profile` and `/courses/:courseId` detail,
+  `/admin` administration entry, `/admin/participants`, stable
+  `/admin/participants/:participantId` detail/edit, and nested
   `/admin/courses`, `/admin/courses/new`, and `/admin/courses/:courseId` views.
   They use one responsive browser-owned MUI shell with desktop list navigation,
   a narrow modal Drawer, a skip link, and stable route titles. The Participant
@@ -116,15 +119,16 @@
   Participant to a query-driven zero/one/multiple assigned-Course home without
   public discovery. Its stable detail exposes relevant Course, Module, Active-
   Group, and own Selection data only, with explicit set/change/remove controls
-  before the Module starts. The Admin Participant directory
-  includes registered zero-Assignment Participants. Stable Course detail owns
+  before the Module starts. The Admin Participant directory includes
+  registered zero-Assignment Participants and links to guarded profile-only
+  maintenance for Active and Disabled targets. Stable Course detail owns
   Course membership, direct Assignment, Group, and future-Module interactions
   without incidental routes.
-- TanStack Query owns remote Admin, Course, Participant, Assignment, and
-  Module Selection state;
+- TanStack Query owns remote Admin, Course, Participant profile, Assignment,
+  and Module Selection state;
   React Hook Form owns the Admin-name, Course, Group, Module, and Participant-
-  onboarding forms; and German-first slice-owned i18next resources own all
-  browser copy.
+  onboarding/profile forms; and German-first slice-owned i18next resources own
+  all browser copy.
   Native local date/time fields and MUI radio groups expose IANA-zone DST
   gap/overlap resolution without a date library or MUI X. The current-Admin
   page is a nested route gate, so no Course query mounts before an Active Admin
@@ -157,6 +161,10 @@
   Active Group uniqueness, while a Module-insert trigger records permanent
   Course scheduling history atomically. Participant principal and whole-email
   uniqueness constraints make one insert the complete registration outcome.
+  Guarded profile-only updates reuse the same unique comparison key, recheck
+  an Active self actor or Active Admin plus registered Active/Disabled target,
+  and leave identity, state, principal, Assignments, Selections, and
+  same-principal Admin data unchanged. They require no schema migration.
   Assignment foreign keys and a unique Participant/Course pair preserve one
   ordinary membership, while a guarded insert rechecks current Active Admin,
   Active Course, and registered Active/Disabled target state. Separate narrow
@@ -178,7 +186,9 @@
   refusal, onboarding/zero-membership/sign-out, same-principal dual-context,
   Participant directory and Course membership/Assignment states, Disabled
   targets, idempotent repeat, assigned-Course list/detail/refresh, current-state
-  loss, identifier privacy, explicit no-default Module Selection,
+  loss, identifier privacy, self/Admin Participant profile editing,
+  Disabled-target detail, duplicate/stale profile refusal, explicit no-default
+  Module Selection,
   overlapping-Module independence, replacement/removal, confirmation focus,
   stale-deadline refusal, truthful current/history presentation, Group/Module
   creation, DST gap/overlap, exact-instant, and overflow assertions.

@@ -1,6 +1,7 @@
 import {
   createAssignParticipantToCourse,
   createResolveAdminContext,
+  createUpdateParticipantProfileAsAdmin,
 } from "@booking-system/booking";
 
 import {
@@ -21,22 +22,26 @@ export function createCourseAccessHttpHandler(capabilities) {
   const operations = createOperations(capabilities);
 
   return async function handleCourseAccessHttpRequest(request) {
-    const route = matchCourseAccessRoute(new URL(request.url).pathname);
+    try {
+      const route = matchCourseAccessRoute(new URL(request.url).pathname);
 
-    if (route === null || !isSupportedRoute(route, request.method)) {
-      return jsonResponse({ outcome: "not-found" }, 404);
+      if (route === null || !isSupportedRoute(route, request.method)) {
+        return jsonResponse({ outcome: "not-found" }, 404);
+      }
+
+      const authorization = await authorizeAdminRequest(request, operations);
+
+      if (authorization.response !== undefined) {
+        return authorization.response;
+      }
+
+      return await handleAuthorizedRoute(
+        { request, route, adminUser: authorization.adminUser },
+        operations,
+      );
+    } catch {
+      return jsonResponse({ outcome: "technical-error" }, 500);
     }
-
-    const authorization = await authorizeAdminRequest(request, operations);
-
-    if (authorization.response !== undefined) {
-      return authorization.response;
-    }
-
-    return handleAuthorizedRoute(
-      { request, route, adminUser: authorization.adminUser },
-      operations,
-    );
   };
 }
 
@@ -58,6 +63,11 @@ function createOperations(capabilities) {
       findAdminUserByExternalPrincipalId:
         capabilities.adminPersistence.findAdminUserByExternalPrincipalId,
     }),
+    updateParticipantProfileAsAdmin: createUpdateParticipantProfileAsAdmin({
+      updateParticipantProfileAsActiveAdmin:
+        capabilities.participantPersistence
+          .updateParticipantProfileAsActiveAdmin,
+    }),
   };
 }
 
@@ -69,8 +79,12 @@ function createOperations(capabilities) {
  * @returns {boolean} Whether the operation exists.
  */
 function isSupportedRoute(route, method) {
-  return route.kind === "participants"
-    ? method === "GET"
+  if (route.kind === "participants") {
+    return method === "GET";
+  }
+
+  return route.kind === "participant"
+    ? new Set(["GET", "PUT"]).has(method)
     : new Set(["GET", "POST"]).has(method);
 }
 
@@ -86,9 +100,62 @@ function handleAuthorizedRoute(context, operations) {
     return handleParticipantListRequest(operations);
   }
 
+  if (context.route.kind === "participant") {
+    return handleParticipantDetailRequest(context, operations);
+  }
+
   return context.request.method === "GET"
     ? handleAssignmentListRequest(context.route.courseId, operations)
     : handleAssignmentRequest(context, operations);
+}
+
+/** @returns {Promise<Response>} Read or edit one Admin-visible Participant. */
+async function handleParticipantDetailRequest(context, operations) {
+  const participant =
+    await operations.participantPersistence.findParticipantById(
+      context.route.participantId,
+    );
+
+  if (participant === null) {
+    return jsonResponse({ outcome: "participant-not-found" }, 404);
+  }
+
+  if (context.request.method === "GET") {
+    return jsonResponse(toParticipantResponse(participant), 200);
+  }
+
+  const body = await readJsonObject(context.request);
+  const result = await operations.updateParticipantProfileAsAdmin({
+    adminUser: context.adminUser,
+    participant,
+    name: body.name,
+    email: body.email,
+  });
+
+  return participantProfileResultResponse(context, result, operations);
+}
+
+/** @returns {Promise<Response>} Exact Admin profile-edit result response. */
+async function participantProfileResultResponse(context, result, operations) {
+  if (result.outcome === "updated") {
+    return jsonResponse(toParticipantResponse(result.participant), 200);
+  }
+
+  if (new Set(["invalid-name", "invalid-email"]).has(result.outcome)) {
+    return jsonResponse(result, 422);
+  }
+
+  if (result.outcome === "email-already-exists") {
+    return jsonResponse(result, 409);
+  }
+
+  if (result.outcome === "admin-not-active") {
+    return staleAdminResponse(context.request, operations);
+  }
+
+  return result.outcome === "participant-not-editable"
+    ? jsonResponse({ outcome: "participant-not-found" }, 404)
+    : jsonResponse(result, 409);
 }
 
 /**

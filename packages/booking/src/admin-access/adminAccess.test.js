@@ -125,6 +125,8 @@ describe("Public booking package interface", () => {
       "createResolveAdminContext",
       "createResolveParticipantContext",
       "createSetParticipantModuleSelection",
+      "createUpdateOwnParticipantProfile",
+      "createUpdateParticipantProfileAsAdmin",
       "deriveModuleSelectionAvailability",
       "deriveModuleSelectionPresentation",
       "hasParticipantCourseAccess",

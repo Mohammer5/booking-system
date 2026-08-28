@@ -26,6 +26,36 @@ export const courseAccessTranslations = {
       empty: "Es wurden noch keine Teilnahmeprofile registriert.",
       listLabel: "Verzeichnis der Teilnehmenden",
     },
+    profile: {
+      selfNavigation: "Teilnahmeprofil bearbeiten",
+      adminNavigation: "Teilnahmeprofil öffnen und bearbeiten",
+      selfTitle: "Teilnahmeprofil bearbeiten",
+      selfDescription:
+        "Ändern Sie den Namen und die E-Mail-Adresse Ihres Teilnahmeprofils.",
+      adminTitle: "Teilnahmeprofil verwalten",
+      adminDescription:
+        "Bearbeiten Sie Name und E-Mail-Adresse dieses Teilnahmeprofils unabhängig von Kurszuordnungen.",
+      providerNotice:
+        "Diese Angaben gehören zum Buchungssystem und werden nicht als vom Anmeldeanbieter bestätigt behandelt.",
+      nameLabel: "Name",
+      emailLabel: "E-Mail-Adresse",
+      nameRequired: "Bitte geben Sie einen Namen ein.",
+      emailInvalid: "Bitte geben Sie eine gültige E-Mail-Adresse ein.",
+      submit: "Teilnahmeprofil speichern",
+      submitting: "Teilnahmeprofil wird gespeichert …",
+      success: "Das Teilnahmeprofil wurde erfolgreich aktualisiert.",
+      emailConflict:
+        "Diese E-Mail-Adresse wird bereits für ein anderes Teilnahmeprofil verwendet.",
+      selfUnavailable:
+        "Ihr Teilnahmeprofil kann im aktuellen Zugriffsstatus nicht bearbeitet werden.",
+      adminUnavailable:
+        "Dieses Teilnahmeprofil kann im aktuellen Administrationsstatus nicht bearbeitet werden.",
+      technicalError:
+        "Das Teilnahmeprofil konnte nicht geladen oder gespeichert werden. Bitte versuchen Sie es erneut.",
+      loading: "Teilnahmeprofil wird geladen …",
+      toParticipantHome: "Zurück zum Teilnahmebereich",
+      toDirectory: "Zurück zum Verzeichnis der Teilnehmenden",
+    },
     membership: {
       title: "Kurszuordnungen",
       assign: "Teilnehmende zuordnen",

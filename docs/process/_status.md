@@ -27,8 +27,10 @@ Current reality:
   error-association, direct/refresh, pre-authorization privacy, Course-wide
   Group and future-Module creation, DST gap/overlap and exact-instant
   presentation, Participant onboarding/zero membership, Participant directory
-  and Course membership/direct-Assignment states, assigned Participant Course
-  list/detail, private unavailable identifiers, current Module/Active-Group
+  and Course membership/direct-Assignment states, Participant self/Admin
+  profile editing, stable Disabled-target detail, duplicate/stale profile
+  refusal, assigned Participant Course list/detail, private unavailable
+  identifiers, current Module/Active-Group
   structure with explicit no-default Module Selection, overlapping-Module
   independence, replacement/removal confirmation, stale-deadline refusal,
   current/history presentation, Disabled targets, idempotent repeat,

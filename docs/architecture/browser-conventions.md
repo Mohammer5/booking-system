@@ -87,9 +87,10 @@ Drawer/Dialog trapping and restoration, result/error focus, direct navigation
 and refresh, pre-authorization Course privacy, Participant
 authentication/onboarding/home/sign-out, zero membership without public
 discovery, global Participant directory and Course membership states, direct
-Assignment/repeat/Disabled-target interaction, Group/Module empty and creation
-states, definite-instant display, DST gap/overlap interaction, stale/technical
-refusals, and horizontal overflow.
+Assignment/repeat/Disabled-target interaction, Participant self/Admin profile
+editing, duplicate/stale refusal and stable Disabled-target detail, Group/Module
+empty and creation states, definite-instant display, DST gap/overlap
+interaction, stale/technical refusals, and horizontal overflow.
 
 MUI X Community may be introduced only for a concrete need such as date/time
 input; its Community packages are MIT-licensed, while Pro and Premium packages
@@ -138,8 +139,10 @@ locale. Direct navigation or refresh to frontend routes must work within the
 accepted same-origin Worker and static-assets deployment, while `/api/*`
 remains Worker/API-owned. [Runtime and hosting](runtime-and-hosting.md) owns the
 deployment and fallback behavior. The current independently navigable routes
-are the Participant entry at `/`, administration entry at `/admin`, global
-Participant directory at `/admin/participants`, Course index at
+are the Participant entry at `/`, Participant profile at `/profile`,
+administration entry at `/admin`, global Participant directory at
+`/admin/participants`, stable Participant detail/edit at
+`/admin/participants/:participantId`, Course index at
 `/admin/courses`, creation at `/admin/courses/new`, and stable detail at
 `/admin/courses/:courseId`. Assigned Participant Course detail is independently
 navigable at `/courses/:courseId` beneath the Participant gate. Course
@@ -224,6 +227,15 @@ uses an explicit no-default radio choice plus set/change/remove mutations;
 removal requires a keyboard-accessible confirmation Dialog with focus
 restoration. Server-derived availability and mutation outcomes own deadline and
 current-state truth rather than the browser wall clock.
+
+Participant profile maintenance reuses this ownership split: TanStack Query
+owns current self/detail profile state and targeted invalidation, React Hook
+Form owns the name/email controls, and the Worker/domain remains authoritative
+for active actor/target state, complete-email uniqueness, and stale refusal.
+The shared form presents the server's current values without reading provider
+profile data, moves focus to field or result/error feedback, and uses stable
+direct routes for self service and Admin maintenance of Active or Disabled
+Participants.
 
 Domain and application failures use machine-readable, language-neutral
 outcomes. Browser code translates those outcomes into localized messages;

@@ -15,26 +15,22 @@ export function createRegisterParticipant({
     name,
     email,
   }) {
-    if (!isValidParticipantName(name)) {
-      return { outcome: "invalid-name" };
-    }
+    const profileInput = getParticipantProfileInput({ name, email });
 
-    const retainedEmail = retainValidParticipantEmail(email);
-
-    if (retainedEmail === null) {
-      return { outcome: "invalid-email" };
+    if (profileInput.outcome !== "valid-profile") {
+      return profileInput;
     }
 
     const participant = {
       id: createParticipantId(),
       externalPrincipalId,
-      name,
-      email: retainedEmail,
+      name: profileInput.profile.name,
+      email: profileInput.profile.email,
       state: "active",
     };
     const persistenceOutcome = await registerParticipant({
       ...participant,
-      normalizedEmail: normalizeParticipantEmail(retainedEmail),
+      normalizedEmail: profileInput.profile.normalizedEmail,
     });
 
     if (persistenceOutcome !== "created") {
@@ -44,40 +40,4 @@ export function createRegisterParticipant({
     return { outcome: "created", participant };
   };
 }
-
-/**
- * Check the canonical required Participant name without changing profile data.
- *
- * @param {unknown} name Supplied booking-system Participant name.
- * @returns {boolean} Whether the name is nonblank after validation trimming.
- */
-function isValidParticipantName(name) {
-  return typeof name === "string" && name.trim().length > 0;
-}
-
-/**
- * Trim and validate one complete Participant email string.
- *
- * @param {unknown} email Supplied booking-system Participant email.
- * @returns {string | null} The retained trimmed email or null when invalid.
- */
-function retainValidParticipantEmail(email) {
-  if (typeof email !== "string") {
-    return null;
-  }
-
-  const retainedEmail = email.trim();
-  const completeEmailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/u;
-
-  return completeEmailPattern.test(retainedEmail) ? retainedEmail : null;
-}
-
-/**
- * Derive only the complete-address case-insensitive comparison key.
- *
- * @param {string} email A valid retained Participant email.
- * @returns {string} The uniqueness comparison key.
- */
-function normalizeParticipantEmail(email) {
-  return email.toLowerCase();
-}
+import { getParticipantProfileInput } from "./getParticipantProfileInput.js";

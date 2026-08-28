@@ -15,6 +15,47 @@ export function useParticipantDirectory() {
   });
 }
 
+/** @returns {object} One freshly authorized Admin Participant detail query. */
+export function useParticipantDetail(participantId) {
+  return useQuery({
+    queryKey: ["course-access", "participant", participantId],
+    queryFn: () => requestJson(`/api/admin/participants/${participantId}`),
+    retry: false,
+  });
+}
+
+/** @returns {object} Current Active Participant self-profile mutation. */
+export function useUpdateOwnParticipantProfile() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (profile) => updateProfile("/api/participant/me", profile),
+    async onSuccess() {
+      await queryClient.invalidateQueries({
+        queryKey: ["course-access", "current-participant"],
+      });
+    },
+  });
+}
+
+/** @returns {object} Active-Admin Participant profile mutation. */
+export function useUpdateParticipantProfileAsAdmin(participantId) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (profile) =>
+      updateProfile(`/api/admin/participants/${participantId}`, profile),
+    async onSuccess() {
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: participantDirectoryQueryKey }),
+        queryClient.invalidateQueries({
+          queryKey: ["course-access", "participant", participantId],
+        }),
+      ]);
+    },
+  });
+}
+
 /**
  * Read one Course's current Assignments after fresh Admin authorization.
  *
@@ -70,6 +111,15 @@ async function assignParticipant(courseId, participantId) {
     assignment: response.body,
     isCreated: response.status === 201,
   };
+}
+
+/** @returns {Promise<object>} Replace one complete Participant profile. */
+function updateProfile(path, profile) {
+  return requestJson(path, {
+    method: "PUT",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify(profile),
+  });
 }
 
 /**

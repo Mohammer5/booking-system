@@ -104,7 +104,7 @@ async function handleWorkerRequest(request, authentication, handlers) {
   }
 
   if (
-    requestURL.pathname === "/api/admin/participants" ||
+    requestURL.pathname.startsWith("/api/admin/participants") ||
     (requestURL.pathname.startsWith("/api/admin/courses/") &&
       requestURL.pathname.endsWith("/assignments"))
   ) {

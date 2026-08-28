@@ -154,6 +154,14 @@ function ParticipantCard({ participant, translate }) {
             />
           </Stack>
           <Typography>{participant.email}</Typography>
+          <Button
+            component={RouterLink}
+            sx={{ alignSelf: "flex-start" }}
+            to={`/admin/participants/${participant.id}`}
+            variant="outlined"
+          >
+            {translate("courseAccess.profile.adminNavigation")}
+          </Button>
         </Stack>
       </CardContent>
     </Card>

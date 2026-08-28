@@ -54,13 +54,15 @@ verification remain mandatory before the first production release.
 
 The local application foundation, Course-structure creation, Participant
 registration/direct Course Assignment, assigned Participant Course access, and
-Participant Module Selection slices are now implemented:
+Participant Module Selection plus profile-maintenance slices are now
+implemented:
 
 - `@booking-system/booking` at `packages/booking` owns the implemented
   `admin-access` behavior plus `course-structure` Course, Course-wide Group,
   future Module, and Course-local definite-time creation policy, plus
   `course-access` Participant registration, fresh context, and direct Course
-  Assignment plus assigned Active-Course list/detail access policy, and
+  Assignment plus assigned Active-Course list/detail and self/Admin profile-edit
+  policy, and
   `module-participation` Participant selection eligibility, replacement,
   removal, and current-versus-historical presentation policy;
 - `@booking-system/booking-system-web` at `apps/booking-system-web` owns the
@@ -68,7 +70,9 @@ Participant Module Selection slices are now implemented:
   flow, Participant directory, nested Course index/create/detail routes,
   Course membership and Assignment interaction, and Group/Module creation
   forms, plus the Participant `/courses/:courseId` detail, explicit Module
-  Selection controls, and query-driven assigned-Course home, Worker/API
+  Selection controls, `/profile` self-service and
+  `/admin/participants/:participantId` administration, and query-driven
+  assigned-Course home, Worker/API
   handling, Better Auth composition, D1
   persistence, Vite/Workers Static Assets integration, and local runtime;
 - six version-controlled migrations create the Better Auth/Admin foundation,
@@ -88,7 +92,8 @@ Participant Module Selection slices are now implemented:
   Participant state fresh, and supports refresh, zero/one/multiple assigned
   Active Courses, private Course detail, and sign-out without public discovery;
 - `/`, `/admin`, `/admin/participants`, `/admin/courses`,
-  `/admin/courses/new`, `/admin/courses/:courseId`, and Participant
+  `/admin/participants/:participantId`, `/admin/courses/new`,
+  `/admin/courses/:courseId`, Participant `/profile`, and Participant
   `/courses/:courseId` are direct/refresh-safe German MUI contexts within one
   responsive shell; one principal/session can reach distinct Participant and
   Admin User identities without a persisted role;
@@ -99,6 +104,11 @@ Participant Module Selection slices are now implemented:
   Participant independently of membership, while guarded direct Assignment
   accepts only current Active Admin/Active Course/registered-Participant state,
   preserves one Participant/Course pair, and creates no Module Selection;
+- Participant self-edit and Admin Participant-detail writes use the existing
+  case-insensitive complete-email constraint and guarded profile-only updates;
+  they recheck current actor/target state, preserve Participant identity,
+  lifecycle, Assignments, Selections, external principal, and same-principal
+  Admin User data, and leave a duplicate or stale loser unchanged;
 - Participant Course list/detail reads derive the Participant only from the
   authenticated principal and guard D1 reads by current Active Participant,
   Active Assignment, and Active Course state. They expose ordered Modules,
@@ -129,7 +139,8 @@ Participant Module Selection slices are now implemented:
   stale/technical refusals, assigned-Course list/detail/refresh/privacy,
   explicit no-default selection, overlapping-Module selections, change/remove
   confirmation and focus, stale-deadline refusal, truthful own current/history
-  presentation, and overflow;
+  presentation, self/Admin profile editing including Disabled targets,
+  duplicate/stale refusal, direct refresh, and overflow;
 - both workspace boundary maps are registered in ESLint with exact module,
   workspace, composition, third-party, and test-only permissions;
 - the root Nix flake supplies NixOS developer-host tooling: Node, pnpm,
@@ -140,7 +151,7 @@ Participant Module Selection slices are now implemented:
   build, and Chromium browser evidence.
 
 Apple, Microsoft, and Facebook providers, Course/Group/Module editing and
-lifecycle, Participant profile/lifecycle administration, Assignment lifecycle,
+lifecycle, Participant lifecycle administration, Assignment lifecycle,
 Archived-Course Participant access, Admin-assisted Module Selection, Invite,
 later Admin capabilities, remote Google credentials and production
 callback/domain configuration, remote Cloudflare staging/production resources,

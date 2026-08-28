@@ -14,6 +14,8 @@ export {
   createListParticipantCourses,
   createRegisterParticipant,
   createResolveParticipantContext,
+  createUpdateOwnParticipantProfile,
+  createUpdateParticipantProfileAsAdmin,
   hasParticipantCourseAccess,
 } from "./course-access/index.js";
 export {

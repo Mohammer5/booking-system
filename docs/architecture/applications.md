@@ -45,10 +45,12 @@ audience-first source buckets. See [browser conventions](browser-conventions.md)
 for the accepted browser libraries and their responsibilities.
 
 The implemented browser exposes Participant Google entry, onboarding, and
-assigned-Course home at `/`, private Participant Course detail at
-`/courses/:courseId`, the administration entry at `/admin`, the Participant
-directory at `/admin/participants`, and nested Course index/create/detail
-routes through one responsive MUI shell. Stable Admin Course detail contains
+assigned-Course home at `/`, self-profile maintenance at `/profile`, private
+Participant Course detail at `/courses/:courseId`, the administration entry at
+`/admin`, the Participant directory at `/admin/participants`, stable
+Participant detail/edit at `/admin/participants/:participantId`, and nested
+Course index/create/detail routes through one responsive MUI shell. Stable
+Admin Course detail contains
 Course membership and direct Assignment plus the owned Group and future-Module
 lists and creation forms rather than adding incidental routes. Navigation
 preserves the same browser cookie and Better Auth principal; Participant
@@ -127,6 +129,27 @@ Assignment, or Module Selection. The Participant route gate resolves this HTTP
 state on direct navigation and refresh, presents the mandatory German profile
 form when the Participant is missing, and mounts private assigned-Course list
 or detail queries only after an Active Participant resolves.
+
+### Participant Profile HTTP Surface
+
+The implemented `course-access` profile-maintenance slice adds self-service to
+the existing current-Participant resource:
+
+```text
+PUT /api/participant/me
+```
+
+| Operation | Authentication and current state | Results |
+| --- | --- | --- |
+| Own profile update | Normal session resolving a current Active Participant plus explicit complete `{ name, email }` profile | `200` narrow updated Participant; `401 unauthenticated`; exact `403` missing/Disabled/stale Participant; `422 invalid-name`/`invalid-email`; `409 email-already-exists`/`profile-not-updated`; sanitized `500 technical-error` |
+
+The server derives the Participant from the authenticated principal, applies
+the same trimmed whole-email comparison used at registration, and changes only
+the required name and email. Participant identity, external principal, global
+state, Assignments, Selections, history, and any same-principal Admin User stay
+unchanged. `/profile` reads and updates this resource behind the existing
+Active-Participant gate, reports local and authoritative outcomes in German,
+and remains direct-navigation and refresh-safe.
 
 ### Participant Course Access HTTP Surface
 
@@ -213,11 +236,13 @@ authorization remains authoritative for every operation.
 
 ### Participant Administration And Course Assignment HTTP Surface
 
-The implemented `course-access` administration slice adds three concrete
+The implemented `course-access` administration slice adds five concrete
 same-origin operations:
 
 ```text
 GET  /api/admin/participants
+GET  /api/admin/participants/:participantId
+PUT  /api/admin/participants/:participantId
 GET  /api/admin/courses/:courseId/assignments
 POST /api/admin/courses/:courseId/assignments
 ```
@@ -225,18 +250,23 @@ POST /api/admin/courses/:courseId/assignments
 | Operation | Authentication and current state | Results |
 | --- | --- | --- |
 | Participant directory | Normal session resolving a current Active Admin | `200 { participants }`; `401 unauthenticated`; exact `403` missing/Disabled Admin |
+| Participant detail | Same plus an existing registered Active or Disabled Participant | `200` narrow Participant; `401`; exact `403`; `404 participant-not-found`; sanitized `500 technical-error` |
+| Admin profile update | Same plus explicit complete `{ name, email }` profile and guarded current Active-Admin/current-target acceptance | `200` narrow updated Participant; `401`; exact `403`; `404 participant-not-found`; `422 invalid-name`/`invalid-email`; `409 email-already-exists`/`profile-not-updated`; sanitized `500 technical-error` |
 | Course membership | Same plus an existing Active or Archived Course | `200 { assignments }`; `401`; exact `403`; `404 course-not-found` |
 | Direct Assignment | Same plus guarded current Active Admin, Active Course, and fully registered Active/Disabled Participant acceptance | `201` created Assignment; `200` already-Active no-op; `401`; exact `403`; `404` Course/Participant; `409` stale Course/target or retained-lifecycle refusal; `422 invalid-participant-id` |
 
-Participant list items expose only `id`, `name`, `email`, and global `state`.
-Assignment items expose only `id`, Assignment `state`, and that same minimum
-Participant representation. The browser supplies only `participantId`; the
-server derives Assignment identity and state, ignores trust fields, freshly
-authorizes every request, and uses one guarded uniqueness-backed insert so a
-stale or concurrent attempt cannot create a duplicate or partial identity or
-Module Selection. `/admin/participants` remains independent of membership so
-zero-Assignment Participants stay discoverable, while Course membership stays
-on the stable Course detail route.
+Participant list and detail items expose only `id`, `name`, `email`, and global
+`state`. Profile writes change only name/email and preserve Participant
+identity, state, principal, relationships, history, and same-principal Admin
+data. Assignment items expose only `id`, Assignment `state`, and that same
+minimum Participant representation. The browser supplies only
+`participantId`; the server derives Assignment identity and state, ignores
+trust fields, freshly authorizes every request, and uses one guarded
+uniqueness-backed insert so a stale or concurrent attempt cannot create a
+duplicate or partial identity or Module Selection. `/admin/participants`
+remains independent of membership so zero-Assignment Participants stay
+discoverable, `/admin/participants/:participantId` owns stable profile
+maintenance, and Course membership stays on the stable Course detail route.
 
 ### No Separate API Application
 

@@ -28,7 +28,8 @@ The repository now implements the first Admin bootstrap subset, the first
 [Course](../DICTIONARY.md#course) structure subset, [Participant
 onboarding](../DICTIONARY.md#participant-onboarding), and direct [Course
 Assignment](../DICTIONARY.md#course-assignment), plus Participant-managed
-[Module Selection](../DICTIONARY.md#module-selection). An Active Admin User can
+[Module Selection](../DICTIONARY.md#module-selection) and Participant profile
+maintenance. An Active Admin User can
 create an Active Course with the canonical minimal fields, add Course-wide
 [Groups](../DICTIONARY.md#group) whose Active names are normalized and unique,
 add future Scheduled [Modules](../DICTIONARY.md#module) through the Course
@@ -47,10 +48,13 @@ historical Module Selection. Before a Scheduled Module starts, the Participant
 may explicitly select or change to an Active same-Course Group, or remove the
 Selection; overlapping Modules remain independent and no Group is selected by
 default. Unknown, inactive, unassigned, Revoked, stale, and cross-Participant
-Course identifiers reveal no Course data. Course, Group, and Module editing or
-lifecycle operations; Admin-assisted Module Selection, Assignment lifecycle
-actions, Archived-Course historical access, Invite, Participant
-profile/lifecycle, later Admin onboarding, and later Admin management behavior
-remain unimplemented. Technology, persistence, API,
+Course identifiers reveal no Course data. An Active Participant may edit their
+own required name/email, while an Active Admin User may edit an Active or
+Disabled Participant from a stable detail; both preserve identity, lifecycle,
+relationships, provider data, and any same-principal Admin User. Course, Group,
+and Module editing or lifecycle operations; Admin-assisted Module Selection,
+Assignment lifecycle actions, Archived-Course historical access, Invite,
+Participant lifecycle, later Admin onboarding, and later Admin management
+behavior remain unimplemented. Technology, persistence, API,
 frontend, and infrastructure mechanics remain outside this product
 specification and do not alter its contracts.

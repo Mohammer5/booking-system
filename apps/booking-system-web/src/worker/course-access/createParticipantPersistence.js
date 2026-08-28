@@ -13,6 +13,10 @@ export function createParticipantPersistence(database) {
     listParticipants: () => listParticipants(database),
     registerParticipant: (candidate) =>
       registerParticipant(database, candidate),
+    updateActiveParticipantProfile: (input) =>
+      updateActiveParticipantProfile(database, input),
+    updateParticipantProfileAsActiveAdmin: (input) =>
+      updateParticipantProfileAsActiveAdmin(database, input),
   };
 }
 
@@ -127,6 +131,139 @@ async function registerParticipant(database, candidate) {
 
     throw error;
   }
+}
+
+/**
+ * Update only profile columns while the self-editing Participant stays Active.
+ *
+ * @param {object} database The application D1 binding.
+ * @param {object} input Target identity and validated profile.
+ * @returns {Promise<object>} Updated or current-state refusal outcome.
+ */
+async function updateActiveParticipantProfile(database, input) {
+  let result;
+
+  try {
+    result = await database
+      .prepare(
+        `update participants
+            set name = ?, email = ?, normalized_email = ?
+          where id = ? and state = 'active'`,
+      )
+      .bind(
+        input.profile.name,
+        input.profile.email,
+        input.profile.normalizedEmail,
+        input.participantId,
+      )
+      .run();
+  } catch (error) {
+    return classifyProfileConstraint(
+      database,
+      {
+        participantId: input.participantId,
+        normalizedEmail: input.profile.normalizedEmail,
+        error,
+      },
+    );
+  }
+
+  if (result.meta.changes === 1) {
+    return { outcome: "updated" };
+  }
+
+  const participant = await findParticipantById(database, input.participantId);
+
+  return {
+    outcome:
+      participant?.state === "active"
+        ? "profile-not-updated"
+        : "participant-not-active",
+  };
+}
+
+/**
+ * Update only profile columns while the Admin and target remain eligible.
+ *
+ * @param {object} database The application D1 binding.
+ * @param {object} input Actor, target, and validated profile.
+ * @returns {Promise<object>} Updated or current-state refusal outcome.
+ */
+async function updateParticipantProfileAsActiveAdmin(database, input) {
+  let result;
+
+  try {
+    result = await database
+      .prepare(
+        `update participants
+            set name = ?, email = ?, normalized_email = ?
+          where id = ? and state in ('active', 'disabled')
+            and exists (
+              select 1 from admin_users
+               where id = ? and state = 'active'
+            )`,
+      )
+      .bind(
+        input.profile.name,
+        input.profile.email,
+        input.profile.normalizedEmail,
+        input.participantId,
+        input.adminUserId,
+      )
+      .run();
+  } catch (error) {
+    return classifyProfileConstraint(
+      database,
+      {
+        participantId: input.participantId,
+        normalizedEmail: input.profile.normalizedEmail,
+        error,
+      },
+    );
+  }
+
+  if (result.meta.changes === 1) {
+    return { outcome: "updated" };
+  }
+
+  const [adminUser, participant] = await Promise.all([
+    database
+      .prepare("select state from admin_users where id = ?")
+      .bind(input.adminUserId)
+      .first(),
+    findParticipantById(database, input.participantId),
+  ]);
+
+  if (adminUser?.state !== "active") {
+    return { outcome: "admin-not-active" };
+  }
+
+  return {
+    outcome:
+      participant === null
+        ? "participant-not-editable"
+        : "profile-not-updated",
+  };
+}
+
+/** @returns {Promise<object>} Known email conflict or rethrown technical error. */
+async function classifyProfileConstraint(
+  database,
+  { participantId, normalizedEmail, error },
+) {
+  const conflict = await database
+    .prepare(
+      `select id from participants
+        where normalized_email = ? and id <> ?`,
+    )
+    .bind(normalizedEmail, participantId)
+    .first();
+
+  if (conflict !== null) {
+    return { outcome: "email-already-exists" };
+  }
+
+  throw error;
 }
 
 /**

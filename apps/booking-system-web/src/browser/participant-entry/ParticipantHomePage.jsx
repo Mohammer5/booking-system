@@ -1,7 +1,7 @@
-import { Alert, Box, Chip, Stack, Typography } from "@mui/material";
+import { Alert, Box, Button, Chip, Stack, Typography } from "@mui/material";
 import { useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
-import { useOutletContext } from "react-router";
+import { Link as RouterLink, useOutletContext } from "react-router";
 
 import { ParticipantCourseList } from "../course-access/index.js";
 import { ParticipantSignOutButton } from "./ParticipantSignOutButton.jsx";
@@ -33,6 +33,14 @@ export function ParticipantHomePage() {
         {t("participantEntry.home.title")}
       </Typography>
       <ParticipantDetails participant={participant} translate={t} />
+      <Button
+        component={RouterLink}
+        sx={{ alignSelf: "flex-start" }}
+        to="/profile"
+        variant="outlined"
+      >
+        {t("courseAccess.profile.selfNavigation")}
+      </Button>
       <ParticipantCourseList />
       <ParticipantSignOutButton signOutMutation={signOutMutation} />
     </Stack>

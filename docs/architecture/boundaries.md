@@ -86,7 +86,8 @@ HTTP. The local-time resolver adds no date/time or MUI X dependency.
 
 Participant registration introduces the accepted dependency-free
 `course-access` responsibility inside the booking package. Its root interface
-exposes Participant registration, fresh Participant-context, and direct Course
+exposes Participant registration, fresh Participant-context, distinct
+self-service and Admin Participant-profile update factories, and direct Course
 Assignment operation factories. It has no edge to `admin-access`,
 authentication, Worker, D1, Better Auth, HTTP, or browser code; the application
 continues to consume only the exact booking package root.
@@ -99,6 +100,11 @@ responsibility importing the booking package root, and browser still reaches
 the capability through same-origin HTTP. Both production and non-production
 composition now inject narrow Participant and Assignment persistence plus
 identity-creation capabilities.
+
+Participant profile maintenance remains inside these existing second-level
+`course-access` slices. It adds no first-level module, workspace, third-party,
+or composition edge: Worker still imports only the booking package root, and
+browser still reaches profile behavior only through same-origin HTTP.
 
 Participant-managed Module Selection introduces the dependency-free
 `module-participation` responsibility inside the booking package. Its root

@@ -1,6 +1,7 @@
 import {
   createRegisterParticipant,
   createResolveParticipantContext,
+  createUpdateOwnParticipantProfile,
 } from "@booking-system/booking";
 
 /**
@@ -22,25 +23,40 @@ export function createParticipantHttpHandler({
     findParticipantByExternalPrincipalId:
       persistence.findParticipantByExternalPrincipalId,
   });
+  const updateOwnParticipantProfile = createUpdateOwnParticipantProfile({
+    updateActiveParticipantProfile: persistence.updateActiveParticipantProfile,
+  });
 
   return async function handleParticipantHttpRequest(request) {
-    const route = `${request.method} ${new URL(request.url).pathname}`;
+    try {
+      const route = `${request.method} ${new URL(request.url).pathname}`;
 
-    if (route === "GET /api/participant/me") {
-      return handleCurrentParticipant(request, {
-        authenticate,
-        resolveParticipantContext,
-      });
+      if (route === "GET /api/participant/me") {
+        return await handleCurrentParticipant(request, {
+          authenticate,
+          resolveParticipantContext,
+        });
+      }
+
+      if (route === "PUT /api/participant/me") {
+        return await handleParticipantProfileUpdate(request, {
+          authenticate,
+          resolveParticipantContext,
+          updateOwnParticipantProfile,
+        });
+      }
+
+      if (route === "POST /api/participant/onboarding") {
+        return await handleParticipantOnboarding(request, {
+          authenticate,
+          registerParticipant,
+        });
+      }
+
+      return jsonResponse({ outcome: "not-found" }, 404);
+    } catch {
+      return jsonResponse({ outcome: "technical-error" }, 500);
     }
-
-    if (route === "POST /api/participant/onboarding") {
-      return handleParticipantOnboarding(request, {
-        authenticate,
-        registerParticipant,
-      });
-    }
-
-    return jsonResponse({ outcome: "not-found" }, 404);
   };
 }
 
@@ -106,6 +122,53 @@ async function handleParticipantOnboarding(request, operations) {
   }
 
   return jsonResponse(toCurrentParticipant(result.participant), 201);
+}
+
+/**
+ * Replace the freshly resolved Active Participant's complete profile.
+ *
+ * @param {Request} request Incoming profile update request.
+ * @param {object} operations Authentication, context, and update operations.
+ * @returns {Promise<Response>} Updated profile or narrow refusal.
+ */
+async function handleParticipantProfileUpdate(request, operations) {
+  const authentication = await operations.authenticate(request);
+
+  if (authentication.outcome === "unauthenticated") {
+    return jsonResponse({ outcome: "unauthenticated" }, 401);
+  }
+
+  const context = await operations.resolveParticipantContext(
+    authentication.externalPrincipalId,
+  );
+
+  if (context.outcome !== "active-participant") {
+    return jsonResponse(context, 403);
+  }
+
+  const body = await readJsonObject(request);
+  const result = await operations.updateOwnParticipantProfile({
+    participant: context.participant,
+    name: body.name,
+    email: body.email,
+  });
+
+  if (result.outcome === "updated") {
+    return jsonResponse(toCurrentParticipant(result.participant), 200);
+  }
+
+  if (new Set(["invalid-name", "invalid-email"]).has(result.outcome)) {
+    return jsonResponse(result, 422);
+  }
+
+  if (result.outcome === "email-already-exists") {
+    return jsonResponse(result, 409);
+  }
+
+  return jsonResponse(
+    result,
+    result.outcome === "participant-not-active" ? 403 : 409,
+  );
 }
 
 /**

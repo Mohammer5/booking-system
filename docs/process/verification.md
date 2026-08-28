@@ -115,6 +115,17 @@ German Google entry, explicit onboarding, validation/conflict, Active
 zero-membership home, direct refresh, same-principal context switching,
 sign-out, privacy, desktop/360px, keyboard/focus, and axe evidence.
 
+For Participant profile maintenance, booking-domain Vitest owns the shared
+name/email policy, distinct Active-Participant self and Active-Admin operations,
+Active/Disabled Admin-target eligibility, and unchanged refusal results.
+Worker/D1 Vitest owns guarded profile-only writes, complete-email uniqueness
+and concurrency, stale actor/target rejection, exact self/Admin HTTP outcomes,
+technical sanitization, and preservation of identity, principal, state,
+Assignments, Selections, and same-principal Admin data. Playwright owns German
+self/Admin edit journeys, stable direct routes and refresh, Disabled-target
+presentation, local/duplicate/stale refusal and focus, privacy,
+desktop/360px responsiveness, and axe evidence.
+
 For direct Course Assignment, booking-domain Vitest owns Active/Disabled target
 eligibility, Active-assignment idempotence, current actor/Course refusal, and
 membership-only outcomes. Worker/D1 Vitest owns the additive migration,
@@ -221,8 +232,9 @@ landmarks/headings, named list navigation, control names, keyboard-only
 activation, visible focus, field/error association, Drawer/Dialog trapping and
 restoration, result/error focus, direct navigation and refresh, Participant
 onboarding/assigned-Course/zero-membership/privacy states, Participant
-directory and Course membership/direct-Assignment states, and absence of
-horizontal overflow. The current 23-test browser suite also proves that one fixed
+directory and Course membership/direct-Assignment states, Participant
+self/Admin profile editing and Disabled-target detail, and absence of
+horizontal overflow. The current 28-test browser suite also proves that one fixed
 normal session remains usable while navigating between Participant and Admin
 contexts, successful sign-out terminates that session, an Active Admin can
 create and revisit a Course with Groups, a future Module, and direct

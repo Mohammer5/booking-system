@@ -82,8 +82,8 @@ test-authentication implementation imports from entering `packages/booking`.
 The first slice uses `browser`, `worker`, and `authentication` as its initial
 first-level names, introduced together with real source and map declarations.
 
-The implemented Admin, Course-structure, Participant-registration/direct-
-Assignment, and assigned Participant Course-access slices preserve three
+The implemented Admin, Course-structure, Participant-registration/profile/
+direct-Assignment, and assigned Participant Course-access slices preserve three
 application roles: browser sign-in/onboarding, Participant directory/Course
 membership and private Participant Course presentation, and Course/Group/Module
 presentation;
@@ -93,8 +93,9 @@ browser client for session initiation and termination while Google provider
 configuration stays in the authentication and Worker composition roles.
 Participant entry remains a second-level `participant-entry` browser slice and
 provides the shared current-context route gate. Direct Assignment and assigned-
-Course access use second-level `course-access` slices inside both browser and
-Worker without creating a new first-level application module. A thin
+Course access plus self/Admin Participant profile maintenance use second-level
+`course-access` slices inside both browser and Worker without creating a new
+first-level application module. A thin
 composition entry may join only the roles required for its executable graph.
 The browser communicates with Worker behavior through same-origin HTTP rather
 than importing Worker implementation to share transport data.

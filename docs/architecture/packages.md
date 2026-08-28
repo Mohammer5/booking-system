@@ -43,9 +43,11 @@ DST-overlap choice, definite instants, and current Admin/Course acceptance
 outcomes. `course-access` now implements fresh Participant-context resolution,
 explicit Participant registration with complete trimmed-email policy, direct
 Course Assignment for registered Active or Disabled targets, and current
-Active Participant + Active Assignment + Active Course list/detail access.
-Invite, profile-editing, Assignment/Participant lifecycle, and Archived-Course
-access stay with that owner when implemented. `module-participation` implements
+Active Participant + Active Assignment + Active Course list/detail access. It
+also implements Active-Participant self profile editing and Active-Admin edits
+of Active/Disabled Participant profiles with the same complete-email policy.
+Invite, Assignment/Participant lifecycle, and Archived-Course access stay with
+that owner when implemented. `module-participation` implements
 Participant Selection eligibility, replacement, removal, and derived
 current-versus-historical presentation; later Admin-assisted behavior remains
 with that owner. These are internal
