@@ -25,7 +25,9 @@ Current reality:
   application-shell states include axe scans and explicit desktop/narrow,
   keyboard, modal focus/trapping and restoration, semantic navigation/name,
   error-association, direct/refresh, pre-authorization privacy, Course-wide
-  Group and future-Module creation, DST gap/overlap and exact-instant
+  Group and future-Module creation, complete Course editing, permanent
+  timezone locking with zero current Modules, two-sided edit/first-Module race
+  safety, DST gap/overlap and exact-instant
   presentation, Participant onboarding/zero membership, Participant directory
   and Course membership/Assignment-lifecycle states, Participant self/Admin
   profile editing and lifecycle, stable Disabled-target detail,

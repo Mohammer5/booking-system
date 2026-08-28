@@ -7,6 +7,7 @@ export {
   createCreateCourse,
   createCreateGroup,
   createCreateModule,
+  createUpdateCourse,
 } from "./course-structure/index.js";
 export {
   createAssignParticipantToCourse,

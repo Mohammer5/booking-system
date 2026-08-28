@@ -62,6 +62,8 @@ export function toCourseResponse(course) {
     description: course.description,
     timezone: course.timezone,
     state: course.state,
+    isTimezoneEditable:
+      course.state === "active" && course.hasEverHadModule !== true,
   };
 }
 

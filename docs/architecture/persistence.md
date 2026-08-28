@@ -174,6 +174,17 @@ the same statement; a refused guarded write or failed interval constraint
 leaves both Module rows and history unchanged. Module instants are stored as
 integer epoch milliseconds and returned as exact ISO instants.
 
+Course editing requires no schema migration. One guarded update rechecks the
+current Active Admin and Active Course, the Course timezone read by the
+application, and permanent `has_ever_had_module` history while changing the
+complete name, description, and timezone fields atomically. Descriptive edits
+remain possible after scheduling history, but a timezone change does not; a
+directly deleted first, last, or only Module cannot clear that history. The
+guarded Module insert also rechecks that the Course still has the timezone used
+to resolve its local schedule. Consequently, a concurrent timezone edit and
+first Module creation cannot both succeed with inconsistent definite instants,
+and either refusal leaves all Course fields, Module rows, and history unchanged.
+
 The fourth additive migration preserves all existing application data and adds
 one `participants` table with stable Participant identity, one row per external
 principal, required nonblank name, retained trimmed email, a unique lowercase

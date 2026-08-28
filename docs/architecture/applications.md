@@ -50,9 +50,10 @@ Participant Course detail at `/courses/:courseId`, the administration entry at
 `/admin`, the Participant directory at `/admin/participants`, stable
 Participant detail/edit/lifecycle at `/admin/participants/:participantId`, and
 nested Course index/create/detail routes through one responsive MUI shell.
-Stable Admin Course detail contains Course membership creation, revocation, and
-reactivation plus the owned Group and future-Module lists and creation forms
-rather than adding incidental routes. Navigation
+Stable Admin Course detail contains complete Course editing with its permanent
+timezone lock, Course membership creation, revocation, and reactivation plus
+the owned Group and future-Module lists and creation forms rather than adding
+incidental routes. Navigation
 preserves the same browser cookie and Better Auth principal; Participant
 context resolves its own
 current domain identity without selecting a role or revealing Course data
@@ -202,13 +203,14 @@ creates no partial side effect; overlapping Modules remain independent.
 
 ### Course Administration HTTP Surface
 
-The implemented `course-structure` creation slices use five concrete
+The implemented `course-structure` slices use six concrete
 same-origin operations:
 
 ```text
 GET  /api/admin/courses
 POST /api/admin/courses
 GET  /api/admin/courses/:courseId
+PUT  /api/admin/courses/:courseId
 POST /api/admin/courses/:courseId/groups
 POST /api/admin/courses/:courseId/modules
 ```
@@ -218,15 +220,21 @@ POST /api/admin/courses/:courseId/modules
 | Course index | Normal session resolving a current Active Admin | `200 { courses }`; `401 unauthenticated`; exact `403` missing/Disabled Admin |
 | Course creation | Same plus guarded Active-Admin write acceptance | `201` narrow Course; `401`; exact `403`; `422` field outcome |
 | Course detail | Normal session resolving a current Active Admin | `200` Course with ordered `groups` and `modules`; `401`; exact `403`; `404 course-not-found` |
+| Course update | Same plus guarded current Active Admin and Active Course acceptance, complete `{ name, description, timezone }`, and permanent timezone history | `200` updated Course; `401`; exact `403`; `404 course-not-found`; `409` stale Course or locked/stale timezone; `422` field outcome; sanitized `500 technical-error` |
 | Group creation | Same plus guarded current Active Admin and Active Course acceptance | `201` narrow Active Group; `401`; exact `403`; `404`; `409` stale Course/name conflict; `422` field outcome |
 | Module creation | Same plus guarded current Active Admin and Active Course acceptance | `201` narrow Scheduled Module with definite instants; `401`; exact `403`; `404`; `409` stale Course; `422` field/time/overlap outcome |
 
 Course representations contain only `id`, `name`, `description`, `timezone`,
-and `state`; detail adds only its Course-owned Group and Module
-representations. The server creates identities and lifecycle state, derives
+`state`, and derived `isTimezoneEditable`; detail adds only its Course-owned
+Group and Module representations. The server creates identities and lifecycle state, derives
 the Course and definite instants, ignores browser trust fields, freshly
-resolves Admin context for every request, and uses guarded inserts so an actor
-Disabled or Course Archived after page load creates nothing. Group responses
+resolves Admin context for every request, and uses guarded writes so an actor
+Disabled or Course Archived after page load creates nothing and an edit changes
+no field partially. A Course update accepts all three editable fields but
+changes timezone only before any successful Module creation. Module insertion
+rechecks the exact Course timezone used to resolve its local schedule, so a
+concurrent timezone edit and first Module creation have one consistent winner.
+Group responses
 omit the persistence normalization key. Module responses preserve exact ISO
 instants; local input, DST gap rejection, and overlap choices remain request
 mechanics interpreted through the persisted Course timezone. The browser nests

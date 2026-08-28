@@ -118,6 +118,7 @@ describe("Course HTTP creation and reads", () => {
       description: null,
       timezone: "Europe/Berlin",
       state: "active",
+      isTimezoneEditable: true,
     });
     expect(body.id).not.toBe("browser-course");
 

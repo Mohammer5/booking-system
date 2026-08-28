@@ -94,6 +94,16 @@ outcomes, and production composition. Playwright owns the German empty/create/
 detail/refresh journey, validation and refusal focus, responsive layout,
 pre-authorization privacy, and accessible route states.
 
+For Course editing, booking-domain Vitest owns complete-field validation,
+identity/relationship preservation, descriptive edits after scheduling
+history, and permanent timezone-lock policy. Worker/D1 Vitest owns the atomic
+guarded update, failed-write rollback, first-Module history retained after
+direct deletion, exact HTTP/sanitization outcomes, and the two-sided race in
+which a timezone edit and first Module creation cannot both win. Playwright
+owns German editing and validation, direct refresh, first-Module locking,
+truthful locked presentation with zero current Modules, stale conflict refresh,
+responsive focus behavior, and axe scans.
+
 For Group and future-Module creation, booking-domain Vitest owns Group
 normalization, minimal structure outcomes, strict Course-local minute
 resolution, DST gaps/overlaps, definite interval rules, injected-time
@@ -259,12 +269,14 @@ activation, visible focus, field/error association, Drawer/Dialog trapping and
 restoration, result/error focus, direct navigation and refresh, Participant
 onboarding/assigned-Course/zero-membership/privacy states, Participant
 directory and Course membership/Assignment-lifecycle states, Participant
-self/Admin profile editing and lifecycle, Disabled-target detail, and absence
-of horizontal overflow. The current 32-test browser suite also proves that one
+self/Admin profile editing and lifecycle, Course editing and permanent
+timezone-lock presentation, Disabled-target detail, and absence of horizontal
+overflow. The current 34-test browser suite also proves that one
 fixed normal session remains usable while navigating between Participant and
 Admin contexts, successful sign-out terminates that session, an Active Admin
-can create and revisit a Course with Groups, a future Module, and direct
-Participant membership, revoke and reactivate that retained Assignment without
+can create, edit, and revisit a Course with Groups, a future Module, a
+permanently locked timezone, and direct Participant membership, revoke and
+reactivate that retained Assignment without
 restoring removed future Selections, and preserve independent other-Course
 access. It also proves global Participant Disable, safe Disabled sign-out,
 same-principal Admin continuity, Re-enable without future-Selection

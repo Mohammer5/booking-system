@@ -6,7 +6,8 @@ for one concept and update this file when stable terminology changes.
 ## Repository Concepts
 
 The product concepts below are accepted specification truth. The first Admin
-bootstrap, Course/Course-wide-Group/future-Scheduled-Module creation,
+bootstrap, Course creation/editing, Course-wide-Group/future-Scheduled-Module
+creation,
 Participant registration/profile maintenance, Course Assignment creation/
 revocation/reactivation, Participant Disable/Re-enable, assigned Course access,
 and Participant-managed Module Selection subsets are implemented; remaining
@@ -85,8 +86,10 @@ The single IANA/TZDB timezone used to interpret one Course's Module schedule,
 defaulting to `Europe/Berlin`. It may change only while the Course is Active
 and no Module has ever been successfully created in it. Successful creation of
 the first Module permanently freezes it; deleting the first, last, or every
-Module does not restore editability. Local schedule input resolves through DST
-rules to definite instants. See [Course
+Module does not restore editability. The local application enforces that
+permanent history on Course edits and guards a concurrent first Module against
+being resolved with a stale timezone. Local schedule input resolves through
+DST rules to definite instants. See [Course
 timezone](product/course-structure.md#course-timezone).
 
 ### External Authentication Identity
@@ -228,7 +231,8 @@ model](architecture/authentication-and-sessions.md#session-model).
 The conceptual domain package `@booking-system/booking` at `packages/booking`.
 Its implemented `admin-access` module owns the first Admin behavior, and its
 implemented `course-structure` module owns Course, Course-wide Group, future
-Scheduled Module, and Course-local definite-time creation policy. Its
+Scheduled Module, Course editing with its permanent timezone lock, and
+Course-local definite-time creation policy. Its
 implemented `course-access` module owns fresh Participant context and
 registration/profile policy plus Course Assignment creation/lifecycle and
 Participant lifecycle plus assigned Course access; Invite behavior stays with
@@ -246,8 +250,8 @@ browser/Vite experience, frontend static assets, Cloudflare Worker and
 same-origin `/api/*` handling including Participant registration/directory,
 Participant profile maintenance, Course membership/direct Assignment,
 Assignment revocation/reactivation, Participant Disable/Re-enable, Participant
-Module Selection, and Course-owned Group/Module creation, private technical
-adapters, and composition roots.
+Module Selection, Course creation/editing, and Course-owned Group/Module
+creation, private technical adapters, and composition roots.
 See
 [Applications](architecture/applications.md#accepted-initial-boundary).
 

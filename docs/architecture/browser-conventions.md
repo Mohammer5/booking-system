@@ -70,8 +70,9 @@ and a high-contrast three-pixel visible-focus outline. `main.jsx` applies that
 theme and `CssBaseline` once. The Admin authentication/bootstrap,
 current-context, refusal, failure, and sign-out states plus the Participant
 directory, Course membership/Assignment Dialog, Course index/create/detail,
-Course-wide Group creation, and future Module creation states use free MUI Core
-components directly without changing their HTTP, authentication, or domain
+Course editing and permanent timezone-lock presentation, Course-wide Group
+creation, and future Module creation states use free MUI Core components
+directly without changing their HTTP, authentication, or domain
 ownership. Native `datetime-local` fields collect
 local minutes; MUI radio groups expose server-resolved DST-overlap occurrences,
 so no MUI X or date/time dependency is present. The Participant and Admin
@@ -89,7 +90,8 @@ authentication/onboarding/home/sign-out, zero membership without public
 discovery, global Participant directory and Course membership states, direct
 Assignment/repeat/Disabled-target interaction, Participant self/Admin profile
 editing, duplicate/stale refusal and stable Disabled-target detail, Group/Module
-empty and creation states, definite-instant display, DST gap/overlap
+empty and creation states, Course editing and permanent timezone lock even
+with zero current Modules, definite-instant display, DST gap/overlap
 interaction, stale/technical refusals, and horizontal overflow.
 
 MUI X Community may be introduced only for a concrete need such as date/time
@@ -227,6 +229,15 @@ uses an explicit no-default radio choice plus set/change/remove mutations;
 removal requires a keyboard-accessible confirmation Dialog with focus
 restoration. Server-derived availability and mutation outcomes own deadline and
 current-state truth rather than the browser wall clock.
+
+Course editing uses the same ownership split on stable Admin Course detail.
+TanStack Query owns the authoritative Course and mutation lifecycle, React Hook
+Form owns the complete name/description/timezone controls, and Worker/domain
+outcomes own field validity, current actor/Course state, and the permanent
+first-Module timezone lock. The timezone is editable only when the derived
+Course representation permits it; otherwise the browser presents accurate
+permanent-lock copy while continuing to permit descriptive edits. A conflict
+refreshes the detail so stale forms cannot keep presenting old editability.
 
 Course Assignment lifecycle uses the same ownership split. TanStack Query
 owns membership-list and assigned-Course invalidation after reactivation or

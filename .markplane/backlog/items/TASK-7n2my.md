@@ -1,26 +1,26 @@
 ---
 id: TASK-7n2my
 title: Edit Courses and govern timezone changes
-status: backlog
+status: done
 priority: medium
 type: feature
 effort: medium
 epic: EPIC-i2x79
-plan: null
+plan: PLAN-7wqex
 depends_on:
 - TASK-6tfxd
 blocks:
 - TASK-fzniz
 related:
 - TASK-3zcmt
-assignee: null
+assignee: gerkules
 tags:
 - course
 - timezone
 - lifecycle
 position: e10
 created: 2026-08-27
-updated: 2026-08-27
+updated: 2026-08-28
 ---
 
 # Edit Courses and govern timezone changes
@@ -34,18 +34,18 @@ successful Module creation, not a count of current Modules.
 
 ## Acceptance Criteria
 
-- [ ] An Active Course's required non-blank name and optional description can
+- [x] An Active Course's required non-blank name and optional description can
       be edited without changing Course identity or any relationship; Course
       names remain non-unique.
-- [ ] Its timezone can change to another valid IANA/TZDB identifier only while
+- [x] Its timezone can change to another valid IANA/TZDB identifier only while
       Active and before any Module has ever been created successfully; fixed
       UTC offsets and unknown identifiers are refused.
-- [ ] The first successful Module creation permanently freezes timezone. A
+- [x] The first successful Module creation permanently freezes timezone. A
       failed creation does not freeze it, and later deletion of the first,
       last, or every Module never restores editability.
-- [ ] Timezone changes do not reinterpret, migrate, or reschedule Modules; the
+- [x] Timezone changes do not reinterpret, migrate, or reschedule Modules; the
       permitted change necessarily occurs before any successful Module.
-- [ ] Current Admin and Course state plus permanent scheduling history are
+- [x] Current Admin and Course state plus permanent scheduling history are
       revalidated at acceptance. A stale/concurrent edit that loses to Module
       creation or Course archival is refused with no partial field change.
 
@@ -83,3 +83,18 @@ implementation plan when selected.
 - `docs/product/representative-scenarios.md#n-course-timezone-and-dst`
 - `docs/architecture/persistence.md#migration-contract`
 - `docs/process/verification.md`
+
+## Completion Evidence
+
+- `packages/booking/src/course-structure/createUpdateCourse.js` owns complete
+  field validation, stable identity/relationship preservation, and permanent
+  timezone-lock policy.
+- Worker persistence and HTTP use a guarded atomic Course update and an exact
+  Course-timezone guard on Module insertion, with durable post-deletion history,
+  rollback, authorization, sanitized outcomes, and two-sided race coverage.
+- Stable German Admin Course detail provides accessible editing or permanent
+  lock copy, conflict refresh, direct/refresh-safe behavior, responsive focus,
+  and axe-clean desktop/narrow evidence.
+- `pnpm check` passed on 2026-08-28: ESLint and boundary rules, 245 booking-
+  domain tests, 174 Worker/D1 tests, production build, and 34 Chromium
+  Playwright tests.

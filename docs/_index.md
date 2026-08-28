@@ -15,7 +15,8 @@ This repository uses an indexed global documentation system.
 ### Docs Status
 - Path: `docs/_status.md`
 - Summary: Present accepted product and technical direction, the implemented
-  local application, Course/Group/future-Module creation and Participant
+  local application, Course creation/editing with permanent timezone locking,
+  Group/future-Module creation, and Participant
   registration/profile/lifecycle/Assignment-lifecycle/assigned-Course-access/
   Module-Selection
   slices, responsive MUI
@@ -50,7 +51,8 @@ This repository uses an indexed global documentation system.
 ### Process
 - Path: `docs/process/_index.md`
 - Summary: Documentation workflow, Markplane tracking, verification including
-  local-tool provisioning, Course-structure, Participant-registration/profile/
+  local-tool provisioning, Course creation/editing and structure,
+  Participant-registration/profile/
   lifecycle, and Assignment-lifecycle/assigned-Participant-Course/Module-
   Selection evidence,
   CI, and release rules.
@@ -65,7 +67,7 @@ This repository uses an indexed global documentation system.
   Admin/Participant shell, Participant onboarding/profile/directory, Course
   Assignment creation/revocation/reactivation, Participant lifecycle, assigned
   Participant Course access, and Participant Module Selection plus Course/
-  Group/Module creation experience,
+  Group/Module creation and guarded Course-editing experience,
   implemented runtime/persistence,
   Google authentication direction, NixOS developer-host tooling, ESLint
   enforcement, and explicit dependency boundaries.

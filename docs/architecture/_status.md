@@ -68,7 +68,7 @@
   Active Super Admin is one atomic persistence outcome.
 - The implemented application slices have a same-origin Admin entry, Google
   sign-in and Better Auth sign-out, bootstrap/current-context HTTP, and
-  freshly authorized Course index/create/detail plus nested Group/Module
+  freshly authorized Course index/create/detail/update plus nested Group/Module
   creation HTTP, plus fresh Participant context, explicit onboarding and
   self-profile maintenance, the global Admin Participant directory and stable
   profile detail plus Disable/Re-enable HTTP, Course Assignment list/create/
@@ -97,8 +97,9 @@
   modern-ESM workspaces with one manifest each.
 - The booking package exposes the three `admin-access` operation factories
   required by first Admin bootstrap/fresh context resolution plus
-  `course-structure` factories for Course, Course-wide Group, and future
-  Module creation and `course-access` factories for fresh Participant context,
+  `course-structure` factories for Course creation/editing, Course-wide Group,
+  and future Module creation and `course-access` factories for fresh
+  Participant context,
   registration, self/Admin Participant profile maintenance, Participant
   Disable/Re-enable, Course Assignment creation/revocation/reactivation, and
   current assigned Active-Course
@@ -127,8 +128,9 @@
   maintenance plus the one current Disable/Re-enable action for Active and
   Disabled targets. The Participant gate presents a freshly Disabled target
   with safe sign-out and mounts no private Participant view. Stable Course
-  detail owns Course membership creation/lifecycle, Group, and future-Module
-  interactions without incidental routes. Membership cards expose only current
+  detail owns complete Course editing, its permanent timezone lock, Course
+  membership creation/lifecycle, Group, and future-Module interactions without
+  incidental routes. Membership cards expose only current
   permitted revoke/reactivate actions with confirmation and accurate retention
   copy.
 - TanStack Query owns remote Admin, Course, Participant profile, Assignment,
@@ -164,7 +166,12 @@
   invalidate a running development database. Atomic
   `D1Database.batch()` preserves exactly-one first bootstrap; guarded Course,
   Group, and Module inserts recheck Active Admin and applicable Course state at
-  write acceptance. Constraints preserve stable ownership and normalized
+  write acceptance. Guarded Course updates change all three editable fields,
+  require the expected current timezone, and permit a timezone change only
+  before permanent first-Module history. Module insertion rechecks the Course
+  timezone used for schedule resolution, so a concurrent edit and first Module
+  cannot both win with inconsistent instants. Constraints preserve stable
+  ownership and normalized
   Active Group uniqueness, while a Module-insert trigger records permanent
   Course scheduling history atomically. Participant principal and whole-email
   uniqueness constraints make one insert the complete registration outcome.
@@ -211,7 +218,8 @@
   Module Selection,
   overlapping-Module independence, replacement/removal, confirmation focus,
   stale-deadline refusal, truthful current/history presentation, Group/Module
-  creation, DST gap/overlap, exact-instant, and overflow assertions.
+  creation, Course editing, permanent timezone locking with zero current
+  Modules, DST gap/overlap, exact-instant, and overflow assertions.
 - The root flake supplies Node 24, pnpm 11.17.0, Git, Markplane, Chromium, and
   a Nix-patched official workerd 1.20260826.1 binary for x86_64-linux. It points
   Miniflare and Playwright at the Nix executables and supplies Miniflare with

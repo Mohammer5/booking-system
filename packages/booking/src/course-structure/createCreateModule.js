@@ -5,7 +5,7 @@ import { resolveCourseLocalDateTime } from "./resolveCourseLocalDateTime.js";
  *
  * @param {object} capabilities Module creation capabilities.
  * @param {() => string} capabilities.createModuleId Create a stable Module identity.
- * @param {(input: {adminUserId: string, module: object}) => Promise<string>} capabilities.createModuleForActiveAdmin Persist only for a current Active Admin and Course.
+ * @param {(input: {adminUserId: string, courseTimezone: string, module: object}) => Promise<string>} capabilities.createModuleForActiveAdmin Persist only for a current Active Admin and unchanged Course.
  * @param {() => string} capabilities.now Read the definite current instant.
  * @returns {(input: object) => Promise<object>} The Module creation operation.
  */
@@ -30,6 +30,7 @@ export function createCreateModule({
     const module = createModuleData(input, schedule, createModuleId());
     const persistenceOutcome = await createModuleForActiveAdmin({
       adminUserId: input.adminUser.id,
+      courseTimezone: input.course.timezone,
       module,
     });
 

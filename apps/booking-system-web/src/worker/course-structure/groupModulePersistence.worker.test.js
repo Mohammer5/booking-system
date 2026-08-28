@@ -127,6 +127,7 @@ describe("Module persistence", () => {
 
     await persistence.createModuleForActiveAdmin({
       adminUserId: "admin-1",
+      courseTimezone: "Europe/Berlin",
       module: moduleCandidate(
         "module-b",
         "course-1",
@@ -136,6 +137,7 @@ describe("Module persistence", () => {
     });
     await persistence.createModuleForActiveAdmin({
       adminUserId: "admin-1",
+      courseTimezone: "Europe/Berlin",
       module: moduleCandidate(
         "module-a",
         "course-1",
@@ -183,6 +185,7 @@ describe("Module persistence", () => {
       await expect(
         persistence.createModuleForActiveAdmin({
           adminUserId: "admin-1",
+          courseTimezone: "Europe/Berlin",
           module: moduleCandidate(
             "module-1",
             "course-1",
@@ -202,6 +205,7 @@ describe("Module persistence", () => {
     await expect(
       persistence.createModuleForActiveAdmin({
         adminUserId: "admin-1",
+        courseTimezone: "Europe/Berlin",
         module: moduleCandidate(
           "module-invalid",
           "course-1",
@@ -225,6 +229,7 @@ describe("Module persistence", () => {
 
     await persistence.createModuleForActiveAdmin({
       adminUserId: "admin-1",
+      courseTimezone: "Europe/Berlin",
       module,
     });
     await expect(
@@ -235,6 +240,7 @@ describe("Module persistence", () => {
     await expect(
       persistence.createModuleForActiveAdmin({
         adminUserId: "admin-1",
+        courseTimezone: "Europe/Berlin",
         module: { ...module, courseId: "course-2" },
       }),
     ).rejects.toThrow();

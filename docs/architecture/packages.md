@@ -37,7 +37,8 @@ modules:
 
 All four responsibility modules now exist in source.
 The first implements the first Admin bootstrap subset; the second implements
-Active Course, Course-wide Group, and future Scheduled Module creation,
+Active Course creation and complete editing, permanent first-Module timezone
+locking, Course-wide Group, and future Scheduled Module creation,
 including normalized Group names, IANA-zone local-time resolution, explicit
 DST-overlap choice, definite instants, and current Admin/Course acceptance
 outcomes. `course-access` now implements fresh Participant-context resolution,

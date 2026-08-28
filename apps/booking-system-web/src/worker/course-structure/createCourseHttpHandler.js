@@ -3,6 +3,7 @@ import {
   createCreateGroup,
   createCreateModule,
   createResolveAdminContext,
+  createUpdateCourse,
 } from "@booking-system/booking";
 
 import {
@@ -25,19 +26,22 @@ export function createCourseHttpHandler(capabilities) {
   const operations = createOperations(capabilities);
 
   return async function handleCourseHttpRequest(request) {
-    const route = matchCourseRoute(new URL(request.url).pathname);
+    try {
+      const route = matchCourseRoute(new URL(request.url).pathname);
 
-    if (route === null || !isSupportedRoute(route, request.method)) {
-      return jsonResponse({ outcome: "not-found" }, 404);
-    }
+      if (route === null || !isSupportedRoute(route, request.method)) {
+        return jsonResponse({ outcome: "not-found" }, 404);
+      }
 
-    const authorization = await authorizeAdminRequest(request, operations);
+      const authorization = await authorizeAdminRequest(request, operations);
 
-    return authorization.response ??
-      handleAuthorizedRoute(
+      return authorization.response ?? await handleAuthorizedRoute(
         { request, route, adminUser: authorization.adminUser },
         operations,
       );
+    } catch {
+      return jsonResponse({ outcome: "technical-error" }, 500);
+    }
   };
 }
 
@@ -66,6 +70,10 @@ function createOperations(capabilities) {
         capabilities.modulePersistence?.createModuleForActiveAdmin,
       now: capabilities.now,
     }),
+    updateCourse: createUpdateCourse({
+      updateActiveCourseForActiveAdmin:
+        capabilities.coursePersistence.updateActiveCourseForActiveAdmin,
+    }),
     resolveAdminContext: createResolveAdminContext({
       findAdminUserByExternalPrincipalId:
         capabilities.adminPersistence.findAdminUserByExternalPrincipalId,
@@ -83,7 +91,7 @@ function createOperations(capabilities) {
 function isSupportedRoute(route, method) {
   const methodsByKind = {
     courses: new Set(["GET", "POST"]),
-    course: new Set(["GET"]),
+    course: new Set(["GET", "PUT"]),
     groups: new Set(["POST"]),
     modules: new Set(["POST"]),
   };
@@ -110,7 +118,12 @@ function handleAuthorizedRoute(context, operations) {
   }
 
   if (route.kind === "course") {
-    return handleCourseDetailRequest(route.courseId, operations);
+    return request.method === "GET"
+      ? handleCourseDetailRequest(route.courseId, operations)
+      : handleUpdateCourseRequest(
+          { request, courseId: route.courseId, adminUser },
+          operations,
+        );
   }
 
   return route.kind === "groups"
@@ -122,6 +135,54 @@ function handleAuthorizedRoute(context, operations) {
         { request, courseId: route.courseId, adminUser },
         operations,
       );
+}
+
+/**
+ * Update one Active Course through complete fields and guarded current state.
+ *
+ * @param {object} context Request, target identity, and current Admin.
+ * @param {object} operations Course operations.
+ * @returns {Promise<Response>} Exact update result or refusal.
+ */
+async function handleUpdateCourseRequest(context, operations) {
+  const course = await operations.coursePersistence.findCourseById(
+    context.courseId,
+  );
+
+  if (course === null) {
+    return jsonResponse({ outcome: "course-not-found" }, 404);
+  }
+
+  const body = await readJsonObject(context.request);
+  const result = await operations.updateCourse({
+    adminUser: context.adminUser,
+    course,
+    name: body.name,
+    description: body.description,
+    timezone: body.timezone,
+  });
+  const staleResponse = await currentStateRefusal(
+    result,
+    { request: context.request, courseId: context.courseId },
+    operations,
+  );
+
+  return staleResponse ?? courseUpdateResultResponse(result);
+}
+
+/** @returns {Response} Exact non-stale Course update response. */
+function courseUpdateResultResponse(result) {
+  if (result.outcome === "updated") {
+    return jsonResponse(toCourseResponse(result.course), 200);
+  }
+
+  const fieldOutcomes = new Set([
+    "invalid-name",
+    "invalid-description",
+    "invalid-timezone",
+  ]);
+
+  return jsonResponse(result, fieldOutcomes.has(result.outcome) ? 422 : 409);
 }
 
 /**
@@ -278,9 +339,14 @@ function groupResultResponse(result) {
  * @returns {Response} Module result response.
  */
 function moduleResultResponse(result) {
-  return result.outcome === "created"
-    ? jsonResponse(toModuleResponse(result.module), 201)
-    : jsonResponse(result, 422);
+  if (result.outcome === "created") {
+    return jsonResponse(toModuleResponse(result.module), 201);
+  }
+
+  return jsonResponse(
+    result,
+    result.outcome === "course-timezone-changed" ? 409 : 422,
+  );
 }
 
 /**

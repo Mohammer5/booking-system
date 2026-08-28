@@ -50,6 +50,41 @@ export function useCreateCourse() {
 }
 
 /**
+ * Update complete Active-Course fields and reconcile stable Course reads.
+ *
+ * @param {string} courseId Stable Course identity.
+ * @returns {object} TanStack Course-edit mutation state.
+ */
+export function useUpdateCourse(courseId) {
+  const queryClient = useQueryClient();
+  const detailQueryKey = ["course-structure", "course", courseId];
+
+  return useMutation({
+    mutationFn: (input) =>
+      requestJson(`/api/admin/courses/${courseId}`, {
+        method: "PUT",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify(input),
+      }),
+    async onSuccess(course) {
+      queryClient.setQueryData(detailQueryKey, (current) => ({
+        ...current,
+        ...course,
+      }));
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: courseIndexQueryKey }),
+        queryClient.invalidateQueries({ queryKey: detailQueryKey }),
+      ]);
+    },
+    async onError(error) {
+      if (error.status === 409) {
+        await queryClient.invalidateQueries({ queryKey: detailQueryKey });
+      }
+    },
+  });
+}
+
+/**
  * Create a Course-wide Group and refresh its parent Course detail.
  *
  * @param {string} courseId Parent Course identity.
@@ -90,6 +125,13 @@ function useCourseStructureMutation(courseId, resource) {
       await queryClient.invalidateQueries({
         queryKey: ["course-structure", "course", courseId],
       });
+    },
+    async onError(error) {
+      if (error.status === 409) {
+        await queryClient.invalidateQueries({
+          queryKey: ["course-structure", "course", courseId],
+        });
+      }
     },
   });
 }

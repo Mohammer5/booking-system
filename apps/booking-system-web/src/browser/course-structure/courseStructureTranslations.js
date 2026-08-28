@@ -47,6 +47,28 @@ export const courseStructureTranslations = {
       timezone: "Zeitzone",
       state: "Status",
     },
+    edit: {
+      title: "Kurs bearbeiten",
+      description:
+        "Ändern Sie den Kursnamen und die optionale Beschreibung. Die Zeitzone kann nur vor dem ersten erfolgreich angelegten Modul geändert werden.",
+      nameLabel: "Kursname bearbeiten",
+      nameRequired: "Bitte geben Sie einen Kursnamen ein.",
+      descriptionLabel: "Kursbeschreibung bearbeiten",
+      descriptionOptional: "Optional",
+      descriptionInvalid: "Bitte geben Sie eine gültige Beschreibung ein.",
+      timezoneLabel: "Kurszeitzone bearbeiten (IANA)",
+      timezoneHelp:
+        "Nur vor dem ersten erfolgreich angelegten Modul änderbar.",
+      timezoneInvalid:
+        "Bitte geben Sie eine gültige IANA-Zeitzone statt eines festen UTC-Offsets ein.",
+      timezoneLocked:
+        "Die Kurszeitzone {{timezone}} ist dauerhaft gesperrt, weil bereits ein Modul erfolgreich angelegt wurde. Auch das spätere Löschen aller Module entsperrt sie nicht.",
+      submit: "Kursänderungen speichern",
+      submitting: "Kursänderungen werden gespeichert …",
+      success: "Die Kursänderungen wurden gespeichert.",
+      unavailable:
+        "Der Kurs hat sich geändert oder kann nicht mehr bearbeitet werden. Die aktuellen Kursdaten wurden neu geladen.",
+    },
     group: {
       title: "Gruppen",
       empty: "Für diesen Kurs wurden noch keine Gruppen angelegt.",

@@ -30,8 +30,11 @@ onboarding](../DICTIONARY.md#participant-onboarding), and direct [Course
 Assignment](../DICTIONARY.md#course-assignment), plus Participant-managed
 [Module Selection](../DICTIONARY.md#module-selection) and Participant profile
 maintenance plus Course Assignment revocation/reactivation. An Active Admin
-User can
-create an Active Course with the canonical minimal fields, add Course-wide
+User can create an Active Course with the canonical minimal fields and edit
+its complete name, description, and timezone while it remains Active. The
+timezone becomes permanently read-only after the first successful Module
+creation, including after every Module is later removed. The Admin can add
+Course-wide
 [Groups](../DICTIONARY.md#group) whose Active names are normalized and unique,
 add future Scheduled [Modules](../DICTIONARY.md#module) through the Course
 timezone's DST rules, discover every registered Active or Disabled
@@ -65,8 +68,9 @@ default. Unknown, inactive, unassigned, Revoked, stale, and cross-Participant
 Course identifiers reveal no Course data. An Active Participant may edit their
 own required name/email, while an Active Admin User may edit an Active or
 Disabled Participant from a stable detail; both preserve identity, lifecycle,
-relationships, provider data, and any same-principal Admin User. Course, Group,
-and Module editing or lifecycle operations; Admin-assisted Module Selection,
+relationships, provider data, and any same-principal Admin User. Group and
+Module editing or lifecycle operations; Course lifecycle operations;
+Admin-assisted Module Selection,
 Archived-Course historical access, Invite, later Admin onboarding, and later
 Admin management
 behavior remain unimplemented. Technology, persistence, API,

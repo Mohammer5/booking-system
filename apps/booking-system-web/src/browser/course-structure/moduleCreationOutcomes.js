@@ -42,6 +42,7 @@ export function moduleErrorMessage(error, translate) {
     "disabled-admin",
     "admin-not-active",
     "course-not-active",
+    "course-timezone-changed",
   ]);
 
   return unavailableOutcomes.has(error?.outcome)

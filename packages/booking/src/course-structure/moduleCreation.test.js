@@ -165,6 +165,7 @@ describe("Module creation", () => {
     });
     expect(capabilities.createModuleForActiveAdmin).toHaveBeenCalledWith({
       adminUserId: "admin-1",
+      courseTimezone: "Europe/Berlin",
       module: expect.not.objectContaining({ selection: expect.anything() }),
     });
   });
@@ -182,7 +183,11 @@ describe("Module creation", () => {
     },
   );
 
-  it.each(["admin-not-active", "course-not-active"])(
+  it.each([
+    "admin-not-active",
+    "course-not-active",
+    "course-timezone-changed",
+  ])(
     "returns persistence refusal %s without a created Module",
     async (outcome) => {
       const capabilities = createCapabilities();

@@ -6,7 +6,11 @@
  */
 export function createModulePersistence(database) {
   return {
-    async createModuleForActiveAdmin({ adminUserId, module }) {
+    async createModuleForActiveAdmin({
+      adminUserId,
+      courseTimezone,
+      module,
+    }) {
       const result = await database
         .prepare(
           `insert into modules
@@ -19,7 +23,7 @@ export function createModulePersistence(database) {
             )
               and exists (
                 select 1 from courses
-                 where id = ? and state = 'active'
+                 where id = ? and state = 'active' and timezone = ?
               )`,
         )
         .bind(
@@ -33,12 +37,16 @@ export function createModulePersistence(database) {
           module.state,
           adminUserId,
           module.courseId,
+          courseTimezone,
         )
         .run();
 
       return result.meta.changes > 0
         ? "created"
-        : resolveModuleRefusal(database, adminUserId, module.courseId);
+        : resolveModuleRefusal(
+            database,
+            { adminUserId, courseId: module.courseId, courseTimezone },
+          );
     },
 
     async listModulesByCourseId(courseId) {
@@ -62,27 +70,29 @@ export function createModulePersistence(database) {
  * Classify a guarded Module insertion loss from authoritative current state.
  *
  * @param {object} database The application D1 binding.
- * @param {string} adminUserId Acting Admin identity.
- * @param {string} courseId Parent Course identity.
+ * @param {object} input Actor, Course, and resolved timezone.
  * @returns {Promise<string>} Language-neutral persistence outcome.
  */
-async function resolveModuleRefusal(database, adminUserId, courseId) {
+async function resolveModuleRefusal(database, input) {
   const state = await database
     .prepare(
       `select
          exists(select 1 from admin_users
                  where id = ? and state = 'active') as is_admin_active,
          exists(select 1 from courses
-                 where id = ? and state = 'active') as is_course_active`,
+                 where id = ? and state = 'active') as is_course_active,
+         (select timezone from courses where id = ?) as course_timezone`,
     )
-    .bind(adminUserId, courseId)
+    .bind(input.adminUserId, input.courseId, input.courseId)
     .first();
 
   return state.is_admin_active !== 1
     ? "admin-not-active"
     : state.is_course_active !== 1
       ? "course-not-active"
-      : "module-not-created";
+      : state.course_timezone !== input.courseTimezone
+        ? "course-timezone-changed"
+        : "module-not-created";
 }
 
 /**
