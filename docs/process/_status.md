@@ -21,13 +21,14 @@ Current reality:
   Workers Vitest with D1, the production build, and Chromium Playwright in the
   canonical `pnpm check`. Critical Admin, Course, Participant, and
   application-shell states include axe scans and explicit desktop/narrow,
-  keyboard, modal
-  focus/trapping and restoration, semantic navigation/name,
+  keyboard, modal focus/trapping and restoration, semantic navigation/name,
   error-association, direct/refresh, pre-authorization privacy, Course-wide
   Group and future-Module creation, DST gap/overlap and exact-instant
-  presentation, Participant onboarding/zero membership, dual-context session
-  resolution, sign-out, stale/technical refusal, and overflow evidence. The
-  tag-gated release policy remains unimplemented.
+  presentation, Participant onboarding/zero membership, Participant directory
+  and Course membership/direct-Assignment states, Disabled targets,
+  idempotent repeat, dual-context session resolution, sign-out,
+  stale/technical refusal, and overflow evidence. The tag-gated release policy
+  remains unimplemented.
 - x86_64 NixOS developers can enter a pinned host-tooling environment with
   `nix develop`; `pnpm check` remains the verification contract and GitHub
   Actions continues to provision Node, pnpm, and Playwright independently.

@@ -1,7 +1,7 @@
 ---
 id: PLAN-p6dvs
 title: Implement Participant Course assignment
-status: draft
+status: done
 implements:
 - TASK-z6hut
 related: []
@@ -172,9 +172,9 @@ Selection, no Participant identity, and no origin-specific membership state.
 
 ### Phase 1: Domain And Schema
 
-- [ ] Implement/test direct Assignment policy, target eligibility, idempotent
+- [x] Implement/test direct Assignment policy, target eligibility, idempotent
       language-neutral outcomes, and no Selection capability/effect.
-- [ ] Add migration 0005 plus clean/upgrade, state, foreign-key, permanent-
+- [x] Add migration 0005 plus clean/upgrade, state, foreign-key, permanent-
       ownership, unique-pair, and absence-of-Selection evidence.
 
 **Checkpoint**: booking Vitest and migration tests prove the first Assignment
@@ -182,10 +182,10 @@ contract and rollout-safe schema independently of HTTP/browser mechanics.
 
 ### Phase 2: Persistence And Worker HTTP
 
-- [ ] Implement/test Participant directory and Course Assignment persistence,
+- [x] Implement/test Participant directory and Course Assignment persistence,
       deterministic representations, guarded acceptance, idempotence,
       uniqueness, concurrency, stale actor/Course/target, and no partial rows.
-- [ ] Implement/test exact Admin routes, fresh authorization, narrow request and
+- [x] Implement/test exact Admin routes, fresh authorization, narrow request and
       response contracts, ignored trust fields, privacy, and both Worker
       compositions.
 
@@ -194,12 +194,12 @@ current state and one pair survives concurrent/repeated attempts.
 
 ### Phase 3: Admin Browser Experience
 
-- [ ] Implement the German Participant directory route and add its Admin
+- [x] Implement the German Participant directory route and add its Admin
       navigation entry with complete loading/empty/unavailable states.
-- [ ] Implement the Course membership section and assignment Dialog with
+- [x] Implement the Course membership section and assignment Dialog with
       Active/Disabled and Active/Revoked labels, complete mutation states,
       predictable focus, direct refresh, and narrow/mobile layout.
-- [ ] Add Playwright discovery, empty/list/assign/repeat/Disabled/stale/privacy,
+- [x] Add Playwright discovery, empty/list/assign/repeat/Disabled/stale/privacy,
       desktop/360px, keyboard/Dialog focus, axe, and overflow evidence.
 
 **Checkpoint**: the real Admin journey can discover an onboarded zero-membership
@@ -207,10 +207,10 @@ Participant, assign them, repeat safely, and revisit the Course membership view.
 
 ### Phase 4: Documentation And Completion
 
-- [ ] Update canonical product/architecture/process status, application/API,
+- [x] Update canonical product/architecture/process status, application/API,
       persistence, package/module/browser/boundary, verification, indexes, and
       dictionary implementation wording; update no nonexistent co-located docs.
-- [ ] Run focused checks and canonical `pnpm check`, close task/plan/epic state
+- [x] Run focused checks and canonical `pnpm check`, close task/plan/epic state
       where warranted, synchronize Markplane, validate diffs, and commit.
 
 **Checkpoint**: schema, code, docs, tracking, tests, and Git agree direct Course
@@ -243,19 +243,28 @@ destructive down migration. No remote database exists in this task.
 
 ## Execution State
 
-- Current phase/checkpoint: planning is complete; implementation has not begun.
-- Completed phase checkboxes: none.
-- Next exact action: commit this attached implementation plan, then begin Phase
-  1 with booking-domain tests and operation implementation.
+- Current phase/checkpoint: Phases 1-4 and Markplane closure are complete; final
+  diff review and the semantic implementation commit remain.
+- Completed phase checkboxes: all Phase 1-4 items.
+- Next exact action: review the complete task diff, create the semantic
+  implementation commit, and verify clean Git history.
 - Persisted decisions: canonical product behavior remains in the cited docs;
-  task-scoped schema/API/UI decisions are recorded above.
-- Focused verification: full context rehydration, dependency/readiness check,
-  source/adjacent-doc inspection, and plan ground-truth validation completed;
-  `markplane sync` passes. No applicable adjacent `*.docs.md` exists.
-- Remaining verification: every focused layer, canonical `pnpm check`,
-  Markplane validation, diff validation, task closure, and implementation commit.
-- Working tree: only `TASK-z6hut` plan attachment metadata and this new plan are
-  uncommitted; no product source change or unrelated user change is present.
+  task-scoped schema/API/UI decisions are recorded above. The schema admits
+  retained Revoked state without exposing its deferred lifecycle actions.
+- Focused verification: the browser `course-access` slice and Assignment E2E
+  spec pass strict ESLint; all 4 focused Playwright scenarios pass in 34.2
+  seconds. The axe-bearing Dialog scan passes with the submit transition
+  restricted to non-color properties, resolving the reported contrast issue
+  without suppressing accessibility evidence. The final canonical `pnpm check`
+  passes lint, 9 local-rule tests, 13 boundary tests, 132 domain tests, 81
+  Worker/D1/migration tests, both production builds, and all 21 Chromium E2E
+  tests. `markplane sync`, `markplane check`, and `git diff --check` pass. No
+  applicable adjacent `*.docs.md` exists.
+- Remaining verification: final diff review, semantic implementation commit,
+  and clean-tree verification.
+- Working tree: the complete uncommitted direct-Assignment vertical slice,
+  canonical docs, tests, and tracking closure are present; no unrelated change
+  is known.
 
 ## Pre-Approval Checklist
 

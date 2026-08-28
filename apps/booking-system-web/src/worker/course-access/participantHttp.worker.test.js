@@ -80,7 +80,8 @@ describe("Participant onboarding HTTP contract", () => {
     expect(stored.normalized_email).toBe("alice+course@example.com");
     expect(stored.state).toBe("active");
     await expect(countRows("participants")).resolves.toBe(1);
-    await expect(bookingMembershipTables()).resolves.toEqual([]);
+    await expect(countRows("course_assignments")).resolves.toBe(0);
+    await expect(moduleSelectionTables()).resolves.toEqual([]);
   });
 
   it("refuses repeated and duplicate-email onboarding without changing existing profiles", async () => {
@@ -297,15 +298,15 @@ async function countRows(tableName) {
 }
 
 /**
- * Inspect whether later membership tables exist in this migration slice.
+ * Inspect whether the later Module Selection table exists.
  *
  * @returns {Promise<Array<object>>} Matching schema rows.
  */
-async function bookingMembershipTables() {
+async function moduleSelectionTables() {
   const result = await env.DB.prepare(
     `select name from sqlite_master
       where type = 'table'
-        and name in ('course_assignments', 'module_selections')`,
+        and name = 'module_selections'`,
   ).all();
 
   return result.results;

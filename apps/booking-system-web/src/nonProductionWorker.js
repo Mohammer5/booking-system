@@ -2,6 +2,7 @@ import { createAuthentication } from "./authentication/index.js";
 import { createFixtureSessionEstablishment } from "./authentication/fixture-session/index.js";
 import {
   createAdminPersistence,
+  createCourseAssignmentPersistence,
   createCoursePersistence,
   createGroupPersistence,
   createModulePersistence,
@@ -33,12 +34,14 @@ export default {
     const handleWorkerRequest = createWorkerApplication({
       authentication: normalAuthentication,
       createAdminUserId: () => crypto.randomUUID(),
+      createCourseAssignmentId: () => crypto.randomUUID(),
       createCourseId: () => crypto.randomUUID(),
       createGroupId: () => crypto.randomUUID(),
       createModuleId: () => crypto.randomUUID(),
       createParticipantId: () => crypto.randomUUID(),
       now: () => environment.BOOKING_TEST_NOW,
       adminPersistence: createAdminPersistence(environment.DB),
+      assignmentPersistence: createCourseAssignmentPersistence(environment.DB),
       coursePersistence: createCoursePersistence(environment.DB),
       groupPersistence: createGroupPersistence(environment.DB),
       modulePersistence: createModulePersistence(environment.DB),

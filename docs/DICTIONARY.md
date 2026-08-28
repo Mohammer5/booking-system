@@ -7,9 +7,9 @@ for one concept and update this file when stable terminology changes.
 
 The product concepts below are accepted specification truth. The first Admin
 bootstrap, Course/Course-wide-Group/future-Scheduled-Module creation, and
-Participant registration subsets are implemented; remaining concepts and
-later lifecycle behavior are still specifications until their delivery tasks
-complete.
+Participant registration and direct Course Assignment subsets are implemented;
+remaining concepts and later lifecycle behavior are still specifications until
+their delivery tasks complete.
 
 ### Admin-Assisted Booking
 
@@ -61,7 +61,10 @@ domain model](product/domain-model.md#course).
 The Active or Revoked relationship stating that one Participant belongs to one
 Course. It is Course-specific membership and remains distinct from Participant
 global state and Module participation. Participant Course access requires both
-an Active Participant and an Active Assignment. See [Course
+an Active Participant and an Active Assignment. The local application
+implements Admin discovery, Course membership reads, and direct creation or
+idempotent retention of an Active Assignment; participant-facing access and
+Assignment lifecycle transitions remain later slices. See [Course
 access](product/course-access.md#administrative-assignment).
 
 ### Course Invite
@@ -214,9 +217,9 @@ Its implemented `admin-access` module owns the first Admin behavior, and its
 implemented `course-structure` module owns Course, Course-wide Group, future
 Scheduled Module, and Course-local definite-time creation policy. Its
 implemented `course-access` module owns fresh Participant context and
-registration policy; later Assignment/access/profile/lifecycle behavior stays
-with that module. The accepted `module-participation` module arrives with its
-later product slice. See
+registration policy plus direct Course Assignment; later Participant Course
+access, Invite, profile, and lifecycle behavior stays with that module. The
+accepted `module-participation` module arrives with its later product slice. See
 [Packages](architecture/packages.md#accepted-initial-package).
 
 ### Booking-System Web Application
@@ -224,9 +227,9 @@ later product slice. See
 The implemented single deployable application
 `@booking-system/booking-system-web` at `apps/booking-system-web`. It owns the
 browser/Vite experience, frontend static assets, Cloudflare Worker and
-same-origin `/api/*` handling including Participant registration and
-Course-owned Group/Module creation, private technical adapters, and composition
-roots. See
+same-origin `/api/*` handling including Participant registration/directory,
+Course membership/direct Assignment, and Course-owned Group/Module creation,
+private technical adapters, and composition roots. See
 [Applications](architecture/applications.md#accepted-initial-boundary).
 
 ### Boundary Map

@@ -18,6 +18,7 @@ import {
   useParams,
 } from "react-router";
 
+import { CourseMembershipSection } from "../course-access/index.js";
 import { useCourseDetail } from "./useCourses.js";
 import { GroupCreationSection } from "./GroupCreationSection.jsx";
 import { ModuleCreationSection } from "./ModuleCreationSection.jsx";
@@ -192,6 +193,7 @@ function CourseDetails({ course, headingRef, translate }) {
         />
       </Stack>
       <CourseDescriptionList course={course} translate={translate} />
+      <CourseMembershipSection course={course} />
       <GroupCreationSection course={course} />
       <ModuleCreationSection course={course} />
     </Stack>

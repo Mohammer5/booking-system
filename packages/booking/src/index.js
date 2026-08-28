@@ -9,6 +9,7 @@ export {
   createCreateModule,
 } from "./course-structure/index.js";
 export {
+  createAssignParticipantToCourse,
   createRegisterParticipant,
   createResolveParticipantContext,
 } from "./course-access/index.js";

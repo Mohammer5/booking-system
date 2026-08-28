@@ -3,6 +3,7 @@ import { initReactI18next } from "react-i18next";
 
 import { adminBootstrapTranslations } from "./admin-bootstrap/adminBootstrapTranslations.js";
 import { applicationShellTranslations } from "./application-shell/index.js";
+import { courseAccessTranslations } from "./course-access/index.js";
 import { courseStructureTranslations } from "./course-structure/index.js";
 import { participantEntryTranslations } from "./participant-entry/index.js";
 
@@ -22,6 +23,7 @@ export async function createBrowserI18n() {
         translation: {
           ...adminBootstrapTranslations,
           ...applicationShellTranslations,
+          ...courseAccessTranslations,
           ...courseStructureTranslations,
           ...participantEntryTranslations,
         },

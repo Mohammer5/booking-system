@@ -9,6 +9,11 @@ test("creates and revisits a Course through the German Admin journey", async ({
 }) => {
   await page.setViewportSize(desktopViewport);
   await ensureActiveAdmin(page);
+  await page.route(
+    "**/api/admin/courses",
+    (route) => fulfillJson(route, 200, { courses: [] }),
+    { times: 1 },
+  );
   await page.goto("/admin");
   await page.getByRole("link", { name: "Kurse verwalten" }).click();
 

@@ -1,7 +1,7 @@
 ---
 id: TASK-z6hut
 title: Assign Participants to Courses
-status: in-progress
+status: done
 priority: medium
 type: feature
 effort: medium
@@ -39,28 +39,28 @@ cardinality.
 
 ## Acceptance Criteria
 
-- [ ] An Active Admin User can discover every fully registered Participant,
+- [x] An Active Admin User can discover every fully registered Participant,
       including a Participant with zero Course Assignments, through a minimum
       representation containing name, email, and Active or Disabled global
       state.
-- [ ] A fully registered Participant with no Assignment can receive one Active
+- [x] A fully registered Participant with no Assignment can receive one Active
       Course Assignment to an Active Course through direct administrative
       assignment.
-- [ ] Assigning a Participant who already has an Active Assignment to that
+- [x] Assigning a Participant who already has an Active Assignment to that
       Course is an idempotent successful no-op.
-- [ ] A Participant/Course pair never receives duplicate Course Assignments.
-- [ ] Direct Assignment creates ordinary Course membership only and does not
+- [x] A Participant/Course pair never receives duplicate Course Assignments.
+- [x] Direct Assignment creates ordinary Course membership only and does not
       implicitly create a Module Selection or a separate origin-specific
       membership state.
 
-- [ ] Direct Assignment accepts a fully registered Active or Disabled
+- [x] Direct Assignment accepts a fully registered Active or Disabled
       Participant for an Active Course, rejects unknown/incomplete people and
       Archived Courses, and validates the acting Admin and Course state again
       at acceptance.
-- [ ] The Course administration view lists current membership and Assignment
+- [x] The Course administration view lists current membership and Assignment
       state, while the global Participant directory remains discoverable even
       when a Participant has zero Assignments.
-- [ ] A stale or concurrent assignment attempt preserves exactly one
+- [x] A stale or concurrent assignment attempt preserves exactly one
       Participant/Course Assignment and has no partial Selection or identity
       side effect.
 
@@ -93,6 +93,12 @@ Revoked Assignment reactivation and revocation effects are owned by
 edits and global lifecycle are separate. Do not add pending Participants,
 origin-specific membership states, or Participant self-leave. Create a fresh
 implementation plan when selected.
+
+Completed locally with 132 booking-domain tests, 81 Worker/D1/migration tests,
+both production builds, and 21 Chromium E2E tests passing through the final
+canonical `pnpm check`. The focused Course Assignment browser suite also passes
+all 4 scenarios with its axe, focus, keyboard, responsive, privacy, and
+overflow assertions intact.
 
 ## References
 

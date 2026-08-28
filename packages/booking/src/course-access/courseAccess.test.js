@@ -1,7 +1,119 @@
 import { describe, expect, it, vi } from "vitest";
 
+import { createAssignParticipantToCourse } from "./createAssignParticipantToCourse.js";
 import { createRegisterParticipant } from "./createRegisterParticipant.js";
 import { createResolveParticipantContext } from "./createResolveParticipantContext.js";
+
+describe("direct Course Assignment", () => {
+  it.each([
+    [{ id: "admin-a", state: "disabled" }, activeCourse(), activeParticipant(), "admin-not-active"],
+    [null, activeCourse(), activeParticipant(), "admin-not-active"],
+    [activeAdmin(), { id: "course-a", state: "archived" }, activeParticipant(), "course-not-active"],
+    [activeAdmin(), activeCourse(), null, "participant-not-assignable"],
+    [activeAdmin(), activeCourse(), { id: "participant-a", state: "pending" }, "participant-not-assignable"],
+  ])(
+    "refuses invalid current state without creating or persisting an Assignment",
+    async (adminUser, course, participant, outcome) => {
+      const createCourseAssignmentId = vi.fn();
+      const assignParticipantToActiveCourse = vi.fn();
+      const assign = createAssignParticipantToCourse({
+        createCourseAssignmentId,
+        assignParticipantToActiveCourse,
+      });
+
+      await expect(assign({ adminUser, course, participant })).resolves.toEqual({
+        outcome,
+      });
+      expect(createCourseAssignmentId).not.toHaveBeenCalled();
+      expect(assignParticipantToActiveCourse).not.toHaveBeenCalled();
+    },
+  );
+
+  it.each(["active", "disabled"])(
+    "creates ordinary Active membership for a registered %s Participant",
+    async (participantState) => {
+      const assignParticipantToActiveCourse = vi
+        .fn()
+        .mockResolvedValue({ outcome: "created" });
+      const assign = createAssignParticipantToCourse({
+        createCourseAssignmentId: () => "assignment-a",
+        assignParticipantToActiveCourse,
+      });
+
+      await expect(
+        assign({
+          adminUser: activeAdmin(),
+          course: activeCourse(),
+          participant: { ...activeParticipant(), state: participantState },
+        }),
+      ).resolves.toEqual({
+        outcome: "created",
+        assignment: {
+          id: "assignment-a",
+          participantId: "participant-a",
+          courseId: "course-a",
+          state: "active",
+        },
+      });
+      expect(assignParticipantToActiveCourse).toHaveBeenCalledWith({
+        adminUserId: "admin-a",
+        assignment: {
+          id: "assignment-a",
+          participantId: "participant-a",
+          courseId: "course-a",
+          state: "active",
+        },
+      });
+    },
+  );
+
+  it("returns the one persisted Active Assignment for an idempotent repeat", async () => {
+    const existingAssignment = {
+      id: "assignment-existing",
+      participantId: "participant-a",
+      courseId: "course-a",
+      state: "active",
+    };
+    const assign = createAssignParticipantToCourse({
+      createCourseAssignmentId: () => "assignment-unused",
+      assignParticipantToActiveCourse: async () => ({
+        outcome: "already-active",
+        assignment: existingAssignment,
+      }),
+    });
+
+    await expect(
+      assign({
+        adminUser: activeAdmin(),
+        course: activeCourse(),
+        participant: activeParticipant(),
+      }),
+    ).resolves.toEqual({
+      outcome: "already-active",
+      assignment: existingAssignment,
+    });
+  });
+
+  it.each([
+    "admin-not-active",
+    "course-not-active",
+    "participant-not-assignable",
+    "assignment-not-active",
+  ])("preserves authoritative persistence refusal %s", async (outcome) => {
+    const assign = createAssignParticipantToCourse({
+      createCourseAssignmentId: () => "assignment-a",
+      assignParticipantToActiveCourse: async () => ({ outcome }),
+    });
+
+    await expect(
+      assign({
+        adminUser: activeAdmin(),
+        course: activeCourse(),
+        participant: activeParticipant(),
+      }),
+    ).resolves.toEqual({ outcome });
+  });
+});
 
 describe("Participant registration", () => {
   it.each([undefined, null, 42, "", " ", "\n\t"])(
@@ -150,3 +262,18 @@ describe("Participant context", () => {
     });
   });
 });
+
+/** @returns {object} Deterministic Active Admin User. */
+function activeAdmin() {
+  return { id: "admin-a", state: "active" };
+}
+
+/** @returns {object} Deterministic Active Course. */
+function activeCourse() {
+  return { id: "course-a", state: "active" };
+}
+
+/** @returns {object} Deterministic Active Participant. */
+function activeParticipant() {
+  return { id: "participant-a", state: "active" };
+}

@@ -50,13 +50,33 @@ export function AdministrationContext({
       </Typography>
       <AdministrationDetails admin={admin} translate={t} />
       <AdminSignOutButton signOutMutation={signOutMutation} />
+      <AdministrationNavigation translate={t} />
+    </Stack>
+  );
+}
+
+/**
+ * Present the focused administration destinations.
+ *
+ * @param {object} props Navigation properties.
+ * @returns {import("react").ReactElement} Administration navigation actions.
+ */
+function AdministrationNavigation({ translate }) {
+  return (
+    <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
       <Button
         component={RouterLink}
-        sx={{ alignSelf: "flex-start" }}
         to="/admin/courses"
         variant="contained"
       >
-        {t("adminAccess.context.courses")}
+        {translate("adminAccess.context.courses")}
+      </Button>
+      <Button
+        component={RouterLink}
+        to="/admin/participants"
+        variant="outlined"
+      >
+        {translate("courseAccess.navigation.participants")}
       </Button>
     </Stack>
   );

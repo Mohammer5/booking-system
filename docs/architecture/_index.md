@@ -16,9 +16,9 @@ JavaScript conventions, and ESLint-enforced dependency rules.
 ### Architecture Status
 - Path: `docs/architecture/_status.md`
 - Summary: Current implemented application/package foundation, Course
-  structure-creation and Participant-registration slices, React browser routes
-  and responsive Admin/Participant experience, Google sign-in,
-  browser-private MUI theme and accessibility baseline,
+  structure-creation, Participant-registration, and direct-Assignment slices,
+  React browser routes and responsive Admin/Participant experience, Google
+  sign-in, browser-private MUI theme and accessibility baseline,
   functional-composition direction, Cloudflare/Vite/D1 runtime, NixOS
   developer tooling, boundary enforcement, and still-deferred product and
   release surfaces.
@@ -56,8 +56,8 @@ JavaScript conventions, and ESLint-enforced dependency rules.
 - Path: `docs/architecture/applications.md`
 - Summary: Defines application boundaries and the implemented
   `apps/booking-system-web` workspace with responsive Participant/Admin
-  contexts, Participant onboarding, and Course/Group/Module creation as the
-  complete initial same-origin application.
+  contexts, Participant onboarding/directory, Course membership, and
+  Course/Group/Module creation as the complete initial same-origin application.
 - Read when: A task adds, removes, deploys, or changes an application boundary
   or application manifest ownership.
 - Tags: architecture, applications, deployment, composition, manifests
@@ -65,9 +65,9 @@ JavaScript conventions, and ESLint-enforced dependency rules.
 ### Runtime And Hosting
 - Path: `docs/architecture/runtime-and-hosting.md`
 - Summary: Defines the implemented local `booking-system-web` Cloudflare Worker
-  and Vite composition, static assets, direct Participant/Admin/Course SPA
-  routing, compatibility, separate browser/Worker graphs, NixOS host-tooling
-  boundary, and minimal hosting footprint.
+  and Vite composition, static assets, direct Participant, Admin, Participant
+  directory, and Course SPA routing, compatibility, separate browser/Worker
+  graphs, NixOS host-tooling boundary, and minimal hosting footprint.
 - Read when: A task affects hosting, frontend/backend deployment shape, Worker
   runtime behavior, Vite delivery, runtime dependency inclusion, routes, or
   local developer tool provisioning, or infrastructure selection.
@@ -77,9 +77,9 @@ JavaScript conventions, and ESLint-enforced dependency rules.
 ### Persistence
 - Path: `docs/architecture/persistence.md`
 - Summary: Defines SQLite-compatible semantics, implemented local/test D1,
-  first-Admin, Course, Group/Module, and Participant migrations, environment
-  isolation, guarded acceptance, uniqueness, permanent scheduling history, and
-  migration constraints.
+  first-Admin, Course, Group/Module, Participant, and Course Assignment
+  migrations, environment isolation, guarded acceptance, uniqueness,
+  permanent scheduling history, and migration constraints.
 - Read when: A task affects databases, D1, SQL semantics, environment data,
   migrations, or persistence safety.
 - Tags: architecture, persistence, database, d1, sqlite, migrations
@@ -102,19 +102,19 @@ JavaScript conventions, and ESLint-enforced dependency rules.
 - Path: `docs/architecture/packages.md`
 - Summary: Defines conceptual package boundaries, the implemented
   `packages/booking` with `admin-access`, Course/Group/Module
-  `course-structure`, and Participant-registration `course-access` behavior,
-  accepted later modules, and why technical dependency segregation does not
-  justify extraction.
+  `course-structure`, and Participant-registration/direct-Assignment
+  `course-access` behavior, accepted later modules, and why technical
+  dependency segregation does not justify extraction.
 - Read when: A task adds, removes, extracts, or changes a package boundary or
   proposes a package to segregate technical dependencies.
 - Tags: architecture, packages, domains, ownership, manifests
 
 ### Module Organization
 - Path: `docs/architecture/module-organization.md`
-- Summary: Defines the implemented responsibility modules, Course-structure
-  and Participant-registration slices, source roots, manifest ownership,
-  browser/Worker/authentication separation, interfaces, entrypoints, adapters,
-  and dependency direction.
+- Summary: Defines the implemented responsibility modules, Course-structure,
+  Participant-registration, and direct-Assignment slices, source roots,
+  manifest ownership, browser/Worker/authentication separation, interfaces,
+  entrypoints, adapters, and dependency direction.
 - Read when: A task affects source placement, workspace manifests, modules,
   runtime responsibilities, slices, imports, interfaces, or tests.
 - Tags: architecture, modules, source-layout, manifests, runtime-boundaries
@@ -132,9 +132,9 @@ JavaScript conventions, and ESLint-enforced dependency rules.
 - Path: `docs/architecture/browser-conventions.md`
 - Summary: React-based browser ownership rules for React Router, TanStack Query,
   React Hook Form, Material UI, responsive shell/Course structure and
-  Participant onboarding navigation and accessible interaction, Better Auth
-  session actions, classnames, debug, i18next, localization, routes, and
-  vertical-slice placement.
+  Participant onboarding/directory/Course-membership navigation and accessible
+  interaction, Better Auth session actions, classnames, debug, i18next,
+  localization, routes, and vertical-slice placement.
 - Read when: A task affects browser routing, navigation, server state, forms,
   frontend validation, conditional classes, diagnostics, localization, or
   browser dependency choices.

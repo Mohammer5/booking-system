@@ -5,7 +5,8 @@
 The `packages/booking` workspace currently contains `admin-access` for first
 Admin bootstrap, `course-structure` for Course, Course-wide Group, and future
 Scheduled Module creation, and `course-access` for fresh Participant context
-and registration. The accepted later package scope also names
+resolution, registration, and direct Course Assignment. The accepted later
+package scope also names
 `module-participation`; it does not exist until its product behavior is
 implemented. These concepts remain modules inside one domain package rather
 than separate workspaces. The implemented modules own product policy, not
@@ -80,18 +81,19 @@ test-authentication implementation imports from entering `packages/booking`.
 The first slice uses `browser`, `worker`, and `authentication` as its initial
 first-level names, introduced together with real source and map declarations.
 
-The implemented Admin, Course-structure, and Participant-registration slices
-preserve three application roles: browser sign-in/onboarding and
-Course/Group/Module presentation, Worker-side HTTP and D1 handling organized by
-the owning conceptual slice, and application-private authentication. The
-browser slices may use Better Auth's browser client for session initiation and
-termination while Google provider configuration stays in the authentication
-and Worker composition roles. Participant browser and Worker behavior live in
-second-level `participant-entry` and `course-access` slices respectively; they
-do not create a new first-level application module. A thin composition entry
-may join only the roles required for its executable graph. The browser
-communicates with Worker behavior through same-origin HTTP rather than
-importing Worker implementation to share transport data.
+The implemented Admin, Course-structure, Participant-registration, and direct
+Assignment slices preserve three application roles: browser sign-in/onboarding,
+Participant directory/Course membership, and Course/Group/Module presentation;
+Worker-side HTTP and D1 handling organized by the owning conceptual slice; and
+application-private authentication. The browser slices may use Better Auth's
+browser client for session initiation and termination while Google provider
+configuration stays in the authentication and Worker composition roles.
+Participant entry remains a second-level `participant-entry` browser slice;
+direct Assignment adds second-level `course-access` slices inside both browser
+and Worker without creating a new first-level application module. A thin
+composition entry may join only the roles required for its executable graph.
+The browser communicates with Worker behavior through same-origin HTTP rather
+than importing Worker implementation to share transport data.
 
 ## Vertical Slices
 

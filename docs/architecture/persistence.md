@@ -81,10 +81,11 @@ infrastructure package. The initial booking schema is limited to the Admin User
 state, permanent bootstrap history, and integrity constraints required by this
 slice. The implemented Course slice separately owns narrow list, stable-detail,
 and guarded-create capabilities over `courses`, `groups`, and `modules`. The
-implemented Participant-registration slice owns narrow fresh-resolution and
-constraint-backed registration capabilities over `participants`. Invite,
-Course Assignment, and Module Selection schema waits for the work that needs
-it.
+implemented `course-access` slices own narrow Participant fresh-resolution,
+directory, constraint-backed registration, and guarded direct-Assignment
+capabilities over `participants` and `course_assignments`. Invite and Module
+Selection schemas wait for the work that needs them, while Assignment
+lifecycle transitions remain deferred to their owning slice.
 
 ## Environment Isolation
 
@@ -122,7 +123,7 @@ change requires an explicit exceptional deployment decision.
 
 ## Current State And Persistence Lifecycle
 
-The application has local/test D1 bindings and four version-controlled
+The application has local/test D1 bindings and five version-controlled
 migrations. `0001_first_admin_foundation.sql` creates the Better Auth `user`,
 `session`, `account`, and `verification` technical tables and indexes plus
 `admin_users` and `admin_bootstrap_history`. `0002_courses.sql` adds the
@@ -130,7 +131,8 @@ booking-owned `courses` table with stable identity, required name/timezone,
 optional description, and constrained Active/Archived state.
 `0003_groups_and_modules.sql` adds permanent Course scheduling history plus
 Course-owned Groups and Modules. `0004_participants.sql` adds registered
-Participants. No remote D1 database exists.
+Participants. `0005_course_assignments.sql` adds retained ordinary Course
+membership. No remote D1 database exists.
 
 ### Implemented First Schema
 
@@ -167,8 +169,17 @@ principal, required nonblank name, retained trimmed email, a unique lowercase
 whole-email comparison key, and constrained Active/Disabled state. One insert
 is the complete registration outcome: the principal and normalized-email
 constraints decide repeated, concurrent, and duplicate-email attempts without
-pending identity or partial profile state. Course Assignment and Module
-Selection tables remain absent until their owning slices are implemented.
+pending identity or partial profile state. Module Selection remains absent
+until its owning slice is implemented.
+
+The fifth additive migration preserves all existing application data and adds
+one `course_assignments` table with stable identity, constrained Active/Revoked
+state, restrictive Participant/Course foreign keys, permanent ownership, and
+one unique Participant/Course pair. A guarded insert rechecks the current
+Active Admin, Active Course, and fully registered Active or Disabled target at
+write acceptance. The unique pair makes repeated and concurrent Active
+assignment idempotent, while a refused write creates no identity or Module
+Selection. Assignment lifecycle transitions remain deferred.
 
 The full migration sequence is applied to clean isolated state in Worker tests
 and before browser E2E. The schema is designed for eventual D1 deployment. A

@@ -68,10 +68,11 @@ guidance.
 eight-pixel spacing, explicit responsive breakpoints, application surfaces,
 and a high-contrast three-pixel visible-focus outline. `main.jsx` applies that
 theme and `CssBaseline` once. The Admin authentication/bootstrap,
-current-context, refusal, failure, and sign-out states plus the Course
-index/create/detail, Course-wide Group creation, and future Module creation
-states use free MUI Core components directly without changing their HTTP,
-authentication, or domain ownership. Native `datetime-local` fields collect
+current-context, refusal, failure, and sign-out states plus the Participant
+directory, Course membership/Assignment Dialog, Course index/create/detail,
+Course-wide Group creation, and future Module creation states use free MUI Core
+components directly without changing their HTTP, authentication, or domain
+ownership. Native `datetime-local` fields collect
 local minutes; MUI radio groups expose server-resolved DST-overlap occurrences,
 so no MUI X or date/time dependency is present. The Participant and Admin
 routes share one responsive browser-owned shell with a banner, named list
@@ -85,8 +86,10 @@ accessible names, keyboard activation, visible focus, field/error association,
 Drawer/Dialog trapping and restoration, result/error focus, direct navigation
 and refresh, pre-authorization Course privacy, Participant
 authentication/onboarding/home/sign-out, zero membership without public
-discovery, Group/Module empty and creation states, definite-instant display,
-DST gap/overlap interaction, stale/technical refusals, and horizontal overflow.
+discovery, global Participant directory and Course membership states, direct
+Assignment/repeat/Disabled-target interaction, Group/Module empty and creation
+states, definite-instant display, DST gap/overlap interaction, stale/technical
+refusals, and horizontal overflow.
 
 MUI X Community may be introduced only for a concrete need such as date/time
 input; its Community packages are MIT-licensed, while Pro and Premium packages
@@ -135,11 +138,12 @@ locale. Direct navigation or refresh to frontend routes must work within the
 accepted same-origin Worker and static-assets deployment, while `/api/*`
 remains Worker/API-owned. [Runtime and hosting](runtime-and-hosting.md) owns the
 deployment and fallback behavior. The current independently navigable routes
-are the Participant entry at `/`, administration entry at `/admin`, Course
-index at `/admin/courses`, creation at `/admin/courses/new`, and stable detail
-at `/admin/courses/:courseId`. Course-owned Group and Module lists and creation
-forms remain on stable detail because they are not independently navigable
-views.
+are the Participant entry at `/`, administration entry at `/admin`, global
+Participant directory at `/admin/participants`, Course index at
+`/admin/courses`, creation at `/admin/courses/new`, and stable detail at
+`/admin/courses/:courseId`. Course membership, Group and Module lists, and
+their owned actions remain on stable Course detail because they are not
+independently navigable views.
 
 ## Browser Authentication
 
@@ -261,6 +265,7 @@ not German text used as identifiers. Representative key shapes are:
 
 ```text
 adminAccess.bootstrap.title
+courseAccess.assignmentDialog.submit
 courseStructure.course.name.label
 moduleParticipation.selection.save
 ```
@@ -268,9 +273,9 @@ moduleParticipation.selection.save
 Translation resources follow conceptual and vertical-slice ownership where
 practical. Do not anticipate reuse with one giant generic `common` namespace
 or a technical shared package. The browser composition combines resources
-owned by the application shell, Participant entry, Admin-bootstrap, and Course
-structure slices; the Admin and Course resources retain the `adminAccess` and
-`courseStructure` semantic key families.
+owned by the application shell, Participant entry, Admin-bootstrap, Course
+access, and Course structure slices; those resources retain the `adminAccess`,
+`courseAccess`, and `courseStructure` semantic key families.
 
 ## Local Ownership And Late Abstraction
 

@@ -1,5 +1,8 @@
 import { createAdminHttpHandler } from "./admin-bootstrap/index.js";
-import { createParticipantHttpHandler } from "./course-access/index.js";
+import {
+  createCourseAccessHttpHandler,
+  createParticipantHttpHandler,
+} from "./course-access/index.js";
 import { createCourseHttpHandler } from "./course-structure/index.js";
 
 /**
@@ -8,72 +11,103 @@ import { createCourseHttpHandler } from "./course-structure/index.js";
  * @param {object} capabilities Runtime capabilities.
  * @returns {(request: Request) => Promise<Response>} The request handler.
  */
-export function createWorkerApplication({
-  authentication,
-  createAdminUserId,
-  createCourseId,
-  createGroupId,
-  createModuleId,
-  createParticipantId,
-  now,
-  adminPersistence,
-  coursePersistence,
-  groupPersistence,
-  modulePersistence,
-  participantPersistence,
-}) {
+export function createWorkerApplication(capabilities) {
+  const handlers = createWorkerHandlers(capabilities);
+
+  return (request) =>
+    handleWorkerRequest(request, capabilities.authentication, handlers);
+}
+
+/**
+ * Compose the concrete HTTP handlers for one Worker request graph.
+ *
+ * @param {object} capabilities Runtime capabilities.
+ * @returns {object} Admin, Course, membership, and Participant handlers.
+ */
+function createWorkerHandlers(capabilities) {
+  const { authentication } = capabilities;
   const handleAdminHttpRequest = createAdminHttpHandler({
     authenticate: authentication.authenticate,
-    createAdminUserId,
-    persistence: adminPersistence,
+    createAdminUserId: capabilities.createAdminUserId,
+    persistence: capabilities.adminPersistence,
   });
   const handleCourseHttpRequest = createCourseHttpHandler({
     authenticate: authentication.authenticate,
-    createCourseId,
-    createGroupId,
-    createModuleId,
-    now,
-    adminPersistence,
-    coursePersistence,
-    groupPersistence,
-    modulePersistence,
+    createCourseId: capabilities.createCourseId,
+    createGroupId: capabilities.createGroupId,
+    createModuleId: capabilities.createModuleId,
+    now: capabilities.now,
+    adminPersistence: capabilities.adminPersistence,
+    coursePersistence: capabilities.coursePersistence,
+    groupPersistence: capabilities.groupPersistence,
+    modulePersistence: capabilities.modulePersistence,
+  });
+  const handleCourseAccessHttpRequest = createCourseAccessHttpHandler({
+    authenticate: authentication.authenticate,
+    createCourseAssignmentId: capabilities.createCourseAssignmentId,
+    adminPersistence: capabilities.adminPersistence,
+    assignmentPersistence: capabilities.assignmentPersistence,
+    coursePersistence: capabilities.coursePersistence,
+    participantPersistence: capabilities.participantPersistence,
   });
   const handleParticipantHttpRequest = createParticipantHttpHandler({
     authenticate: authentication.authenticate,
-    createParticipantId,
-    persistence: participantPersistence,
+    createParticipantId: capabilities.createParticipantId,
+    persistence: capabilities.participantPersistence,
   });
 
-  return async function handleWorkerRequest(request) {
-    const requestURL = new URL(request.url);
-    const pathname = requestURL.pathname;
-    const failureResponse = authenticationFailureResponse(request, requestURL);
-
-    if (failureResponse !== null) {
-      return failureResponse;
-    }
-
-    if (pathname.startsWith("/api/auth/")) {
-      return authentication.handleAuthRequest(request);
-    }
-
-    if (
-      pathname === "/api/admin/courses" ||
-      pathname.startsWith("/api/admin/courses/")
-    ) {
-      return handleCourseHttpRequest(request);
-    }
-
-    if (pathname.startsWith("/api/admin/")) {
-      return handleAdminHttpRequest(request);
-    }
-
-    if (pathname.startsWith("/api/participant/")) {
-      return handleParticipantHttpRequest(request);
-    }
-
-    return Response.json({ outcome: "not-found" }, { status: 404 });
+  return {
+    handleAdminHttpRequest,
+    handleCourseAccessHttpRequest,
+    handleCourseHttpRequest,
+    handleParticipantHttpRequest,
   };
+}
+
+/**
+ * Dispatch one Worker request across the concrete application handlers.
+ *
+ * @param {Request} request Incoming request.
+ * @param {object} authentication Authentication operations.
+ * @param {object} handlers Concrete HTTP handlers.
+ * @returns {Promise<Response>} The application response.
+ */
+async function handleWorkerRequest(request, authentication, handlers) {
+  const requestURL = new URL(request.url);
+  const failureResponse = authenticationFailureResponse(request, requestURL);
+
+  if (failureResponse !== null) {
+    return failureResponse;
+  }
+
+  if (requestURL.pathname.startsWith("/api/auth/")) {
+    return authentication.handleAuthRequest(request);
+  }
+
+  if (
+    requestURL.pathname === "/api/admin/participants" ||
+    (requestURL.pathname.startsWith("/api/admin/courses/") &&
+      requestURL.pathname.endsWith("/assignments"))
+  ) {
+    return handlers.handleCourseAccessHttpRequest(request);
+  }
+
+  if (
+    requestURL.pathname === "/api/admin/courses" ||
+    requestURL.pathname.startsWith("/api/admin/courses/")
+  ) {
+    return handlers.handleCourseHttpRequest(request);
+  }
+
+  if (requestURL.pathname.startsWith("/api/admin/")) {
+    return handlers.handleAdminHttpRequest(request);
+  }
+
+  if (requestURL.pathname.startsWith("/api/participant/")) {
+    return handlers.handleParticipantHttpRequest(request);
+  }
+
+  return Response.json({ outcome: "not-found" }, { status: 404 });
 }
 
 /**

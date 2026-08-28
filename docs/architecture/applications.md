@@ -45,14 +45,15 @@ audience-first source buckets. See [browser conventions](browser-conventions.md)
 for the accepted browser libraries and their responsibilities.
 
 The implemented browser exposes Participant Google entry, onboarding, and home
-at `/`, the administration entry at `/admin`, and nested Course
-index/create/detail routes through one responsive MUI shell. Stable Course
-detail contains the owned Group and future-Module lists and creation forms
-rather than adding incidental routes. Navigation preserves the same browser
-cookie and Better Auth principal; Participant context resolves its own current
-domain identity without selecting a role or revealing Course data before a
-later Assignment authorizes access. Every route is direct-navigation and
-refresh-safe through the application-owned SPA fallback.
+at `/`, the administration entry at `/admin`, the Participant directory at
+`/admin/participants`, and nested Course index/create/detail routes through one
+responsive MUI shell. Stable Course detail contains Course membership and
+direct Assignment plus the owned Group and future-Module lists and creation
+forms rather than adding incidental routes. Navigation preserves the same
+browser cookie and Better Auth principal; Participant context resolves its own
+current domain identity without selecting a role or revealing Course data
+before a later access slice authorizes it. Every route is direct-navigation
+and refresh-safe through the application-owned SPA fallback.
 
 Better Auth remains private to this application and resolves a request to one
 stable external principal. The application then uses participant or
@@ -158,6 +159,33 @@ mechanics interpreted through the persisted Course timezone. The browser nests
 `/admin/courses`, `/admin/courses/new`, and
 `/admin/courses/:courseId` behind its current-Admin gate, while Worker
 authorization remains authoritative for every operation.
+
+### Participant Administration And Course Assignment HTTP Surface
+
+The implemented `course-access` administration slice adds three concrete
+same-origin operations:
+
+```text
+GET  /api/admin/participants
+GET  /api/admin/courses/:courseId/assignments
+POST /api/admin/courses/:courseId/assignments
+```
+
+| Operation | Authentication and current state | Results |
+| --- | --- | --- |
+| Participant directory | Normal session resolving a current Active Admin | `200 { participants }`; `401 unauthenticated`; exact `403` missing/Disabled Admin |
+| Course membership | Same plus an existing Active or Archived Course | `200 { assignments }`; `401`; exact `403`; `404 course-not-found` |
+| Direct Assignment | Same plus guarded current Active Admin, Active Course, and fully registered Active/Disabled Participant acceptance | `201` created Assignment; `200` already-Active no-op; `401`; exact `403`; `404` Course/Participant; `409` stale Course/target or retained-lifecycle refusal; `422 invalid-participant-id` |
+
+Participant list items expose only `id`, `name`, `email`, and global `state`.
+Assignment items expose only `id`, Assignment `state`, and that same minimum
+Participant representation. The browser supplies only `participantId`; the
+server derives Assignment identity and state, ignores trust fields, freshly
+authorizes every request, and uses one guarded uniqueness-backed insert so a
+stale or concurrent attempt cannot create a duplicate or partial identity or
+Module Selection. `/admin/participants` remains independent of membership so
+zero-Assignment Participants stay discoverable, while Course membership stays
+on the stable Course detail route.
 
 ### No Separate API Application
 

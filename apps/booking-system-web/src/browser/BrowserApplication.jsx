@@ -5,6 +5,7 @@ import {
   AdministrationContextRoute,
 } from "./admin-bootstrap/index.js";
 import { ResponsiveApplicationShell } from "./application-shell/index.js";
+import { ParticipantDirectoryPage } from "./course-access/index.js";
 import {
   CourseCreatePage,
   CourseDetailPage,
@@ -37,6 +38,7 @@ export function BrowserApplication() {
         }
       >
         <Route index element={<AdministrationContextRoute />} />
+        <Route path="participants" element={<ParticipantDirectoryPage />} />
         <Route path="courses" element={<CourseIndexPage />} />
         <Route path="courses/new" element={<CourseCreatePage />} />
         <Route path="courses/:courseId" element={<CourseDetailPage />} />
