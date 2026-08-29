@@ -138,7 +138,14 @@ Claimed. Opening, authenticating, refreshing, invalid input, abandonment,
 existing Active/Disabled Admin principals, terminal state, and competing losers
 create nothing and consume nothing. A legitimately deleted principal may
 return through a new Invite as a new ordinary identity without restored state
-or authority. Later Admin management behavior remains unimplemented.
+or authority. The complete current Admin User directory now exposes required
+name, ordinary or Super Admin authority, and Active or Disabled state. Every
+Active Admin may edit their own required booking-system name; ordinary Admins
+may edit other ordinary Admins but not Super Admins, while Super Admins may edit
+ordinary or Super Admin targets. Authorized edits may retain an Active or
+Disabled target, change only the name, and revalidate current actor/target
+state and authority at acceptance. Promotion and Admin User lifecycle actions
+remain unimplemented.
 Technology, persistence, API,
 frontend, and infrastructure mechanics remain outside this product
 specification and do not alter its contracts.

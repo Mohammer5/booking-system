@@ -3,7 +3,8 @@
 ## Accepted Initial Conceptual Target
 
 The `packages/booking` workspace currently contains `admin-access` for first
-Admin bootstrap and Admin Invite create/list/revoke/recognize/claim policy,
+Admin bootstrap, Admin Invite create/list/revoke/recognize/claim policy, and
+current Admin User list/name-edit authorization,
 `course-structure` for Course creation/editing, Course-wide
 Group creation/editing/archival/reactivation/permanent deletion, and future Scheduled Module
 creation plus descriptive editing, pre-start rescheduling, and terminal
@@ -20,8 +21,8 @@ one domain package rather
 than separate workspaces. The implemented modules own product policy, not
 authentication-provider SDK, HTTP, D1, or browser UI mechanics.
 
-The application keeps the corresponding Admin Invite browser, HTTP, secret
-adapter, and D1 persistence files together under the existing `browser/admin-
+The application keeps the corresponding Admin User and Admin Invite browser,
+HTTP, secret adapter, and D1 persistence files together under the existing `browser/admin-
 access` and `worker/admin-bootstrap` responsibilities; this concrete slice does
 not introduce another package or first-level application module.
 

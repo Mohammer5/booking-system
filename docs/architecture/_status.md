@@ -78,7 +78,7 @@
   HTTP for Active or Archived Courses, shared Course Invite management and
   public recognition/signed-continuation/explicit-Join HTTP, authenticated
   Admin Invite create/list/revoke and public recognition/signed-continuation/
-  atomic-claim HTTP, plus terminal
+  atomic-claim HTTP, current Admin User list/detail/name-edit HTTP, plus terminal
   body-free Course archival HTTP.
   Application destinations remain fixed and browser input cannot select
   principal, authority, Assignment identity/state, lifecycle state,
@@ -102,8 +102,8 @@
 - `@booking-system/booking` and `@booking-system/booking-system-web` are real
   modern-ESM workspaces with one manifest each.
 - The booking package exposes the first-bootstrap/fresh-context and Admin
-  Invite create/list/revoke/recognize/claim `admin-access` operation factories
-  plus
+  Invite create/list/revoke/recognize/claim plus current Admin User list/
+  name-edit `admin-access` operations and edit-availability predicate, plus
   `course-structure` factories for Course creation/editing, Course-wide Group
   creation/editing/archival/reactivation/permanent deletion, and future Module
   creation, lifetime descriptive editing, pre-start rescheduling, and terminal
@@ -127,7 +127,8 @@
   public `/invite` continuation and Join,
   Participant `/profile` and `/courses/:courseId` detail,
   `/admin` administration entry, public `/admin/invite` onboarding,
-  `/admin/invites`, `/admin/participants`, stable
+  `/admin/invites`, `/admin/users`, stable `/admin/users/:adminUserId`,
+  `/admin/participants`, stable
   `/admin/participants/:participantId` detail/edit, and nested
   `/admin/courses`, `/admin/courses/new`, and `/admin/courses/:courseId` views.
   They use one responsive browser-owned MUI shell with desktop list navigation,
@@ -166,7 +167,12 @@
   return, resolves current Admin state, requires an explicit name, and presents
   common unavailable, existing-principal, stale, and ordinary-Admin success
   states without mounting administration data.
-- TanStack Query owns remote Admin, Admin Invite, Course, Participant profile,
+- The Admin User directory renders a semantic table on desktop and card list at
+  narrow width, while stable detail exposes explicit authority/state and only
+  the server-derived permitted name form. Success and stale outcomes reconcile
+  directory, detail, and current-Admin caches without making provider data
+  authoritative.
+- TanStack Query owns remote Admin, Admin User, Admin Invite, Course, Participant profile,
   Assignment, and Module Selection state;
   React Hook Form owns the Admin-name, Course, Group create/edit, Module, and Participant-
   onboarding/profile forms; and German-first slice-owned i18next resources own

@@ -62,7 +62,11 @@ Current reality:
   explicit-name/ordinary-authority creation, existing/Disabled refusal without
   consumption, deleted-principal return, atomic rollback, same-Invite/same-
   principal/Revoke competition, unavailable privacy, responsive/focus
-  behavior, and axe. The
+  behavior, and axe. The Admin User directory/name layer additionally proves
+  current ordered rows, fresh self/ordinary/Super authorization, Disabled
+  target retention, guarded name-only persistence, identity/Participant
+  isolation, real fixed Super/ordinary journeys, responsive table/cards,
+  direct refresh, focused stale/error states, and axe. The
   tag-gated release policy remains unimplemented.
 - x86_64 NixOS developers can enter a pinned host-tooling environment with
   `nix develop`; `pnpm check` remains the verification contract and GitHub

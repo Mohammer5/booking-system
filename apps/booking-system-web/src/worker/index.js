@@ -5,6 +5,7 @@ export {
   createAdminInvitePersistence,
   createAdminInviteToken,
   createAdminPersistence,
+  createAdminUserHttpHandler,
   hashAdminInviteToken,
 } from "./admin-bootstrap/index.js";
 export { createCoursePersistence } from "./course-structure/index.js";

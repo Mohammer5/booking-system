@@ -29,7 +29,8 @@ The accepted package scope contains four focused conceptual responsibility
 modules:
 
 - `admin-access` for Admin User identity and lifecycle, Super Admin authority,
-  first Admin bootstrap, Admin Invites, and Admin onboarding policy;
+  first Admin bootstrap, Admin Invites/onboarding, and current Admin User
+  directory/name-edit policy;
 - `course-structure` for Course structure and lifecycle;
 - `course-access` for Participant identity, profile and global access policy,
   Course access, and membership; and
@@ -39,7 +40,9 @@ All four responsibility modules now exist in source.
 The first implements first Admin bootstrap plus Admin Invite creation,
 non-secret listing, terminal revocation, minimal recognition, explicit-name
 claim, current/deleted-principal, and ordinary-Admin onboarding policy while
-later Admin User management remains deferred; the second implements
+also implementing current Admin User listing, name validation, and self/
+ordinary/Super edit authorization. Promotion and Admin User lifecycle
+management remain deferred; the second implements
 Active Course creation and complete editing, permanent first-Module timezone
 locking, Course-wide Group creation/complete editing/archival/reactivation/
 permanent deletion,

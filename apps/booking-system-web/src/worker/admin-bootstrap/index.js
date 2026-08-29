@@ -8,3 +8,4 @@ export { createAdminInviteContinuation } from "./createAdminInviteContinuation.j
 export { createAdminInviteOnboardingHttpHandler } from "./createAdminInviteOnboardingHttpHandler.js";
 export { createAdminPersistence } from "./createAdminPersistence.js";
 export { createAdminHttpHandler } from "./createAdminHttpHandler.js";
+export { createAdminUserHttpHandler } from "./createAdminUserHttpHandler.js";

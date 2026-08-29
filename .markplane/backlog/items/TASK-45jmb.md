@@ -1,19 +1,19 @@
 ---
 id: TASK-45jmb
 title: List and edit Admin Users
-status: backlog
+status: done
 priority: medium
 type: feature
 effort: medium
 epic: EPIC-hc9uu
-plan: null
+plan: PLAN-zk9un
 depends_on:
 - TASK-rrp92
 blocks:
 - TASK-qhred
 related:
 - TASK-ca46j
-assignee: null
+assignee: gerkules
 tags:
 - admin
 - profile
@@ -21,7 +21,7 @@ tags:
 - ui
 position: g30
 created: 2026-08-27
-updated: 2026-08-27
+updated: 2026-08-29
 ---
 
 # List and edit Admin Users
@@ -35,18 +35,18 @@ edit while allowing each Active Admin to edit their own name.
 
 ## Acceptance Criteria
 
-- [ ] Every current Admin User is listed with required name, ordinary Admin or
+- [x] Every current Admin User is listed with required name, ordinary Admin or
       Super Admin authority, and Active or Disabled state; legitimately deleted
       Admin Users need not appear.
-- [ ] An Active Admin User may edit their own required non-blank name without
+- [x] An Active Admin User may edit their own required non-blank name without
       changing identity, state, authority, principal, or relationships.
-- [ ] An ordinary Active Admin may edit another ordinary Admin's name but may
+- [x] An ordinary Active Admin may edit another ordinary Admin's name but may
       not edit any Super Admin. An Active Super Admin may edit another ordinary
       or Super Admin's name.
-- [ ] Disabled actors have no access. Current actor/target state and authority
+- [x] Disabled actors have no access. Current actor/target state and authority
       are revalidated at acceptance so stale promotion/disable/delete changes
       make an unauthorized edit lose without partial mutation.
-- [ ] Provider profile data never controls the booking-system name; matching
+- [x] Provider profile data never controls the booking-system name; matching
       names do not merge identities or affect a Participant backed by the same
       principal.
 

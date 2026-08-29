@@ -3,6 +3,8 @@ import { Navigate, Route, Routes } from "react-router";
 import {
   AdminInviteOnboardingPage,
   AdminInvitePage,
+  AdminUserDetailPage,
+  AdminUserDirectoryPage,
 } from "./admin-access/index.js";
 import {
   AdminBootstrapPage,
@@ -75,6 +77,8 @@ export function BrowserApplication() {
       >
         <Route index element={<AdministrationContextRoute />} />
         <Route path="invites" element={<AdminInvitePage />} />
+        <Route path="users" element={<AdminUserDirectoryPage />} />
+        <Route path="users/:adminUserId" element={<AdminUserDetailPage />} />
         <Route path="participants" element={<ParticipantDirectoryPage />} />
         <Route
           path="participants/:participantId"

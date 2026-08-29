@@ -23,7 +23,8 @@ domain and behavior.
   Course archival with private read-only historical access, and assigned
   Active/Archived-Course access plus Participant profile/lifecycle maintenance
   and Module Selection plus shared-Course-Invite management/Join and Admin-
-  Invite administration/onboarding subsets, and the remaining product
+  Invite administration/onboarding plus Admin User directory/name-maintenance
+  subsets, and the remaining product
   implementation gap.
 - Read when: You need to distinguish accepted first-release behavior and
   non-goals from implementation state.

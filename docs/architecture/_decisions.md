@@ -241,6 +241,17 @@ integrity failure rolls the preceding update back. This keeps the already
 sufficient `0008` schema, avoids pending/claimant state, and gives same-Invite,
 same-principal, and Revoke competition one coherent winner.
 
+## Guard Admin User Name Edits At Acceptance
+
+Admin User directory/detail responses derive name-edit availability from the
+fresh current actor and target rather than duplicating the ordinary/Super/self
+matrix in browser code or session claims. The final name-only D1 update repeats
+the same actor-state and target-authority guard, so a stale promotion, actor
+Disable, or target deletion cannot turn a previously rendered form into
+authority or a partial mutation. The existing `admin_users` schema already
+contains every required fact; no version column, generic permission store, or
+profile abstraction is added.
+
 ## Keep Node Tooling Separate From The Worker Runtime
 
 Node.js remains the repository tooling, build, and CI runtime. Application

@@ -1,7 +1,10 @@
 import i18next from "i18next";
 import { initReactI18next } from "react-i18next";
 
-import { adminInviteTranslations } from "./admin-access/index.js";
+import {
+  adminInviteTranslations,
+  adminUserTranslations,
+} from "./admin-access/index.js";
 import { adminBootstrapTranslations } from "./admin-bootstrap/adminBootstrapTranslations.js";
 import { applicationShellTranslations } from "./application-shell/index.js";
 import { courseAccessTranslations } from "./course-access/index.js";
@@ -23,6 +26,7 @@ export async function createBrowserI18n() {
       de: {
         translation: {
           ...adminInviteTranslations,
+          ...adminUserTranslations,
           ...adminBootstrapTranslations,
           ...applicationShellTranslations,
           ...courseAccessTranslations,

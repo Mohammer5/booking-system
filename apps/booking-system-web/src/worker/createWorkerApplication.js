@@ -2,6 +2,7 @@ import {
   createAdminHttpHandler,
   createAdminInviteOnboardingHttpHandler,
   createAdminInviteHttpHandler,
+  createAdminUserHttpHandler,
 } from "./admin-bootstrap/index.js";
 import {
   createCourseAccessHttpHandler,
@@ -95,11 +96,16 @@ function createAdminHandlers(capabilities, authentication) {
       inviteContinuation: capabilities.adminInviteContinuation,
       invitePersistence: capabilities.adminInvitePersistence,
     });
+  const handleAdminUserHttpRequest = createAdminUserHttpHandler({
+    authenticate: authentication.authenticate,
+    adminPersistence: capabilities.adminPersistence,
+  });
 
   return {
     handleAdminHttpRequest,
     handleAdminInviteOnboardingHttpRequest,
     handleAdminInviteHttpRequest,
+    handleAdminUserHttpRequest,
   };
 }
 
@@ -204,6 +210,10 @@ function handleAdminDomainRequest(request, requestURL, handlers) {
 
   if (pathname.startsWith("/api/admin-invite/")) {
     return handlers.handleAdminInviteOnboardingHttpRequest(request);
+  }
+
+  if (pathname === "/api/admin/users" || pathname.startsWith("/api/admin/users/")) {
+    return handlers.handleAdminUserHttpRequest(request);
   }
 
   if (pathname === "/api/admin/invites" || pathname.startsWith("/api/admin/invites/")) {

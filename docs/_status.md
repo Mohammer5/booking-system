@@ -58,12 +58,13 @@ terminal Course archival with private read-only history,
 Participant registration/profile/lifecycle
 maintenance, Course Assignment creation/lifecycle, assigned Participant
 Course access, shared Course Invite management/recognition/Join, Admin Invite
-administration/onboarding, and Participant Module Selection slices are now
+administration/onboarding, Admin User directory/name maintenance, and
+Participant Module Selection slices are now
 implemented:
 
 - `@booking-system/booking` at `packages/booking` owns the implemented
   `admin-access` first-bootstrap and Admin Invite create/list/revoke/
-  recognition/claim behavior
+  recognition/claim plus current Admin User list/name-edit behavior
   plus `course-structure` Course, Course-wide Group,
   future Module creation, lifetime descriptive editing, pre-start
   rescheduling, terminal cancellation with retained Selection history,
@@ -93,7 +94,9 @@ implemented:
   `/admin/participants/:participantId` administration, Active-Course Invite
   controls, the public `/invite` continuation/Join route, directly navigable
   `/admin/invites` administration with one-time creation results, public
-  `/admin/invite` signed continuation and ordinary-Admin onboarding, and query-driven
+  `/admin/invite` signed continuation and ordinary-Admin onboarding,
+  `/admin/users` current Admin directory and stable
+  `/admin/users/:adminUserId` name detail/edit, and query-driven
   assigned-Course home, Worker/API
   handling, Better Auth composition, D1
   persistence, Vite/Workers Static Assets integration, and local runtime;
@@ -116,7 +119,9 @@ implemented:
   Participant state fresh, and supports refresh, zero/one/multiple assigned
   Active or Archived Courses, private Course detail, and sign-out without
   public discovery;
-- `/`, `/invite`, `/admin`, `/admin/participants`, `/admin/courses`,
+- `/`, `/invite`, `/admin`, `/admin/users`, `/admin/invites`,
+  `/admin/participants`, `/admin/courses`,
+  `/admin/users/:adminUserId`,
   `/admin/participants/:participantId`, `/admin/courses/new`,
   `/admin/courses/:courseId`, Participant `/profile`, and Participant
   `/courses/:courseId` are direct/refresh-safe German MUI contexts within one
@@ -202,6 +207,13 @@ implemented:
   ordinary Active Admin insert; existing Active/Disabled principals, deleted-
   principal return, same-Invite/same-principal competition, Revoke races, and
   insert rollback leave one coherent outcome and create no Participant;
+- the Admin User directory lists every current Active or Disabled Admin with
+  narrow name/state/authority data and server-derived name-edit availability.
+  One guarded name-only update permits Active self edits, ordinary-to-ordinary
+  edits, and Super-Admin edits of ordinary or Super targets, while current
+  actor state, target existence, and authority changes are rechecked in D1;
+  identity, principal, lifecycle, authority, relationships, same-principal
+  Participant data, and duplicate-name independence remain unchanged;
 - the stable Course detail lists and creates Course-wide Groups with unique
   normalized Active names and future Scheduled Modules, resolves local minute
   input through the Course IANA timezone, rejects DST gaps, requires an
@@ -254,6 +266,11 @@ implemented:
   validation, ordinary-Admin creation, existing/Disabled refusal without
   consumption, deleted-principal return, two-principal competition, stale and
   unavailable privacy, responsive layout, focus, and axe;
+- Admin User browser evidence additionally covers the real fixed Super and
+  invited ordinary directory, self and cross-Admin edits, ordinary-to-Super
+  refusal, responsive table/card alternatives, direct refresh, required-name
+  validation, Disabled and second-Super presentation, stale outcomes, focus,
+  privacy, overflow, and axe;
 - both workspace boundary maps are registered in ESLint with exact module,
   workspace, composition, third-party, and test-only permissions;
 - the root Nix flake supplies NixOS developer-host tooling: Node, pnpm,
@@ -264,7 +281,7 @@ implemented:
   build, and Chromium browser evidence.
 
 Apple, Microsoft, and Facebook providers, Admin-assisted Module Selection,
-later Admin capabilities, remote Google credentials and production
+Admin promotion and lifecycle capabilities, remote Google credentials and production
 callback/domain configuration, remote Cloudflare staging/production resources,
 release
 automation, deployment credentials, and production deployment remain absent.

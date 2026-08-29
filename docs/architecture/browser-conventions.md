@@ -149,7 +149,9 @@ deployment and fallback behavior. The current independently navigable routes
 are the Participant entry at `/`, Participant profile at `/profile`,
 public Course Invite continuation and Join at `/invite`,
 administration entry at `/admin`, public Admin Invite onboarding at
-`/admin/invite`, Admin Invite administration at `/admin/invites`, global
+`/admin/invite`, Admin Invite administration at `/admin/invites`, current
+Admin User directory at `/admin/users`, stable Admin User detail/name editing
+at `/admin/users/:adminUserId`, global
 Participant directory at
 `/admin/participants`, stable Participant detail/edit at
 `/admin/participants/:participantId`, Course index at
@@ -169,6 +171,14 @@ and then uses only the signed server continuation. Authentication, refresh,
 local name validation, and abandonment consume nothing; current Active or
 Disabled Admin principals receive a common refusal, while a principal with no
 current Admin receives the explicit-name form and one focused terminal result.
+
+The Admin User directory consumes server-derived `isNameEditable` rather than
+reimplementing the self/ordinary/Super matrix in browser code. Desktop uses a
+semantic table and narrow viewports use a named card list without horizontal
+overflow. Stable detail always shows explicit authority and state, mounts the
+name-only React Hook Form only when permitted, explains provider-data
+independence, and focuses validation, success, or stale refusal. Successful
+self-edit invalidates current-Admin state as well as directory/detail data.
 
 ## Browser Authentication
 

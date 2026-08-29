@@ -80,6 +80,13 @@ function AdministrationNavigation({ translate }) {
       </Button>
       <Button
         component={RouterLink}
+        to="/admin/users"
+        variant="outlined"
+      >
+        {translate("adminUsers.navigation")}
+      </Button>
+      <Button
+        component={RouterLink}
         to="/admin/invites"
         variant="outlined"
       >

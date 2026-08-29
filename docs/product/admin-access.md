@@ -118,6 +118,12 @@ User identity and authority. Disabling or deleting an Admin User MUST NOT imply
 Participant Disable or deletion, even when the same external authentication
 identity backs both domain entities.
 
+An authorized Active Admin User MAY edit the retained name of an Active or
+Disabled target Admin User under the authority rules below. Target Disable
+does not erase or protect that booking-system profile property; it prevents the
+Disabled Admin User from acting. The actor and target still MUST be revalidated
+when the name edit is accepted.
+
 ### Ordinary Admin User Authority
 
 An ordinary Active Admin User MAY edit their own name. They MUST NOT:

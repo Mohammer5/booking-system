@@ -4,8 +4,11 @@ export {
   createClaimAdminInvite,
   createGetAdminAuthenticationEntry,
   createListAdminInvites,
+  createListAdminUsers,
   createRevokeAdminInvite,
   createResolveAdminContext,
+  createUpdateAdminUserName,
+  isAdminUserNameEditable,
   recognizeAdminInvite,
 } from "./admin-access/index.js";
 export {

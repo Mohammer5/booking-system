@@ -327,6 +327,19 @@ Disabled refusal without consumption, returning-principal onboarding, common
 terminal/unknown privacy, two fixed-principal competition, desktop/360px,
 keyboard/result focus, overflow, and axe without contacting Google's UI.
 
+For current Admin User directory and name maintenance, booking-domain Vitest
+owns Active-actor listing, nonblank-name validation, the self/ordinary/Super
+target matrix, Active/Disabled targets, edit-availability derivation, identity
+preservation, and guarded outcome translation. Worker/D1 Vitest owns ordered
+current rows, one guarded name-only update, fresh actor/target authority,
+promotion/deletion/Disable races, duplicate-name independence, same-principal
+Participant isolation, rollback, exact narrow no-store HTTP, production
+composition, and technical sanitization. Playwright owns real fixed Super and
+invited ordinary list/self/cross-edit journeys, ordinary-to-Super refusal,
+second-Super and Disabled presentation, stale loss, direct refresh, responsive
+table/card alternatives, required-name/provider copy, loading/empty/error/
+unavailable states, privacy, keyboard/result focus, overflow, and axe.
+
 The implemented integration uses project-pinned `@cloudflare/vitest-plugin`
 with isolated D1 state and the version-controlled migration sequence.
 
@@ -360,10 +373,11 @@ Detailed product invariants remain lower-level-test responsibilities.
 
 Routine E2E must not automate Google, Apple, Microsoft, or Facebook login UIs.
 The implemented direction is an explicitly non-production Better Auth
-test-capable composition that establishes normal application sessions for the
-fixed `first-admin`, `later-admin`, `participant-a`, `participant-b`,
-`invite-participant-a`, `invite-participant-b`, and `selection-participant`
-identities.
+test-capable composition that establishes normal application sessions for
+twelve fixed identities: `first-admin`, `later-admin`, `participant-a`,
+`participant-b`, `invite-participant-a`, `invite-participant-b`,
+`selection-participant`, `admin-invite-a`, `admin-invite-b`, `admin-invite-c`,
+`admin-invite-d`, and `returning-admin`.
 Playwright then exercises the normal authenticated application and real
 booking-domain authorization; test authentication must not mock or bypass it or
 permit arbitrary-principal impersonation.
@@ -407,7 +421,7 @@ onboarding/assigned-Course/zero-membership/privacy states, Participant
 directory and Course membership/Assignment-lifecycle states, Participant
 self/Admin profile editing and lifecycle, Course editing and permanent
 timezone-lock presentation, Disabled-target detail, and absence of horizontal
-overflow. The current 48-test browser suite also proves that one
+overflow. The current 57-test browser suite also proves that one
 fixed normal session remains usable while navigating between Participant and
 Admin contexts, successful sign-out terminates that session, an Active Admin
 can create, edit, and revisit a Course with Groups, a future Module, a

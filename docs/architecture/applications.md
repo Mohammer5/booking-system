@@ -49,7 +49,9 @@ assigned-Course home at `/`, public Course Invite recognition at `/invite`,
 self-profile maintenance at `/profile`, private
 Participant Course detail at `/courses/:courseId`, the administration entry at
 `/admin`, public invited-Admin onboarding at `/admin/invite`, Admin Invite
-administration at `/admin/invites`, the Participant
+administration at `/admin/invites`, current Admin User directory at
+`/admin/users`, stable Admin User detail/name editing at
+`/admin/users/:adminUserId`, the Participant
 directory at `/admin/participants`, stable
 Participant detail/edit/lifecycle at `/admin/participants/:participantId`, and
 nested Course index/create/detail routes through one responsive MUI shell.
@@ -447,6 +449,33 @@ The German `/admin/invite` view cleans the fragment immediately, survives
 refresh and fixed Google return without consuming, requires an explicit name,
 and exposes common unavailable, existing-principal, stale/concurrent, and
 success states. It creates no Participant and reveals no administration data.
+
+### Admin User Directory And Name HTTP Surface
+
+Current Admin User administration uses three same-origin operations:
+
+```text
+GET /api/admin/users
+GET /api/admin/users/:adminUserId
+PUT /api/admin/users/:adminUserId
+```
+
+Every operation authenticates normally and freshly resolves an Active current
+Admin User. The collection returns every current Admin User in deterministic
+name/identity order. Collection and detail representations contain only `id`,
+required booking-system `name`, Active/Disabled `state`, ordinary/Super
+`authority`, and server-derived `isNameEditable`; external principals,
+provider data, Participant data, and relationships never cross this HTTP
+surface.
+
+The `PUT` accepts `{ name }` only. One guarded D1 statement changes only the
+target name while rechecking actor Active state, target existence, self access,
+and ordinary-versus-Super authority. Invalid input returns `422`; a missing
+target returns `404`; a stale actor or no-longer-authorized target is refused
+without partial mutation. The directly navigable German `/admin/users` and
+`/admin/users/:adminUserId` views use responsive table/card alternatives,
+explicit state/authority labels, and mount the accessible name form only when
+the server representation permits it.
 
 ### No Separate API Application
 

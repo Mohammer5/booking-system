@@ -98,6 +98,13 @@ guarded `insert ... select` over `course_assignments`, `participants`,
 `admin-access` persistence additionally owns guarded Admin Invite creation,
 non-secret ordered listing and digest recognition, terminal revocation, and
 atomic ordinary-Admin claim over `admin_invites` and `admin_users`.
+It also owns current Admin User lookup/listing and a name-only update over the
+existing `admin_users` schema. Listing rechecks the actor remains Active. The
+single guarded update accepts self, ordinary-target, or Super-authorized
+target edits only while the actor is still Active and the target still exists
+with an allowed current authority. It updates no identity, external principal,
+state, authority, relationship, or same-principal Participant row; target
+Active/Disabled state remains retained and duplicate names remain valid.
 
 ## Environment Isolation
 
