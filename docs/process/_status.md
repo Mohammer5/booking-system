@@ -78,7 +78,12 @@ Current reality:
   cascade evidence, same-session access loss/restoration, new-Invite return,
   server-derived German directory/detail controls, destructive consequence
   copy, removed-row success, responsive keyboard/focus behavior, and axe. The
-  tag-gated release policy remains unimplemented.
+  Admin participation layer additionally proves one injected-time derived
+  Selection predicate, normalized guarded Active/Archived Course reads,
+  current/stale Admin authorization, Participant response privacy, directly
+  navigable overview/detail, responsive table/list presentation, every named
+  lifecycle history, archived selected-Group details, focus, overflow, and
+  axe. The tag-gated release policy remains unimplemented.
 - x86_64 NixOS developers can enter a pinned host-tooling environment with
   `nix develop`; `pnpm check` remains the verification contract and GitHub
   Actions continues to provision Node, pnpm, and Playwright independently.

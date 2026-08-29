@@ -21,7 +21,8 @@ JavaScript conventions, and ESLint-enforced dependency rules.
   lifecycle, Assignment-
   lifecycle, and assigned Participant Course-access plus Module-Selection and
   shared-Course-Invite management/Join and Admin-Invite-administration/
-  onboarding plus Admin-User-directory/name-editing/promotion/lifecycle slices and terminal Course archival/
+  onboarding plus Admin-User-directory/name-editing/promotion/lifecycle and
+  administrative Course-participation inspection slices and terminal Course archival/
   read-only history,
   React browser routes and
   responsive Admin/Participant experience, Google
@@ -71,7 +72,8 @@ JavaScript conventions, and ESLint-enforced dependency rules.
   contexts, Participant onboarding/profile/lifecycle/assigned-Course access/
   directory, Course Assignment creation/revocation/reactivation, Participant
   Module Selection, shared Course Invite management/recognition/Join, Admin
-  Invite administration/onboarding, Admin User directory/name editing/promotion/lifecycle, guarded
+  Invite administration/onboarding, Admin User directory/name editing/promotion/lifecycle,
+  administrative Course participation overview/detail, guarded
   Course editing, Course/Group/Module creation,
   Module editing/rescheduling/cancellation/deletion, and Group editing/
   archival/reactivation/deletion plus Course archival
@@ -104,7 +106,8 @@ JavaScript conventions, and ESLint-enforced dependency rules.
   Selection, Course Invite, digest-only terminal Admin Invite, and historical-
   Admin-attribution migrations,
   assigned Participant Course reads, atomic Admin Invite claim, and guarded
-  Admin User name updates, authority-only promotion, and guarded lifecycle,
+  Admin Course-participation reads, Admin User name updates,
+  authority-only promotion, and guarded lifecycle,
   guarded Participant
   profile/lifecycle updates, retained Assignment lifecycle with atomic
   Selection retention, guarded Course and Group editing/lifecycle/deletion with

@@ -1,3 +1,5 @@
+export { AdminCourseParticipationDetailPage } from "./AdminCourseParticipationDetailPage.jsx";
+export { AdminCourseParticipationPage } from "./AdminCourseParticipationPage.jsx";
 export { AdminParticipantDetailPage } from "./AdminParticipantDetailPage.jsx";
 export { CourseInvitePage } from "./CourseInvitePage.jsx";
 export { CourseInviteSection } from "./CourseInviteSection.jsx";

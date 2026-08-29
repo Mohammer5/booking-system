@@ -5,6 +5,7 @@ import {
   createAdminUserHttpHandler,
 } from "./admin-bootstrap/index.js";
 import {
+  createAdministrativeParticipationHttpHandler,
   createCourseAccessHttpHandler,
   createCourseInviteHttpHandler,
   createCourseInviteJoinHttpHandler,
@@ -56,6 +57,13 @@ function createWorkerHandlers(capabilities) {
     coursePersistence: capabilities.coursePersistence,
     participantPersistence: capabilities.participantPersistence,
   });
+  const handleAdministrativeParticipationHttpRequest =
+    createAdministrativeParticipationHttpHandler({
+      authenticate: authentication.authenticate,
+      now: capabilities.now,
+      adminPersistence: capabilities.adminPersistence,
+      persistence: capabilities.administrativeParticipationPersistence,
+    });
   const inviteHandlers = createInviteHandlers(capabilities, authentication);
   const participantHandlers = createParticipantHandlers(
     capabilities,
@@ -64,6 +72,7 @@ function createWorkerHandlers(capabilities) {
 
   return {
     ...adminHandlers,
+    handleAdministrativeParticipationHttpRequest,
     handleCourseAccessHttpRequest,
     ...inviteHandlers,
     handleCourseHttpRequest,
@@ -220,8 +229,13 @@ function handleAdminDomainRequest(request, requestURL, handlers) {
     return handlers.handleAdminInviteHttpRequest(request);
   }
 
-  if (isAdminCourseInvitePath(pathname)) {
-    return handlers.handleCourseInviteHttpRequest(request);
+  if (
+    isAdminCourseInvitePath(pathname) ||
+    isAdministrativeParticipationPath(pathname)
+  ) {
+    return isAdminCourseInvitePath(pathname)
+      ? handlers.handleCourseInviteHttpRequest(request)
+      : handlers.handleAdministrativeParticipationHttpRequest(request);
   }
 
   if (
@@ -239,6 +253,14 @@ function handleAdminDomainRequest(request, requestURL, handlers) {
   return pathname.startsWith("/api/admin/")
     ? handlers.handleAdminHttpRequest(request)
     : null;
+}
+
+/** @returns {boolean} Whether a path belongs to Admin participation inspection. */
+function isAdministrativeParticipationPath(pathname) {
+  return (
+    pathname.startsWith("/api/admin/courses/") &&
+    pathname.split("/").includes("participation")
+  );
 }
 
 /** @returns {boolean} Whether a path is nested Admin Course Invite API. */

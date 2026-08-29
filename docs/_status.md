@@ -59,7 +59,7 @@ Participant registration/profile/lifecycle
 maintenance, Course Assignment creation/lifecycle, assigned Participant
 Course access, shared Course Invite management/recognition/Join, Admin Invite
 administration/onboarding, Admin User directory/name maintenance/promotion/
-lifecycle, and
+lifecycle, administrative Course participation inspection, and
 Participant Module Selection slices are now
 implemented:
 
@@ -99,7 +99,8 @@ implemented:
   `/admin/users` current Admin directory and stable
   `/admin/users/:adminUserId` name detail/edit plus permanent Super Admin
   promotion and lifecycle confirmations, and query-driven
-  assigned-Course home, Worker/API
+  assigned-Course home plus stable responsive Admin Course participation
+  overview/Participant-detail routes, Worker/API
   handling, Better Auth composition, D1
   persistence, Vite/Workers Static Assets integration, and local runtime;
 - nine version-controlled migrations create the Better Auth/Admin foundation,
@@ -125,7 +126,8 @@ implemented:
   `/admin/participants`, `/admin/courses`,
   `/admin/users/:adminUserId`,
   `/admin/participants/:participantId`, `/admin/courses/new`,
-  `/admin/courses/:courseId`, Participant `/profile`, and Participant
+  `/admin/courses/:courseId`, its participation overview and Course-scoped
+  Participant detail, Participant `/profile`, and Participant
   `/courses/:courseId` are direct/refresh-safe German MUI contexts within one
   responsive shell; one principal/session can reach distinct Participant and
   Admin User identities without a persisted role;
@@ -165,6 +167,12 @@ implemented:
   including that selected Group's retained details/state when Archived,
   never rosters, peer profiles, emails, counts, Assignments, Admin data, or a
   public catalogue;
+- Admin Course participation reads use a normalized D1 batch whose every
+  statement requires the same current Active Admin and Course scope. They
+  expose retained Active/Revoked Assignments with Active/Disabled Participants,
+  every Module and Group, and derived live/historical Selection meaning with
+  retained Archived selected-Group details. The read is direct/refresh-safe
+  and adds nothing to Participant representations;
 - guarded Selection set/change/remove writes recheck the Participant,
   Assignment, Course, Scheduled Module, Active same-Course Group, and exact
   `startsAt` deadline at acceptance; replacement preserves one stable

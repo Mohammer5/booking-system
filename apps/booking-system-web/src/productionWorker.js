@@ -4,6 +4,7 @@ import {
   createAdminInvitePersistence,
   createAdminInviteContinuation,
   createAdminInviteToken,
+  createAdministrativeParticipationPersistence,
   createCourseAssignmentPersistence,
   createCourseInvitePersistence,
   createCourseInviteContinuation,
@@ -56,6 +57,8 @@ export default {
       ),
       inviteJoinPersistence: createCourseInviteJoinPersistence(environment.DB),
       adminPersistence: createAdminPersistence(environment.DB),
+      administrativeParticipationPersistence:
+        createAdministrativeParticipationPersistence(environment.DB),
       assignmentPersistence: createCourseAssignmentPersistence(environment.DB),
       coursePersistence: createCoursePersistence(environment.DB),
       invitePersistence: createCourseInvitePersistence(environment.DB),

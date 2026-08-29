@@ -12,6 +12,8 @@ import {
 } from "./admin-bootstrap/index.js";
 import { ResponsiveApplicationShell } from "./application-shell/index.js";
 import {
+  AdminCourseParticipationDetailPage,
+  AdminCourseParticipationPage,
   AdminParticipantDetailPage,
   CourseInvitePage,
   ParticipantCourseDetailPage,
@@ -67,28 +69,43 @@ export function BrowserApplication() {
           element={<ParticipantCourseDetailPage />}
         />
       </Route>
-      <Route
-        path="/admin"
-        element={
-          <ResponsiveApplicationShell context="admin">
-            <AdminBootstrapPage />
-          </ResponsiveApplicationShell>
-        }
-      >
-        <Route index element={<AdministrationContextRoute />} />
-        <Route path="invites" element={<AdminInvitePage />} />
-        <Route path="users" element={<AdminUserDirectoryPage />} />
-        <Route path="users/:adminUserId" element={<AdminUserDetailPage />} />
-        <Route path="participants" element={<ParticipantDirectoryPage />} />
-        <Route
-          path="participants/:participantId"
-          element={<AdminParticipantDetailPage />}
-        />
-        <Route path="courses" element={<CourseIndexPage />} />
-        <Route path="courses/new" element={<CourseCreatePage />} />
-        <Route path="courses/:courseId" element={<CourseDetailPage />} />
-      </Route>
+      {administrationRoute()}
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
+  );
+}
+
+/** @returns {import("react").ReactElement} Nested Admin application routes. */
+function administrationRoute() {
+  return (
+    <Route
+      path="/admin"
+      element={
+        <ResponsiveApplicationShell context="admin">
+          <AdminBootstrapPage />
+        </ResponsiveApplicationShell>
+      }
+    >
+      <Route index element={<AdministrationContextRoute />} />
+      <Route path="invites" element={<AdminInvitePage />} />
+      <Route path="users" element={<AdminUserDirectoryPage />} />
+      <Route path="users/:adminUserId" element={<AdminUserDetailPage />} />
+      <Route path="participants" element={<ParticipantDirectoryPage />} />
+      <Route
+        path="participants/:participantId"
+        element={<AdminParticipantDetailPage />}
+      />
+      <Route path="courses" element={<CourseIndexPage />} />
+      <Route path="courses/new" element={<CourseCreatePage />} />
+      <Route
+        path="courses/:courseId/participation"
+        element={<AdminCourseParticipationPage />}
+      />
+      <Route
+        path="courses/:courseId/participation/:participantId"
+        element={<AdminCourseParticipationDetailPage />}
+      />
+      <Route path="courses/:courseId" element={<CourseDetailPage />} />
+    </Route>
   );
 }

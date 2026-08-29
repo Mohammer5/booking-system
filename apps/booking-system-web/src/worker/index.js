@@ -10,6 +10,8 @@ export {
 } from "./admin-bootstrap/index.js";
 export { createCoursePersistence } from "./course-structure/index.js";
 export {
+  createAdministrativeParticipationHttpHandler,
+  createAdministrativeParticipationPersistence,
   createCourseAssignmentPersistence,
   createCourseInvitePersistence,
   createCourseInviteJoinPersistence,

@@ -23,7 +23,7 @@ This repository uses an indexed global documentation system.
   registration/profile/lifecycle/Assignment-lifecycle/assigned-Course-access/
   Module-Selection/shared-Course-Invite-management/Join/Admin-Invite-
   administration/onboarding/Admin-User-directory/name-maintenance/promotion/
-  lifecycle
+  lifecycle/administrative-Course-participation-inspection
   slices, responsive MUI
   Admin/Participant experience, Google authentication, live tooling, and
   intentionally deferred release surfaces.
@@ -60,7 +60,8 @@ This repository uses an indexed global documentation system.
   Participant-registration/profile/
   lifecycle, and Assignment-lifecycle/assigned-Participant-Course/Module-
   Selection/shared-Course-Invite-management/Join/Admin-Invite-administration/
-  onboarding/Admin-User-lifecycle/Course-archival evidence,
+  onboarding/Admin-User-lifecycle/administrative-Course-participation/
+  Course-archival evidence,
   CI, and release rules.
 - Read when: A task affects documentation, Markplane, tests, CI, releases,
   routing, indexes, or terminology maintenance.
@@ -74,7 +75,7 @@ This repository uses an indexed global documentation system.
   Assignment creation/revocation/reactivation, Participant lifecycle, assigned
   Participant Course access, shared Course Invite management/recognition/Join,
   Admin Invite administration/onboarding and Admin User directory/name editing/
-  promotion/lifecycle,
+  promotion/lifecycle, administrative Course-participation inspection,
   and
   Participant Module Selection plus Course/
   Group/Module creation, Module editing/rescheduling/cancellation/deletion,

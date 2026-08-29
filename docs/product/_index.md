@@ -24,7 +24,8 @@ domain and behavior.
   Active/Archived-Course access plus Participant profile/lifecycle maintenance
   and Module Selection plus shared-Course-Invite management/Join and Admin-
   Invite administration/onboarding plus Admin User directory/name-maintenance/
-  Super-Admin-promotion/lifecycle subsets, and the remaining product
+  Super-Admin-promotion/lifecycle and administrative Course-participation
+  inspection subsets, and the remaining product
   implementation gap.
 - Read when: You need to distinguish accepted first-release behavior and
   non-goals from implementation state.
@@ -64,8 +65,8 @@ domain and behavior.
 ### Course Access
 - Path: `docs/product/course-access.md`
 - Summary: Participant registration, profile and global access state, Course
-  Assignments, shared Course Invites, administration, permissions, and
-  visibility.
+  Assignments, shared Course Invites, administrative Course participation
+  inspection, permissions, and visibility.
 - Read when: A task affects Participant onboarding, profile, status,
   administration, Course access, joining, Assignment, membership, revocation,
   Course Invite visibility, or archived read-only access.

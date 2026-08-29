@@ -353,6 +353,41 @@ discoverable, `/admin/participants/:participantId` owns stable profile and
 lifecycle maintenance, and Course membership stays on the stable Course detail
 route.
 
+### Administrative Participation HTTP Surface
+
+The read-only `course-access` administration slice adds one concrete
+same-origin operation:
+
+```text
+GET /api/admin/courses/:courseId/participation
+```
+
+The operation normally authenticates and freshly resolves one Active Admin,
+then passes that Admin identity into a guarded Course-scoped D1 batch. Success
+returns `200 { course, groups, modules, participations }`; unauthenticated and
+missing/Disabled Admin contexts return the existing exact `401`/`403`
+outcomes; a missing Course or Admin disabled between context resolution and
+the read returns `404 participation-unavailable`; unexpected failure returns a
+sanitized `500 technical-error`. Every response is `no-store`.
+
+The representation is normalized. `course` carries only its administration
+fields; `groups` includes Active and Archived Group identity/details/state;
+`modules` includes Scheduled and Cancelled content and exact instants; and each
+ordered participation carries the minimum Participant profile, retained
+Assignment identity/state, and retained Selections. Selection responses omit
+stored status and instead contain Worker-composed booking-domain
+`meaning`/`phase` derived from one captured instant and the matching current
+Participant, Assignment, Course, and Module. The selected Group remains
+embedded with identity/details/state when Archived.
+
+The browser exposes `/admin/courses/:courseId/participation` as a responsive
+semantic table/card overview with complete Module and Group lists, and
+`/admin/courses/:courseId/participation/:participantId` as a refresh-safe
+Participant/Module detail. Both are read-only German MUI views behind the
+current-Admin gate. The separate Participant persistence, handler, contract,
+routes, and representations remain unchanged and contain no roster, peer,
+Assignment, count, or Admin data.
+
 ### Shared Course Invite HTTP Surface
 
 The implemented `course-access` Invite slice adds eight concrete same-origin

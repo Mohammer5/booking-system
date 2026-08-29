@@ -224,6 +224,34 @@ describe("derived Module Selection presentation", () => {
       }),
     ).toMatchObject({ meaning: "historical", phase: "historical" });
   });
+
+  it("retains Archived Group identity and details in derived participation", () => {
+    const archivedGroupSelection = {
+      ...selection(),
+      group: {
+        id: "group-a",
+        name: "Historische Gruppe",
+        details: "Unveränderte Gruppendetails",
+        state: "archived",
+      },
+    };
+    const result = deriveModuleSelectionPresentation({
+      ...eligibleInput(),
+      module: {
+        ...moduleData(),
+        startsAt: "2026-09-01T09:00:00.000Z",
+      },
+      selection: archivedGroupSelection,
+      now: "2026-09-01T10:30:00.000Z",
+    });
+
+    expect(result).toEqual({
+      ...archivedGroupSelection,
+      meaning: "live",
+      phase: "in-progress",
+    });
+    expect(result.group).toBe(archivedGroupSelection.group);
+  });
 });
 
 /** @returns {object} Deterministic set-operation capabilities. */

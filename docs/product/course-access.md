@@ -413,6 +413,20 @@ Invite. Administrative Course information includes Course Participants,
 Assignment state, Modules, Groups, and Participants' Selections, subject to the
 accepted action rules.
 
+This administration read is Course-scoped and directly navigable. It includes
+Active and Disabled Participants reached through retained Active or Revoked
+Assignments, Scheduled and Cancelled Modules, Active and Archived Groups, and
+retained Selections. Each Selection's live or historical meaning is derived at
+read time from the current Participant, Assignment, Course, Module, and
+definite current instant. An Archived selected Group retains its identity and
+details in an in-progress or historical Selection even though it is not
+available for a new future choice.
+
+The administration read grants no mutation authority by itself. It MUST NOT
+widen Participant-facing Course access or expose a roster, peer profile/email,
+peer Selection, Assignment, Group count, or Admin information through a
+Participant representation.
+
 ### No Public Discovery
 
 The product has no public Course catalogue or directory. Outside the deliberate

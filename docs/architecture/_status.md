@@ -132,7 +132,9 @@
   `/admin/invites`, `/admin/users`, stable `/admin/users/:adminUserId`,
   `/admin/participants`, stable
   `/admin/participants/:participantId` detail/edit, and nested
-  `/admin/courses`, `/admin/courses/new`, and `/admin/courses/:courseId` views.
+  `/admin/courses`, `/admin/courses/new`, `/admin/courses/:courseId`,
+  `/admin/courses/:courseId/participation`, and stable Course-scoped
+  participation Participant-detail views.
   They use one responsive browser-owned MUI shell with desktop list navigation,
   a narrow modal Drawer, a skip link, and stable route titles. The Participant
   route resolves current state, offers fixed-destination Google entry, requires
@@ -153,6 +155,10 @@
   archival without incidental routes. Archived detail retains inspection,
   removes structural/booking controls, and keeps only Active-Assignment
   revocation actionable.
+  The Admin participation overview composes every retained Assignment/
+  Participant with all Modules and Groups in responsive table/card form; its
+  stable Participant detail presents no/live/historical per-Module Selections
+  and retained Archived selected-Group details without mutation controls.
   Active Course detail additionally owns the one-current shared Invite URL,
   copy and lifecycle controls. The public Invite route captures a token from a
   URL fragment, removes it from the address bar, replaces it after recognition
@@ -250,6 +256,11 @@
   and Active or Archived Course state, order list/Module/Group data
   deterministically, and restrict Participant Groups to Active state plus any
   own selected Archived Group without adding a migration.
+  A separate Admin participation batch independently guards every Course,
+  Assignment/Participant, Module, Group, and retained Selection statement with
+  the same current Active Admin ID and requested Course. The Worker derives
+  Selection meaning from those rows and one captured instant; no Selection
+  status is stored and no Participant contract is widened.
   Guarded Selection replacement/removal rechecks current Participant,
   Assignment, Course, Module, Group, and deadline state in SQL; one unique
   Participant/Module pair preserves stable identity while composite references

@@ -172,6 +172,14 @@ capability through the existing browser `course-access` slice. This adds the
 booking first-level module and root-composition permission but changes no
 first-level application edge or third-party permission.
 
+Administrative participation inspection remains inside the existing
+application `worker/course-access` and `browser/course-access` slices. Worker
+composition consumes the already public booking-package
+`deriveModuleSelectionPresentation` interface; the browser reaches the new
+read model only through same-origin HTTP. No workspace dependency,
+first-level responsibility, third-party permission, composition-file
+permission, or boundary-map entry changes.
+
 ## Map Shape
 
 Each map explicitly declares:

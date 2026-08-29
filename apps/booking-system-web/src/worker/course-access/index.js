@@ -1,3 +1,5 @@
+export { createAdministrativeParticipationHttpHandler } from "./createAdministrativeParticipationHttpHandler.js";
+export { createAdministrativeParticipationPersistence } from "./createAdministrativeParticipationPersistence.js";
 export { createCourseAssignmentPersistence } from "./createCourseAssignmentPersistence.js";
 export { createCourseInvitePersistence } from "./createCourseInvitePersistence.js";
 export { createCourseInviteHttpHandler } from "./createCourseInviteHttpHandler.js";

@@ -202,6 +202,14 @@ function CourseDetails(props) {
         translate={translate}
       />
       <CourseDescriptionList course={course} translate={translate} />
+      <Button
+        component={RouterLink}
+        sx={{ alignSelf: "flex-start" }}
+        to={`/admin/courses/${course.id}/participation`}
+        variant="outlined"
+      >
+        {translate("courseAccess.adminParticipation.open")}
+      </Button>
       {props.archivalResult?.course.id === course.id ? (
         <Alert
           ref={props.archivalSuccessRef}

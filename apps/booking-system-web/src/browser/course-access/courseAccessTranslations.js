@@ -1,3 +1,5 @@
+import { adminParticipationTranslations } from "./adminParticipationTranslations.js";
+
 export const courseAccessTranslations = {
   courseAccess: {
     invite: {
@@ -82,6 +84,7 @@ export const courseAccessTranslations = {
       technicalError:
         "Die Teilnahmedaten konnten nicht geladen oder gespeichert werden. Bitte versuchen Sie es erneut.",
     },
+    adminParticipation: adminParticipationTranslations,
     participantState: {
       active: "Teilnahmeprofil: Aktiv",
       disabled: "Teilnahmeprofil: Deaktiviert",

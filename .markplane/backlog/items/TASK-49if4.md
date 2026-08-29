@@ -1,12 +1,12 @@
 ---
 id: TASK-49if4
 title: Inspect administrative participation
-status: backlog
+status: done
 priority: medium
 type: feature
 effort: medium
 epic: EPIC-h8fpz
-plan: null
+plan: PLAN-pchnp
 depends_on:
 - TASK-25j4s
 - TASK-smtvk
@@ -17,7 +17,7 @@ blocks:
 - TASK-2nh3b
 related:
 - TASK-jvqrk
-assignee: null
+assignee: gerkules
 tags:
 - admin
 - participation
@@ -25,7 +25,7 @@ tags:
 - ui
 position: h10
 created: 2026-08-27
-updated: 2026-08-27
+updated: 2026-08-29
 ---
 
 # Inspect administrative participation
@@ -40,21 +40,21 @@ leaking administration data into Participant views.
 
 ## Acceptance Criteria
 
-- [ ] An Active Admin User can inspect Active and Archived Courses, their
+- [x] An Active Admin User can inspect Active and Archived Courses, their
       Participants and Active/Revoked Assignment states, Modules, Groups, and
       each Participant's retained Selections relevant to administration.
-- [ ] Selection presentation derives live/historical meaning from current
+- [x] Selection presentation derives live/historical meaning from current
       Participant, Assignment, Course, Module lifecycle, and definite `now`;
       no Selection status is stored or trusted.
-- [ ] Exact transition to historical state is visible at `endsAt`, cancellation,
+- [x] Exact transition to historical state is visible at `endsAt`, cancellation,
       Assignment revocation, Participant Disable, and Course archival; valid
       reactivation/Re-enable may make retained in-progress participation live.
-- [ ] Archived Group identity/details remain visible for retained in-progress
+- [x] Archived Group identity/details remain visible for retained in-progress
       or historical Selections where required, while the Group is unavailable
       for new future choices.
-- [ ] Course/Participant/Module identifiers are authorized against current
+- [x] Course/Participant/Module identifiers are authorized against current
       Admin state; Disabled/missing Admins and stale requests receive no data.
-- [ ] Participant browser/API views remain unchanged and never receive roster,
+- [x] Participant browser/API views remain unchanged and never receive roster,
       peer profile/email/Selection, Group counts, or Admin information merely
       because this read model exists.
 

@@ -2,6 +2,16 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 const participantDirectoryQueryKey = ["course-access", "participants"];
 
+/** @returns {object} One freshly authorized Admin Course-participation query. */
+export function useAdministrativeCourseParticipation(courseId) {
+  return useQuery({
+    queryKey: ["course-access", "administrative-participation", courseId],
+    queryFn: () =>
+      requestJson(`/api/admin/courses/${courseId}/participation`),
+    retry: false,
+  });
+}
+
 /**
  * Read the freshly authorized Participant administration directory.
  *

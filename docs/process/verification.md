@@ -373,6 +373,22 @@ Participant independence, new-Invite return, desktop table and 360px detail,
 keyboard/Dialog cancellation and result/error focus, bounded stale/final-Super
 and self-protection, privacy, overflow, and axe.
 
+For administrative participation inspection, booking-domain Vitest owns the
+complete injected-time live/historical predicate, exact start/end phases,
+Disabled/Revoked/Archived/Cancelled transitions, valid in-progress return to
+live meaning, ownership mismatches, and retained Archived selected-Group
+identity/details. Worker/D1 Vitest owns normalized Course, Assignment/
+Participant, Module, Group, and Selection composition, deterministic ordering,
+Active and Archived Course reads, the lifecycle matrix, current and stale
+Active-Admin guards on every statement, exact route/method/no-store behavior,
+sanitized failure, production composition, and an unchanged narrow Participant
+response without peers, Assignments, counts, or Admin data. Playwright owns the
+real zero-participation Active/Archived Course journey, direct refresh,
+loading/empty/unavailable/technical focus, responsive desktop table and 360px
+list alternatives, stable Participant detail, future/in-progress/exact-ended/
+Cancelled/Disabled/Revoked/Archived presentation, retained Archived Group
+details, Participant privacy probes, keyboard focus, overflow, and axe.
+
 The implemented integration uses project-pinned `@cloudflare/vitest-plugin`
 with isolated D1 state and the version-controlled migration sequence.
 
@@ -454,7 +470,7 @@ onboarding/assigned-Course/zero-membership/privacy states, Participant
 directory and Course membership/Assignment-lifecycle states, Participant
 self/Admin profile editing and lifecycle, Course editing and permanent
 timezone-lock presentation, Disabled-target detail, and absence of horizontal
-overflow. The current 61-test browser suite also proves that one
+overflow. The current 63-test browser suite also proves that one
 fixed normal session remains usable while navigating between Participant and
 Admin contexts, successful sign-out terminates that session, an Active Admin
 can create, edit, and revisit a Course with Groups, a future Module, a

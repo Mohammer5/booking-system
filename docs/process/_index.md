@@ -19,7 +19,7 @@ development work is tracked and verified, and how releases are promoted.
   Participant-registration/profile/lifecycle, Assignment-lifecycle, assigned
   Participant Course, Module Selection, shared Course Invite, Admin Invite
   administration/onboarding, Admin User directory/name editing/promotion/
-  lifecycle, and
+  lifecycle, administrative Course-participation inspection, and
   application-shell verification;
   active state; and known gaps.
 - Read when: You need the present-state view of the docs or tracking process.
@@ -62,7 +62,7 @@ development work is tracked and verified, and how releases are promoted.
   profile/lifecycle/assigned-Course access, Assignment-lifecycle/Module-
   Selection, shared-Course-Invite management/recognition/Join, Admin-Invite
   administration/onboarding, Admin-User-directory/name-editing/promotion/
-  lifecycle, terminal Course-
+  lifecycle, administrative Course-participation inspection, terminal Course-
   archival/read-only history, and accessibility
   policy, plus the external branch-protection requirement.
 - Read when: A task affects tests, CI, required checks, test environments,

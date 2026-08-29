@@ -98,6 +98,16 @@ guarded `insert ... select` over `course_assignments`, `participants`,
 `admin-access` persistence additionally owns guarded Admin Invite creation,
 non-secret ordered listing and digest recognition, terminal revocation, and
 atomic ordinary-Admin claim over `admin_invites` and `admin_users`.
+
+The Admin-only Course participation read is a separate normalized
+`course-access` persistence capability. One D1 batch reads the requested Active
+or Archived Course, all same-Course Assignments with their Participants, all
+Modules, all Groups, and all retained Selections with selected-Group data.
+Every statement independently requires the same current Active Admin ID and
+scopes every identifier through the requested Course, so an actor disabled
+after initial context resolution receives no data. Selection meaning is not a
+column or trusted row field; the Worker applies the booking-domain derivation
+to these authoritative rows using one captured instant.
 It also owns current Admin User lookup/listing, a name-only update, one-way
 promotion, and guarded Disable/Re-enable/delete over `admin_users`. Listing
 rechecks the actor remains Active. The single guarded name update accepts self,
