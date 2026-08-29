@@ -2,6 +2,8 @@ import { createAuthentication } from "./authentication/index.js";
 import {
   createAdminPersistence,
   createCourseAssignmentPersistence,
+  createCourseInvitePersistence,
+  createCourseInviteToken,
   createCoursePersistence,
   createGroupPersistence,
   createModulePersistence,
@@ -9,6 +11,7 @@ import {
   createParticipantCoursePersistence,
   createParticipantPersistence,
   createWorkerApplication,
+  hashCourseInviteToken,
 } from "./worker/index.js";
 
 export default {
@@ -25,15 +28,19 @@ export default {
       authentication,
       createAdminUserId: () => crypto.randomUUID(),
       createCourseAssignmentId: () => crypto.randomUUID(),
+      createCourseInviteId: () => crypto.randomUUID(),
+      createCourseInviteToken,
       createCourseId: () => crypto.randomUUID(),
       createGroupId: () => crypto.randomUUID(),
       createModuleId: () => crypto.randomUUID(),
       createModuleSelectionId: () => crypto.randomUUID(),
       createParticipantId: () => crypto.randomUUID(),
       now: () => new Date().toISOString(),
+      hashCourseInviteToken,
       adminPersistence: createAdminPersistence(environment.DB),
       assignmentPersistence: createCourseAssignmentPersistence(environment.DB),
       coursePersistence: createCoursePersistence(environment.DB),
+      invitePersistence: createCourseInvitePersistence(environment.DB),
       groupPersistence: createGroupPersistence(environment.DB),
       modulePersistence: createModulePersistence(environment.DB),
       selectionPersistence: createModuleSelectionPersistence(environment.DB),

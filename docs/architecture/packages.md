@@ -57,8 +57,9 @@ Active or Disabled targets, and current Active Participant + Active Assignment
 also implements Active-Participant self profile editing and Active-Admin edits
 of Active/Disabled Participant profiles with the same complete-email policy,
 plus guarded global Participant Disable/Re-enable with exact Selection
-retention and fresh access effects. Invite behavior stays with that owner when
-implemented. `module-participation` implements
+retention and fresh access effects. It also implements the one-current shared
+Course Invite lifecycle and minimal recognized-Invite visibility, without
+token, persistence, or browser mechanics. `module-participation` implements
 Participant Selection eligibility, replacement, removal, and derived
 current-versus-historical presentation; later Admin-assisted behavior remains
 with that owner. These are internal

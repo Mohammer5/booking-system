@@ -1,6 +1,7 @@
 import { createAdminHttpHandler } from "./admin-bootstrap/index.js";
 import {
   createCourseAccessHttpHandler,
+  createCourseInviteHttpHandler,
   createParticipantCourseHttpHandler,
   createParticipantHttpHandler,
 } from "./course-access/index.js";
@@ -53,35 +54,60 @@ function createWorkerHandlers(capabilities) {
     coursePersistence: capabilities.coursePersistence,
     participantPersistence: capabilities.participantPersistence,
   });
-  const handleParticipantHttpRequest = createParticipantHttpHandler({
-    authenticate: authentication.authenticate,
-    createParticipantId: capabilities.createParticipantId,
-    persistence: capabilities.participantPersistence,
-  });
-  const handleParticipantCourseHttpRequest = createParticipantCourseHttpHandler({
-    authenticate: authentication.authenticate,
-    now: capabilities.now,
-    participantPersistence: capabilities.participantPersistence,
-    persistence: capabilities.participantCoursePersistence,
-  });
-  const handleModuleParticipationHttpRequest =
-    createModuleParticipationHttpHandler({
+  const handleCourseInviteHttpRequest = createInviteHandler(
+    capabilities,
+    authentication,
+  );
+  const participantHandlers = createParticipantHandlers(
+    capabilities,
+    authentication,
+  );
+
+  return {
+    handleAdminHttpRequest,
+    handleCourseAccessHttpRequest,
+    handleCourseInviteHttpRequest,
+    handleCourseHttpRequest,
+    ...participantHandlers,
+  };
+}
+
+/** @returns {object} Participant HTTP handlers sharing one capability graph. */
+function createParticipantHandlers(capabilities, authentication) {
+  return {
+    handleParticipantHttpRequest: createParticipantHttpHandler({
+      authenticate: authentication.authenticate,
+      createParticipantId: capabilities.createParticipantId,
+      persistence: capabilities.participantPersistence,
+    }),
+    handleParticipantCourseHttpRequest: createParticipantCourseHttpHandler({
+      authenticate: authentication.authenticate,
+      now: capabilities.now,
+      participantPersistence: capabilities.participantPersistence,
+      persistence: capabilities.participantCoursePersistence,
+    }),
+    handleModuleParticipationHttpRequest: createModuleParticipationHttpHandler({
       authenticate: authentication.authenticate,
       createModuleSelectionId: capabilities.createModuleSelectionId,
       now: capabilities.now,
       participantCoursePersistence: capabilities.participantCoursePersistence,
       participantPersistence: capabilities.participantPersistence,
       selectionPersistence: capabilities.selectionPersistence,
-    });
-
-  return {
-    handleAdminHttpRequest,
-    handleCourseAccessHttpRequest,
-    handleCourseHttpRequest,
-    handleModuleParticipationHttpRequest,
-    handleParticipantCourseHttpRequest,
-    handleParticipantHttpRequest,
+    }),
   };
+}
+
+/** @returns {Function} Focused public and Admin Course Invite handler. */
+function createInviteHandler(capabilities, authentication) {
+  return createCourseInviteHttpHandler({
+    authenticate: authentication.authenticate,
+    createCourseInviteId: capabilities.createCourseInviteId,
+    createCourseInviteToken: capabilities.createCourseInviteToken,
+    hashCourseInviteToken: capabilities.hashCourseInviteToken,
+    adminPersistence: capabilities.adminPersistence,
+    coursePersistence: capabilities.coursePersistence,
+    invitePersistence: capabilities.invitePersistence,
+  });
 }
 
 /**
@@ -102,6 +128,18 @@ async function handleWorkerRequest(request, authentication, handlers) {
 
   if (requestURL.pathname.startsWith("/api/auth/")) {
     return authentication.handleAuthRequest(request);
+  }
+
+  return handleDomainRequest(request, requestURL, handlers);
+}
+
+/** @returns {Promise<Response>} Dispatch one booking-domain HTTP request. */
+function handleDomainRequest(request, requestURL, handlers) {
+  if (
+    requestURL.pathname === "/api/course-invites/recognition" ||
+    isAdminCourseInvitePath(requestURL.pathname)
+  ) {
+    return handlers.handleCourseInviteHttpRequest(request);
   }
 
   if (
@@ -128,6 +166,12 @@ async function handleWorkerRequest(request, authentication, handlers) {
   }
 
   return Response.json({ outcome: "not-found" }, { status: 404 });
+}
+
+/** @returns {boolean} Whether a path is nested Admin Course Invite API. */
+function isAdminCourseInvitePath(pathname) {
+  return pathname.startsWith("/api/admin/courses/") &&
+    pathname.split("/").includes("invites");
 }
 
 /** @returns {Promise<Response>} Dispatch one Participant-context request. */

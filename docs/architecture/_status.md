@@ -75,8 +75,8 @@
   self-profile maintenance, the global Admin Participant directory and stable
   profile detail plus Disable/Re-enable HTTP, Course Assignment list/create/
   reactivate/revoke HTTP, and private assigned Participant Course list/detail
-  HTTP for Active or Archived Courses, plus terminal body-free Course archival
-  HTTP.
+  HTTP for Active or Archived Courses, shared Course Invite management and
+  public recognition HTTP, plus terminal body-free Course archival HTTP.
   Application destinations remain fixed and browser input cannot select
   principal, authority, Assignment identity/state, lifecycle state,
   normalized email, definite instant, or permanent scheduling history.
@@ -110,7 +110,8 @@
   registration, self/Admin Participant profile maintenance, Participant
   Disable/Re-enable, Course Assignment creation/revocation/reactivation, and
   current assigned Active/Archived-Course
-  list/detail access, plus
+  list/detail access, together with Course Invite create/disable/re-enable/
+  replace and minimal-recognition policy, plus
   `module-participation` factories for Participant Selection set/change/remove
   and derived current/history presentation.
   Course-local time resolution and complete-email
@@ -119,6 +120,7 @@
   responsibilities plus thin browser, production Worker, and non-production
   Worker compositions.
 - React Router serves the independently navigable `/` Participant entry,
+  public `/invite` recognition,
   Participant `/profile` and `/courses/:courseId` detail,
   `/admin` administration entry, `/admin/participants`, stable
   `/admin/participants/:participantId` detail/edit, and nested
@@ -143,6 +145,11 @@
   archival without incidental routes. Archived detail retains inspection,
   removes structural/booking controls, and keeps only Active-Assignment
   revocation actionable.
+  Active Course detail additionally owns the one-current shared Invite URL,
+  copy and lifecycle controls. The public Invite route captures a token from a
+  URL fragment, removes it from the address bar, retains it only in Invite-
+  specific session storage, and renders no private Course context or Join
+  control.
   Membership cards expose only current
   permitted revoke/reactivate actions with confirmation and accurate retention
   copy.

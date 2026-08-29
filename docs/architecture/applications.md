@@ -45,13 +45,15 @@ audience-first source buckets. See [browser conventions](browser-conventions.md)
 for the accepted browser libraries and their responsibilities.
 
 The implemented browser exposes Participant Google entry, onboarding, and
-assigned-Course home at `/`, self-profile maintenance at `/profile`, private
+assigned-Course home at `/`, public Course Invite recognition at `/invite`,
+self-profile maintenance at `/profile`, private
 Participant Course detail at `/courses/:courseId`, the administration entry at
 `/admin`, the Participant directory at `/admin/participants`, stable
 Participant detail/edit/lifecycle at `/admin/participants/:participantId`, and
 nested Course index/create/detail routes through one responsive MUI shell.
 Stable Admin Course detail contains complete Course editing with its permanent
-timezone lock, Course membership creation, revocation, and reactivation plus
+timezone lock, shared Course Invite management, Course membership creation,
+revocation, and reactivation plus
 the owned Group list, creation and complete field forms, current lifecycle
 actions, and Module list/creation plus separate descriptive and pre-start
 schedule forms, terminal cancellation, and permanent deletion rather than
@@ -346,6 +348,36 @@ remains independent of membership so zero-Assignment Participants stay
 discoverable, `/admin/participants/:participantId` owns stable profile and
 lifecycle maintenance, and Course membership stays on the stable Course detail
 route.
+
+### Shared Course Invite HTTP Surface
+
+The implemented `course-access` Invite slice adds six concrete same-origin
+operations:
+
+```text
+POST /api/course-invites/recognition
+GET  /api/admin/courses/:courseId/invites/current
+POST /api/admin/courses/:courseId/invites/current
+POST /api/admin/courses/:courseId/invites/:inviteId/disablement
+POST /api/admin/courses/:courseId/invites/:inviteId/reenablement
+POST /api/admin/courses/:courseId/invites/:inviteId/replacement
+```
+
+Admin operations require a normal session resolving a current Active Admin and
+an Active Course. The current read returns `200 { invite: null | { id, state,
+url } }`; first creation returns `201 created`; lifecycle writes return `200`
+with the same narrow current representation. Stale Admin, Course, Invite, or
+expected enabled/disabled state is refused without changing authority, and
+every response is `no-store`. The fragment URL `/invite#<token>` is retrievable
+only for the current Invite; copy is a browser action and performs no write.
+
+Public recognition accepts only `POST { token }`. A recognized digest returns
+`200 { outcome: "available" | "unavailable", courseName }`, including for a
+disabled/replaced Invite or Archived Course. Unknown and malformed input share
+`404 { outcome: "invite-unavailable" }`. Public representations expose no URL,
+token, digest, roster, Participant, Selection, Group/Module access, Assignment,
+or Admin data. Recognition does not authenticate or Join; explicit Join is a
+later slice.
 
 ### No Separate API Application
 

@@ -20,16 +20,21 @@ export {
 } from "./course-structure/index.js";
 export {
   createAssignParticipantToCourse,
+  createCourseInvite,
+  createDisableCourseInvite,
   createDisableParticipant,
   createGetParticipantCourse,
   createListParticipantCourses,
   createRegisterParticipant,
   createReenableParticipant,
+  createReenableCourseInvite,
+  createReplaceCourseInvite,
   createRevokeCourseAssignment,
   createResolveParticipantContext,
   createUpdateOwnParticipantProfile,
   createUpdateParticipantProfileAsAdmin,
   hasParticipantCourseAccess,
+  recognizeCourseInvite,
 } from "./course-access/index.js";
 export {
   createRemoveParticipantModuleSelection,

@@ -19,8 +19,9 @@ JavaScript conventions, and ESLint-enforced dependency rules.
   creation/editing, Group reversible lifecycle/permanent deletion and structure creation,
   Participant-registration/profile/
   lifecycle, Assignment-
-  lifecycle, and assigned Participant Course-access plus Module-Selection
-  slices and terminal Course archival/read-only history, React browser routes and
+  lifecycle, and assigned Participant Course-access plus Module-Selection and
+  shared-Course-Invite slices and terminal Course archival/read-only history,
+  React browser routes and
   responsive Admin/Participant experience, Google
   sign-in, browser-private MUI theme and accessibility baseline,
   functional-composition direction, Cloudflare/Vite/D1 runtime, NixOS
@@ -62,7 +63,8 @@ JavaScript conventions, and ESLint-enforced dependency rules.
   `apps/booking-system-web` workspace with responsive Participant/Admin
   contexts, Participant onboarding/profile/lifecycle/assigned-Course access/
   directory, Course Assignment creation/revocation/reactivation, Participant
-  Module Selection, guarded Course editing, Course/Group/Module creation,
+  Module Selection, shared Course Invite management/recognition, guarded
+  Course editing, Course/Group/Module creation,
   Module editing/rescheduling/cancellation/deletion, and Group editing/
   archival/reactivation/deletion plus Course archival
   as the current same-origin application.
@@ -77,7 +79,8 @@ JavaScript conventions, and ESLint-enforced dependency rules.
   profile/directory/detail, assigned Participant Course, and Admin Course SPA
   routing including Archived read-only detail,
   compatibility, separate browser/Worker graphs, NixOS host-tooling boundary,
-  and minimal hosting footprint.
+  public Invite plus private Participant/Admin SPA routing, and minimal
+  hosting footprint.
 - Read when: A task affects hosting, frontend/backend deployment shape, Worker
   runtime behavior, Vite delivery, runtime dependency inclusion, routes, or
   local developer tool provisioning, or infrastructure selection.
@@ -87,8 +90,9 @@ JavaScript conventions, and ESLint-enforced dependency rules.
 ### Persistence
 - Path: `docs/architecture/persistence.md`
 - Summary: Defines SQLite-compatible semantics, implemented local/test D1,
-  first-Admin, Course, Group/Module, Participant, Course Assignment, and Module
-  Selection migrations, assigned Participant Course reads, guarded Participant
+  first-Admin, Course, Group/Module, Participant, Course Assignment, Module
+  Selection, and Course Invite migrations, assigned Participant Course reads,
+  guarded Participant
   profile/lifecycle updates, retained Assignment lifecycle with atomic
   Selection retention, guarded Course and Group editing/lifecycle/deletion with
   Group/Selection/name and first-Module/timezone races, plus guarded Module
@@ -121,7 +125,7 @@ JavaScript conventions, and ESLint-enforced dependency rules.
   `packages/booking` with `admin-access`, Course editing and Course/Group/Module
   `course-structure` including Group lifecycle/deletion and Course archival,
   and Participant-registration/profile/lifecycle/Assignment-lifecycle/assigned-
-  Active/Archived-Course `course-access` plus Participant-
+  Active/Archived-Course and shared-Invite `course-access` plus Participant-
   Selection `module-participation` behavior, and why technical
   dependency segregation does not justify extraction.
 - Read when: A task adds, removes, extracts, or changes a package boundary or
@@ -133,8 +137,8 @@ JavaScript conventions, and ESLint-enforced dependency rules.
 - Summary: Defines the implemented responsibility modules, Course creation/
   editing, Group lifecycle/deletion and structure,
   Participant-registration/profile/lifecycle, Assignment-lifecycle, and
-  assigned Active/Archived Participant Course plus Module-Selection and Course-
-  archival slices, source roots,
+  assigned Active/Archived Participant Course plus shared-Course-Invite,
+  Module-Selection, and Course-archival slices, source roots,
   manifest ownership,
   browser/Worker/authentication separation, interfaces, entrypoints, adapters,
   and dependency direction.
@@ -182,8 +186,9 @@ JavaScript conventions, and ESLint-enforced dependency rules.
 ### Dependency Boundaries
 - Path: `docs/architecture/boundaries.md`
 - Summary: Canonical human counterpart to the two implemented per-workspace
-  deny-by-default maps, including profile maintenance and Assignment lifecycle
-  plus Participant lifecycle within existing `course-access`, the booking
+  deny-by-default maps, including profile maintenance, Assignment lifecycle,
+  Participant lifecycle, and shared Course Invites within existing
+  `course-access`, the booking
   `module-participation` responsibility, Course editing within existing
   `course-structure` including Group lifecycle/deletion and Module
   editing/rescheduling/cancellation/deletion plus Course archival, and exact

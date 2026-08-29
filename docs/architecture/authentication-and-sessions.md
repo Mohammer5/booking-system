@@ -285,8 +285,13 @@ or creates a Course Assignment merely because an Invite was opened.
 
 Security-sensitive Invite secrets must not enter third-party OAuth URLs,
 referrers, browser or technical logs, or analytics. Prefer server-side or
-session-backed continuation state when practical. Exact routes and continuation
-storage are deferred to implementation.
+session-backed continuation state when practical. Course Invite recognition
+now uses `/invite#<token>`: the browser immediately transfers the fragment to
+an Invite-specific `sessionStorage` key, removes it with `replaceState`, and
+sends it only in the body of `POST /api/course-invites/recognition`. This
+recognition state supports refresh but does not authenticate, onboard, Join,
+or create an Assignment. Authentication/onboarding return-to-Invite and final
+Join continuation remain deferred.
 
 ## Non-Production Authentication
 

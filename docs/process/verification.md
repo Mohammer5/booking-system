@@ -273,6 +273,18 @@ selection and replacement, refresh persistence, removal confirmation and
 focus restoration, stale-deadline refusal, private own-Selection presentation,
 responsive layout, and axe evidence.
 
+For shared Course Invite management, booking-domain Vitest owns first-create,
+disable/re-enable/replace transitions, stable current identity, absence of
+expiry, predecessor invalidation, and Course-name-only recognition policy.
+Worker/D1 Vitest owns the additive migration, 256-bit token/SHA-256 adapters,
+one-current and current-only-recoverable constraints, guarded current-state
+writes, concurrent create/replacement, atomic predecessor clearing, archive
+races, authorization, exact no-store HTTP contracts, narrow public/Admin
+representations, and sanitized technical failures. Playwright owns real Admin
+create/retrieve/copy/disable/re-enable/replace, old/new/Archived and unknown
+public states, fragment cleanup, session refresh, privacy, desktop/360px,
+keyboard/Dialog/result focus, overflow, and axe evidence.
+
 The implemented integration uses project-pinned `@cloudflare/vitest-plugin`
 with isolated D1 state and the version-controlled migration sequence.
 
@@ -352,7 +364,7 @@ onboarding/assigned-Course/zero-membership/privacy states, Participant
 directory and Course membership/Assignment-lifecycle states, Participant
 self/Admin profile editing and lifecycle, Course editing and permanent
 timezone-lock presentation, Disabled-target detail, and absence of horizontal
-overflow. The current 46-test browser suite also proves that one
+overflow. The current 48-test browser suite also proves that one
 fixed normal session remains usable while navigating between Participant and
 Admin contexts, successful sign-out terminates that session, an Active Admin
 can create, edit, and revisit a Course with Groups, a future Module, a

@@ -17,7 +17,8 @@ development work is tracked and verified, and how releases are promoted.
 - Summary: Current process rules, layered Admin/Course creation/editing and
   Group lifecycle/deletion and structure,
   Participant-registration/profile/lifecycle, Assignment-lifecycle, assigned
-  Participant Course, Module Selection, and application-shell verification;
+  Participant Course, Module Selection, shared Course Invite, and
+  application-shell verification;
   active state; and known gaps.
 - Read when: You need the present-state view of the docs or tracking process.
 - Tags: docs, process, status, current-state
@@ -57,7 +58,8 @@ development work is tracked and verified, and how releases are promoted.
   shell, Course creation/editing, Group lifecycle/deletion and structure,
   Module editing/rescheduling/cancellation/deletion, Participant registration/
   profile/lifecycle/assigned-Course access, Assignment-lifecycle/Module-
-  Selection, terminal Course-archival/read-only history, and accessibility
+  Selection, shared-Course-Invite management/recognition, terminal Course-
+  archival/read-only history, and accessibility
   policy, plus the external branch-protection requirement.
 - Read when: A task affects tests, CI, required checks, test environments,
   browser automation, local test-tool provisioning, verification commands, or

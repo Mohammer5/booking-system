@@ -91,7 +91,8 @@ Archived Course state before returning private data. The implemented
 `module-participation` slice owns guarded Selection set/change/remove over
 `module_selections`. The same `course-access` persistence owns retained-row
 Assignment reactivation and atomic revocation with exact future-Selection
-removal; Invite schemas remain deferred to their owning slices.
+removal, plus one-current Course Invite lifecycle and recognition lookup over
+`course_invites`.
 
 ## Environment Isolation
 
@@ -133,7 +134,7 @@ change requires an explicit exceptional deployment decision.
 
 ## Current State And Persistence Lifecycle
 
-The application has local/test D1 bindings and six version-controlled
+The application has local/test D1 bindings and seven version-controlled
 migrations. `0001_first_admin_foundation.sql` creates the Better Auth `user`,
 `session`, `account`, and `verification` technical tables and indexes plus
 `admin_users` and `admin_bootstrap_history`. `0002_courses.sql` adds the
@@ -143,7 +144,9 @@ optional description, and constrained Active/Archived state.
 Course-owned Groups and Modules. `0004_participants.sql` adds registered
 Participants. `0005_course_assignments.sql` adds retained ordinary Course
 membership. `0006_module_selections.sql` adds Participant Module Selections
-with same-Course ownership constraints. No remote D1 database exists.
+with same-Course ownership constraints. `0007_course_invites.sql` adds shared
+Course Invites with one-current and replacement constraints. No remote D1
+database exists.
 
 ### Implemented First Schema
 
@@ -305,6 +308,17 @@ Participant's Selection, includes Active Groups plus any selected Archived
 Group, and derives live or historical meaning from current state and time
 rather than storing a status. Revoking the Assignment immediately removes the
 read path without deleting retained history.
+
+The seventh additive migration preserves existing application data and adds
+`course_invites` with permanent Course ownership, a unique SHA-256 recognition
+digest, current-only recoverable token, constrained enabled/current flags,
+one partial-unique current row per Course, and bidirectional replacement
+markers. Creation and state updates recheck current Active Admin/Course and
+exact Invite state. Replacement uses one D1 batch that first invalidates the
+exact predecessor and clears its raw token, then inserts one enabled current
+Invite through a trigger-validated marker; any stale, concurrent, constraint,
+or technical loser rolls back both statements. Recognition joins only the
+matching digest to Course name/state and Invite enabled/current meaning.
 
 The full migration sequence is applied to clean isolated state in Worker tests
 and before browser E2E. The schema is designed for eventual D1 deployment. A

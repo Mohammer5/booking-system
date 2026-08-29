@@ -57,7 +57,8 @@ lifecycle/permanent deletion, Module creation/editing/cancellation/deletion,
 terminal Course archival with private read-only history,
 Participant registration/profile/lifecycle
 maintenance, Course Assignment creation/lifecycle, assigned Participant
-Course access, and Participant Module Selection slices are now implemented:
+Course access, shared Course Invite management/recognition, and Participant
+Module Selection slices are now implemented:
 
 - `@booking-system/booking` at `packages/booking` owns the implemented
   `admin-access` behavior plus `course-structure` Course, Course-wide Group,
@@ -70,7 +71,8 @@ Course access, and Participant Module Selection slices are now implemented:
   retained-Selection policy, and Course-local definite-time creation policy, plus
   `course-access` Participant registration, fresh context, Course Assignment
   creation/revocation/reactivation, assigned Active/Archived-Course list/detail, and
-  self/Admin profile-edit plus Participant Disable/Re-enable policy, and
+  self/Admin profile-edit plus Participant Disable/Re-enable policy, together
+  with one-current Course Invite lifecycle and minimal recognition policy, and
   `module-participation` Participant selection eligibility, replacement,
   removal, and current-versus-historical presentation policy;
 - `@booking-system/booking-system-web` at `apps/booking-system-web` owns the
@@ -84,14 +86,16 @@ Course access, and Participant Module Selection slices are now implemented:
   `/courses/:courseId`
   detail, explicit Module
   Selection controls, `/profile` self-service and
-  `/admin/participants/:participantId` administration, and query-driven
+  `/admin/participants/:participantId` administration, Active-Course Invite
+  controls, the public `/invite` recognition route, and query-driven
   assigned-Course home, Worker/API
   handling, Better Auth composition, D1
   persistence, Vite/Workers Static Assets integration, and local runtime;
-- six version-controlled migrations create the Better Auth/Admin foundation,
+- seven version-controlled migrations create the Better Auth/Admin foundation,
   Courses, additive Group/Module schema with permanent first-Module scheduling
   history, constrained Participants, constrained Course Assignments, and
-  same-Course Module Selections, with clean-state construction and
+  same-Course Module Selections, and constrained Course Invites, with clean-
+  state construction and
   data-preserving upgrade evidence;
 - production and explicit non-production Worker compositions structurally
   separate fixed fixture-session establishment from production, while their
@@ -105,7 +109,7 @@ Course access, and Participant Module Selection slices are now implemented:
   Participant state fresh, and supports refresh, zero/one/multiple assigned
   Active or Archived Courses, private Course detail, and sign-out without
   public discovery;
-- `/`, `/admin`, `/admin/participants`, `/admin/courses`,
+- `/`, `/invite`, `/admin`, `/admin/participants`, `/admin/courses`,
   `/admin/participants/:participantId`, `/admin/courses/new`,
   `/admin/courses/:courseId`, Participant `/profile`, and Participant
   `/courses/:courseId` are direct/refresh-safe German MUI contexts within one
@@ -167,6 +171,13 @@ Course access, and Participant Module Selection slices are now implemented:
   not block. All structure and participation rows remain unchanged, Archived
   Admin detail removes every structural action except Assignment revocation,
   and private Participant history persists only while the Assignment is Active;
+- guarded Course Invite creation, disablement, re-enablement, and replacement
+  recheck current Active Admin/Course/Invite state. D1 stores one recoverable
+  current token plus SHA-256 recognition digests, atomically clears predecessor
+  authority on replacement, and preserves one coherent current Invite. The
+  fragment-based public route immediately moves raw authority into Invite-only
+  session storage, cleans the address bar, and exposes only Course name plus
+  available/unavailable meaning for recognized current or predecessor tokens;
 - the stable Course detail lists and creates Course-wide Groups with unique
   normalized Active names and future Scheduled Modules, resolves local minute
   input through the Course IANA timezone, rejects DST gaps, requires an
@@ -205,6 +216,11 @@ Course access, and Participant Module Selection slices are now implemented:
   forms, Module cancellation/history/deadline states, Module deletion/
   historical blockers/zero-current timezone lock, terminal Course archival/
   Archived read-only history/revocation, direct refresh, and overflow;
+- Playwright also proves real shared-Invite creation, repeated retrieval and
+  copy, disable/re-enable/replacement, permanent predecessor invalidation,
+  Archived recognition, unknown-token privacy, fragment cleanup, session
+  refresh, destructive Dialog focus, technical sanitization, responsive
+  layout, and axe results;
 - both workspace boundary maps are registered in ESLint with exact module,
   workspace, composition, third-party, and test-only permissions;
 - the root Nix flake supplies NixOS developer-host tooling: Node, pnpm,
@@ -215,8 +231,8 @@ Course access, and Participant Module Selection slices are now implemented:
   build, and Chromium browser evidence.
 
 Apple, Microsoft, and Facebook providers, Admin-assisted Module
-Selection,
-Invite,
+Selection, Course Invite Join,
+Admin Invites,
 later Admin capabilities, remote Google credentials and production
 callback/domain configuration, remote Cloudflare staging/production resources,
 release

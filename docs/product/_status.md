@@ -114,7 +114,14 @@ Course identifiers reveal no Course data. An Active Participant may edit their
 own required name/email, while an Active Admin User may edit an Active or
 Disabled Participant from a stable detail; both preserve identity, lifecycle,
 relationships, provider data, and any same-principal Admin User. Admin-assisted
-Module Selection, Invite, later Admin onboarding, and later Admin management
+Module Selection remains deferred. An Active Admin User can now create,
+retrieve, copy, disable, re-enable, or permanently replace the one current
+shared Course Invite while its Course is Active. Recognized current and
+predecessor links reveal only Course name plus available/unavailable meaning;
+unknown or malformed links reveal no Course data. Replacement removes the
+predecessor's Join authority permanently, while no Invite expires or becomes
+person-specific. Course Invite Join, Admin Invites, later Admin onboarding,
+and later Admin management
 behavior remain unimplemented. Technology, persistence, API,
 frontend, and infrastructure mechanics remain outside this product
 specification and do not alter its contracts.

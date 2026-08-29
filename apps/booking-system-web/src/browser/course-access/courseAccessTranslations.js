@@ -1,5 +1,53 @@
 export const courseAccessTranslations = {
   courseAccess: {
+    invite: {
+      title: "Geteilte Kurseinladung",
+      description:
+        "Dieser Link kann von mehreren Personen verwendet und weitergegeben werden. Er läuft nicht automatisch ab.",
+      loading: "Kurseinladung wird geladen …",
+      none: "Für diesen Kurs besteht noch keine geteilte Einladung.",
+      create: "Kurseinladung erstellen",
+      createPending: "Kurseinladung wird erstellt …",
+      created: "Die Kurseinladung wurde erfolgreich erstellt.",
+      copy: "Einladungslink kopieren",
+      copied: "Der Einladungslink wurde kopiert.",
+      disable: "Kurseinladung deaktivieren",
+      disableTitle: "Kurseinladung deaktivieren?",
+      disableDescription:
+        "Der vorhandene Link bleibt erkennbar, kann aber nicht mehr für einen Beitritt verwendet werden. Er kann später wieder aktiviert werden.",
+      disableConfirm: "Kurseinladung deaktivieren",
+      disablePending: "Kurseinladung wird deaktiviert …",
+      disabled: "Die Kurseinladung wurde deaktiviert.",
+      reenable: "Kurseinladung wieder aktivieren",
+      reenablePending: "Kurseinladung wird wieder aktiviert …",
+      "re-enabled": "Die Kurseinladung wurde wieder aktiviert.",
+      replace: "Kurseinladung dauerhaft ersetzen",
+      replaceTitle: "Kurseinladung dauerhaft ersetzen?",
+      replaceDescription:
+        "Der bisherige Link wird dauerhaft ungültig und kann nicht wieder aktiviert werden. Ein neuer aktiver Link wird erstellt.",
+      replaceConfirm: "Kurseinladung endgültig ersetzen",
+      replacePending: "Kurseinladung wird ersetzt …",
+      replaced: "Die Kurseinladung wurde dauerhaft ersetzt.",
+      cancel: "Abbrechen",
+      stale:
+        "Die Kurseinladung kann wegen eines geänderten Administrations-, Kurs- oder Einladungsstatus nicht bearbeitet werden.",
+      technicalError:
+        "Die Kurseinladung konnte nicht geladen oder gespeichert werden. Bitte versuchen Sie es erneut.",
+      state: {
+        enabled: "Einladung: Aktiv",
+        disabled: "Einladung: Deaktiviert",
+      },
+    },
+    publicInvite: {
+      title: "Kurseinladung",
+      description:
+        "Hier wird ausschließlich geprüft, welchem Kurs ein Einladungslink zugeordnet ist und ob er aktuell verfügbar ist.",
+      loading: "Kurseinladung wird geprüft …",
+      available: "Diese Kurseinladung ist verfügbar.",
+      unavailable: "Diese Kurseinladung ist nicht verfügbar.",
+      technicalError:
+        "Die Kurseinladung konnte nicht geprüft werden. Bitte versuchen Sie es erneut.",
+    },
     navigation: {
       participants: "Teilnehmende verwalten",
       toAdministration: "Zur Administration",

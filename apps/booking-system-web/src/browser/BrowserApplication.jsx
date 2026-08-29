@@ -7,6 +7,7 @@ import {
 import { ResponsiveApplicationShell } from "./application-shell/index.js";
 import {
   AdminParticipantDetailPage,
+  CourseInvitePage,
   ParticipantCourseDetailPage,
   ParticipantDirectoryPage,
   ParticipantProfilePage,
@@ -29,6 +30,14 @@ import {
 export function BrowserApplication() {
   return (
     <Routes>
+      <Route
+        path="/invite"
+        element={
+          <ResponsiveApplicationShell context="participant">
+            <CourseInvitePage />
+          </ResponsiveApplicationShell>
+        }
+      />
       <Route
         path="/"
         element={

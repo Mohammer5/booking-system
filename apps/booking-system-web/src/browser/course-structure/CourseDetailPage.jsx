@@ -18,7 +18,10 @@ import {
   useParams,
 } from "react-router";
 
-import { CourseMembershipSection } from "../course-access/index.js";
+import {
+  CourseInviteSection,
+  CourseMembershipSection,
+} from "../course-access/index.js";
 import { CourseArchivalControl } from "./CourseArchivalControl.jsx";
 import { CourseEditSection } from "./CourseEditSection.jsx";
 import { useCourseDetail } from "./useCourses.js";
@@ -212,6 +215,7 @@ function CourseDetails(props) {
       {isActive ? (
         <>
           <CourseEditSection course={course} />
+          <CourseInviteSection course={course} />
           <CourseArchivalControl
             course={course}
             onArchived={props.onArchived}

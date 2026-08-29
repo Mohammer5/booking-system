@@ -1,11 +1,16 @@
 export { createAssignParticipantToCourse } from "./createAssignParticipantToCourse.js";
+export { createCourseInvite } from "./createCourseInvite.js";
+export { createDisableCourseInvite } from "./createDisableCourseInvite.js";
 export { createDisableParticipant } from "./createDisableParticipant.js";
 export { createGetParticipantCourse } from "./createGetParticipantCourse.js";
 export { createListParticipantCourses } from "./createListParticipantCourses.js";
 export { createRegisterParticipant } from "./createRegisterParticipant.js";
 export { createReenableParticipant } from "./createReenableParticipant.js";
+export { createReenableCourseInvite } from "./createReenableCourseInvite.js";
+export { createReplaceCourseInvite } from "./createReplaceCourseInvite.js";
 export { createRevokeCourseAssignment } from "./createRevokeCourseAssignment.js";
 export { createResolveParticipantContext } from "./createResolveParticipantContext.js";
 export { createUpdateOwnParticipantProfile } from "./createUpdateOwnParticipantProfile.js";
 export { createUpdateParticipantProfileAsAdmin } from "./createUpdateParticipantProfileAsAdmin.js";
 export { hasParticipantCourseAccess } from "./hasParticipantCourseAccess.js";
+export { recognizeCourseInvite } from "./recognizeCourseInvite.js";

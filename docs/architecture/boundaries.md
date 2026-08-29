@@ -156,6 +156,13 @@ Assignment lifecycle also remains inside the existing second-level
 confirmation, and query invalidation add no first-level module, workspace,
 third-party, boundary-map, or composition edge.
 
+Shared Course Invite management and recognition remain inside the same
+booking, Worker, and browser `course-access` responsibilities. Domain policy
+uses the existing package-root interface; Worker-private Web Crypto, D1, and
+HTTP adapters plus browser-private TanStack Query/MUI composition use existing
+permissions. No workspace, first-level responsibility, dependency, or
+boundary-map edge changes.
+
 Participant-managed Module Selection introduces the dependency-free
 `module-participation` responsibility inside the booking package. Its root
 interface exposes only Selection policy and derived presentation operations,

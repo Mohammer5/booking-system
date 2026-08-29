@@ -1,12 +1,12 @@
 ---
 id: TASK-k2ckf
 title: Manage shared Course Invites
-status: backlog
+status: done
 priority: medium
 type: feature
 effort: medium
 epic: EPIC-ziadc
-plan: null
+plan: PLAN-38qq6
 depends_on:
 - TASK-ubm2q
 - TASK-dfq2k
@@ -15,14 +15,14 @@ blocks:
 - TASK-ikzih
 related:
 - TASK-wny83
-assignee: null
+assignee: gerkules
 tags:
 - course-invite
 - security
 - ui
 position: f10
 created: 2026-08-27
-updated: 2026-08-27
+updated: 2026-08-29
 ---
 
 # Manage shared Course Invites
@@ -37,26 +37,26 @@ person-specific state.
 
 ## Acceptance Criteria
 
-- [ ] An Active Course has no Invite or exactly one current shared Invite,
+- [x] An Active Course has no Invite or exactly one current shared Invite,
       enabled or disabled. An Active Admin User can create the first enabled
       Invite, disable/re-enable it, and replace either current state with a new
       enabled Invite.
-- [ ] Replacement permanently invalidates the predecessor for Join. No Invite
+- [x] Replacement permanently invalidates the predecessor for Join. No Invite
       expires automatically, and multiple Participants may reuse/forward the
       current enabled URL.
-- [ ] The current URL is retrievable and copyable during Active-Course
+- [x] The current URL is retrievable and copyable during Active-Course
       administration without regeneration; copying never invalidates links.
-- [ ] A recognized current or predecessor token may reveal only Course name
+- [x] A recognized current or predecessor token may reveal only Course name
       and available/unavailable state even when disabled, replaced, or the
       Course is Archived. Unknown/malformed tokens reveal no Course name or
       other data.
-- [ ] No public result exposes roster, Participant profile/Selection, private
+- [x] No public result exposes roster, Participant profile/Selection, private
       Group/Module access detail, Admin data, or other Invite information.
-- [ ] Archived Course Invite mutation is refused. Current Admin, Course, and
+- [x] Archived Course Invite mutation is refused. Current Admin, Course, and
       Invite state is revalidated so stale/concurrent enable/disable/replace
       actions leave one coherent current Invite and no recoverable predecessor
       authority.
-- [ ] Raw Invite secrets do not enter diagnostic logs, analytics, referrers, or
+- [x] Raw Invite secrets do not enter diagnostic logs, analytics, referrers, or
       unrelated browser/API representations.
 
 ## UI/UX Expectations

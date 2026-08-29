@@ -48,7 +48,12 @@ Current reality:
   independence, replacement/removal confirmation, stale-deadline refusal,
   current/history presentation, Disabled targets, idempotent repeat,
   dual-context session resolution, sign-out, stale/technical refusal, and
-  overflow evidence. The tag-gated release policy remains unimplemented.
+  overflow evidence. Course Invite evidence additionally covers the one-
+  current invariant, guarded concurrent creation/replacement, current-only
+  recoverable authority, digest-only predecessors, narrow recognition, real
+  Admin create/retrieve/copy/disable/re-enable/replace, unknown and Archived
+  states, fragment cleanup, refresh, focus, responsive layout, and axe. The
+  tag-gated release policy remains unimplemented.
 - x86_64 NixOS developers can enter a pinned host-tooling environment with
   `nix develop`; `pnpm check` remains the verification contract and GitHub
   Actions continues to provision Node, pnpm, and Playwright independently.
