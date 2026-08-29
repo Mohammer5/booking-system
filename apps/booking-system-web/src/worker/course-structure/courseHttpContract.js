@@ -25,6 +25,14 @@ export function matchCourseRoute(pathname) {
   if (
     segments.length === 2 &&
     segments[0].length > 0 &&
+    segments[1] === "archival"
+  ) {
+    return { kind: "courseArchival", courseId: segments[0] };
+  }
+
+  if (
+    segments.length === 2 &&
+    segments[0].length > 0 &&
     new Set(["groups", "modules"]).has(segments[1])
   ) {
     return { kind: segments[1], courseId: segments[0] };
@@ -125,6 +133,11 @@ export function toCourseResponse(course) {
 export function toCourseDetailResponse(course, structures) {
   return {
     ...toCourseResponse(course),
+    isArchivalAvailable:
+      course.state === "active" &&
+      structures.modules.every((module) =>
+        module.state === "cancelled" ||
+        Date.parse(module.endsAt) <= Date.parse(structures.currentInstant)),
     groups: structures.groups.map(toGroupResponse),
     modules: structures.modules.map((module) =>
       toModuleResponse(module, structures.currentInstant),

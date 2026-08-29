@@ -138,6 +138,7 @@ describe("Course HTTP creation and reads", () => {
     expect(detail.status).toBe(200);
     await expect(detail.json()).resolves.toEqual({
       ...body,
+      isArchivalAvailable: true,
       groups: [],
       modules: [],
     });

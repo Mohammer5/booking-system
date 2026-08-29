@@ -14,6 +14,7 @@ import {
   handleModuleCancellationRequest,
 } from "./createModuleCancellationHttp.js";
 import { createCourseHttpOperations } from "./createCourseHttpOperations.js";
+import { handleCourseArchivalRequest } from "./createCourseArchivalHttp.js";
 import {
   handleModuleManagementRequest,
   moduleCreationResultResponse,
@@ -59,6 +60,7 @@ function isSupportedRoute(route, method) {
   const methodsByKind = {
     courses: new Set(["GET", "POST"]),
     course: new Set(["GET", "PUT"]),
+    courseArchival: new Set(["POST"]),
     groups: new Set(["POST"]),
     group: new Set(["DELETE", "PUT"]),
     groupArchival: new Set(["POST"]),
@@ -90,13 +92,19 @@ function handleAuthorizedRoute(context, operations) {
     return handleCreateCourseRequest(request, adminUser, operations);
   }
 
-  if (route.kind === "course") {
-    return request.method === "GET"
-      ? handleCourseDetailRequest(route.courseId, operations)
-      : handleUpdateCourseRequest(
-          { request, courseId: route.courseId, adminUser },
+  if (new Set(["course", "courseArchival"]).has(route.kind)) {
+    return route.kind === "courseArchival"
+      ? handleCourseArchivalRequest(
+          context,
           operations,
-        );
+          currentStateRefusal,
+        )
+      : request.method === "GET"
+        ? handleCourseDetailRequest(route.courseId, operations)
+        : handleUpdateCourseRequest(
+            { request, courseId: route.courseId, adminUser },
+            operations,
+          );
   }
 
   if (

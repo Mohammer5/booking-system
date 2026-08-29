@@ -20,7 +20,7 @@ JavaScript conventions, and ESLint-enforced dependency rules.
   Participant-registration/profile/
   lifecycle, Assignment-
   lifecycle, and assigned Participant Course-access plus Module-Selection
-  slices, React browser routes and
+  slices and terminal Course archival/read-only history, React browser routes and
   responsive Admin/Participant experience, Google
   sign-in, browser-private MUI theme and accessibility baseline,
   functional-composition direction, Cloudflare/Vite/D1 runtime, NixOS
@@ -64,7 +64,7 @@ JavaScript conventions, and ESLint-enforced dependency rules.
   directory, Course Assignment creation/revocation/reactivation, Participant
   Module Selection, guarded Course editing, Course/Group/Module creation,
   Module editing/rescheduling/cancellation/deletion, and Group editing/
-  archival/reactivation/deletion
+  archival/reactivation/deletion plus Course archival
   as the current same-origin application.
 - Read when: A task adds, removes, deploys, or changes an application boundary
   or application manifest ownership.
@@ -75,7 +75,7 @@ JavaScript conventions, and ESLint-enforced dependency rules.
 - Summary: Defines the implemented local `booking-system-web` Cloudflare Worker
   and Vite composition, static assets, direct Participant, Admin, Participant
   profile/directory/detail, assigned Participant Course, and Admin Course SPA
-  routing,
+  routing including Archived read-only detail,
   compatibility, separate browser/Worker graphs, NixOS host-tooling boundary,
   and minimal hosting footprint.
 - Read when: A task affects hosting, frontend/backend deployment shape, Worker
@@ -92,7 +92,8 @@ JavaScript conventions, and ESLint-enforced dependency rules.
   profile/lifecycle updates, retained Assignment lifecycle with atomic
   Selection retention, guarded Course and Group editing/lifecycle/deletion with
   Group/Selection/name and first-Module/timezone races, plus guarded Module
-  descriptive/schedule/cancellation updates, reference-protected deletion, and
+  descriptive/schedule/cancellation updates, reference-protected deletion,
+  guarded no-rewrite Course archival, and
   current-time races,
   environment isolation, guarded acceptance, uniqueness, permanent scheduling
   history, and migration constraints.
@@ -118,8 +119,9 @@ JavaScript conventions, and ESLint-enforced dependency rules.
 - Path: `docs/architecture/packages.md`
 - Summary: Defines conceptual package boundaries, the implemented
   `packages/booking` with `admin-access`, Course editing and Course/Group/Module
-  `course-structure` including Group lifecycle/deletion, and Participant-registration/profile/lifecycle/
-  Assignment-lifecycle/assigned-Course `course-access` plus Participant-
+  `course-structure` including Group lifecycle/deletion and Course archival,
+  and Participant-registration/profile/lifecycle/Assignment-lifecycle/assigned-
+  Active/Archived-Course `course-access` plus Participant-
   Selection `module-participation` behavior, and why technical
   dependency segregation does not justify extraction.
 - Read when: A task adds, removes, extracts, or changes a package boundary or
@@ -131,7 +133,8 @@ JavaScript conventions, and ESLint-enforced dependency rules.
 - Summary: Defines the implemented responsibility modules, Course creation/
   editing, Group lifecycle/deletion and structure,
   Participant-registration/profile/lifecycle, Assignment-lifecycle, and
-  assigned Participant Course plus Module-Selection slices, source roots,
+  assigned Active/Archived Participant Course plus Module-Selection and Course-
+  archival slices, source roots,
   manifest ownership,
   browser/Worker/authentication separation, interfaces, entrypoints, adapters,
   and dependency direction.
@@ -154,7 +157,7 @@ JavaScript conventions, and ESLint-enforced dependency rules.
   React Hook Form, Material UI, responsive shell/Course structure and
   editing with permanent timezone-lock, Module editing/rescheduling/
   cancellation/deletion, and Group
-  lifecycle/deletion presentation plus
+  lifecycle/deletion and terminal Course-archival presentation plus
   Participant onboarding/profile/lifecycle/assigned-Course/directory/Course-
   Assignment-lifecycle/Module-Selection navigation and accessible interaction,
   Better Auth session
@@ -183,7 +186,7 @@ JavaScript conventions, and ESLint-enforced dependency rules.
   plus Participant lifecycle within existing `course-access`, the booking
   `module-participation` responsibility, Course editing within existing
   `course-structure` including Group lifecycle/deletion and Module
-  editing/rescheduling/cancellation/deletion, and exact
+  editing/rescheduling/cancellation/deletion plus Course archival, and exact
   workspace, third-party, composition, test-only, and runtime-graph
   distinctions.
 - Read when: A task changes workspace dependencies, responsibility modules,

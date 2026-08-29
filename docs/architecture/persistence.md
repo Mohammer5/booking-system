@@ -84,10 +84,10 @@ and guarded-create capabilities over `courses`, `groups`, and `modules`. The
 implemented `course-access` slices own narrow Participant fresh-resolution,
 directory/detail, constraint-backed registration, guarded self/Admin
 profile-only updates, guarded Participant lifecycle, guarded direct-Assignment,
-and assigned Active-Course list/detail capabilities over `participants`,
+and assigned Active/Archived-Course list/detail capabilities over `participants`,
 `course_assignments`, `courses`, `groups`, and `modules`. The Participant
-Course reads join current Active Participant, Active Assignment, and Active
-Course state before returning private data. The implemented
+Course reads join current Active Participant, Active Assignment, and Active or
+Archived Course state before returning private data. The implemented
 `module-participation` slice owns guarded Selection set/change/remove over
 `module_selections`. The same `course-access` persistence owns retained-row
 Assignment reactivation and atomic revocation with exact future-Selection
@@ -184,6 +184,17 @@ guarded Module insert also rechecks that the Course still has the timezone used
 to resolve its local schedule. Consequently, a concurrent timezone edit and
 first Module creation cannot both succeed with inconsistent definite instants,
 and either refusal leaves all Course fields, Module rows, and history unchanged.
+
+Course archival also requires no migration or batch. One guarded update
+rechecks the current Active Admin and Active Course plus the absence of any
+same-Course Scheduled Module with `ends_at > accepted_now`, then changes only
+Course state to Archived. Exact end, ended Scheduled Modules, and every
+Cancelled Module permit the transition. Existing Active-Course write guards
+refuse every subsequent structural or Selection mutation, while Assignment
+revocation retains its explicit Archived-Course exception. A concurrent
+Module mutation and archival therefore have one current-state winner, and a
+refused, stale, triggered, or technical outcome rewrites no Course field,
+Group, Module, Assignment, or Selection.
 
 Group field and reversible lifecycle operations also require no schema
 migration. One guarded complete-field update preserves Group identity, Course
@@ -288,9 +299,12 @@ statements recheck an Active Participant, Active Assignment and Course,
 Scheduled Module with `now < startsAt`, and—when setting—an Active same-Course
 Group. Replacement updates only the Group and preserves Selection identity;
 refused or stale writes leave existing state unchanged. Participant Course
-detail joins only the requesting Participant's Selection and derives its live
-or historical meaning from current state and time rather than storing a
-status.
+list/detail reads accept an Active or Archived Course only for a current Active
+Participant and Active Assignment. Detail joins only the requesting
+Participant's Selection, includes Active Groups plus any selected Archived
+Group, and derives live or historical meaning from current state and time
+rather than storing a status. Revoking the Assignment immediately removes the
+read path without deleting retained history.
 
 The full migration sequence is applied to clean isolated state in Worker tests
 and before browser E2E. The schema is designed for eventual D1 deployment. A

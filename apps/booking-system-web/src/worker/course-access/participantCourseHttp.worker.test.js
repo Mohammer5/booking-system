@@ -11,6 +11,7 @@ beforeAll(async () => {
 
 beforeEach(async () => {
   await env.DB.batch([
+    env.DB.prepare("delete from module_selections"),
     env.DB.prepare("delete from course_assignments"),
     env.DB.prepare("delete from modules"),
     env.DB.prepare("delete from groups"),
@@ -88,7 +89,7 @@ describe("Participant Course route and context authorization", () => {
 });
 
 describe("Participant Course list HTTP contract", () => {
-  it("returns deterministic zero, one, and multiple current memberships only", async () => {
+  it("returns deterministic zero, one, and multiple accessible memberships", async () => {
     const cookie = await activeParticipantCookie("a");
     const empty = await get("/api/participant/courses", cookie);
 
@@ -115,6 +116,7 @@ describe("Participant Course list HTTP contract", () => {
       courses: [
         courseResponse("a", "Alpha"),
         courseResponse("z", "alpha"),
+        courseResponse("archived", "Archived", "archived"),
       ],
     });
   });
@@ -221,13 +223,67 @@ describe("Participant Course detail HTTP contract", () => {
     });
   });
 
+  it("returns only own read-only history for Archived access until revocation", async () => {
+    const cookie = await activeParticipantCookie("a");
+    await insertParticipant("peer", "peer-principal", "active", {
+      name: "Private Archived Peer",
+      email: "archived-peer@example.com",
+    });
+    await insertCourse("a", "Archived History", "archived");
+    await insertAssignment("a", "a", "a", "active");
+    await insertAssignment("peer", "peer", "a", "active");
+    await insertGroup("active", "Visible Group", "active");
+    await insertGroup("archived", "Historical Group", "archived");
+    await insertModule("ended", "Ended Module", "scheduled", 1_700_000_000_000);
+    await insertModule("cancelled", "Cancelled Module", "cancelled", 1_700_100_000_000);
+    await insertSelection("own", "a", "ended", "archived");
+    await insertSelection("peer", "peer", "cancelled", "active");
+    const path = "/api/participant/courses/course-a";
+    const response = await get(path, cookie);
+    const body = await response.json();
+
+    expect(response.status).toBe(200);
+    expect(body).toMatchObject({
+      id: "course-a",
+      state: "archived",
+      groups: [{ id: "group-active", state: "active" }],
+      modules: [
+        {
+          id: "module-ended",
+          selectionAvailability: "closed",
+          selection: {
+            id: "selection-own",
+            meaning: "historical",
+            phase: "historical",
+            group: {
+              id: "group-archived",
+              name: "Historical Group",
+              state: "archived",
+            },
+          },
+        },
+        {
+          id: "module-cancelled",
+          selectionAvailability: "closed",
+          selection: null,
+        },
+      ],
+    });
+    expect(JSON.stringify(body)).not.toContain("Private Archived Peer");
+    expect(JSON.stringify(body)).not.toContain("selection-peer");
+
+    await env.DB.prepare(
+      "update course_assignments set state = 'revoked' where id = 'assignment-a'",
+    ).run();
+    await expectOutcome(await get(path, cookie), 404, "course-unavailable");
+  });
+
   it.each([
     ["unknown", "unknown", null, null, null],
     ["malformed", "%20", null, null, null],
     ["unassigned", "a", "active", null, "active"],
     ["cross-Participant", "a", "active", "other", "active"],
     ["Revoked", "a", "active", "a", "revoked"],
-    ["Archived", "a", "archived", "a", "active"],
   ])("uses one privacy-safe outcome for %s detail", async (
     _case,
     requestedSuffix,
@@ -257,7 +313,7 @@ describe("Participant Course detail HTTP contract", () => {
     await expectOutcome(response, 404, "course-unavailable");
   });
 
-  it("revalidates Participant, Assignment, and Course state on later requests", async () => {
+  it("revalidates Participant and Assignment while preserving Archived access", async () => {
     const cookie = await activeParticipantCookie("a");
     await insertCourse("a", "Current Course", "active");
     await insertAssignment("a", "a", "a", "active");
@@ -275,7 +331,13 @@ describe("Participant Course detail HTTP contract", () => {
     await expectOutcome(await get(path, cookie), 404, "course-unavailable");
     await env.DB.prepare("update course_assignments set state = 'active'").run();
     await env.DB.prepare("update courses set state = 'archived'").run();
-    await expectOutcome(await get(path, cookie), 404, "course-unavailable");
+    const archived = await get(path, cookie);
+
+    expect(archived.status).toBe(200);
+    await expect(archived.json()).resolves.toMatchObject({
+      id: "course-a",
+      state: "archived",
+    });
   });
 
   it("sanitizes unexpected read failures", async () => {
@@ -432,14 +494,35 @@ async function insertModule(suffix, title, state, startsAt) {
     .run();
 }
 
+/** @returns {Promise<void>} Insert one deterministic retained Selection. */
+async function insertSelection(
+  suffix,
+  participantSuffix,
+  moduleSuffix,
+  groupSuffix,
+) {
+  await env.DB.prepare(
+    `insert into module_selections
+       (id, participant_id, course_id, module_id, group_id)
+     values (?, ?, 'course-a', ?, ?)`,
+  )
+    .bind(
+      `selection-${suffix}`,
+      `participant-${participantSuffix}`,
+      `module-${moduleSuffix}`,
+      `group-${groupSuffix}`,
+    )
+    .run();
+}
+
 /** @returns {object} Expected narrow Course response. */
-function courseResponse(suffix, name) {
+function courseResponse(suffix, name, state = "active") {
   return {
     id: `course-${suffix}`,
     name,
     description: `Description for ${name}`,
     timezone: "Europe/Berlin",
-    state: "active",
+    state,
   };
 }
 

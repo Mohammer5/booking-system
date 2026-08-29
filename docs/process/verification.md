@@ -155,6 +155,19 @@ sanitization. Playwright owns real future and Cancelled deletion, bounded ended
 eligibility and historical blockers, last-row empty state and timezone refusal,
 refresh, keyboard/Dialog/result focus, desktop/360px layout, and axe scans.
 
+For terminal Course archival, booking-domain Vitest owns Active actor/Course,
+the upcoming/in-progress/exact-end/ended/Cancelled Module matrix, one captured
+instant, terminal state, no-rewrite result, and cross-responsibility read-only/
+historical predicates. Worker/D1 Vitest owns the one guarded state update,
+complete retained-row snapshot, stale actor/Course and structural/booking race
+outcomes, rollback, Archived Participant access/privacy, revocation, and every
+existing post-archive write refusal. Worker HTTP evidence owns the body-free
+`POST`, current server-derived eligibility, exact outcomes, production
+composition, post-read race, and technical sanitization. Playwright owns the
+German blocked-then-allowed journey, complete Archived Admin action inventory,
+private Participant own history until revocation, direct refresh, stale/error
+focus, desktop/360px layout, and axe scans.
+
 For Group editing and reversible lifecycle, booking-domain Vitest owns
 complete Active/Archived fields, Course-local normalized Active-name rules,
 injected time, the exact future/exact-start/in-progress/ended/Cancelled
@@ -237,11 +250,13 @@ independence, stale/technical outcomes, desktop/360px responsiveness, and axe
 evidence.
 
 For assigned Participant Course access, booking-domain Vitest owns the shared
-Active Participant/Assignment/Course predicate, eligibility filtering, stable
+Active Participant/Assignment plus Active-or-Archived Course predicate,
+eligibility filtering, stable
 adapter order, and one private unavailable outcome. Worker/D1 Vitest owns
 guarded ordered list/detail reads, current-state refusal, exact HTTP contracts,
-missing/cross-Participant/unassigned identifier privacy, technical-error
-sanitization, and the explicit absence of Selection persistence. Playwright
+missing/cross-Participant/unassigned identifier privacy, own-Selection-only
+Archived history, revocation loss, technical-error sanitization, and the
+explicit absence of Selection persistence. Playwright
 owns truthful empty/loading/error/populated list states, one/multiple Course
 ordering, stable detail/direct refresh, Module/Active-Group presentation,
 unavailable privacy, pre-Active request refusal, sign-out, desktop/360px,
@@ -337,7 +352,7 @@ onboarding/assigned-Course/zero-membership/privacy states, Participant
 directory and Course membership/Assignment-lifecycle states, Participant
 self/Admin profile editing and lifecycle, Course editing and permanent
 timezone-lock presentation, Disabled-target detail, and absence of horizontal
-overflow. The current 44-test browser suite also proves that one
+overflow. The current 46-test browser suite also proves that one
 fixed normal session remains usable while navigating between Participant and
 Admin contexts, successful sign-out terminates that session, an Active Admin
 can create, edit, and revisit a Course with Groups, a future Module, a
@@ -347,8 +362,8 @@ restoring removed future Selections, and preserve independent other-Course
 access. It also proves global Participant Disable, safe Disabled sign-out,
 same-principal Admin continuity, Re-enable without future-Selection
 restoration, and retained historical/live presentation. An Active Participant
-can access only assigned Active Courses while missing or inactive Participant
-context causes no private Course-access request.
+can access only assigned Active or Archived Courses while missing or inactive
+Participant context causes no private Course-access request.
 It also proves retained-identity Group editing, allowed and exact-blocked
 archival, Active-name-conflicted then successful reactivation, and retained
 Archived Group details/state in Participant history. Permanent Group deletion
@@ -368,6 +383,11 @@ It also proves permanent Module deletion after real Selection removal, real
 Cancelled and bounded ended eligibility, privacy-safe current/historical
 blockers, stale/technical errors, confirmation/cancel/result focus, last-row
 empty state, permanent Course timezone refusal, and refresh persistence.
+It also proves blocked then allowed terminal Course archival, exact-end and
+future-Cancelled eligibility, no Archived structural action surfaces, retained
+private Participant history, prohibited Selection mutation, later Assignment
+revocation and access loss, direct refresh, stale/technical refusal, Dialog/
+result focus, desktop/360px layout, and axe scans.
 
 On browser-test failure, CI should retain short-lived useful diagnostics such
 as the Playwright report, traces, screenshots, and relevant logs. Artifacts

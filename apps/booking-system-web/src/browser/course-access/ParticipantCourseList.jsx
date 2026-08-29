@@ -3,6 +3,7 @@ import {
   AlertTitle,
   Card,
   CardContent,
+  Chip,
   CircularProgress,
   Link,
   List,
@@ -118,14 +119,31 @@ function ParticipantCourseListSuccess({ courses, translate }) {
         <ListItem disablePadding key={course.id} sx={{ mb: 2 }}>
           <Card sx={{ width: "100%" }} variant="outlined">
             <CardContent>
-              <Stack spacing={1}>
-                <Link
-                  component={RouterLink}
-                  to={`/courses/${course.id}`}
-                  variant="h3"
+              <Stack spacing={1.5}>
+                <Stack
+                  direction={{ xs: "column", sm: "row" }}
+                  spacing={1}
+                  sx={{
+                    alignItems: { sm: "center" },
+                    justifyContent: "space-between",
+                  }}
                 >
-                  {course.name}
-                </Link>
+                  <Link
+                    component={RouterLink}
+                    to={`/courses/${course.id}`}
+                    variant="h3"
+                  >
+                    {course.name}
+                  </Link>
+                  <Chip
+                    color={course.state === "active" ? "success" : "default"}
+                    label={translate(
+                      `courseAccess.participantCourses.state.${course.state}`,
+                    )}
+                    sx={{ alignSelf: { xs: "flex-start", sm: "auto" } }}
+                    variant={course.state === "active" ? "filled" : "outlined"}
+                  />
+                </Stack>
                 {course.description === null ? null : (
                   <Typography>{course.description}</Typography>
                 )}

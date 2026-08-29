@@ -19,6 +19,7 @@ import {
 } from "react-router";
 
 import { CourseMembershipSection } from "../course-access/index.js";
+import { CourseArchivalControl } from "./CourseArchivalControl.jsx";
 import { CourseEditSection } from "./CourseEditSection.jsx";
 import { useCourseDetail } from "./useCourses.js";
 import { GroupCreationSection } from "./GroupCreationSection.jsx";
@@ -37,6 +38,8 @@ export function CourseDetailPage() {
   const courseQuery = useCourseDetail(courseId);
   const headingRef = useRef(null);
   const errorRef = useRef(null);
+  const archivalSuccessRef = useRef(null);
+  const [archivalResult, setArchivalResult] = useState(null);
   const [isSuccessOpen, setIsSuccessOpen] = useState(
     location.state?.courseCreated === true,
   );
@@ -54,12 +57,24 @@ export function CourseDetailPage() {
     }
   }, [courseQuery.isError]);
 
+  useEffect(() => {
+    if (
+      courseQuery.data?.state === "archived" &&
+      archivalResult?.course.id === courseQuery.data.id
+    ) {
+      archivalSuccessRef.current?.focus();
+    }
+  }, [archivalResult, courseQuery.data]);
+
   return (
     <>
       <CourseDetailSurface
         courseQuery={courseQuery}
+        archivalResult={archivalResult}
+        archivalSuccessRef={archivalSuccessRef}
         errorRef={errorRef}
         headingRef={headingRef}
+        onArchived={setArchivalResult}
         translate={t}
       />
       <Snackbar
@@ -114,7 +129,8 @@ function CourseDetailSurface(props) {
  * @param {object} props Detail state properties.
  * @returns {import("react").ReactElement} The current detail state.
  */
-function CourseDetailState({ courseQuery, errorRef, headingRef, translate }) {
+function CourseDetailState(props) {
+  const { courseQuery, errorRef, headingRef, translate } = props;
   if (courseQuery.isPending) {
     return (
       <Stack spacing={3}>
@@ -151,8 +167,11 @@ function CourseDetailState({ courseQuery, errorRef, headingRef, translate }) {
 
   return (
     <CourseDetails
+      archivalResult={props.archivalResult}
+      archivalSuccessRef={props.archivalSuccessRef}
       course={courseQuery.data}
       headingRef={headingRef}
+      onArchived={props.onArchived}
       translate={translate}
     />
   );
@@ -164,40 +183,80 @@ function CourseDetailState({ courseQuery, errorRef, headingRef, translate }) {
  * @param {object} props Course detail properties.
  * @returns {import("react").ReactElement} The resolved Course details.
  */
-function CourseDetails({ course, headingRef, translate }) {
+function CourseDetails(props) {
+  const { course, headingRef, translate } = props;
+  const isActive = course.state === "active";
+
   return (
     <Stack
       aria-labelledby="course-detail-title"
       component="article"
       spacing={3}
     >
-      <Stack
-        direction={{ xs: "column", sm: "row" }}
-        spacing={2}
-        sx={{
-          alignItems: { sm: "center" },
-          justifyContent: "space-between",
-        }}
-      >
-        <Typography
-          component="h1"
-          id="course-detail-title"
-          ref={headingRef}
-          tabIndex={-1}
-          variant="h1"
-        >
-          {course.name}
-        </Typography>
-        <Chip
-          color="success"
-          label={translate("courseStructure.state.active")}
-        />
-      </Stack>
+      <CourseHeading
+        course={course}
+        headingRef={headingRef}
+        translate={translate}
+      />
       <CourseDescriptionList course={course} translate={translate} />
-      <CourseEditSection course={course} />
+      {props.archivalResult?.course.id === course.id ? (
+        <Alert
+          ref={props.archivalSuccessRef}
+          role="status"
+          severity="success"
+          tabIndex={-1}
+        >
+          {translate("courseStructure.archival.success")}
+        </Alert>
+      ) : null}
+      {isActive ? (
+        <>
+          <CourseEditSection course={course} />
+          <CourseArchivalControl
+            course={course}
+            onArchived={props.onArchived}
+            translate={translate}
+          />
+        </>
+      ) : (
+        <Alert severity="info">
+          {translate("courseStructure.archival.readOnly")}
+        </Alert>
+      )}
       <CourseMembershipSection course={course} />
       <GroupCreationSection course={course} />
       <ModuleCreationSection course={course} />
+    </Stack>
+  );
+}
+
+/** @returns {import("react").ReactElement} Course identity and lifecycle. */
+function CourseHeading({ course, headingRef, translate }) {
+  const isActive = course.state === "active";
+
+  return (
+    <Stack
+      direction={{ xs: "column", sm: "row" }}
+      spacing={2}
+      sx={{
+        alignItems: { sm: "center" },
+        justifyContent: "space-between",
+      }}
+    >
+      <Typography
+        component="h1"
+        id="course-detail-title"
+        ref={headingRef}
+        tabIndex={-1}
+        variant="h1"
+      >
+        {course.name}
+      </Typography>
+      <Chip
+        color={isActive ? "success" : "default"}
+        label={translate(`courseStructure.state.${course.state}`)}
+        variant={isActive ? "filled" : "outlined"}
+      />
     </Stack>
   );
 }
@@ -227,7 +286,7 @@ function CourseDescriptionList({ course, translate }) {
         {course.timezone}
       </DetailTerm>
       <DetailTerm label={translate("courseStructure.detail.state")}>
-        {translate("courseStructure.state.active")}
+        {translate(`courseStructure.state.${course.state}`)}
       </DetailTerm>
     </Box>
   );

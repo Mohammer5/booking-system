@@ -29,7 +29,13 @@ import {
  * @param {object} props Selection control properties.
  * @returns {import("react").ReactElement} Accessible Selection interaction.
  */
-export function ModuleSelectionControl({ courseId, module, groups, translate }) {
+export function ModuleSelectionControl({
+  courseId,
+  courseState,
+  module,
+  groups,
+  translate,
+}) {
   const control = useSelectionControlState(courseId, module);
 
   return (
@@ -49,9 +55,11 @@ export function ModuleSelectionControl({ courseId, module, groups, translate }) 
       ) : (
         <Alert severity="info">
           {translate(
-            module.state === "cancelled"
-              ? "courseAccess.participantCourses.selection.cancelledLocked"
-              : "courseAccess.participantCourses.selection.locked",
+            courseState === "archived"
+              ? "courseAccess.participantCourses.selection.archivedLocked"
+              : module.state === "cancelled"
+                ? "courseAccess.participantCourses.selection.cancelledLocked"
+                : "courseAccess.participantCourses.selection.locked",
           )}
         </Alert>
       )}

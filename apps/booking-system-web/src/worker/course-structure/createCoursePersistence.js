@@ -1,3 +1,5 @@
+import { createCourseArchivalPersistence } from "./createCourseArchivalPersistence.js";
+
 /**
  * Create the narrow D1 capabilities owned by Course structure.
  *
@@ -6,6 +8,7 @@
  */
 export function createCoursePersistence(database) {
   return {
+    ...createCourseArchivalPersistence(database),
     async createCourseForActiveAdmin({ adminUserId, course }) {
       const result = await database
         .prepare(

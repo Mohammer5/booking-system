@@ -18,6 +18,7 @@ This repository uses an indexed global documentation system.
   local application, Course creation/editing with permanent timezone locking,
   Group creation/editing/archival/reactivation/deletion, Module creation/
   descriptive editing/pre-start rescheduling/terminal cancellation/deletion,
+  terminal Course archival and private read-only history,
   Participant
   registration/profile/lifecycle/Assignment-lifecycle/assigned-Course-access/
   Module-Selection
@@ -56,7 +57,7 @@ This repository uses an indexed global documentation system.
   local-tool provisioning, Course creation/editing and structure,
   Participant-registration/profile/
   lifecycle, and Assignment-lifecycle/assigned-Participant-Course/Module-
-  Selection evidence,
+  Selection/Course-archival evidence,
   CI, and release rules.
 - Read when: A task affects documentation, Markplane, tests, CI, releases,
   routing, indexes, or terminology maintenance.
@@ -70,7 +71,7 @@ This repository uses an indexed global documentation system.
   Assignment creation/revocation/reactivation, Participant lifecycle, assigned
   Participant Course access, and Participant Module Selection plus Course/
   Group/Module creation, Module editing/rescheduling/cancellation/deletion,
-  Group lifecycle/deletion,
+  Group lifecycle/deletion and Course archival/read-only history,
   and guarded Course-editing experience,
   implemented runtime/persistence,
   Google authentication direction, NixOS developer-host tooling, ESLint

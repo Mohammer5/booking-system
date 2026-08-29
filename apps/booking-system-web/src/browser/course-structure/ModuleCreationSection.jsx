@@ -52,7 +52,9 @@ export function ModuleCreationSection({ course }) {
         })}
         translate={t}
       />
-      <ModuleCreationForm course={course} translate={t} />
+      {course.state === "active" ? (
+        <ModuleCreationForm course={course} translate={t} />
+      ) : null}
     </Stack>
   );
 }

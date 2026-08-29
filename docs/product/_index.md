@@ -19,9 +19,10 @@ domain and behavior.
   boundaries, implemented Admin-bootstrap, Course creation/editing with its
   permanent timezone lock, Group creation/editing/archival/reactivation and
   retained-reference deletion plus future-Module creation,
-  Participant onboarding, Course Assignment creation/lifecycle, and assigned
-  Active-Course access plus Participant profile/lifecycle maintenance and
-  Module Selection subsets, and the remaining product implementation gap.
+  Participant onboarding, Course Assignment creation/lifecycle, terminal
+  Course archival with private read-only historical access, and assigned
+  Active/Archived-Course access plus Participant profile/lifecycle maintenance
+  and Module Selection subsets, and the remaining product implementation gap.
 - Read when: You need to distinguish accepted first-release behavior and
   non-goals from implementation state.
 - Tags: product, status, current-state, v1, implementation

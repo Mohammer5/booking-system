@@ -4,6 +4,7 @@ export {
   createResolveAdminContext,
 } from "./admin-access/index.js";
 export {
+  createArchiveCourse,
   createArchiveGroup,
   createCancelModule,
   createCreateCourse,

@@ -1,12 +1,12 @@
 ---
 id: TASK-fzniz
 title: Archive Courses with read-only historical access
-status: backlog
+status: done
 priority: medium
 type: feature
 effort: large
 epic: EPIC-i2x79
-plan: null
+plan: PLAN-xcz4u
 depends_on:
 - TASK-7n2my
 - TASK-vyj7r
@@ -20,7 +20,7 @@ blocks:
 - TASK-h37zt
 related:
 - TASK-vwciv
-assignee: null
+assignee: gerkules
 tags:
 - course
 - archival
@@ -28,7 +28,7 @@ tags:
 - authorization
 position: e70
 created: 2026-08-27
-updated: 2026-08-27
+updated: 2026-08-29
 ---
 
 # Archive Courses with read-only historical access
@@ -43,27 +43,27 @@ read-only access until Assignment revocation.
 
 ## Acceptance Criteria
 
-- [ ] Archival is refused while any Scheduled Module has `now < endsAt`,
+- [x] Archival is refused while any Scheduled Module has `now < endsAt`,
       including upcoming and in-progress Modules. At exact `endsAt` it no
       longer blocks; a Cancelled Module does not block even when its original
       `endsAt` is future.
-- [ ] Successful archival is terminal, never hard-deletes/reactivates the
+- [x] Successful archival is terminal, never hard-deletes/reactivates the
       Course, and does not cancel Modules or remove/rewrite Groups, Modules,
       Assignments, Invites, or Selections.
-- [ ] Archived Course name/description/timezone, Groups, Modules, current
+- [x] Archived Course name/description/timezone, Groups, Modules, current
       Invite, Assignment addition/reactivation, and Participant/Admin-assisted
       Selection mutation are structurally read-only with authoritative stale
       refusal.
-- [ ] An Active Admin User can list, directly inspect, and distinguish Archived
+- [x] An Active Admin User can list, directly inspect, and distinguish Archived
       Courses. Existing Active Assignments may still be revoked, but Revoked
       Assignments cannot reactivate there.
-- [ ] An Active Participant with an Active Assignment retains directly
+- [x] An Active Participant with an Active Assignment retains directly
       navigable read-only access to appropriate Course/Module/Group details and
       only their own Selections; later revocation removes access. Disabled or
       Revoked users receive no Course data.
-- [ ] Every retained Selection is historical after archival, and the current
+- [x] Every retained Selection is historical after archival, and the current
       Course Invite is unusable for Join; no private data becomes public.
-- [ ] Concurrent archival and structural/booking mutations are evaluated from
+- [x] Concurrent archival and structural/booking mutations are evaluated from
       current state so no mixed partial outcome is accepted.
 
 ## UI/UX Expectations

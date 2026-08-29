@@ -25,7 +25,7 @@ covered here.
 
 This product area remains the implementation-agnostic source of product truth.
 The repository now implements the first Admin bootstrap subset, the first
-[Course](../DICTIONARY.md#course) structure subset, [Participant
+[Course](../DICTIONARY.md#course) structure and terminal-archival subset, [Participant
 onboarding](../DICTIONARY.md#participant-onboarding), and direct [Course
 Assignment](../DICTIONARY.md#course-assignment), plus Participant-managed
 [Module Selection](../DICTIONARY.md#module-selection) and Participant profile
@@ -88,25 +88,33 @@ Selection blocks deletion; a removed or replaced pre-start Selection does not.
 Success removes only the Module row, preserves all unrelated structure and
 participation data, and leaves the Course timezone permanently locked even
 after the first, last, or every current Module is gone.
+An Active Admin User may terminally archive an Active Course only when every
+Scheduled Module has reached exact `endsAt` or later; Cancelled Modules never
+block. One guarded state update changes only the Course to Archived and retains
+all Course fields, Groups, Modules, Assignments, and Selections unchanged.
+Archived Admin detail remains inspectable but removes every Course, Group,
+Module, Assignment-add/reactivate, and Selection mutation surface; revocation
+of an existing Active Assignment remains available. An Active Participant
+with an Active Assignment retains private, directly navigable read-only access
+to the Archived Course and only their own historical Selections until that
+Assignment is revoked.
 A new authenticated principal can
 explicitly supply the required booking-system Participant name and unique
 email, become one Active Participant, return to the Participant home, and see
 the valid zero-Assignment state without public Course discovery. An Active
-Participant now sees exactly the Active Courses reached through their own
-Active Assignments and may open a stable private detail containing relevant
-Course information, Modules, Active Groups, and only their own current or
-historical Module Selection. Before a Scheduled Module starts, the Participant
+Participant now sees exactly the Active or Archived Courses reached through
+their own Active Assignments and may open a stable private detail containing
+relevant Course information, Modules, currently eligible Groups, retained
+selected-Group details, and only their own current or historical Module
+Selection. Before a Scheduled Module starts in an Active Course, the Participant
 may explicitly select or change to an Active same-Course Group, or remove the
 Selection; overlapping Modules remain independent and no Group is selected by
 default. Unknown, inactive, unassigned, Revoked, stale, and cross-Participant
 Course identifiers reveal no Course data. An Active Participant may edit their
 own required name/email, while an Active Admin User may edit an Active or
 Disabled Participant from a stable detail; both preserve identity, lifecycle,
-relationships, provider data, and any same-principal Admin User. Course
-lifecycle operations;
-Admin-assisted Module Selection,
-Archived-Course historical access, Invite, later Admin onboarding, and later
-Admin management
+relationships, provider data, and any same-principal Admin User. Admin-assisted
+Module Selection, Invite, later Admin onboarding, and later Admin management
 behavior remain unimplemented. Technology, persistence, API,
 frontend, and infrastructure mechanics remain outside this product
 specification and do not alter its contracts.

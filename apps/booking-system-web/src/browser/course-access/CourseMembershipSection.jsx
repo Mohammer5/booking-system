@@ -105,6 +105,11 @@ function CourseMembershipSurface({ course, state, translate }) {
         openerRef={state.openerRef}
         translate={translate}
       />
+      {course.state === "archived" ? (
+        <Alert severity="info">
+          {translate("courseAccess.membership.archivedReadOnly")}
+        </Alert>
+      ) : null}
       <MembershipSuccess state={state} translate={translate} />
       <CourseMembershipState
         assignmentQuery={state.assignments}
@@ -135,15 +140,16 @@ function MembershipHeading({ isCourseActive, onOpen, openerRef, translate }) {
       <Typography component="h2" id="course-membership-title" variant="h2">
         {translate("courseAccess.membership.title")}
       </Typography>
-      <Button
-        aria-haspopup="dialog"
-        disabled={!isCourseActive}
-        onClick={onOpen}
-        ref={openerRef}
-        variant="contained"
-      >
-        {translate("courseAccess.membership.assign")}
-      </Button>
+      {isCourseActive ? (
+        <Button
+          aria-haspopup="dialog"
+          onClick={onOpen}
+          ref={openerRef}
+          variant="contained"
+        >
+          {translate("courseAccess.membership.assign")}
+        </Button>
+      ) : null}
     </Stack>
   );
 }

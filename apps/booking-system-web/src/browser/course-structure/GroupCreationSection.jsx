@@ -50,13 +50,16 @@ export function GroupCreationSection({ course }) {
       <GroupList
         courseId={course.id}
         groups={course.groups}
+        isReadOnly={course.state === "archived"}
         onDeleted={(result) => setDeletionResult({
           courseId: course.id,
           groupName: result.group.name,
         })}
         translate={t}
       />
-      <GroupCreationForm courseId={course.id} translate={t} />
+      {course.state === "active" ? (
+        <GroupCreationForm courseId={course.id} translate={t} />
+      ) : null}
     </Stack>
   );
 }
@@ -67,7 +70,7 @@ export function GroupCreationSection({ course }) {
  * @param {object} props Group-list properties.
  * @returns {import("react").ReactElement} Current Group list state.
  */
-function GroupList({ courseId, groups, onDeleted, translate }) {
+function GroupList({ courseId, groups, isReadOnly, onDeleted, translate }) {
   if (groups.length === 0) {
     return (
       <Alert role="status" severity="info">
@@ -86,6 +89,7 @@ function GroupList({ courseId, groups, onDeleted, translate }) {
           <GroupManagementCard
             courseId={courseId}
             group={group}
+            isReadOnly={isReadOnly}
             onDeleted={onDeleted}
             translate={translate}
           />

@@ -75,6 +75,7 @@
   self-profile maintenance, the global Admin Participant directory and stable
   profile detail plus Disable/Re-enable HTTP, Course Assignment list/create/
   reactivate/revoke HTTP, and private assigned Participant Course list/detail
+  HTTP for Active or Archived Courses, plus terminal body-free Course archival
   HTTP.
   Application destinations remain fixed and browser input cannot select
   principal, authority, Assignment identity/state, lifecycle state,
@@ -103,12 +104,12 @@
   creation/editing/archival/reactivation/permanent deletion, and future Module
   creation, lifetime descriptive editing, pre-start rescheduling, and terminal
   before-end cancellation with retained Selection history plus permanent
-  unreferenced deletion;
+  unreferenced deletion and terminal no-rewrite Course archival;
   `course-access` factories for fresh
   Participant context,
   registration, self/Admin Participant profile maintenance, Participant
   Disable/Re-enable, Course Assignment creation/revocation/reactivation, and
-  current assigned Active-Course
+  current assigned Active/Archived-Course
   list/detail access, plus
   `module-participation` factories for Participant Selection set/change/remove
   and derived current/history presentation.
@@ -129,16 +130,19 @@
   Participant to a query-driven zero/one/multiple assigned-Course home without
   public discovery. Its stable detail exposes relevant Course, Module, Active-
   Group, and own Selection data only, with explicit set/change/remove controls
-  before the Module starts; a retained Selection still presents its selected
-  Archived Group details/state. The Admin Participant directory includes
+  before the Module starts in an Active Course; Archived detail is explicitly
+  read-only and every retained Selection is historical, while a selected
+  Archived Group still retains its details/state. The Admin Participant directory includes
   registered zero-Assignment Participants and links to guarded profile-only
   maintenance plus the one current Disable/Re-enable action for Active and
   Disabled targets. The Participant gate presents a freshly Disabled target
   with safe sign-out and mounts no private Participant view. Stable Course
   detail owns complete Course editing, its permanent timezone lock, Course
   membership creation/lifecycle, Group creation/edit/lifecycle/deletion, and
-  Module create/edit/reschedule/cancel/delete interactions without incidental
-  routes.
+  Module create/edit/reschedule/cancel/delete interactions and terminal Course
+  archival without incidental routes. Archived detail retains inspection,
+  removes structural/booking controls, and keeps only Active-Assignment
+  revocation actionable.
   Membership cards expose only current
   permitted revoke/reactivate actions with confirmation and accurate retention
   copy.
@@ -201,8 +205,9 @@
   Cancelled, other-Course, repeated, stale, and failed-batch data remains.
   Separate narrow
   Participant Course reads join current Active Participant, Active Assignment,
-  and Active Course state, order list/Module/Group data deterministically, and
-  restrict Participant Groups to Active state without adding a migration.
+  and Active or Archived Course state, order list/Module/Group data
+  deterministically, and restrict Participant Groups to Active state plus any
+  own selected Archived Group without adding a migration.
   Guarded Selection replacement/removal rechecks current Participant,
   Assignment, Course, Module, Group, and deadline state in SQL; one unique
   Participant/Module pair preserves stable identity while composite references
@@ -226,6 +231,11 @@
   Selection foreign key to recheck Active Admin/Course and zero retained
   references. Success removes only the Module row and leaves permanent Course
   scheduling history set; deletion/new-Selection races have one valid winner.
+  Terminal Course archival reuses the schema and one guarded update to recheck
+  Active Admin/Course plus zero Scheduled Modules with `ends_at` after the
+  accepted instant. Success changes only Course state; current Active-Course
+  guards freeze every related write except explicit Assignment revocation, and
+  archive/Module races have one valid winner.
 - Both explicit workspace boundary maps are registered in ESLint. The boundary
   converter denies undeclared third-party imports and supports exact test-only
   and composition-interface permissions.

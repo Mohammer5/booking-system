@@ -25,27 +25,31 @@ export function ModuleManagementCard({ course, module, onDeleted, translate }) {
             timezone={course.timezone}
             translate={translate}
           />
-          <ModuleDetailsForm
-            courseId={course.id}
-            module={module}
-            translate={translate}
-          />
-          <ModuleScheduleForm
-            course={course}
-            module={module}
-            translate={translate}
-          />
-          <ModuleCancellationControl
-            courseId={course.id}
-            module={module}
-            translate={translate}
-          />
-          <ModuleDeletionControl
-            courseId={course.id}
-            module={module}
-            onDeleted={onDeleted}
-            translate={translate}
-          />
+          {course.state === "active" ? (
+            <>
+              <ModuleDetailsForm
+                courseId={course.id}
+                module={module}
+                translate={translate}
+              />
+              <ModuleScheduleForm
+                course={course}
+                module={module}
+                translate={translate}
+              />
+              <ModuleCancellationControl
+                courseId={course.id}
+                module={module}
+                translate={translate}
+              />
+              <ModuleDeletionControl
+                courseId={course.id}
+                module={module}
+                onDeleted={onDeleted}
+                translate={translate}
+              />
+            </>
+          ) : null}
         </Stack>
       </CardContent>
     </Card>

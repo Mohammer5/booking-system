@@ -56,8 +56,9 @@ development work is tracked and verified, and how releases are promoted.
   contract, NixOS local browser provisioning, pull-request CI, responsive
   shell, Course creation/editing, Group lifecycle/deletion and structure,
   Module editing/rescheduling/cancellation/deletion, Participant registration/
-  profile/lifecycle/assigned-Course access, and Assignment-lifecycle/Module-Selection browser and
-  accessibility policy, plus the external branch-protection requirement.
+  profile/lifecycle/assigned-Course access, Assignment-lifecycle/Module-
+  Selection, terminal Course-archival/read-only history, and accessibility
+  policy, plus the external branch-protection requirement.
 - Read when: A task affects tests, CI, required checks, test environments,
   browser automation, local test-tool provisioning, verification commands, or
   failure artifacts.

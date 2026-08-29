@@ -167,11 +167,11 @@ GET /api/participant/courses/:courseId
 
 | Operation | Authentication and current state | Results |
 | --- | --- | --- |
-| Assigned Course list | Normal session resolving a current Active Participant, then current Active Assignments and Active Courses | `200 { courses }`, including truthful empty; `401 unauthenticated`; `403 no-participant`/`disabled-participant`; sanitized `500 technical-error` |
-| Assigned Course detail | Same plus a current Active Assignment to the requested current Active Course | `200` narrow Course with ordered `modules` and Active `groups`; `401`; exact `403`; one `404 course-unavailable` for malformed, unknown, inactive, unassigned, Revoked, stale, or cross-Participant identifiers; sanitized `500 technical-error` |
+| Assigned Course list | Normal session resolving a current Active Participant, then current Active Assignments and Active or Archived Courses | `200 { courses }`, including truthful empty; `401 unauthenticated`; `403 no-participant`/`disabled-participant`; sanitized `500 technical-error` |
+| Assigned Course detail | Same plus a current Active Assignment to the requested current Active or Archived Course | `200` narrow Course with ordered `modules`, Active `groups`, and any selected Archived Group; `401`; exact `403`; one `404 course-unavailable` for malformed, unknown, inactive, unassigned, Revoked, stale, or cross-Participant identifiers; sanitized `500 technical-error` |
 
 List items expose only Course `id`, `name`, optional `description`, `timezone`,
-and Active `state`. Detail adds participant-relevant Module and Active Group
+and current Course `state`. Detail adds participant-relevant Module and Group
 fields. Each Module exposes only the current Participant's own Selection or
 `null`; a present Selection contains its stable identity, selected Group
 including retained details/state even when Archived, and derived current-
@@ -207,7 +207,7 @@ creates no partial side effect; overlapping Modules remain independent.
 
 ### Course Administration HTTP Surface
 
-The implemented `course-structure` slices use fourteen concrete
+The implemented `course-structure` slices use fifteen concrete
 same-origin operations:
 
 ```text
@@ -215,6 +215,7 @@ GET  /api/admin/courses
 POST /api/admin/courses
 GET  /api/admin/courses/:courseId
 PUT  /api/admin/courses/:courseId
+POST /api/admin/courses/:courseId/archival
 POST /api/admin/courses/:courseId/groups
 PUT  /api/admin/courses/:courseId/groups/:groupId
 DELETE /api/admin/courses/:courseId/groups/:groupId
@@ -233,6 +234,7 @@ POST /api/admin/courses/:courseId/modules/:moduleId/cancellation
 | Course creation | Same plus guarded Active-Admin write acceptance | `201` narrow Course; `401`; exact `403`; `422` field outcome |
 | Course detail | Normal session resolving a current Active Admin | `200` Course with ordered `groups` and `modules`; `401`; exact `403`; `404 course-not-found` |
 | Course update | Same plus guarded current Active Admin and Active Course acceptance, complete `{ name, description, timezone }`, and permanent timezone history | `200` updated Course; `401`; exact `403`; `404 course-not-found`; `409` stale Course or locked/stale timezone; `422` field outcome; sanitized `500 technical-error` |
+| Course archival | Same plus guarded current Active Admin, current Active Course, and no Scheduled Module with server-captured `now < endsAt`; no request body | `200 { outcome: "archived", course }`; `401`; exact `403`; `404 course-not-found`; `409 course-archival-blocked` or terminal/stale actor/Course state; sanitized `500 technical-error` |
 | Group creation | Same plus guarded current Active Admin and Active Course acceptance | `201` narrow Active Group; `401`; exact `403`; `404`; `409` stale Course/name conflict; `422` field outcome |
 | Group update | Same plus one same-Course Active/Archived Group and complete `{ name, details }` | `200` narrow updated Group; `401`; exact `403`; `404` Course/Group; `409` stale state or Active-name conflict; `422` field outcome; sanitized `500 technical-error` |
 | Group deletion | Same plus one same-Course Active/Archived Group with no currently retained Selection | `200 { outcome: "deleted", group }`; `401`; exact `403`; `404`; `409 group-deletion-blocked` or stale state; sanitized `500 technical-error` |
@@ -245,8 +247,9 @@ POST /api/admin/courses/:courseId/modules/:moduleId/cancellation
 | Module deletion | Same plus one same-Course Scheduled/Cancelled Module with no currently retained Selection; no request body | `200 { outcome: "deleted", module }`; `401`; exact `403`; `404` Course/Module; `409 module-deletion-blocked` or stale actor/Course/reference state; sanitized `500 technical-error` |
 
 Course representations contain only `id`, `name`, `description`, `timezone`,
-`state`, and derived `isTimezoneEditable`; detail adds only its Course-owned
-Group and Module representations. The server creates identities and lifecycle state, derives
+`state`, and derived `isTimezoneEditable`; detail adds derived
+`isArchivalAvailable` plus only its Course-owned Group and Module
+representations. The server creates identities and lifecycle state, derives
 the Course and definite instants, ignores browser trust fields, freshly
 resolves Admin context for every request, and uses guarded writes so an actor
 Disabled or Course Archived after page load creates nothing and an edit changes
@@ -271,7 +274,14 @@ accepts no browser trust fields and removes only one same-Course Module after
 rechecking Active Admin/Course and the absence of every retained Selection.
 It is independent of Module time/state beyond Scheduled or Cancelled, cascades
 nothing, and leaves permanent Course scheduling history set; the restrictive
-Selection foreign key arbitrates a concurrent new reference. Group lifecycle
+Selection foreign key arbitrates a concurrent new reference. Course archival
+accepts no browser instant, state, Module, or related-data input. One guarded
+update captures and rechecks the current Active Admin/Course plus the absence
+of any Scheduled Module whose `endsAt` remains future; exact end and every
+Cancelled Module are eligible. Success changes only Course state, while all
+existing Active-Course write guards make retained structure and booking data
+read-only. The detail capability is explanatory only and a concurrent Module
+mutation remains governed by the accepting update. Group lifecycle
 and deletion actions accept no browser-supplied instant, state, Course ownership,
 or Selection data; the server derives retained-reference context and the
 guarded accepting D1 statement rechecks it. Archival and reactivation retain

@@ -42,7 +42,7 @@ locking, Course-wide Group creation/complete editing/archival/reactivation/
 permanent deletion,
 and future Scheduled Module creation, lifetime descriptive editing, strictly
 pre-start rescheduling, terminal before-end cancellation, and permanent
-unreferenced deletion,
+unreferenced deletion plus terminal no-rewrite Course archival,
 including normalized Group names, IANA-zone local-time resolution, explicit
 DST-overlap choice, definite instants, the exact retained-Selection archival
 and deletion blockers, current-start schedule locking, Selection deadline
@@ -53,12 +53,12 @@ implements fresh Participant-context resolution,
 explicit Participant registration with complete trimmed-email policy, direct
 Course Assignment plus retained-row revocation/reactivation for registered
 Active or Disabled targets, and current Active Participant + Active Assignment
-+ Active Course list/detail access. It
++ Active or Archived Course list/detail access. It
 also implements Active-Participant self profile editing and Active-Admin edits
 of Active/Disabled Participant profiles with the same complete-email policy,
 plus guarded global Participant Disable/Re-enable with exact Selection
-retention and fresh access effects. Invite and Archived-Course access stay with
-that owner when implemented. `module-participation` implements
+retention and fresh access effects. Invite behavior stays with that owner when
+implemented. `module-participation` implements
 Participant Selection eligibility, replacement, removal, and derived
 current-versus-historical presentation; later Admin-assisted behavior remains
 with that owner. These are internal

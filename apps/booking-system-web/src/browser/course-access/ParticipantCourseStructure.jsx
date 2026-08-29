@@ -47,6 +47,7 @@ function ParticipantModuleList({ course, translate }) {
             <ListItem disablePadding key={module.id} sx={{ mb: 2 }}>
               <ModuleCard
                 courseId={course.id}
+                courseState={course.state}
                 groups={course.groups}
                 module={module}
                 timezone={course.timezone}
@@ -61,7 +62,14 @@ function ParticipantModuleList({ course, translate }) {
 }
 
 /** @returns {import("react").ReactElement} Read-only Module information. */
-function ModuleCard({ courseId, groups, module, timezone, translate }) {
+function ModuleCard({
+  courseId,
+  courseState,
+  groups,
+  module,
+  timezone,
+  translate,
+}) {
   const stateKey =
     module.state === "cancelled" ? "cancelled" : "scheduled";
 
@@ -96,6 +104,7 @@ function ModuleCard({ courseId, groups, module, timezone, translate }) {
           />
           <ModuleSelectionControl
             courseId={courseId}
+            courseState={courseState}
             groups={groups}
             module={module}
             translate={translate}

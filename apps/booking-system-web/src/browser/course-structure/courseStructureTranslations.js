@@ -70,6 +70,26 @@ export const courseStructureTranslations = {
       unavailable:
         "Der Kurs hat sich geändert oder kann nicht mehr bearbeitet werden. Die aktuellen Kursdaten wurden neu geladen.",
     },
+    archival: {
+      title: "Kurs archivieren",
+      summary:
+        "Die Archivierung ist endgültig und erst möglich, wenn alle geplanten Module beendet oder abgesagt sind.",
+      action: "Kurs archivieren",
+      dialogTitle: "Kurs endgültig archivieren?",
+      description:
+        "Danach bleiben Kursstruktur, Zuordnungen und Modulauswahlen unverändert als Historie erhalten. Der Kurs kann nicht reaktiviert werden und ist bis auf den Widerruf aktiver Kurszuordnungen schreibgeschützt.",
+      blocked:
+        "Der Kurs kann noch nicht archiviert werden, weil mindestens ein geplantes Modul sein exaktes Ende noch nicht erreicht hat. Warten Sie bis zum Ende oder sagen Sie das Modul zuvor ausdrücklich ab.",
+      cancel: "Abbrechen",
+      confirm: "Kurs endgültig archivieren",
+      pending: "Kurs wird archiviert …",
+      success:
+        "Der Kurs wurde endgültig archiviert. Alle bestehenden Daten blieben unverändert erhalten.",
+      unavailable:
+        "Der Kursstatus hat sich geändert oder der Kurs kann nicht mehr archiviert werden. Die aktuellen Kursdaten wurden neu geladen.",
+      readOnly:
+        "Dieser Kurs ist endgültig archiviert. Kurs, Gruppen und Module bleiben zur Einsicht erhalten und können nicht mehr bearbeitet werden. Aktive Kurszuordnungen können weiterhin widerrufen werden.",
+    },
     group: {
       title: "Gruppen",
       empty: "Für diesen Kurs wurden noch keine Gruppen angelegt.",

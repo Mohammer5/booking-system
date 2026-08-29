@@ -18,7 +18,7 @@ beforeEach(async () => {
 });
 
 describe("Participant Course list persistence", () => {
-  it("orders only current Active memberships for the current Active Participant", async () => {
+  it("orders current Active and Archived memberships for the current Active Participant", async () => {
     await insertParticipant("a", "active");
     await insertParticipant("other", "active");
     await insertCourses([
@@ -44,6 +44,7 @@ describe("Participant Course list persistence", () => {
     ).resolves.toMatchObject([
       { course: { id: "course-a" } },
       { course: { id: "course-z" } },
+      { course: { id: "course-archived", state: "archived" } },
       { course: { id: "course-b" } },
     ]);
   });
@@ -116,7 +117,6 @@ describe("Participant Course detail persistence", () => {
     ["unknown Course", null, null, null],
     ["Disabled Participant", "disabled", "active", "active"],
     ["Revoked Assignment", "active", "revoked", "active"],
-    ["Archived Course", "active", "active", "archived"],
   ])("returns the same null result for %s", async (
     _case,
     participantState,
@@ -137,6 +137,24 @@ describe("Participant Course detail persistence", () => {
         "course-a",
       ),
     ).resolves.toBeNull();
+  });
+
+  it("returns private empty structure for an Archived Course", async () => {
+    await insertParticipant("a", "active");
+    await insertCourses([["a", "Archived Course", "archived"]]);
+    await insertAssignments([["a", "a", "a", "active"]]);
+    const persistence = createParticipantCoursePersistence(env.DB);
+
+    await expect(
+      persistence.findParticipantCourseMembership(
+        "participant-a",
+        "course-a",
+      ),
+    ).resolves.toMatchObject({
+      course: { id: "course-a", state: "archived" },
+      groups: [],
+      modules: [],
+    });
   });
 
   it("returns empty structure without adding schema or changing rows", async () => {

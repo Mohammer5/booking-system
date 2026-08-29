@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 /**
- * Read the current Active Participant's assigned Active Courses.
+ * Read the current Active Participant's accessible Active or Archived Courses.
  *
  * @returns {object} TanStack Participant Course-list query state.
  */

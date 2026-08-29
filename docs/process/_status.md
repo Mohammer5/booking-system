@@ -38,7 +38,9 @@ Current reality:
   duplicate/stale profile refusal, global Disabled refusal and safe sign-out,
   Re-enable without future-Selection restoration, same-principal Admin
   continuity, retained historical/live presentation, Assignment revoke/repeat/
-  reactivate, Archived-Course handling,
+  reactivate, terminal Course archival eligibility/no-rewrite races, Archived
+  Admin read-only inspection, private Participant history until Assignment
+  revocation,
   future-Selection retention boundaries and rollback, assigned Participant
   Course access loss/restoration with multi-Course isolation, private
   unavailable identifiers, current Module/Active-Group

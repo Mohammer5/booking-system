@@ -92,6 +92,8 @@ export const courseAccessTranslations = {
         "Die Kurszuordnung wurde widerrufen und der Kurszugriff entfernt.",
       "already-revoked":
         "Die Kurszuordnung war bereits widerrufen und blieb unverändert.",
+      archivedReadOnly:
+        "Der archivierte Kurs ist schreibgeschützt. Aktive Kurszuordnungen können nur noch widerrufen werden; neue oder widerrufene Zuordnungen können nicht hinzugefügt oder reaktiviert werden.",
     },
     lifecycle: {
       revokeAction: "Kurszuordnung widerrufen",
@@ -133,6 +135,7 @@ export const courseAccessTranslations = {
       },
       state: {
         active: "Aktiv",
+        archived: "Archiviert",
       },
       list: {
         title: "Meine Kurse",
@@ -148,6 +151,8 @@ export const courseAccessTranslations = {
         toList: "Zurück zu meinen Kursen",
         timezone: "Zeitzone",
         state: "Status",
+        archivedReadOnly:
+          "Dieser Kurs ist archiviert. Sie können die Kursstruktur und Ihre eigene historische Modulauswahl lesen, aber keine Auswahl anlegen, ändern oder entfernen.",
       },
       modules: {
         title: "Module",
@@ -179,6 +184,8 @@ export const courseAccessTranslations = {
         locked: "Diese Modulauswahl kann ab dem Modulbeginn nicht mehr geändert werden.",
         cancelledLocked:
           "Das Modul wurde abgesagt. Eine bestehende Auswahl bleibt als historische Teilnahme erhalten; sie kann nicht neu angelegt, geändert oder entfernt werden.",
+        archivedLocked:
+          "Der Kurs ist archiviert. Eine bestehende Auswahl bleibt als historische Teilnahme erhalten; neue, geänderte oder entfernte Auswahlen sind nicht möglich.",
         groupLabel: "Gruppe auswählen",
         required: "Bitte wählen Sie ausdrücklich eine Gruppe aus.",
         noGroups: "Für dieses Modul ist derzeit keine aktive Gruppe verfügbar.",

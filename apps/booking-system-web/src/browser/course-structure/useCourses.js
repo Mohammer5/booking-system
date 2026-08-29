@@ -85,6 +85,46 @@ export function useUpdateCourse(courseId) {
 }
 
 /**
+ * Terminally archive one eligible Course and reconcile every Course view.
+ *
+ * @param {string} courseId Stable Course identity.
+ * @param {(result: object) => void} onArchived Parent-owned success callback.
+ * @returns {object} TanStack Course archival mutation state.
+ */
+export function useArchiveCourse(courseId, onArchived) {
+  const queryClient = useQueryClient();
+  const detailQueryKey = ["course-structure", "course", courseId];
+
+  return useMutation({
+    mutationFn: () => requestJson(
+      `/api/admin/courses/${courseId}/archival`,
+      { method: "POST" },
+    ),
+    async onSuccess(result) {
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: courseIndexQueryKey }),
+        queryClient.invalidateQueries({ queryKey: detailQueryKey }),
+        queryClient.invalidateQueries({
+          queryKey: ["course-access", "assignments", courseId],
+        }),
+        queryClient.invalidateQueries({
+          queryKey: ["course-access", "participant-courses"],
+        }),
+        queryClient.invalidateQueries({
+          queryKey: ["course-access", "participant-course", courseId],
+        }),
+      ]);
+      onArchived(result);
+    },
+    async onError(error) {
+      if (error.status === 409) {
+        await queryClient.invalidateQueries({ queryKey: detailQueryKey });
+      }
+    },
+  });
+}
+
+/**
  * Create a Course-wide Group and refresh its parent Course detail.
  *
  * @param {string} courseId Parent Course identity.

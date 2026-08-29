@@ -194,7 +194,9 @@ test("presents Archived, repeated, stale, and technical lifecycle states safely"
   await page.goto(`/admin/courses/${course.id}`);
   const card = membershipCard(page, participant.name);
 
-  await expect(page.getByRole("button", { name: "Teilnehmende zuordnen" })).toBeDisabled();
+  await expect(
+    page.getByRole("button", { name: "Teilnehmende zuordnen" }),
+  ).toHaveCount(0);
   await card.getByRole("button", { name: "Kurszuordnung widerrufen" }).click();
   const dialog = page.getByRole("dialog", { name: "Kurszuordnung widerrufen?" });
   const confirm = dialog.getByRole("button", {

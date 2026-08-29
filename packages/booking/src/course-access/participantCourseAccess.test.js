@@ -5,16 +5,22 @@ import { createListParticipantCourses } from "./createListParticipantCourses.js"
 import { hasParticipantCourseAccess } from "./hasParticipantCourseAccess.js";
 
 describe("Participant Course access predicate", () => {
-  it("grants an Active Participant access through a matching Active Assignment to an Active Course", () => {
-    expect(hasParticipantCourseAccess(activeMembership())).toBe(true);
-  });
+  it.each(["active", "archived"])(
+    "grants an Active Participant matching Active Assignment access to a %s Course",
+    (courseState) => {
+      expect(hasParticipantCourseAccess({
+        ...activeMembership(),
+        course: course("a", courseState),
+      })).toBe(true);
+    },
+  );
 
   it.each([
     ["missing Participant", { participant: null }],
     ["Disabled Participant", { participant: participant("a", "disabled") }],
     ["missing Assignment", { assignment: null }],
     ["Revoked Assignment", { assignment: assignment("a", "a", "revoked") }],
-    ["Archived Course", { course: course("a", "archived") }],
+    ["unknown Course state", { course: course("a", "pending") }],
     ["another Participant", { assignment: assignment("a", "other") }],
     ["another Course", { assignment: assignment("other", "a") }],
   ])("refuses %s", (_case, replacement) => {
@@ -77,7 +83,7 @@ describe("Participant Course list", () => {
 
     await expect(listCourses(participant("a"))).resolves.toEqual({
       outcome: "courses-available",
-      courses: [course("active")],
+      courses: [course("active"), course("archived", "archived")],
     });
     expect(createAssignment).not.toHaveBeenCalled();
     expect(createSelection).not.toHaveBeenCalled();
@@ -111,7 +117,7 @@ describe("Participant Course detail", () => {
   it.each([
     ["missing membership", null],
     ["Revoked membership", { ...membership("a"), assignment: assignment("a", "a", "revoked") }],
-    ["inactive Course", { ...membership("a"), course: course("a", "archived") }],
+    ["unknown Course state", { ...membership("a"), course: course("a", "pending") }],
     ["cross-Participant membership", { ...membership("a"), assignment: assignment("a", "other") }],
     ["identifier mismatch", membership("other")],
   ])("uses one unavailable result for %s", async (_case, value) => {
@@ -123,6 +129,24 @@ describe("Participant Course detail", () => {
     await expect(
       getCourse({ participant: participant("a"), courseId: "course-a" }),
     ).resolves.toEqual({ outcome: "course-unavailable" });
+  });
+
+  it("returns an Archived Course through the same private stable detail", async () => {
+    const getCourse = createGetParticipantCourse({
+      findParticipantCourseMembership: async () => ({
+        ...membership("a"),
+        course: course("a", "archived"),
+        groups: [],
+        modules: [],
+      }),
+    });
+
+    await expect(
+      getCourse({ participant: participant("a"), courseId: "course-a" }),
+    ).resolves.toMatchObject({
+      outcome: "course-available",
+      course: { id: "course-a", state: "archived" },
+    });
   });
 
   it("has no Assignment or Selection side effect", async () => {

@@ -1,3 +1,4 @@
+export { createArchiveCourse } from "./createArchiveCourse.js";
 export { createArchiveGroup } from "./createArchiveGroup.js";
 export { createCancelModule } from "./createCancelModule.js";
 export { createCreateCourse } from "./createCreateCourse.js";

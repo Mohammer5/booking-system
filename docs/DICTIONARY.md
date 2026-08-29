@@ -12,7 +12,8 @@ Module descriptive editing, pre-start rescheduling, terminal cancellation, and
 reference-protected permanent Module deletion,
 Participant registration/profile maintenance, Course Assignment creation/
 revocation/reactivation, Participant Disable/Re-enable, assigned Course access,
-and Participant-managed Module Selection subsets are implemented; remaining
+terminal Course archival with private read-only historical access, and
+Participant-managed Module Selection subsets are implemented; remaining
 concepts and later lifecycle behavior are still specifications until their
 delivery tasks complete.
 
@@ -58,7 +59,10 @@ Admin User may edit it without changing identity, state, or authority. See
 The primary booking-system container for Groups, Modules, Course Assignments,
 one Course timezone, and at most one current shared Course Invite. It has
 required name and timezone plus optional description. A new Course is Active
-and empty; an Archived Course is permanent and structurally read-only. See [the
+and empty; an Archived Course is permanent and structurally read-only. The
+local application implements terminal Active-to-Archived transition after
+every Scheduled Module has ended or been Cancelled, without rewriting retained
+structure or participation history. See [the
 domain model](product/domain-model.md#course).
 
 ### Course Assignment
@@ -70,7 +74,8 @@ an Active Participant and an Active Assignment. The local application
 implements Admin discovery, Course membership reads, and direct creation or
 idempotent retention of an Active Assignment, plus retained-row revocation and
 Active-Course reactivation with exact future-Selection removal. Participant-
-facing access follows fresh Assignment state. See [Course
+facing access follows fresh Assignment state across Active Courses and private
+read-only Archived-Course history until revocation. See [Course
 access](product/course-access.md#administrative-assignment).
 
 ### Course Invite
@@ -255,15 +260,16 @@ model](architecture/authentication-and-sessions.md#session-model).
 The conceptual domain package `@booking-system/booking` at `packages/booking`.
 Its implemented `admin-access` module owns the first Admin behavior, and its
 implemented `course-structure` module owns Course, Course-wide Group, future
-Scheduled Module, Course editing with its permanent timezone lock, and
+Scheduled Module, Course editing with its permanent timezone lock, terminal
+Course archival, and
 Group editing/archival/reactivation/permanent deletion with retained Selection
 policy, plus Course-local definite-time creation and pre-start-rescheduling
 policy with lifetime Module descriptive editing, terminal state-only
 cancellation, and reference-protected permanent Module deletion. Its
 implemented `course-access` module owns fresh Participant context and
 registration/profile policy plus Course Assignment creation/lifecycle and
-Participant lifecycle plus assigned Course access; Invite behavior stays with
-that module. Its implemented
+Participant lifecycle plus assigned Active/Archived-Course access; Invite
+behavior stays with that module. Its implemented
 `module-participation` module owns Participant Selection eligibility,
 set/change/remove, and derived current/history policy, with Admin-assisted
 behavior still deferred. See
@@ -282,6 +288,7 @@ creation plus Group editing/archival/reactivation and permanent deletion of
 unreferenced Groups plus Module descriptive editing/pre-start rescheduling,
 terminal Module cancellation with retained Selection history,
 permanent deletion of unreferenced Modules with Course timezone history intact,
+terminal Course archival with read-only Admin/Participant presentation,
 private technical adapters, and composition roots.
 See
 [Applications](architecture/applications.md#accepted-initial-boundary).

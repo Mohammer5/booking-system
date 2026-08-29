@@ -7,6 +7,7 @@ import {
 } from "@booking-system/booking";
 
 import { createGroupManagementOperations } from "./createGroupManagementHttp.js";
+import { createCourseArchivalOperations } from "./createCourseArchivalHttp.js";
 import { createModuleCancellationOperations } from "./createModuleCancellationHttp.js";
 import { createModuleManagementOperations } from "./createModuleManagementHttp.js";
 
@@ -19,6 +20,7 @@ import { createModuleManagementOperations } from "./createModuleManagementHttp.j
 export function createCourseHttpOperations(capabilities) {
   return {
     ...capabilities,
+    ...createCourseArchivalOperations(capabilities),
     ...createGroupManagementOperations(capabilities),
     ...createModuleCancellationOperations(capabilities),
     ...createModuleManagementOperations(capabilities),

@@ -176,8 +176,9 @@ function CourseListCard({ course, translate }) {
               {course.name}
             </Typography>
             <Chip
-              color="success"
-              label={translate("courseStructure.state.active")}
+              color={course.state === "active" ? "success" : "default"}
+              label={translate(`courseStructure.state.${course.state}`)}
+              variant={course.state === "active" ? "filled" : "outlined"}
             />
           </Stack>
           <Typography>{course.timezone}</Typography>

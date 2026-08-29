@@ -20,7 +20,13 @@ import { useGroupManagement } from "./useGroupManagement.js";
  * @param {object} props Current Group, parent Course, and translation function.
  * @returns {import("react").ReactElement} Group management card.
  */
-export function GroupManagementCard({ courseId, group, onDeleted, translate }) {
+export function GroupManagementCard({
+  courseId,
+  group,
+  isReadOnly,
+  onDeleted,
+  translate,
+}) {
   const state = useGroupManagement(courseId, group, translate);
   const deletion = useGroupDeletion(courseId, group, onDeleted);
   const titleId = `group-${group.id}-title`;
@@ -36,29 +42,35 @@ export function GroupManagementCard({ courseId, group, onDeleted, translate }) {
       <CardContent>
         <Stack spacing={2}>
           <GroupIdentity group={group} titleId={titleId} translate={translate} />
-          <Typography component="h4" id={editTitleId} variant="h4">
-            {translate("courseStructure.group.editTitle")}
-          </Typography>
-          <GroupEditForm
-            group={group}
-            state={state}
-            translate={translate}
-          />
-          <GroupManagementActions
-            deletion={deletion}
-            group={group}
-            state={state}
-            translate={translate}
-          />
-          <GroupLifecycleResult state={state} translate={translate} />
+          {isReadOnly ? null : (
+            <>
+              <Typography component="h4" id={editTitleId} variant="h4">
+                {translate("courseStructure.group.editTitle")}
+              </Typography>
+              <GroupEditForm
+                group={group}
+                state={state}
+                translate={translate}
+              />
+              <GroupManagementActions
+                deletion={deletion}
+                group={group}
+                state={state}
+                translate={translate}
+              />
+              <GroupLifecycleResult state={state} translate={translate} />
+            </>
+          )}
         </Stack>
       </CardContent>
-      <GroupManagementDialogs
-        deletion={deletion}
-        group={group}
-        state={state}
-        translate={translate}
-      />
+      {isReadOnly ? null : (
+        <GroupManagementDialogs
+          deletion={deletion}
+          group={group}
+          state={state}
+          translate={translate}
+        />
+      )}
     </Card>
   );
 }

@@ -14,7 +14,7 @@ export function createParticipantCoursePersistence(database) {
 }
 
 /**
- * List only current Active Course memberships for one current Active Participant.
+ * List accessible Active or Archived Courses for one current Active Participant.
  *
  * @param {object} database The application D1 binding.
  * @param {string} participantId Server-resolved Participant identity.
@@ -34,7 +34,7 @@ async function listParticipantCourseMemberships(database, participantId) {
          join course_assignments a on a.participant_id = p.id
          join courses c on c.id = a.course_id
         where p.id = ? and p.state = 'active'
-          and a.state = 'active' and c.state = 'active'
+          and a.state = 'active' and c.state in ('active', 'archived')
         order by c.name collate nocase, c.id`,
     )
     .bind(participantId)
@@ -87,7 +87,7 @@ function membershipStatement(database, participantId, courseId) {
          join course_assignments a on a.participant_id = p.id
          join courses c on c.id = a.course_id
         where p.id = ? and p.state = 'active'
-          and a.state = 'active' and c.state = 'active'
+          and a.state = 'active' and c.state in ('active', 'archived')
           and c.id = ?`,
     )
     .bind(participantId, courseId);
@@ -103,7 +103,7 @@ function groupStatement(database, participantId, courseId) {
          join courses c on c.id = a.course_id
          join groups g on g.course_id = c.id
         where p.id = ? and p.state = 'active'
-          and a.state = 'active' and c.state = 'active'
+          and a.state = 'active' and c.state in ('active', 'archived')
           and c.id = ? and g.state = 'active'
         order by g.name collate nocase, g.id`,
     )
@@ -132,7 +132,7 @@ function moduleStatement(database, participantId, courseId) {
            on s.participant_id = p.id and s.module_id = m.id
          left join groups sg on sg.id = s.group_id
         where p.id = ? and p.state = 'active'
-          and a.state = 'active' and c.state = 'active'
+          and a.state = 'active' and c.state in ('active', 'archived')
           and c.id = ?
         order by m.starts_at, m.id`,
     )

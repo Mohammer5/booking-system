@@ -112,6 +112,8 @@ function ParticipantCourseDetailState({ courseQuery, errorRef, translate }) {
 
 /** @returns {import("react").ReactElement} Authorized Course detail. */
 function ParticipantCourseDetails({ course, translate }) {
+  const isActive = course.state === "active";
+
   return (
     <Stack component="article" spacing={4}>
       <Stack
@@ -123,10 +125,18 @@ function ParticipantCourseDetails({ course, translate }) {
           {course.name}
         </Typography>
         <Chip
-          color="success"
-          label={translate("courseAccess.participantCourses.state.active")}
+          color={isActive ? "success" : "default"}
+          label={translate(
+            `courseAccess.participantCourses.state.${course.state}`,
+          )}
+          variant={isActive ? "filled" : "outlined"}
         />
       </Stack>
+      {isActive ? null : (
+        <Alert severity="info">
+          {translate("courseAccess.participantCourses.detail.archivedReadOnly")}
+        </Alert>
+      )}
       {course.description === null ? null : (
         <Typography>{course.description}</Typography>
       )}
@@ -152,7 +162,7 @@ function CourseMetadata({ course, translate }) {
         {course.timezone}
       </DetailTerm>
       <DetailTerm label={translate("courseAccess.participantCourses.detail.state")}>
-        {translate("courseAccess.participantCourses.state.active")}
+        {translate(`courseAccess.participantCourses.state.${course.state}`)}
       </DetailTerm>
     </Box>
   );

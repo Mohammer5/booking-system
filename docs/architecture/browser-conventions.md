@@ -235,6 +235,12 @@ removal requires a keyboard-accessible confirmation Dialog with focus
 restoration. Server-derived availability and mutation outcomes own deadline and
 current-state truth rather than the browser wall clock.
 
+The same Participant list/detail routes admit privately assigned Active and
+Archived Courses. Archived state is named in list and detail, all retained
+own Selections are presented as historical, and no set/change/remove control
+is rendered. Revocation invalidates these caches so the Course disappears and
+its stable direct route returns the privacy-preserving unavailable state.
+
 Course editing uses the same ownership split on stable Admin Course detail.
 TanStack Query owns the authoritative Course and mutation lifecycle, React Hook
 Form owns the complete name/description/timezone controls, and Worker/domain
@@ -272,6 +278,17 @@ technical failures. TanStack Query reconciles Admin and Participant detail;
 after success the card unmounts and a parent-owned Module-section status takes
 focus. Last-row deletion presents the truthful empty state while the Course
 timezone remains visibly and authoritatively locked.
+
+Terminal Course archival is a body-free mutation on stable Admin Course
+detail. Its German MUI Dialog names permanence and read-only consequences,
+focuses cancellation first, disables confirmation for a known unfinished
+Scheduled Module, restores the invoking action on dismissal, and focuses
+stale/technical feedback or parent-owned success. The server remains
+authoritative if eligibility changes. Archived detail retains Course, Group,
+Module, membership, and Selection-history inspection while removing Course/
+Group/Module forms and lifecycle actions plus Assignment add/reactivation;
+only Active-Assignment revocation remains actionable. Admin and Participant
+Course list/detail caches are reconciled after success.
 
 Course Assignment lifecycle uses the same ownership split. TanStack Query
 owns membership-list and assigned-Course invalidation after reactivation or

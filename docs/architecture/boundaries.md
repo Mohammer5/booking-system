@@ -115,6 +115,14 @@ Participant Selection foreign key stay inside existing persistence. The new
 public factory export requires no map, dependency, composition, workspace, or
 first-level responsibility edge.
 
+Terminal Course archival also stays within the existing `course-structure`
+slices. The booking factory owns exact end-time eligibility, application-
+private D1/HTTP owns the guarded no-rewrite transition, and German MUI plus the
+existing browser `course-access` slice own Admin read-only and private
+Participant-history presentation. The public factory export and widened
+Active/Archived reads use existing permitted interfaces; no map, dependency,
+composition, workspace, or first-level responsibility edge changes.
+
 Participant registration introduces the accepted dependency-free
 `course-access` responsibility inside the booking package. Its root interface
 exposes Participant registration, fresh Participant-context, distinct

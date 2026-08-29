@@ -5,7 +5,7 @@
  * @param {object | null} input.participant Current Participant.
  * @param {object | null} input.assignment Current Course Assignment.
  * @param {object | null} input.course Current Course.
- * @returns {boolean} Whether the Participant may access the Active Course.
+ * @returns {boolean} Whether the Participant may access the current Course.
  */
 export function hasParticipantCourseAccess({
   participant,
@@ -15,7 +15,7 @@ export function hasParticipantCourseAccess({
   return (
     participant?.state === "active" &&
     assignment?.state === "active" &&
-    course?.state === "active" &&
+    new Set(["active", "archived"]).has(course?.state) &&
     assignment.participantId === participant.id &&
     assignment.courseId === course.id
   );
