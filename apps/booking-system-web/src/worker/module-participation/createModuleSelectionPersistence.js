@@ -1,3 +1,5 @@
+import { createAdminAssistedModuleSelectionPersistence } from "./createAdminAssistedModuleSelectionPersistence.js";
+
 /**
  * Create narrow D1 capabilities owned by Participant Module Selection.
  *
@@ -6,6 +8,7 @@
  */
 export function createModuleSelectionPersistence(database) {
   return {
+    ...createAdminAssistedModuleSelectionPersistence(database),
     setParticipantModuleSelection: (input) =>
       setParticipantModuleSelection(database, input),
     removeParticipantModuleSelection: (input) =>

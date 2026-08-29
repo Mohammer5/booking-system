@@ -95,6 +95,61 @@ describe("administrative participation persistence", () => {
     });
   });
 
+  it("reads one fully registered target with nullable retained Assignment", async () => {
+    await seedAdmin("active");
+    await seedCourse("a", "Target Course", "active");
+    await seedParticipant("target", "Target", "active");
+    await seedGroup("active", "a", "Active Group", "active");
+    await seedModule("future", "a", "Future", 1_800_000_000_000, "scheduled");
+    const persistence = createAdministrativeParticipationPersistence(env.DB);
+
+    await expect(
+      persistence.findParticipantParticipation(
+        "admin-a",
+        "course-a",
+        "participant-target",
+      ),
+    ).resolves.toMatchObject({
+      course: { id: "course-a" },
+      groups: [{ id: "group-active" }],
+      modules: [{ id: "module-future" }],
+      participation: {
+        participant: participantResult("target", "Target", "active"),
+        assignment: null,
+        selections: [],
+      },
+    });
+
+    await seedAssignment("target", "target", "a", "revoked");
+    await seedSelection("target", "target", "a", "future", "active");
+    await expect(
+      persistence.findParticipantParticipation(
+        "admin-a",
+        "course-a",
+        "participant-target",
+      ),
+    ).resolves.toMatchObject({
+      participation: {
+        assignment: assignmentResult("target", "target", "revoked"),
+        selections: [{ id: "selection-target", groupId: "group-active" }],
+      },
+    });
+  });
+
+  it.each([
+    ["missing target", "admin-a", "participant-missing"],
+    ["missing Admin", "admin-missing", "participant-target"],
+  ])("returns no target data for %s", async (_case, adminId, participantId) => {
+    await seedAdmin("active");
+    await seedCourse("a", "Target Course", "active");
+    await seedParticipant("target", "Target", "active");
+    const persistence = createAdministrativeParticipationPersistence(env.DB);
+
+    await expect(
+      persistence.findParticipantParticipation(adminId, "course-a", participantId),
+    ).resolves.toBeNull();
+  });
+
   it.each([
     ["missing Admin", null, "course-a"],
     ["Disabled Admin", "disabled", "course-a"],

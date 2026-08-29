@@ -150,6 +150,12 @@ The Assignment is the ordinary Course-specific membership defined in [Course
 access](course-access.md#course-assignment-through-admin-assisted-booking).
 Origin adds no assisted or booking-created membership state.
 
+The private Course participation view may therefore open any fully registered
+Participant as a Course-scoped target even when no Assignment exists. The
+Course participation overview remains Assignment-based; target discovery uses
+the existing private Participant administration directory and does not expose
+that directory to Participants.
+
 ### Eligibility And Deadline
 
 Apart from not requiring Active membership before the operation begins, an
@@ -187,6 +193,8 @@ An Active Admin User MAY remove an existing Selection only while the Course is
 Active, Module is Scheduled, and `now < startsAt`. At or after `startsAt`, or
 for an Archived Course or Cancelled Module, removal is refused. Successful
 removal leaves no Selection and does not create or reactivate an Assignment.
+Removal does not require an Active Assignment: a retained Revoked Assignment
+remains Revoked, and absent membership remains absent.
 
 ### Coherent Refusal
 

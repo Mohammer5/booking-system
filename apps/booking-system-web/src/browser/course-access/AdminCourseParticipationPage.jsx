@@ -17,11 +17,12 @@ import {
   TableRow,
   Typography,
 } from "@mui/material";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link as RouterLink, useParams } from "react-router";
 
 import { AdministrativeCourseStructure } from "./AdministrativeCourseStructure.jsx";
+import { AdminParticipationParticipantDialog } from "./AdminParticipationParticipantDialog.jsx";
 import { administrativeParticipationErrorMessage } from "./administrativeParticipationErrorMessage.js";
 import { useAdministrativeCourseParticipation } from "./useCourseAccess.js";
 
@@ -140,11 +141,23 @@ function ParticipationOverview({ data, translate }) {
 
 /** @returns {import("react").ReactElement} Responsive Participant overview. */
 function ParticipationDirectory({ data, translate }) {
+  const [isTargetDialogOpen, setIsTargetDialogOpen] = useState(false);
+
   return (
     <Stack aria-labelledby="admin-participation-participants" component="section" spacing={2}>
       <Typography component="h2" id="admin-participation-participants" variant="h2">
         {translate("courseAccess.adminParticipation.participants.title")}
       </Typography>
+      <Typography>
+        {translate("courseAccess.adminParticipation.participants.assistedDescription")}
+      </Typography>
+      <Button
+        onClick={() => setIsTargetDialogOpen(true)}
+        sx={{ alignSelf: "flex-start" }}
+        variant="contained"
+      >
+        {translate("courseAccess.adminParticipation.participants.manageSelection")}
+      </Button>
       {data.participations.length === 0 ? (
         <Alert role="status" severity="info">
           {translate("courseAccess.adminParticipation.participants.empty")}
@@ -155,6 +168,14 @@ function ParticipationDirectory({ data, translate }) {
           <ParticipationCards data={data} translate={translate} />
         </>
       )}
+      {isTargetDialogOpen ? (
+        <AdminParticipationParticipantDialog
+          courseId={data.course.id}
+          onClose={() => setIsTargetDialogOpen(false)}
+          participations={data.participations}
+          translate={translate}
+        />
+      ) : null}
     </Stack>
   );
 }

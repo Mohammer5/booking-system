@@ -73,6 +73,263 @@ test("opens, refreshes, archives, and safely refuses a real Course participation
   expect(participantProbeBody).not.toContain("admin");
 });
 
+test("manages a real assisted Selection across membership and lifecycle states", async ({
+  page,
+}) => {
+  await page.setViewportSize(desktopViewport);
+  const participant = await ensureAssistedParticipant(page);
+
+  await ensureActiveAdmin(page);
+  const setup = await createAssistedBookingCourse(page);
+  const crossCourse = await createCourse(page, "Fremder Auswahlkurs");
+  const crossGroupResponse = await page.request.post(
+    `/api/admin/courses/${crossCourse.id}/groups`,
+    { data: { name: "Fremde Gruppe" } },
+  );
+  const crossGroup = await crossGroupResponse.json();
+  const detailPath =
+    `/admin/courses/${setup.course.id}/participation/${participant.id}`;
+  const selectionApi =
+    `/api/admin/courses/${setup.course.id}/participation/${participant.id}/modules/${setup.module.id}/selection`;
+
+  const crossRefusal = await page.request.put(selectionApi, {
+    data: { groupId: crossGroup.id },
+  });
+  expect(crossRefusal.status()).toBe(409);
+  await expect(crossRefusal.json()).resolves.toEqual({
+    outcome: "group-not-selectable",
+  });
+  const afterCrossRefusal = await (await page.request.get(
+    `/api/admin/courses/${setup.course.id}/participation/${participant.id}`,
+  )).json();
+  expect(afterCrossRefusal.participation.assignment).toBeNull();
+  expect(afterCrossRefusal.participation.selections).toEqual([]);
+
+  await page.goto(`/admin/courses/${setup.course.id}/participation`);
+  const manageButton = page.getByRole("button", {
+    name: "Modulauswahl stellvertretend verwalten",
+  });
+
+  await manageButton.focus();
+  await page.keyboard.press("Enter");
+  const targetDialog = page.getByRole("dialog", {
+    name: "Teilnahmeprofil für Modulauswahl öffnen",
+  });
+  const cancelTarget = targetDialog.getByRole("button", { name: "Abbrechen" });
+
+  await expect(cancelTarget).toBeFocused();
+  await page.keyboard.press("Escape");
+  await expect(targetDialog).toBeHidden();
+  await expectVisibleKeyboardFocus(manageButton);
+  await manageButton.click();
+  await targetDialog.getByRole("radio", {
+    name: new RegExp(participant.name),
+  }).check();
+  await targetDialog.getByRole("button", {
+    name: "Modulauswahlen öffnen",
+  }).click();
+  await expect(page).toHaveURL(detailPath);
+  await expect(page.getByText("Kurszuordnung: Nicht vorhanden")).toBeVisible();
+
+  let module = moduleItem(page, setup.module.title);
+  await expect(module).toContainText(
+    "Eine gewöhnliche aktive Kurszuordnung wird erstellt.",
+  );
+  await expect(module).toContainText(
+    "Eine Kurszuordnung allein ist keine Modulteilnahme.",
+  );
+  await module.getByRole("button", { name: "Modulauswahl speichern" }).click();
+  await expect(module.getByText("Bitte wählen Sie eine aktive Gruppe aus.")).toBeVisible();
+  await module.getByRole("radio", { name: setup.groups[0].name }).check();
+  await module.getByRole("button", { name: "Modulauswahl speichern" }).click();
+  await expect(module.getByRole("status").filter({
+    hasText: "Die Modulauswahl wurde angelegt.",
+  })).toBeFocused();
+  await expect(module).toContainText(`Ausgewählte Gruppe: ${setup.groups[0].name}`);
+
+  module = moduleItem(page, setup.module.title);
+  await module.getByRole("button", { name: "Modulauswahl speichern" }).click();
+  await expect(module.getByRole("status").filter({
+    hasText: "Diese Gruppe war bereits ausgewählt.",
+  })).toBeFocused();
+  await module.getByRole("radio", { name: setup.groups[1].name }).check();
+  await module.getByRole("button", { name: "Modulauswahl speichern" }).click();
+  await expect(module.getByRole("status").filter({
+    hasText: "Die Modulauswahl wurde ersetzt.",
+  })).toBeFocused();
+  await expect(module).toContainText(`Ausgewählte Gruppe: ${setup.groups[1].name}`);
+
+  await page.reload();
+  module = moduleItem(page, setup.module.title);
+  await expect(module).toContainText(`Ausgewählte Gruppe: ${setup.groups[1].name}`);
+  const removeButton = module.getByRole("button", {
+    name: "Modulauswahl entfernen",
+  });
+
+  await removeButton.focus();
+  await page.keyboard.press("Enter");
+  const removalDialog = page.getByRole("dialog", {
+    name: "Modulauswahl entfernen?",
+  });
+
+  await expect(removalDialog.getByRole("button", { name: "Abbrechen" })).toBeFocused();
+  await page.keyboard.press("Escape");
+  await expectVisibleKeyboardFocus(removeButton);
+  await removeButton.click();
+  await removalDialog.getByRole("button", {
+    name: "Auswahl endgültig entfernen",
+  }).click();
+  await expect(module.getByRole("status").filter({
+    hasText: "Die Modulauswahl wurde entfernt.",
+  })).toBeFocused();
+
+  const assignments = await (await page.request.get(
+    `/api/admin/courses/${setup.course.id}/assignments`,
+  )).json();
+  const retainedAssignment = assignments.assignments.find(
+    ({ participant: current }) => current.id === participant.id,
+  );
+  const revocation = await page.request.post(
+    `/api/admin/courses/${setup.course.id}/assignments/${retainedAssignment.id}/revocation`,
+  );
+  expect(revocation.status()).toBe(200);
+  await page.reload();
+  module = moduleItem(page, setup.module.title);
+  await expect(module).toContainText(
+    "Die widerrufene gewöhnliche Kurszuordnung wird reaktiviert.",
+  );
+  await module.getByRole("radio", { name: setup.groups[0].name }).check();
+  await module.getByRole("button", { name: "Modulauswahl speichern" }).click();
+  await expect(module.getByRole("status").filter({
+    hasText: "Die gewöhnliche Kurszuordnung wurde dabei reaktiviert.",
+  })).toBeFocused();
+
+  const cancellation = await page.request.post(
+    `/api/admin/courses/${setup.course.id}/modules/${setup.module.id}/cancellation`,
+  );
+  expect(cancellation.status()).toBe(200);
+  const cancelledRefusal = await page.request.put(selectionApi, {
+    data: { groupId: setup.groups[1].id },
+  });
+  expect(cancelledRefusal.status()).toBe(409);
+  await page.reload();
+  module = moduleItem(page, setup.module.title);
+  await expect(module).toContainText("Modulstatus: Abgesagt");
+  await expect(module.getByRole("button", { name: "Modulauswahl speichern" })).toHaveCount(0);
+
+  const disablement = await page.request.post(
+    `/api/admin/participants/${participant.id}/disablement`,
+  );
+  expect(disablement.status()).toBe(200);
+  const disabledRefusal = await page.request.put(selectionApi, {
+    data: { groupId: setup.groups[1].id },
+  });
+  expect(disabledRefusal.status()).toBe(409);
+  await page.reload();
+  await expect(page.getByText("Teilnahmeprofil: Deaktiviert")).toBeVisible();
+  await expect(page.getByRole("button", { name: "Modulauswahl speichern" })).toHaveCount(0);
+
+  const reenablement = await page.request.post(
+    `/api/admin/participants/${participant.id}/reenablement`,
+  );
+  expect(reenablement.status()).toBe(200);
+  const archival = await page.request.post(
+    `/api/admin/courses/${setup.course.id}/archival`,
+  );
+  expect(archival.status()).toBe(200);
+  const archivedRefusal = await page.request.put(selectionApi, {
+    data: { groupId: setup.groups[1].id },
+  });
+  expect(archivedRefusal.status()).toBe(409);
+  await page.reload();
+  await expect(page.getByText(/Dieser Kurs ist archiviert/)).toBeVisible();
+  await expect(page.getByRole("button", { name: "Modulauswahl speichern" })).toHaveCount(0);
+  await page.setViewportSize(narrowViewport);
+  await expectAccessibleLayout(page);
+});
+
+test("presents exact-deadline locks and focused stale and technical refusals", async ({
+  page,
+}) => {
+  await page.setViewportSize(desktopViewport);
+  await ensureActiveAdmin(page);
+  const detailApi =
+    "**/api/admin/courses/course-assisted-bounded/participation/participant-assisted-bounded";
+  const selectionApi = `${detailApi}/modules/module-assisted-future/selection`;
+  const model = boundedAssistedDetailModel();
+  let mutationOutcome = "selection-deadline-reached";
+  let releaseMutation;
+  let mutationGate = new Promise((resolve) => {
+    releaseMutation = resolve;
+  });
+
+  await page.route(detailApi, (route) => fulfillJson(route, 200, model));
+  await page.route(selectionApi, async (route) => {
+    await mutationGate;
+    await fulfillJson(
+      route,
+      mutationOutcome === "technical-error" ? 500 : 409,
+      { outcome: mutationOutcome },
+    );
+  });
+  await page.goto(
+    "/admin/courses/course-assisted-bounded/participation/participant-assisted-bounded",
+  );
+
+  const exactModule = moduleItem(page, "Modul am exakten Beginn");
+  const cancelledModule = moduleItem(page, "Abgesagtes Auswahlmodul");
+  const futureModule = moduleItem(page, "Künftiges Auswahlmodul");
+
+  await expect(exactModule).toContainText("nicht bearbeitbar");
+  await expect(cancelledModule).toContainText("nicht bearbeitbar");
+  await expect(exactModule.getByRole("button", {
+    name: "Modulauswahl speichern",
+  })).toHaveCount(0);
+  await expect(futureModule.getByRole("radio", {
+    name: "Archivierte Assistenzgruppe",
+  })).toHaveCount(0);
+  await futureModule.getByRole("button", {
+    name: "Modulauswahl speichern",
+  }).click();
+  await expect(futureModule.getByText(
+    "Bitte wählen Sie eine aktive Gruppe aus.",
+  )).toBeVisible();
+  await futureModule.getByRole("radio", {
+    name: "Aktive Assistenzgruppe",
+  }).check();
+  await futureModule.getByRole("button", {
+    name: "Modulauswahl speichern",
+  }).click();
+  await expect(futureModule.getByRole("button", {
+    name: "Modulauswahl wird gespeichert …",
+  })).toBeDisabled();
+  releaseMutation();
+  await expect(futureModule.getByRole("alert").filter({
+    hasText: "Die Auswahl wurde nicht geändert",
+  })).toBeFocused();
+  await expect(futureModule).toContainText("Keine Auswahl");
+  await expect(page.getByText("Kurszuordnung: Nicht vorhanden")).toBeVisible();
+
+  mutationOutcome = "technical-error";
+  mutationGate = Promise.resolve();
+  await futureModule.getByRole("button", {
+    name: "Modulauswahl speichern",
+  }).click();
+  await expect(futureModule.getByRole("alert").filter({
+    hasText: "Die Modulauswahl konnte nicht gespeichert werden.",
+  })).toBeFocused();
+  await expectAccessibleLayout(page);
+
+  await page.unroute(detailApi);
+  await page.route(detailApi, (route) =>
+    fulfillJson(route, 404, { outcome: "participation-unavailable" }),
+  );
+  await page.reload();
+  await expect(page.getByRole("alert").filter({
+    hasText: "Dieses Teilnahmeprofil gehört nicht zur verfügbaren Kursteilnahme.",
+  })).toBeFocused();
+});
+
 test("presents every lifecycle in responsive overview and direct Participant detail", async ({
   page,
 }) => {
@@ -92,6 +349,16 @@ test("presents every lifecycle in responsive overview and direct Participant det
       await readGate;
     }
     await fulfillJson(route, 200, model);
+  });
+  await page.route(`${path}/*`, async (route) => {
+    const participantId = new URL(route.request().url()).pathname.split("/").at(-1);
+    const detail = participantDetailModel(model, participantId);
+
+    await fulfillJson(
+      route,
+      detail === null ? 404 : 200,
+      detail ?? { outcome: "participation-unavailable" },
+    );
   });
   const navigation = page.goto(
     `/admin/courses/${model.course.id}/participation`,
@@ -217,6 +484,58 @@ async function expectEmptyParticipation(page) {
   }
 }
 
+/** @returns {Promise<object>} Ensure one fixed Active assisted target. */
+async function ensureAssistedParticipant(page) {
+  const fixture = await page.request.post(
+    "/api/_fixtures/session/selection-participant",
+  );
+
+  expect(fixture.status()).toBe(204);
+  let response = await page.request.get("/api/participant/me");
+
+  if (response.status() === 403) {
+    response = await page.request.post("/api/participant/onboarding", {
+      data: {
+        name: "Stellvertretende Auswahlperson",
+        email: "assisted-selection@example.com",
+      },
+    });
+  }
+
+  expect([200, 201]).toContain(response.status());
+  return response.json();
+}
+
+/** @returns {Promise<object>} Create one future Module and two active Groups. */
+async function createAssistedBookingCourse(page) {
+  const course = await createCourse(page, "Stellvertretende Auswahl");
+  const groups = [];
+
+  for (const name of ["Assistierte Gruppe Alpha", "Assistierte Gruppe Beta"]) {
+    const response = await page.request.post(
+      `/api/admin/courses/${course.id}/groups`,
+      { data: { name } },
+    );
+
+    expect(response.status()).toBe(201);
+    groups.push(await response.json());
+  }
+
+  const moduleResponse = await page.request.post(
+    `/api/admin/courses/${course.id}/modules`,
+    {
+      data: {
+        title: "Assistiertes Zukunftsmodul",
+        startsAtLocal: "2026-09-01T10:00",
+        endsAtLocal: "2026-09-01T11:00",
+      },
+    },
+  );
+
+  expect(moduleResponse.status()).toBe(201);
+  return { course, groups, module: await moduleResponse.json() };
+}
+
 /** @returns {Promise<void>} Ensure the first fixture is an Active Admin. */
 async function ensureActiveAdmin(page) {
   const fixture = await page.request.post("/api/_fixtures/session/first-admin");
@@ -276,6 +595,93 @@ function lifecycleModel() {
         selection("current", "active", "historical", "historical", "revoked"),
       ]),
     ],
+  };
+}
+
+/** @returns {object | null} One current target-detail response. */
+function participantDetailModel(model, participantId) {
+  const participationModel = model.participations.find(
+    ({ participant }) => participant.id === participantId,
+  );
+
+  if (participationModel === undefined) return null;
+
+  return {
+    course: model.course,
+    groups: model.groups,
+    modules: model.modules.map((module) => ({
+      ...module,
+      selectionAvailability:
+        model.course.state === "active" &&
+        participationModel.participant.state === "active" &&
+        module.state === "scheduled" &&
+        Date.parse(module.startsAt) > Date.parse("2026-08-28T10:00:00.000Z")
+          ? "open"
+          : "closed",
+    })),
+    participation: participationModel,
+  };
+}
+
+/** @returns {object} Target detail with exact, Cancelled, and open Modules. */
+function boundedAssistedDetailModel() {
+  return {
+    course: {
+      id: "course-assisted-bounded",
+      name: "Begrenzte stellvertretende Auswahl",
+      description: null,
+      timezone: "Europe/Berlin",
+      state: "active",
+    },
+    groups: [
+      group("assisted-active", "Aktive Assistenzgruppe", null, "active"),
+      group(
+        "assisted-archived",
+        "Archivierte Assistenzgruppe",
+        null,
+        "archived",
+      ),
+    ],
+    modules: [
+      {
+        ...moduleData(
+          "assisted-exact",
+          "Modul am exakten Beginn",
+          "2026-08-28T10:00:00.000Z",
+          "2026-08-28T11:00:00.000Z",
+        ),
+        selectionAvailability: "closed",
+      },
+      {
+        ...moduleData(
+          "assisted-cancelled",
+          "Abgesagtes Auswahlmodul",
+          "2026-08-28T12:00:00.000Z",
+          "2026-08-28T13:00:00.000Z",
+          "cancelled",
+        ),
+        selectionAvailability: "closed",
+      },
+      {
+        ...moduleData(
+          "assisted-future",
+          "Künftiges Auswahlmodul",
+          "2026-08-28T14:00:00.000Z",
+          "2026-08-28T15:00:00.000Z",
+        ),
+        selectionAvailability: "open",
+      },
+    ],
+    participation: {
+      participant: {
+        id: "participant-assisted-bounded",
+        name: "Begrenzte Auswahlperson",
+        email: "bounded@example.com",
+        state: "active",
+      },
+      assignment: null,
+      selections: [],
+    },
   };
 }
 

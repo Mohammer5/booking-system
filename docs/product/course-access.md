@@ -273,8 +273,9 @@ Revoked Course Assignment
 The outcome preserves one Assignment per Participant and Course. The Course
 must be Active, and booking validity MUST be established against authoritative
 current state before the combined outcome is accepted. Refusal leaves no newly
-created or reactivated Assignment. Admin-assisted removal does not create or
-reactivate membership.
+created or reactivated Assignment. Admin-assisted removal is independent of
+membership state: it does not create or reactivate membership, and a retained
+Revoked Assignment remains Revoked.
 
 This path MUST NOT create a Participant for an unknown or incompletely
 registered person, operate on a Disabled Participant, or turn an Admin User

@@ -5,6 +5,7 @@ import nonProductionWorker from "../../nonProductionWorker.js";
 import productionWorker from "../../productionWorker.js";
 import { createAdministrativeParticipationHttpHandler } from "./createAdministrativeParticipationHttpHandler.js";
 import { createAdministrativeParticipationPersistence } from "./createAdministrativeParticipationPersistence.js";
+import { createModuleSelectionPersistence } from "../module-participation/createModuleSelectionPersistence.js";
 
 const nowEpoch = Date.parse("2026-08-28T10:00:00.000Z");
 
@@ -37,10 +38,18 @@ describe("administrative participation authorization and contract", () => {
     for (const [method, path] of [
       ["POST", "/api/admin/courses/course-a/participation"],
       ["GET", "/api/admin/courses/course-a/participation/"],
-      ["GET", "/api/admin/courses/course-a/participation/private"],
     ]) {
       await expectOutcome(await request(path, cookie, { method }), 404, "not-found");
     }
+
+    await expectOutcome(
+      await get(
+        "/api/admin/courses/course-a/participation/participant-missing",
+        cookie,
+      ),
+      404,
+      "participation-unavailable",
+    );
 
     const production = await productionWorker.fetch(
       new Request("http://localhost/api/admin/courses/course-a/participation"),
@@ -263,6 +272,208 @@ describe("administrative participation lifecycle presentation", () => {
   });
 });
 
+describe("Admin-assisted Module Selection HTTP", () => {
+  it("reads an unassigned target and creates, reselects, replaces, removes, and reactivates", async () => {
+    const cookie = await activeAdminCookie();
+
+    await seedAssistedBookingGraph();
+    const detailPath =
+      "/api/admin/courses/course-a/participation/participant-target";
+    const selectionPath = `${detailPath}/modules/module-future/selection`;
+    const initial = await (await get(detailPath, cookie)).json();
+
+    expect(initial.participation.assignment).toBeNull();
+    expect(initial.participation.selections).toEqual([]);
+    expect(initial.modules[0].selectionAvailability).toBe("open");
+
+    const created = await request(selectionPath, cookie, setOptions("group-active"));
+    const createdBody = await created.json();
+    expect(created.status).toBe(201);
+    expect(createdBody).toMatchObject({
+      outcome: "created",
+      assignmentOutcome: "created",
+      assignment: { state: "active" },
+      selection: { moduleId: "module-future", groupId: "group-active" },
+    });
+
+    const repeated = await request(selectionPath, cookie, setOptions("group-active"));
+    const repeatedBody = await repeated.json();
+    expect(repeated.status).toBe(200);
+    expect(repeatedBody).toMatchObject({
+      outcome: "already-selected",
+      assignmentOutcome: "already-active",
+    });
+    const changed = await request(selectionPath, cookie, setOptions("group-second"));
+    const changedBody = await changed.json();
+    expect(changed.status).toBe(200);
+    expect(changedBody).toMatchObject({
+      outcome: "changed",
+      assignmentOutcome: "already-active",
+      selection: { groupId: "group-second" },
+    });
+
+    await expectOutcome(
+      await request(selectionPath, cookie, { method: "DELETE" }),
+      200,
+      "removed",
+    );
+    await env.DB.prepare(
+      "update course_assignments set state = 'revoked' where participant_id = 'participant-target'",
+    ).run();
+    const reactivated = await request(
+      selectionPath,
+      cookie,
+      setOptions("group-active"),
+    );
+    const reactivatedBody = await reactivated.json();
+
+    expect(reactivated.status).toBe(201);
+    expect(reactivatedBody).toMatchObject({
+      outcome: "created",
+      assignmentOutcome: "reactivated",
+      assignment: { id: createdBody.assignment.id, state: "active" },
+    });
+    const refreshed = await (await get(detailPath, cookie)).json();
+    expect(refreshed.participation.selections).toHaveLength(1);
+    expect(refreshed.participation.selections[0]).toMatchObject({
+      moduleId: "module-future",
+      meaning: "live",
+      phase: "upcoming",
+    });
+  });
+
+  it.each([
+    ["Disabled Participant", "participant-not-active", "update participants set state = 'disabled'", "group-second"],
+    ["Archived Course", "course-not-active", "update courses set state = 'archived'", "group-second"],
+    ["Cancelled Module", "module-not-selectable", "update modules set state = 'cancelled'", "group-second"],
+    ["exact deadline", "selection-deadline-reached", null, "group-second"],
+    ["Archived Group", "group-not-selectable", "update groups set state = 'archived' where id = 'group-second'", "group-second"],
+    ["cross-Course Group", "group-not-selectable", null, "group-other"],
+  ])("refuses %s without changing membership or Selection", async (
+    caseName,
+    outcome,
+    mutation,
+    groupId,
+  ) => {
+    const cookie = await activeAdminCookie();
+
+    await seedAssistedBookingGraph(
+      caseName === "exact deadline" ? nowEpoch : nowEpoch + 3_600_000,
+    );
+    await seedAssignment("target", "revoked");
+    await seedSelection("old", "target", "future", "active");
+    if (groupId === "group-other") await seedCrossCourseGroup();
+    if (mutation !== null) await env.DB.prepare(mutation).run();
+    const path = "/api/admin/courses/course-a/participation/participant-target/modules/module-future/selection";
+
+    await expectOutcome(
+      await request(path, cookie, setOptions(groupId)),
+      409,
+      outcome,
+    );
+    await expect(
+      env.DB.prepare(
+        "select state from course_assignments where id = 'assignment-target'",
+      ).first(),
+    ).resolves.toMatchObject({ state: "revoked" });
+    await expect(
+      env.DB.prepare(
+        "select group_id from module_selections where id = 'selection-old'",
+      ).first(),
+    ).resolves.toMatchObject({ group_id: "group-active" });
+  });
+
+  it("removal ignores Revoked membership but refuses lifecycle closure without changing it", async () => {
+    const cookie = await activeAdminCookie();
+
+    await seedAssistedBookingGraph();
+    await seedAssignment("target", "revoked");
+    await seedSelection("old", "target", "future", "active");
+    const path = "/api/admin/courses/course-a/participation/participant-target/modules/module-future/selection";
+
+    await expectOutcome(
+      await request(path, cookie, { method: "DELETE" }),
+      200,
+      "removed",
+    );
+    await expect(
+      env.DB.prepare(
+        "select state from course_assignments where id = 'assignment-target'",
+      ).first(),
+    ).resolves.toMatchObject({ state: "revoked" });
+    await seedSelection("again", "target", "future", "active");
+    await env.DB.prepare("update modules set state = 'cancelled'").run();
+    await expectOutcome(
+      await request(path, cookie, { method: "DELETE" }),
+      409,
+      "module-not-selectable",
+    );
+    await expect(
+      env.DB.prepare("select count(*) as count from module_selections").first(),
+    ).resolves.toMatchObject({ count: 1 });
+  });
+
+  it("refuses a Disabled Admin before mutation and leaves no partial rows", async () => {
+    const cookie = await activeAdminCookie();
+
+    await seedAssistedBookingGraph();
+    await env.DB.prepare("update admin_users set state = 'disabled'").run();
+    const path = "/api/admin/courses/course-a/participation/participant-target/modules/module-future/selection";
+
+    await expectOutcome(
+      await request(path, cookie, setOptions("group-active")),
+      403,
+      "disabled-admin",
+    );
+    await expect(
+      env.DB.prepare("select count(*) as count from course_assignments").first(),
+    ).resolves.toMatchObject({ count: 0 });
+  });
+
+  it("loses a stale Admin race at persistence without leaving membership", async () => {
+    await seedAdminIdentity();
+    await seedAssistedBookingGraph();
+    const persistence = createAdministrativeParticipationPersistence(env.DB);
+    const handler = createAdministrativeParticipationHttpHandler({
+      authenticate: async () => ({
+        outcome: "authenticated",
+        externalPrincipalId: "principal-admin",
+      }),
+      createCourseAssignmentId: () => "assignment-stale",
+      createModuleSelectionId: () => "selection-stale",
+      now: () => new Date(nowEpoch).toISOString(),
+      adminPersistence: {
+        findAdminUserByExternalPrincipalId: async () => ({
+          id: "admin-a",
+          state: "active",
+        }),
+      },
+      persistence: {
+        ...persistence,
+        async findParticipantParticipation(...parameters) {
+          const result = await persistence.findParticipantParticipation(...parameters);
+
+          await env.DB.prepare("update admin_users set state = 'disabled'").run();
+          return result;
+        },
+      },
+      selectionPersistence: createModuleSelectionPersistence(env.DB),
+    });
+    const response = await handler(new Request(
+      "http://localhost/api/admin/courses/course-a/participation/participant-target/modules/module-future/selection",
+      setOptions("group-active"),
+    ));
+
+    await expectOutcome(response, 403, "admin-not-active");
+    await expect(
+      env.DB.prepare("select count(*) as count from course_assignments").first(),
+    ).resolves.toMatchObject({ count: 0 });
+    await expect(
+      env.DB.prepare("select count(*) as count from module_selections").first(),
+    ).resolves.toMatchObject({ count: 0 });
+  });
+});
+
 /** @returns {object} One Participation by stable Participant ID. */
 function participation(body, participantId) {
   return body.participations.find(
@@ -317,6 +528,57 @@ function request(path, cookie, options = {}) {
     new Request(`http://localhost${path}`, { ...options, headers }),
     env,
   );
+}
+
+/** @returns {object} One explicit Group-choice request. */
+function setOptions(groupId) {
+  return {
+    method: "PUT",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ groupId }),
+  };
+}
+
+/** @returns {Promise<void>} Seed an eligible assisted-booking target graph. */
+async function seedAssistedBookingGraph(startsAt = nowEpoch + 3_600_000) {
+  await seedCourse("active");
+  await seedParticipant("target", "active");
+  await seedGroup("active", "Active Group", "active");
+  await seedGroup("second", "Second Group", "active");
+  await seedModule(
+    "future",
+    "Future",
+    startsAt,
+    startsAt + 3_600_000,
+    "scheduled",
+  );
+}
+
+/** @returns {Promise<void>} Seed a target Group outside the requested Course. */
+async function seedCrossCourseGroup() {
+  await env.DB.batch([
+    env.DB.prepare(
+      `insert into courses
+         (id, name, description, timezone, state, has_ever_had_module)
+       values ('course-other', 'Other Course', null,
+               'Europe/Berlin', 'active', 0)`,
+    ),
+    env.DB.prepare(
+      `insert into groups
+         (id, course_id, name, normalized_name, details, state)
+       values ('group-other', 'course-other', 'Other Group',
+               'other group', null, 'active')`,
+    ),
+  ]);
+}
+
+/** @returns {Promise<void>} Seed one direct Active Admin identity. */
+function seedAdminIdentity() {
+  return env.DB.prepare(
+    `insert into admin_users
+       (id, external_principal_id, name, state, authority)
+     values ('admin-a', 'principal-admin', 'Admin', 'active', 'admin')`,
+  ).run();
 }
 
 /** @returns {Promise<void>} Seed all named lifecycle combinations. */

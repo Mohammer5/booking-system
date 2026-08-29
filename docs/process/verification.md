@@ -389,6 +389,19 @@ list alternatives, stable Participant detail, future/in-progress/exact-ended/
 Cancelled/Disabled/Revoked/Archived presentation, retained Archived Group
 details, Participant privacy probes, keyboard focus, overflow, and axe.
 
+For Admin-assisted Module Selection, booking-domain Vitest owns Active actor
+and target eligibility, Assignment composition, stable identities, ordinary
+Selection idempotence/replacement/removal, exact `startsAt`, every structural
+refusal, and overlap allowance. Worker/D1 Vitest owns atomic missing/Revoked
+Assignment plus Selection writes, membership-free removal, statement-failure
+rollback, one-pair concurrency, current actor/target/structure guards, narrow
+target-detail and mutation HTTP contracts, and no-partial refusal evidence.
+Playwright owns the German no/Active/Revoked Assignment journey, repeat/
+replace/remove and refresh, cross-Course no-partial refusal, Disabled,
+Cancelled, Archived, and exact-deadline states, pending/success/stale/
+technical presentation, desktop/360px layout, keyboard/Dialog/result focus,
+privacy, overflow, and axe.
+
 The implemented integration uses project-pinned `@cloudflare/vitest-plugin`
 with isolated D1 state and the version-controlled migration sequence.
 

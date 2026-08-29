@@ -60,9 +60,12 @@ function createWorkerHandlers(capabilities) {
   const handleAdministrativeParticipationHttpRequest =
     createAdministrativeParticipationHttpHandler({
       authenticate: authentication.authenticate,
+      createCourseAssignmentId: capabilities.createCourseAssignmentId,
+      createModuleSelectionId: capabilities.createModuleSelectionId,
       now: capabilities.now,
       adminPersistence: capabilities.adminPersistence,
       persistence: capabilities.administrativeParticipationPersistence,
+      selectionPersistence: capabilities.selectionPersistence,
     });
   const inviteHandlers = createInviteHandlers(capabilities, authentication);
   const participantHandlers = createParticipantHandlers(

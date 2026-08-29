@@ -12,6 +12,96 @@ export function useAdministrativeCourseParticipation(courseId) {
   });
 }
 
+/** @returns {object} One Admin-targeted Participant participation query. */
+export function useAdministrativeParticipantParticipation(
+  courseId,
+  participantId,
+) {
+  return useQuery({
+    queryKey: administrativeParticipantParticipationKey(
+      courseId,
+      participantId,
+    ),
+    queryFn: () => requestJson(
+      `/api/admin/courses/${courseId}/participation/${participantId}`,
+    ),
+    retry: false,
+  });
+}
+
+/** @returns {object} Admin-assisted Selection set/change mutation. */
+export function useSetParticipantModuleSelectionAsAdmin(
+  courseId,
+  participantId,
+  moduleId,
+) {
+  return useAdministrativeSelectionMutation(
+    { courseId, participantId, moduleId, method: "PUT" },
+  );
+}
+
+/** @returns {object} Admin-assisted Selection removal mutation. */
+export function useRemoveParticipantModuleSelectionAsAdmin(
+  courseId,
+  participantId,
+  moduleId,
+) {
+  return useAdministrativeSelectionMutation(
+    { courseId, participantId, moduleId, method: "DELETE" },
+  );
+}
+
+/** @returns {object} One Admin Selection mutation and exact invalidation. */
+function useAdministrativeSelectionMutation(options) {
+  const { courseId, participantId, moduleId, method } = options;
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (groupId) => requestJson(
+      `/api/admin/courses/${courseId}/participation/${participantId}/modules/${moduleId}/selection`,
+      {
+        method,
+        ...(method === "PUT" ? {
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ groupId }),
+        } : {}),
+      },
+    ),
+    async onSuccess() {
+      await Promise.all([
+        queryClient.invalidateQueries({
+          queryKey: administrativeParticipantParticipationKey(
+            courseId,
+            participantId,
+          ),
+        }),
+        queryClient.invalidateQueries({
+          queryKey: ["course-access", "administrative-participation", courseId],
+        }),
+        queryClient.invalidateQueries({
+          queryKey: ["course-access", "assignments", courseId],
+        }),
+        queryClient.invalidateQueries({
+          queryKey: ["course-access", "participant-courses"],
+        }),
+        queryClient.invalidateQueries({
+          queryKey: ["course-access", "participant-course", courseId],
+        }),
+      ]);
+    },
+  });
+}
+
+/** @returns {Array<string>} Stable Admin target-detail query key. */
+function administrativeParticipantParticipationKey(courseId, participantId) {
+  return [
+    "course-access",
+    "administrative-participation",
+    courseId,
+    participantId,
+  ];
+}
+
 /**
  * Read the freshly authorized Participant administration directory.
  *

@@ -1,19 +1,19 @@
 ---
 id: TASK-2nh3b
 title: Manage Admin-assisted Module Selections
-status: backlog
+status: done
 priority: medium
 type: feature
 effort: large
 epic: EPIC-h8fpz
-plan: null
+plan: PLAN-kc7in
 depends_on:
 - TASK-49if4
 blocks:
 - TASK-h37zt
 related:
 - TASK-smtvk
-assignee: null
+assignee: gerkules
 tags:
 - admin
 - selection
@@ -21,7 +21,7 @@ tags:
 - atomicity
 position: h20
 created: 2026-08-27
-updated: 2026-08-27
+updated: 2026-08-29
 ---
 
 # Manage Admin-assisted Module Selections
@@ -35,26 +35,26 @@ as part of the same atomic outcome; refusal must never leave membership behind.
 
 ## Acceptance Criteria
 
-- [ ] Set-Selection accepts only an existing fully registered Active
+- [x] Set-Selection accepts only an existing fully registered Active
       Participant, Active Admin actor, Active Course, Scheduled Module, Active
       same-Course Group, and definite `now < startsAt`.
-- [ ] On successful set, no Assignment becomes one ordinary Active Assignment,
+- [x] On successful set, no Assignment becomes one ordinary Active Assignment,
       an Active Assignment remains unchanged, and a Revoked Assignment is
       reactivated in the Active Course; one Assignment per pair is preserved.
-- [ ] No Selection becomes Group G, the same Group is idempotent, and another
+- [x] No Selection becomes Group G, the same Group is idempotent, and another
       eligible Group atomically replaces the old choice leaving exactly one
       current Selection.
-- [ ] Refusal for Disabled Participant/Admin, Archived Course, Cancelled or
+- [x] Refusal for Disabled Participant/Admin, Archived Course, Cancelled or
       started Module, Archived/cross-Course Group, stale state, or invalid
       target leaves no new/reactivated Assignment and leaves the prior Selection
       unchanged.
-- [ ] Admin-assisted removal before `startsAt` leaves no Selection and creates
+- [x] Admin-assisted removal before `startsAt` leaves no Selection and creates
       or reactivates no Assignment. At exact `startsAt`, after cancellation, or
       in an Archived Course, removal is refused.
-- [ ] The Admin has no late-booking, lifecycle, capacity, conflict, or
+- [x] The Admin has no late-booking, lifecycle, capacity, conflict, or
       authorization override. Participant and Admin mutations share the exact
       `startsAt` deadline and Selection meaning.
-- [ ] Concurrent set/remove/Assignment/lifecycle changes are accepted from
+- [x] Concurrent set/remove/Assignment/lifecycle changes are accepted from
       authoritative current state and preserve one coherent atomic outcome.
 
 ## UI/UX Expectations

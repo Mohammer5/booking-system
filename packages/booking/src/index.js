@@ -52,8 +52,11 @@ export {
   recognizeCourseInvite,
 } from "./course-access/index.js";
 export {
+  createRemoveParticipantModuleSelectionAsAdmin,
   createRemoveParticipantModuleSelection,
+  createSetParticipantModuleSelectionAsAdmin,
   createSetParticipantModuleSelection,
+  deriveAdminAssistedModuleSelectionAvailability,
   deriveModuleSelectionAvailability,
   deriveModuleSelectionPresentation,
 } from "./module-participation/index.js";

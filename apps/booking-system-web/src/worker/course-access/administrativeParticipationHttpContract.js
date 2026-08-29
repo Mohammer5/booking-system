@@ -8,10 +8,33 @@ export function matchAdministrativeParticipationRoute(pathname) {
 
   const segments = pathname.slice(participationPrefix.length).split("/");
 
-  return segments.length === 2 &&
-    segments[0].length > 0 &&
-    segments[1] === "participation"
-    ? { courseId: segments[0] }
+  if (segments[0]?.length === 0 || segments[1] !== "participation") {
+    return null;
+  }
+
+  if (segments.length === 2) {
+    return { kind: "overview", courseId: segments[0] };
+  }
+
+  if (segments.length === 3 && segments[2].length > 0) {
+    return {
+      kind: "participant",
+      courseId: segments[0],
+      participantId: segments[2],
+    };
+  }
+
+  return segments.length === 6 &&
+    segments[2].length > 0 &&
+    segments[3] === "modules" &&
+    segments[4].length > 0 &&
+    segments[5] === "selection"
+    ? {
+        kind: "selection",
+        courseId: segments[0],
+        participantId: segments[2],
+        moduleId: segments[4],
+      }
     : null;
 }
 
@@ -22,6 +45,19 @@ export function toAdministrativeParticipationResponse(result) {
     groups: result.groups.map(toGroupResponse),
     modules: result.modules.map(toModuleResponse),
     participations: result.participations.map(toParticipationResponse),
+  };
+}
+
+/** @returns {object} Narrow target Participant participation response. */
+export function toAdministrativeParticipantParticipationResponse(result) {
+  return {
+    course: toCourseResponse(result.course),
+    groups: result.groups.map(toGroupResponse),
+    modules: result.modules.map((module) => ({
+      ...toModuleResponse(module),
+      selectionAvailability: module.selectionAvailability,
+    })),
+    participation: toParticipationResponse(result.participation),
   };
 }
 
@@ -68,7 +104,7 @@ function toParticipationResponse(participation) {
       email: participation.participant.email,
       state: participation.participant.state,
     },
-    assignment: {
+    assignment: participation.assignment === null ? null : {
       id: participation.assignment.id,
       state: participation.assignment.state,
     },

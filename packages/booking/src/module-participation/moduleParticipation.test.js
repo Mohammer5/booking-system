@@ -1,7 +1,10 @@
 import { describe, expect, it, vi } from "vitest";
 
+import { createRemoveParticipantModuleSelectionAsAdmin } from "./createRemoveParticipantModuleSelectionAsAdmin.js";
 import { createRemoveParticipantModuleSelection } from "./createRemoveParticipantModuleSelection.js";
+import { createSetParticipantModuleSelectionAsAdmin } from "./createSetParticipantModuleSelectionAsAdmin.js";
 import { createSetParticipantModuleSelection } from "./createSetParticipantModuleSelection.js";
+import { deriveAdminAssistedModuleSelectionAvailability } from "./deriveAdminAssistedModuleSelectionAvailability.js";
 import { deriveModuleSelectionAvailability } from "./deriveModuleSelectionAvailability.js";
 import { deriveModuleSelectionPresentation } from "./deriveModuleSelectionPresentation.js";
 
@@ -114,6 +117,193 @@ describe("Participant Module Selection removal", () => {
     await removeSelection({ ...eligibleInput(), group: null });
 
     expect(removeParticipantModuleSelection).toHaveBeenCalledOnce();
+  });
+});
+
+describe("Admin-assisted Module Selection set/change", () => {
+  it.each([
+    ["Disabled Admin", { adminUser: adminUser("disabled") }, "admin-not-active"],
+    ["Disabled Participant", { participant: participant("disabled") }, "participant-not-active"],
+    ["Archived Course", { course: course("archived") }, "course-not-active"],
+    ["Cancelled Module", { module: moduleData("cancelled") }, "module-not-selectable"],
+    ["cross-Course Module", { module: { ...moduleData(), courseId: "other" } }, "module-not-selectable"],
+    ["Archived Group", { group: group("archived") }, "group-not-selectable"],
+    ["cross-Course Group", { group: { ...group(), courseId: "other" } }, "group-not-selectable"],
+    ["cross-Participant Assignment", { assignment: { ...assignment(), participantId: "other" } }, "assignment-not-assignable"],
+    ["cross-Course Assignment", { assignment: { ...assignment(), courseId: "other" } }, "assignment-not-assignable"],
+    ["cross-Participant Selection", { selection: { ...selection(), participantId: "other" } }, "selection-not-current"],
+    ["cross-Course Selection", { selection: { ...selection(), courseId: "other" } }, "selection-not-current"],
+    ["cross-Module Selection", { selection: { ...selection(), moduleId: "other" } }, "selection-not-current"],
+  ])("refuses %s before creating identities or persistence", async (_case, replacement, outcome) => {
+    const capabilities = adminSetCapabilities();
+    const setSelection = createSetParticipantModuleSelectionAsAdmin(capabilities);
+
+    await expect(
+      setSelection({ ...adminEligibleInput(), ...replacement }),
+    ).resolves.toEqual({ outcome });
+    expect(capabilities.createCourseAssignmentId).not.toHaveBeenCalled();
+    expect(capabilities.createModuleSelectionId).not.toHaveBeenCalled();
+    expect(capabilities.setParticipantModuleSelectionAsAdmin).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    ["2026-09-01T10:00:00.000Z"],
+    ["2026-09-01T10:00:00.001Z"],
+    ["not-an-instant"],
+  ])("refuses the exact or invalid deadline %s without membership", async (now) => {
+    const capabilities = adminSetCapabilities(now);
+    const setSelection = createSetParticipantModuleSelectionAsAdmin(capabilities);
+
+    await expect(setSelection(adminEligibleInput())).resolves.toEqual({
+      outcome: "selection-deadline-reached",
+    });
+    expect(capabilities.setParticipantModuleSelectionAsAdmin).not.toHaveBeenCalled();
+  });
+
+  it("composes missing membership and Selection into one guarded input", async () => {
+    const capabilities = adminSetCapabilities();
+    const setSelection = createSetParticipantModuleSelectionAsAdmin(capabilities);
+
+    await expect(setSelection(adminEligibleInput())).resolves.toMatchObject({
+      outcome: "created",
+      assignmentOutcome: "created",
+    });
+    expect(capabilities.setParticipantModuleSelectionAsAdmin).toHaveBeenCalledWith({
+      adminUserId: "admin-a",
+      assignment: assignment("active", "assignment-created"),
+      selection: selection("selection-created"),
+      nowEpoch: Date.parse(beforeStart),
+    });
+  });
+
+  it.each(["active", "revoked"])(
+    "retains an existing %s Assignment identity and Selection identity",
+    async (assignmentState) => {
+      const capabilities = adminSetCapabilities();
+      const setSelection = createSetParticipantModuleSelectionAsAdmin(capabilities);
+
+      await setSelection({
+        ...adminEligibleInput(),
+        assignment: assignment(assignmentState),
+        selection: selection(),
+        group: { ...group(), id: "group-b" },
+      });
+
+      expect(capabilities.createCourseAssignmentId).not.toHaveBeenCalled();
+      expect(capabilities.createModuleSelectionId).not.toHaveBeenCalled();
+      expect(capabilities.setParticipantModuleSelectionAsAdmin).toHaveBeenCalledWith({
+        adminUserId: "admin-a",
+        assignment: assignment("active"),
+        selection: { ...selection(), groupId: "group-b" },
+        nowEpoch: Date.parse(beforeStart),
+      });
+    },
+  );
+
+  it.each([
+    ["created", "created"],
+    ["already-selected", "already-active"],
+    ["changed", "reactivated"],
+  ])("preserves %s/%s persistence meaning", async (outcome, assignmentOutcome) => {
+    const persisted = {
+      outcome,
+      assignmentOutcome,
+      assignment: assignment(),
+      selection: selection(),
+    };
+    const capabilities = adminSetCapabilities(beforeStart, persisted);
+
+    await expect(
+      createSetParticipantModuleSelectionAsAdmin(capabilities)(adminEligibleInput()),
+    ).resolves.toEqual(persisted);
+  });
+
+  it("does not inspect other Module intervals and permits overlaps", async () => {
+    const capabilities = adminSetCapabilities();
+    const setSelection = createSetParticipantModuleSelectionAsAdmin(capabilities);
+
+    await setSelection(adminEligibleInput());
+    await setSelection({
+      ...adminEligibleInput(),
+      module: { ...moduleData(), id: "module-overlap" },
+    });
+
+    expect(capabilities.setParticipantModuleSelectionAsAdmin).toHaveBeenCalledTimes(2);
+  });
+});
+
+describe("Admin-assisted Module Selection removal", () => {
+  it("removes before start without inspecting or composing Assignment state", async () => {
+    const persist = vi.fn().mockResolvedValue({ outcome: "removed" });
+    const removeSelection = createRemoveParticipantModuleSelectionAsAdmin({
+      now: () => beforeStart,
+      removeParticipantModuleSelectionAsAdmin: persist,
+    });
+
+    await expect(
+      removeSelection({ ...adminEligibleInput(), assignment: assignment("revoked") }),
+    ).resolves.toEqual({ outcome: "removed" });
+    expect(persist).toHaveBeenCalledWith({
+      adminUserId: "admin-a",
+      participantId: "participant-a",
+      courseId: "course-a",
+      moduleId: "module-a",
+      nowEpoch: Date.parse(beforeStart),
+    });
+  });
+
+  it("preserves already-absent as an idempotent success", async () => {
+    const removeSelection = createRemoveParticipantModuleSelectionAsAdmin({
+      now: () => beforeStart,
+      removeParticipantModuleSelectionAsAdmin: async () => ({
+        outcome: "already-absent",
+      }),
+    });
+
+    await expect(
+      removeSelection({ ...adminEligibleInput(), selection: null }),
+    ).resolves.toEqual({ outcome: "already-absent" });
+  });
+
+  it.each([
+    ["Disabled Admin", { adminUser: adminUser("disabled") }, "admin-not-active"],
+    ["Disabled Participant", { participant: participant("disabled") }, "participant-not-active"],
+    ["Archived Course", { course: course("archived") }, "course-not-active"],
+    ["Cancelled Module", { module: moduleData("cancelled") }, "module-not-selectable"],
+    ["exact start", { now: "2026-09-01T10:00:00.000Z" }, "selection-deadline-reached"],
+  ])("refuses %s without a persistence call", async (_case, replacement, outcome) => {
+    const persist = vi.fn();
+    const removeSelection = createRemoveParticipantModuleSelectionAsAdmin({
+      now: () => replacement.now ?? beforeStart,
+      removeParticipantModuleSelectionAsAdmin: persist,
+    });
+    const inputReplacement = { ...replacement };
+
+    delete inputReplacement.now;
+
+    await expect(
+      removeSelection({ ...adminEligibleInput(), ...inputReplacement }),
+    ).resolves.toEqual({ outcome });
+    expect(persist).not.toHaveBeenCalled();
+  });
+});
+
+describe("Admin-assisted Module Selection availability", () => {
+  it.each([
+    [beforeStart, {}, "open"],
+    ["2026-09-01T10:00:00.000Z", {}, "closed"],
+    [beforeStart, { adminUser: adminUser("disabled") }, "closed"],
+    [beforeStart, { participant: participant("disabled") }, "closed"],
+    [beforeStart, { course: course("archived") }, "closed"],
+    [beforeStart, { module: moduleData("cancelled") }, "closed"],
+  ])("derives current availability at %s", (now, replacement, availability) => {
+    expect(
+      deriveAdminAssistedModuleSelectionAvailability({
+        ...adminEligibleInput(),
+        now,
+        ...replacement,
+      }),
+    ).toBe(availability);
   });
 });
 
@@ -263,6 +453,36 @@ function setCapabilities(now = beforeStart, result = { outcome: "created", selec
   };
 }
 
+/** @returns {object} Deterministic Admin-assisted set capabilities. */
+function adminSetCapabilities(now = beforeStart, result = {
+  outcome: "created",
+  assignmentOutcome: "created",
+  assignment: assignment(),
+  selection: selection(),
+}) {
+  return {
+    createCourseAssignmentId: vi.fn(() => "assignment-created"),
+    createModuleSelectionId: vi.fn(() => "selection-created"),
+    now: () => now,
+    setParticipantModuleSelectionAsAdmin: vi.fn().mockResolvedValue(result),
+  };
+}
+
+/** @returns {object} Complete Admin-assisted input without prior rows. */
+function adminEligibleInput() {
+  return {
+    ...eligibleInput(),
+    adminUser: adminUser(),
+    assignment: null,
+    selection: null,
+  };
+}
+
+/** @returns {object} Admin User data. */
+function adminUser(state = "active") {
+  return { id: "admin-a", state };
+}
+
 /** @returns {object} Complete eligible current Selection input. */
 function eligibleInput() {
   return {
@@ -280,9 +500,9 @@ function participant(state = "active") {
 }
 
 /** @returns {object} Course Assignment data. */
-function assignment(state = "active") {
+function assignment(state = "active", id = "assignment-a") {
   return {
-    id: "assignment-a",
+    id,
     participantId: "participant-a",
     courseId: "course-a",
     state,
@@ -311,9 +531,9 @@ function group(state = "active") {
 }
 
 /** @returns {object} Stored Selection without derived status. */
-function selection() {
+function selection(id = "selection-a") {
   return {
-    id: "selection-a",
+    id,
     participantId: "participant-a",
     courseId: "course-a",
     moduleId: "module-a",
