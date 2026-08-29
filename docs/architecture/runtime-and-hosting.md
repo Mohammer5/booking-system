@@ -60,7 +60,7 @@ The default routing model is same-origin:
 /admin        -> administration frontend entry through SPA fallback
 /admin/invite -> public invited-Admin continuation through SPA fallback
 /admin/invites -> Admin Invite administration through SPA fallback
-/admin/users/* -> Admin User directory, name detail, and promotion UI through SPA fallback
+/admin/users/* -> Admin User directory, name, promotion, and lifecycle UI through SPA fallback
 /admin/participants/* -> Participant administration through SPA fallback
 /admin/courses/* -> Course administration views through SPA fallback
 /assets/*     -> frontend static assets

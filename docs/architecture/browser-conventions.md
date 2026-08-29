@@ -172,9 +172,10 @@ local name validation, and abandonment consume nothing; current Active or
 Disabled Admin principals receive a common refusal, while a principal with no
 current Admin receives the explicit-name form and one focused terminal result.
 
-The Admin User directory consumes server-derived `isNameEditable` and
-`isPromotionAvailable` rather than reimplementing the self/ordinary/Super
-matrices in browser code. Desktop uses a semantic table and narrow viewports
+The Admin User directory consumes server-derived name, promotion, Disable,
+Re-enable, and delete affordances plus a safe lifecycle restriction rather
+than reimplementing the self/ordinary/Super matrices in browser code. Desktop
+uses a semantic table and narrow viewports
 use a named card list without horizontal overflow. Stable detail always shows
 explicit authority and state, mounts the name-only React Hook Form only when
 permitted, explains provider-data independence, and focuses validation,
@@ -184,6 +185,14 @@ share one incidental MUI promotion Dialog that identifies the target, explains
 the permanent one-way change, initially focuses Cancel, restores its opener on
 cancellation, focuses a stale refusal in-place, and focuses the reconciled
 success after close. No demotion control exists.
+Eligible directory and detail targets also share one lifecycle control. Its
+German dialogs explain access loss, identity/authority preservation or
+permanent current-identity deletion, new-Invite return, and complete
+non-cascade behavior. Cancel initially receives focus and restores the exact
+opener; stale/invariant errors receive focus in-place. Disable/Re-enable keep a
+focused row/detail completion result, while deletion moves completion ownership
+above the removed row or into directory navigation state so success cannot be
+unmounted with the target.
 
 ## Browser Authentication
 

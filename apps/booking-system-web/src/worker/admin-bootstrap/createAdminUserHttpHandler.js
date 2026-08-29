@@ -1,8 +1,12 @@
 import {
+  createDeleteAdminUser,
+  createDisableAdminUser,
   createListAdminUsers,
   createPromoteAdminUser,
+  createReenableAdminUser,
   createResolveAdminContext,
   createUpdateAdminUserName,
+  deriveAdminUserLifecycleActions,
   isAdminUserNameEditable,
   isAdminUserPromotable,
 } from "@booking-system/booking";
@@ -40,6 +44,14 @@ export function createAdminUserHttpHandler(capabilities) {
 function createOperations(capabilities) {
   return {
     ...capabilities,
+    deleteAdminUser: createDeleteAdminUser({
+      deleteAuthorizedAdminUser:
+        capabilities.adminPersistence.deleteAuthorizedAdminUser,
+    }),
+    disableAdminUser: createDisableAdminUser({
+      disableAuthorizedAdminUser:
+        capabilities.adminPersistence.disableAuthorizedAdminUser,
+    }),
     listAdminUsers: createListAdminUsers({
       listCurrentAdminUsers:
         capabilities.adminPersistence.listCurrentAdminUsers,
@@ -47,6 +59,10 @@ function createOperations(capabilities) {
     promoteAdminUser: createPromoteAdminUser({
       promoteAuthorizedAdminUser:
         capabilities.adminPersistence.promoteAuthorizedAdminUser,
+    }),
+    reenableAdminUser: createReenableAdminUser({
+      reenableAuthorizedAdminUser:
+        capabilities.adminPersistence.reenableAuthorizedAdminUser,
     }),
     resolveAdminContext: createResolveAdminContext({
       findAdminUserByExternalPrincipalId:
@@ -73,17 +89,30 @@ function matchRoute(request) {
   if (
     segments.length === 1 &&
     segments[0].length > 0 &&
-    new Set(["GET", "PUT"]).has(request.method)
+    new Set(["GET", "PUT", "DELETE"]).has(request.method)
   ) {
-    return { kind: "detail", adminUserId: segments[0] };
+    return {
+      kind: request.method === "DELETE" ? "deletion" : "detail",
+      adminUserId: segments[0],
+    };
   }
 
-  return segments.length === 2 &&
-    segments[0].length > 0 &&
-    segments[1] === "promotion" &&
-    request.method === "POST"
-    ? { kind: "promotion", adminUserId: segments[0] }
-    : null;
+  if (
+    segments.length !== 2 ||
+    segments[0].length === 0 ||
+    request.method !== "POST"
+  ) {
+    return null;
+  }
+
+  const commandKinds = {
+    disablement: "disablement",
+    promotion: "promotion",
+    reenablement: "reenablement",
+  };
+  const kind = commandKinds[segments[1]];
+
+  return kind === undefined ? null : { kind, adminUserId: segments[0] };
 }
 
 /** @returns {Promise<object>} Fresh Active Admin or exact response. */
@@ -130,9 +159,38 @@ async function handleAuthorizedRequest(context, operations) {
     return handlePromotion(context, targetAdminUser, operations);
   }
 
+  if (new Set(["disablement", "reenablement", "deletion"])
+    .has(context.route.kind)) {
+    return handleLifecycle(context, targetAdminUser, operations);
+  }
+
   return context.request.method === "GET"
     ? jsonResponse(toAdminUserResponse(targetAdminUser, context.adminUser), 200)
     : handleNameUpdate(context, targetAdminUser, operations);
+}
+
+/** @returns {Promise<Response>} Apply one guarded lifecycle command. */
+async function handleLifecycle(context, targetAdminUser, operations) {
+  const operation = {
+    disablement: operations.disableAdminUser,
+    reenablement: operations.reenableAdminUser,
+    deletion: operations.deleteAdminUser,
+  }[context.route.kind];
+  const result = await operation({
+    adminUser: context.adminUser,
+    targetAdminUser,
+  });
+
+  if (result.outcome === "deleted") {
+    return jsonResponse({ adminUserId: result.adminUserId }, 200);
+  }
+
+  return new Set(["disabled", "re-enabled"]).has(result.outcome)
+    ? jsonResponse(
+        toAdminUserResponse(result.adminUser, context.adminUser),
+        200,
+      )
+    : refusalResponse(result);
 }
 
 /** @returns {Promise<Response>} Apply one guarded one-way promotion. */
@@ -174,10 +232,17 @@ function refusalResponse(result) {
   const statuses = {
     "admin-not-active": 403,
     "admin-user-not-editable": 409,
+    "admin-user-last-active-super": 409,
+    "admin-user-not-active": 409,
+    "admin-user-not-deleted": 409,
+    "admin-user-not-disabled": 409,
+    "admin-user-not-manageable": 409,
+    "admin-user-not-re-enabled": 409,
     "admin-user-not-found": 404,
     "admin-user-not-promotable": 409,
     "admin-user-not-promoted": 409,
     "admin-user-not-updated": 409,
+    "admin-user-self-protected": 409,
     "invalid-name": 422,
   };
 
@@ -186,6 +251,11 @@ function refusalResponse(result) {
 
 /** @returns {object} Narrow Admin User representation and edit affordance. */
 function toAdminUserResponse(targetAdminUser, adminUser) {
+  const lifecycle = deriveAdminUserLifecycleActions({
+    adminUser,
+    targetAdminUser,
+  });
+
   return {
     id: targetAdminUser.id,
     name: targetAdminUser.name,
@@ -196,6 +266,10 @@ function toAdminUserResponse(targetAdminUser, adminUser) {
       adminUser,
       targetAdminUser,
     }),
+    isDisableAvailable: lifecycle.canDisable,
+    isReenableAvailable: lifecycle.canReenable,
+    isDeleteAvailable: lifecycle.canDelete,
+    lifecycleRestriction: lifecycle.restriction,
   };
 }
 

@@ -450,24 +450,27 @@ refresh and fixed Google return without consuming, requires an explicit name,
 and exposes common unavailable, existing-principal, stale/concurrent, and
 success states. It creates no Participant and reveals no administration data.
 
-### Admin User Directory, Name, And Promotion HTTP Surface
+### Admin User Directory, Name, Promotion, And Lifecycle HTTP Surface
 
-Current Admin User administration uses four same-origin operations:
+Current Admin User administration uses seven same-origin operations:
 
 ```text
 GET /api/admin/users
 GET /api/admin/users/:adminUserId
 PUT /api/admin/users/:adminUserId
 POST /api/admin/users/:adminUserId/promotion
+POST /api/admin/users/:adminUserId/disablement
+POST /api/admin/users/:adminUserId/reenablement
+DELETE /api/admin/users/:adminUserId
 ```
 
 Every operation authenticates normally and freshly resolves an Active current
 Admin User. The collection returns every current Admin User in deterministic
 name/identity order. Collection and detail representations contain only `id`,
 required booking-system `name`, Active/Disabled `state`, ordinary/Super
-`authority`, and server-derived `isNameEditable` and
-`isPromotionAvailable`; external principals, provider data, Participant data,
-and relationships never cross this HTTP surface.
+`authority`, server-derived name/promotion/lifecycle affordances, and a safe
+self/Super-target lifecycle restriction; external principals, provider data,
+Participant data, and relationships never cross this HTTP surface.
 
 The `PUT` accepts `{ name }` only. One guarded D1 statement changes only the
 target name while rechecking actor Active state, target existence, self access,
@@ -483,6 +486,19 @@ Admin actor; concurrent/already-Super, Disabled, self, ordinary-actor, and
 missing-target attempts make no partial change. The same directory/detail
 views expose the server-derived action through a German permanent one-way
 confirmation and reconcile the promoted representation immediately.
+
+The lifecycle command requests accept no browser-supplied state or authority.
+Disable and Re-enable use guarded state-only updates; deletion uses one guarded
+current-identity delete. Every statement rechecks a different Active actor,
+the ordinary/Super target matrix, target state, and the requirement that an
+Active Super Admin remain after Disable/delete. Concurrent cross-Super requests
+therefore produce one valid winner and one refusal. Re-enable preserves the
+same identity and authority. Delete returns only the removed Admin User ID;
+the next request from its still-existing authentication session resolves no
+current Admin User. The responsive directory/detail controls show only
+server-permitted commands, explain access and non-cascade effects in German,
+remove a deleted row, and keep cancellation, refusal, and completion focus
+predictable.
 
 ### No Separate API Application
 

@@ -1,12 +1,13 @@
 import { Alert, Button, CircularProgress, Paper, Stack, Typography } from "@mui/material";
 import { useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
-import { Link as RouterLink, useParams } from "react-router";
+import { Link as RouterLink, useNavigate, useParams } from "react-router";
 
 import {
   AdminAuthorityChip,
   AdminStateChip,
 } from "./AdminUserDirectoryPage.jsx";
+import { AdminUserLifecycleControls } from "./AdminUserLifecycleControls.jsx";
 import { AdminUserNameForm } from "./AdminUserNameForm.jsx";
 import { AdminUserPromotionControl } from "./AdminUserPromotionControl.jsx";
 import { useAdminUser, useUpdateAdminUserName } from "./useAdminUsers.js";
@@ -15,6 +16,7 @@ import { useAdminUser, useUpdateAdminUserName } from "./useAdminUsers.js";
 export function AdminUserDetailPage() {
   const { adminUserId } = useParams();
   const { t: translate } = useTranslation();
+  const navigate = useNavigate();
   const query = useAdminUser(adminUserId);
   const mutation = useUpdateAdminUserName(adminUserId);
   const errorRef = useRef(null);
@@ -40,6 +42,14 @@ export function AdminUserDetailPage() {
         <AdminUserDetailState
           errorRef={errorRef}
           mutation={mutation}
+          onDeleted={(adminUser) => navigate("/admin/users", {
+            state: {
+              adminUserLifecycleSuccess: {
+                action: "delete",
+                name: adminUser.name,
+              },
+            },
+          })}
           query={query}
           translate={translate}
         />
@@ -49,7 +59,13 @@ export function AdminUserDetailPage() {
 }
 
 /** @returns {import("react").ReactElement} Current detail route state. */
-function AdminUserDetailState({ errorRef, mutation, query, translate }) {
+function AdminUserDetailState({
+  errorRef,
+  mutation,
+  onDeleted,
+  query,
+  translate,
+}) {
   if (query.isPending) {
     return (
       <Stack role="status" spacing={2} sx={{ alignItems: "center" }}>
@@ -78,6 +94,12 @@ function AdminUserDetailState({ errorRef, mutation, query, translate }) {
       </Stack>
       <AdminUserPromotionControl
         adminUser={query.data}
+        translate={translate}
+      />
+      <AdminUserLifecycleControls
+        adminUser={query.data}
+        onDeleted={onDeleted}
+        showRestriction
         translate={translate}
       />
       {query.data.isNameEditable ? (

@@ -24,7 +24,7 @@ domain and behavior.
   Active/Archived-Course access plus Participant profile/lifecycle maintenance
   and Module Selection plus shared-Course-Invite management/Join and Admin-
   Invite administration/onboarding plus Admin User directory/name-maintenance/
-  Super-Admin-promotion subsets, and the remaining product
+  Super-Admin-promotion/lifecycle subsets, and the remaining product
   implementation gap.
 - Read when: You need to distinguish accepted first-release behavior and
   non-goals from implementation state.
@@ -58,8 +58,8 @@ domain and behavior.
 - Read when: A task affects Admin User authentication or identity, Super Admin
   authority or promotion, Admin User mutation or deletion, Admin bootstrap,
   Admin Invites, Admin onboarding, or Admin User/Invite administration views.
-- Tags: product, admin, identity, authorization, promotion, onboarding, invite,
-  ui
+- Tags: product, admin, identity, authorization, promotion, lifecycle,
+  onboarding, invite, ui
 
 ### Course Access
 - Path: `docs/product/course-access.md`

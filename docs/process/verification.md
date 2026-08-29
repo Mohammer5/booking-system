@@ -355,6 +355,24 @@ detail affordances, the German permanent confirmation, keyboard/Dialog cancel
 restoration, focused success/stale results, bounded Disabled presentation,
 privacy, overflow, and axe.
 
+For Admin User Disable, Re-enable, and deletion, booking-domain Vitest owns the
+Active/Disabled ordinary/Super/self/missing actor-target matrix, permitted-
+action derivation, exact refusals, Re-enable identity/authority preservation,
+and guarded outcome translation. Worker/D1 Vitest owns the ninth additive
+history-preserving migration, state-only transitions, current-identity-only
+deletion, fresh actor/target/authority guards, concurrent cross-Super attempts,
+the last-Active-Super invariant, technical rollback, and unchanged Course,
+Group, Module, Participant, Assignment, Selection, Course Invite, Admin Invite,
+bootstrap-attribution, and same-principal Participant rows. HTTP evidence owns
+exact command routes, narrow no-store representations, Disabled/deleted same-
+session access, restored access, production composition, and new-Invite return
+as a new ordinary identity. Playwright owns real fixed ordinary/Super permitted
+and refused actions, German destructive non-cascade copy, Disable/Re-enable/
+delete presentation, removed-row completion, post-action Admin access, shared-
+Participant independence, new-Invite return, desktop table and 360px detail,
+keyboard/Dialog cancellation and result/error focus, bounded stale/final-Super
+and self-protection, privacy, overflow, and axe.
+
 The implemented integration uses project-pinned `@cloudflare/vitest-plugin`
 with isolated D1 state and the version-controlled migration sequence.
 
@@ -436,7 +454,7 @@ onboarding/assigned-Course/zero-membership/privacy states, Participant
 directory and Course membership/Assignment-lifecycle states, Participant
 self/Admin profile editing and lifecycle, Course editing and permanent
 timezone-lock presentation, Disabled-target detail, and absence of horizontal
-overflow. The current 59-test browser suite also proves that one
+overflow. The current 61-test browser suite also proves that one
 fixed normal session remains usable while navigating between Participant and
 Admin contexts, successful sign-out terminates that session, an Active Admin
 can create, edit, and revisit a Course with Groups, a future Module, a

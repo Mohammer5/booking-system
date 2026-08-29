@@ -61,6 +61,44 @@ export function usePromoteAdminUser(adminUserId) {
   });
 }
 
+/** @returns {object} Guarded Admin User lifecycle command mutation. */
+export function useChangeAdminUserLifecycle(adminUserId) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ action }) => {
+      const commands = {
+        disable: [`/api/admin/users/${adminUserId}/disablement`, "POST"],
+        reenable: [`/api/admin/users/${adminUserId}/reenablement`, "POST"],
+        delete: [`/api/admin/users/${adminUserId}`, "DELETE"],
+      };
+      const [path, method] = commands[action];
+
+      return requestJson(path, { method });
+    },
+    async onSuccess(result, { action }) {
+      if (action === "delete") {
+        queryClient.setQueryData(directoryQueryKey, (current) => ({
+          adminUsers: (current?.adminUsers ?? []).filter(
+            ({ id }) => id !== result.adminUserId,
+          ),
+        }));
+        queryClient.removeQueries({
+          queryKey: ["admin-access", "admin-user", adminUserId],
+        });
+        return;
+      }
+
+      reconcileAdminUser(queryClient, adminUserId, result);
+      await queryClient.invalidateQueries({ queryKey: currentAdminQueryKey });
+    },
+    async onError(error) {
+      if (!isStaleAdminUserError(error)) return;
+      await invalidateAdminUserQueries(queryClient, adminUserId);
+    },
+  });
+}
+
 /** @returns {void} Replace one authoritative Admin in detail and directory. */
 function reconcileAdminUser(queryClient, adminUserId, adminUser) {
   queryClient.setQueryData(
@@ -89,10 +127,17 @@ function isStaleAdminUserError(error) {
   return new Set([
     "admin-not-active",
     "admin-user-not-editable",
+    "admin-user-last-active-super",
+    "admin-user-not-active",
+    "admin-user-not-deleted",
+    "admin-user-not-disabled",
+    "admin-user-not-manageable",
+    "admin-user-not-re-enabled",
     "admin-user-not-found",
     "admin-user-not-promotable",
     "admin-user-not-promoted",
     "admin-user-not-updated",
+    "admin-user-self-protected",
     "disabled-admin",
     "no-admin-user",
     "unauthenticated",

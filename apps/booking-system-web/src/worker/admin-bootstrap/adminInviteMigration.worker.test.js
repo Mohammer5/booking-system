@@ -4,6 +4,16 @@ import { beforeAll, describe, expect, it } from "vitest";
 beforeAll(async () => {
   await applyD1Migrations(env.DB, env.TEST_MIGRATIONS.slice(0, 7));
   await insertAdmin("admin-existing");
+  await applyD1Migrations(env.DB, env.TEST_MIGRATIONS.slice(0, 8));
+  await insertInvite({
+    id: "invite-before-lifecycle",
+    digest: hex("f"),
+  });
+  await env.DB.prepare(
+    `insert into admin_bootstrap_history
+       (singleton, first_admin_user_id, completed_at)
+     values (1, 'admin-existing', 1)`,
+  ).run();
   await applyD1Migrations(env.DB, env.TEST_MIGRATIONS);
 });
 
@@ -58,7 +68,7 @@ describe("Admin Invite schema upgrade", () => {
     ).run()).rejects.toThrow();
   });
 
-  it("retains the Invite and clears only creator reference on Admin deletion", async () => {
+  it("retains historical Invite and bootstrap attribution on Admin deletion", async () => {
     await insertAdmin("admin-removable");
     await insertInvite({
       id: "invite-retained",
@@ -74,7 +84,24 @@ describe("Admin Invite schema upgrade", () => {
          from admin_invites where id = 'invite-retained'`,
     ).first()).resolves.toEqual({
       id: "invite-retained",
-      created_by_admin_user_id: null,
+      created_by_admin_user_id: "admin-removable",
+      state: "active",
+    });
+    await env.DB.prepare(
+      "delete from admin_users where id = 'admin-existing'",
+    ).run();
+    await expect(env.DB.prepare(
+      `select first_admin_user_id, completed_at
+         from admin_bootstrap_history where singleton = 1`,
+    ).first()).resolves.toEqual({
+      first_admin_user_id: "admin-existing",
+      completed_at: 1,
+    });
+    await expect(env.DB.prepare(
+      `select created_by_admin_user_id, state
+         from admin_invites where id = 'invite-before-lifecycle'`,
+    ).first()).resolves.toEqual({
+      created_by_admin_user_id: "admin-existing",
       state: "active",
     });
   });

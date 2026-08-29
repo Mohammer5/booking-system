@@ -1,3 +1,5 @@
+import { createAdminUserLifecyclePersistence } from "./createAdminUserLifecyclePersistence.js";
+
 /**
  * Create the narrow D1 capabilities owned by Admin User identity management.
  *
@@ -6,6 +8,7 @@
  */
 export function createAdminPersistence(database) {
   return {
+    ...createAdminUserLifecyclePersistence(database),
     findAdminUserById: (adminUserId) =>
       findAdminUserById(database, adminUserId),
 

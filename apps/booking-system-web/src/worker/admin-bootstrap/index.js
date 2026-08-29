@@ -9,3 +9,4 @@ export { createAdminInviteOnboardingHttpHandler } from "./createAdminInviteOnboa
 export { createAdminPersistence } from "./createAdminPersistence.js";
 export { createAdminHttpHandler } from "./createAdminHttpHandler.js";
 export { createAdminUserHttpHandler } from "./createAdminUserHttpHandler.js";
+export { createAdminUserLifecyclePersistence } from "./createAdminUserLifecyclePersistence.js";

@@ -53,9 +53,9 @@ First Admin bootstrap availability is a durable historical fact: it answers
 whether an Admin User has ever successfully been created, not whether an Admin
 User row exists now. Counting current Admin Users is therefore not adequate.
 The implemented `admin_bootstrap_history` table has one constrained singleton
-row. Its nullable foreign key records the first Admin while that row exists and
-uses `ON DELETE SET NULL`, so later Admin deletion preserves the permanent
-historical fact.
+row. Its first-Admin ID is historical attribution rather than a current-
+identity relationship, so later Admin deletion preserves both the permanent
+bootstrap fact and the originally accepted ID.
 
 The first bootstrap claim must produce one atomic authoritative persistence
 outcome that either:
@@ -98,9 +98,10 @@ guarded `insert ... select` over `course_assignments`, `participants`,
 `admin-access` persistence additionally owns guarded Admin Invite creation,
 non-secret ordered listing and digest recognition, terminal revocation, and
 atomic ordinary-Admin claim over `admin_invites` and `admin_users`.
-It also owns current Admin User lookup/listing, a name-only update, and one-way
-promotion over the existing `admin_users` schema. Listing rechecks the actor
-remains Active. The single guarded name update accepts self, ordinary-target,
+It also owns current Admin User lookup/listing, a name-only update, one-way
+promotion, and guarded Disable/Re-enable/delete over `admin_users`. Listing
+rechecks the actor remains Active. The single guarded name update accepts self,
+ordinary-target,
 or Super-authorized
 target edits only while the actor is still Active and the target still exists
 with an allowed current authority. It updates no identity, external principal,
@@ -113,6 +114,13 @@ already-Super target, concurrent loser, or trigger failure changes no Admin,
 Invite, relationship, or same-principal Participant fact. Multiple Super Admin
 rows require no migration because the original authority constraint already
 admits both values without a uniqueness restriction.
+Disable and Re-enable update only the target state. Delete removes only the
+current Admin identity. Every lifecycle statement rechecks an Active different
+actor, the ordinary/Super authority matrix, and for Disable/delete an Active
+Super row that remains after acceptance. SQLite serialization and that guard
+give concurrent cross-Super attempts one winner without a zero-Active-Super
+intermediate state. Zero-change classification reloads current actor, target,
+and Active-Super count for an exact refusal.
 
 ## Environment Isolation
 
@@ -154,7 +162,7 @@ change requires an explicit exceptional deployment decision.
 
 ## Current State And Persistence Lifecycle
 
-The application has local/test D1 bindings and eight version-controlled
+The application has local/test D1 bindings and nine version-controlled
 migrations. `0001_first_admin_foundation.sql` creates the Better Auth `user`,
 `session`, `account`, and `verification` technical tables and indexes plus
 `admin_users` and `admin_bootstrap_history`. `0002_courses.sql` adds the
@@ -167,7 +175,10 @@ membership. `0006_module_selections.sql` adds Participant Module Selections
 with same-Course ownership constraints. `0007_course_invites.sql` adds shared
 Course Invites with one-current and replacement constraints.
 `0008_admin_invites.sql` adds independent digest-only Admin Invites with
-terminal state transitions. No remote D1 database exists.
+terminal state transitions. `0009_admin_user_deletion_history.sql` removes
+current-Admin foreign keys from accepted bootstrap and Admin Invite attribution
+while preserving every existing value, index, check, and Invite transition
+trigger. No remote D1 database exists.
 
 ### Implemented First Schema
 
@@ -354,8 +365,10 @@ optional creator attribution, epoch creation time, and constrained Active,
 Claimed, or Revoked state. It stores no raw token or recoverable URL. Triggers
 make identity, digest, and creation time immutable and permit only Active to
 Claimed or Active to Revoked, so both terminal states reject repetition,
-reactivation, and cross-terminal changes. Creator deletion sets attribution to
-null without deleting the Invite. Guarded create and revoke statements recheck
+reactivation, and cross-terminal changes. The ninth additive migration then
+treats creator and first-Admin IDs as historical strings rather than current-
+identity foreign keys, so creator deletion changes neither attribution nor the
+Invite. Guarded create and revoke statements recheck
 the acting Admin as Active; a concurrent claim/Revoke race lets one terminal
 write win and classifies the other without partial effects. Final claim first
 updates one exact Active Invite only when the external principal has no current

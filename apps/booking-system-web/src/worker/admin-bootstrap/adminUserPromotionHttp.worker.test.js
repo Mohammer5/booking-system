@@ -55,6 +55,10 @@ describe("Admin User promotion HTTP authorization", () => {
       authority: "super-admin",
       isNameEditable: true,
       isPromotionAvailable: false,
+      isDisableAvailable: true,
+      isReenableAvailable: false,
+      isDeleteAvailable: true,
+      lifecycleRestriction: null,
     });
     expect(JSON.stringify(body)).not.toContain("fixture-");
     await expect(storedAdmin("admin-target")).resolves.toMatchObject({
@@ -217,10 +221,13 @@ function createDirectHandler(overrides) {
       externalPrincipalId: actor.externalPrincipalId,
     }),
     adminPersistence: {
+      deleteAuthorizedAdminUser: async () => "deleted",
+      disableAuthorizedAdminUser: async () => "disabled",
       findAdminUserByExternalPrincipalId: async () => actor,
       findAdminUserById: async () => target,
       listCurrentAdminUsers: async () => [actor, target],
       promoteAuthorizedAdminUser: async () => "promoted",
+      reenableAuthorizedAdminUser: async () => "re-enabled",
       updateAuthorizedAdminUserName: async () => "updated",
       ...overrides,
     },

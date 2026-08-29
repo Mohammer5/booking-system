@@ -150,8 +150,16 @@ to Super Admin. Promotion changes only authority, creates no identity, admits
 multiple Super Admins, is immediately authoritative for the promoted user's
 existing session, and is one-way with no demotion action. Ordinary/Disabled
 actors, self, Disabled/already-Super targets, and stale concurrent losers
-change nothing. Admin User Disable/Re-enable/delete actions remain
-unimplemented.
+change nothing. An ordinary Active Admin may now Disable, Re-enable, or delete
+another ordinary Admin, while an Active Super Admin may manage another
+ordinary or Super Admin. No actor may Disable/delete themselves, ordinary
+Admins cannot mutate Super Admins, and every accepted Disable/delete leaves an
+Active Super Admin. Re-enable preserves identity and authority; deletion
+removes only the current Admin identity, so the existing authentication
+session loses Admin access and return requires a new Invite/new ordinary
+identity. Courses, Groups, Modules, Participants, Assignments, Selections,
+Course Invites, Admin Invites, same-principal Participant data, and previously
+accepted actions remain unchanged.
 Technology, persistence, API,
 frontend, and infrastructure mechanics remain outside this product
 specification and do not alter its contracts.

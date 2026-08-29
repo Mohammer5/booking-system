@@ -30,7 +30,7 @@ modules:
 
 - `admin-access` for Admin User identity and lifecycle, Super Admin authority,
   first Admin bootstrap, Admin Invites/onboarding, and current Admin User
-  directory/name-edit and one-way promotion policy;
+  directory/name-edit, one-way promotion, and lifecycle policy;
 - `course-structure` for Course structure and lifecycle;
 - `course-access` for Participant identity, profile and global access policy,
   Course access, and membership; and
@@ -41,9 +41,9 @@ The first implements first Admin bootstrap plus Admin Invite creation,
 non-secret listing, terminal revocation, minimal recognition, explicit-name
 claim, current/deleted-principal, and ordinary-Admin onboarding policy while
 also implementing current Admin User listing, name validation, and self/
-ordinary/Super edit authorization plus Active-Super-to-Active-ordinary
-promotion eligibility and guarded outcome translation. Admin User lifecycle
-management remains deferred; the second implements
+ordinary/Super edit authorization, Active-Super-to-Active-ordinary promotion,
+and Disable/Re-enable/delete eligibility with self, Super-target, and
+last-Active-Super refusal outcomes. The second implements
 Active Course creation and complete editing, permanent first-Module timezone
 locking, Course-wide Group creation/complete editing/archival/reactivation/
 permanent deletion,

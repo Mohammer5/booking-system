@@ -78,8 +78,9 @@
   HTTP for Active or Archived Courses, shared Course Invite management and
   public recognition/signed-continuation/explicit-Join HTTP, authenticated
   Admin Invite create/list/revoke and public recognition/signed-continuation/
-  atomic-claim HTTP, current Admin User list/detail/name-edit and body-free
-  promotion HTTP, plus terminal body-free Course archival HTTP.
+  atomic-claim HTTP, current Admin User list/detail/name-edit, body-free
+  promotion/Disable/Re-enable HTTP, and guarded identity deletion HTTP, plus
+  terminal body-free Course archival HTTP.
   Application destinations remain fixed and browser input cannot select
   principal, authority, Assignment identity/state, lifecycle state,
   normalized email, definite instant, or permanent scheduling history.
@@ -103,8 +104,8 @@
   modern-ESM workspaces with one manifest each.
 - The booking package exposes the first-bootstrap/fresh-context and Admin
   Invite create/list/revoke/recognize/claim plus current Admin User list/
-  name-edit/one-way-promotion `admin-access` operations and server-affordance
-  predicates, plus
+  name-edit/one-way-promotion/Disable/Re-enable/delete `admin-access`
+  operations and server-affordance policy, plus
   `course-structure` factories for Course creation/editing, Course-wide Group
   creation/editing/archival/reactivation/permanent deletion, and future Module
   creation, lifetime descriptive editing, pre-start rescheduling, and terminal
@@ -170,11 +171,15 @@
   states without mounting administration data.
 - The Admin User directory renders a semantic table on desktop and card list at
   narrow width, while stable detail exposes explicit authority/state and only
-  the server-derived permitted name form and promotion action. The shared
+  server-derived permitted name, promotion, and lifecycle actions. The shared
   German promotion Dialog explains the permanent one-way change and owns
   keyboard, cancel-restoration, stale-error, and success focus. Success and
   stale outcomes reconcile directory, detail, and current-Admin caches without
   making provider data authoritative or exposing demotion.
+  Shared lifecycle dialogs explain access loss, non-cascade, preserved
+  identity/authority on Re-enable, and permanent current-identity deletion plus
+  new-Invite return. They preserve cancel/error/success focus, and deletion
+  moves success above the removed row or back to the directory.
 - TanStack Query owns remote Admin, Admin User, Admin Invite, Course, Participant profile,
   Assignment, and Module Selection state;
   React Hook Form owns the Admin-name, Course, Group create/edit, Module, and Participant-
@@ -201,10 +206,10 @@
   `/admin`, `/admin/invite`, `/invite`, or `/` application context. Twelve
   fixed non-production fixture identities use a separate executable
   composition.
-- Eight version-controlled D1 migrations implement the authentication/Admin
+- Nine version-controlled D1 migrations implement the authentication/Admin
   foundation plus additive Course, Group/Module, Participant, Course
-  Assignment, same-Course Module Selection, Course Invite, and Admin Invite
-  schemas. Manual
+  Assignment, same-Course Module Selection, Course Invite, Admin Invite, and
+  history-preserving Admin deletion schemas. Manual
   development and fixture/Playwright runs use
   separate generated Wrangler persistence roots, so test preparation cannot
   invalidate a running development database. Atomic
@@ -223,6 +228,12 @@
   an Active self actor or Active Admin plus registered Active/Disabled target,
   and leave identity, state, principal, Assignments, Selections, and
   same-principal Admin data unchanged. They require no schema migration.
+  Guarded Admin User Disable/Re-enable change only target state; guarded delete
+  removes only the current identity. Every command freshly rechecks actor,
+  target, ordinary/Super authority, self-protection, and an Active-Super
+  remainder inside the accepting SQL statement. Historical bootstrap/Admin-
+  Invite actor IDs remain unchanged, as do all booking and same-principal
+  Participant rows.
   Atomic guarded Participant Disable removes only future Scheduled Selections
   across all Courses before changing the retained Participant state; exact-
   start/begun/ended Scheduled, Cancelled, Assignment, same-principal Admin,

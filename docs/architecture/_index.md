@@ -21,7 +21,7 @@ JavaScript conventions, and ESLint-enforced dependency rules.
   lifecycle, Assignment-
   lifecycle, and assigned Participant Course-access plus Module-Selection and
   shared-Course-Invite management/Join and Admin-Invite-administration/
-  onboarding plus Admin-User-directory/name-editing/promotion slices and terminal Course archival/
+  onboarding plus Admin-User-directory/name-editing/promotion/lifecycle slices and terminal Course archival/
   read-only history,
   React browser routes and
   responsive Admin/Participant experience, Google
@@ -42,7 +42,9 @@ JavaScript conventions, and ESLint-enforced dependency rules.
   functional composition, one same-origin Cloudflare Worker, D1 with SQLite
   semantics, signed Course Invite continuation, digest-only terminal Admin
   Invite authority and atomic signed onboarding, guarded current Admin User
-  name editing and authority-only promotion, Node/runtime and NixOS host-
+  name editing, authority-only promotion, guarded lifecycle/deletion, and
+  retained historical Admin attribution,
+  Node/runtime and NixOS host-
   tooling separation, explicit ESLint enforcement, and deferred remote
   infrastructure.
 - Read when: You need to understand why the project chose one web application,
@@ -69,7 +71,7 @@ JavaScript conventions, and ESLint-enforced dependency rules.
   contexts, Participant onboarding/profile/lifecycle/assigned-Course access/
   directory, Course Assignment creation/revocation/reactivation, Participant
   Module Selection, shared Course Invite management/recognition/Join, Admin
-  Invite administration/onboarding, Admin User directory/name editing/promotion, guarded
+  Invite administration/onboarding, Admin User directory/name editing/promotion/lifecycle, guarded
   Course editing, Course/Group/Module creation,
   Module editing/rescheduling/cancellation/deletion, and Group editing/
   archival/reactivation/deletion plus Course archival
@@ -83,7 +85,7 @@ JavaScript conventions, and ESLint-enforced dependency rules.
 - Summary: Defines the implemented local `booking-system-web` Cloudflare Worker
   and Vite composition, static assets, direct Participant, Admin, Participant
   profile/directory/detail, assigned Participant Course, public/Admin Invite,
-  Admin User directory/detail/promotion,
+  Admin User directory/detail/promotion/lifecycle,
   and Admin Course SPA
   routing including Archived read-only detail,
   compatibility, separate browser/Worker graphs, NixOS host-tooling boundary,
@@ -99,9 +101,10 @@ JavaScript conventions, and ESLint-enforced dependency rules.
 - Path: `docs/architecture/persistence.md`
 - Summary: Defines SQLite-compatible semantics, implemented local/test D1,
   first-Admin, Course, Group/Module, Participant, Course Assignment, Module
-  Selection, Course Invite, and digest-only terminal Admin Invite migrations,
+  Selection, Course Invite, digest-only terminal Admin Invite, and historical-
+  Admin-attribution migrations,
   assigned Participant Course reads, atomic Admin Invite claim, and guarded
-  Admin User name updates and authority-only promotion,
+  Admin User name updates, authority-only promotion, and guarded lifecycle,
   guarded Participant
   profile/lifecycle updates, retained Assignment lifecycle with atomic
   Selection retention, guarded Course and Group editing/lifecycle/deletion with
@@ -134,7 +137,7 @@ JavaScript conventions, and ESLint-enforced dependency rules.
 - Path: `docs/architecture/packages.md`
 - Summary: Defines conceptual package boundaries, the implemented
   `packages/booking` with first-bootstrap/Admin-Invite-administration/
-  onboarding/Admin-User-directory/name-editing/promotion `admin-access`, Course
+  onboarding/Admin-User-directory/name-editing/promotion/lifecycle `admin-access`, Course
   editing and Course/Group/Module
   `course-structure` including Group lifecycle/deletion and Course archival,
   and Participant-registration/profile/lifecycle/Assignment-lifecycle/assigned-
@@ -151,7 +154,7 @@ JavaScript conventions, and ESLint-enforced dependency rules.
   editing, Group lifecycle/deletion and structure,
   Participant-registration/profile/lifecycle, Assignment-lifecycle, and
   assigned Active/Archived Participant Course plus shared-Course-Invite Join,
-  Admin-Invite administration/onboarding, Admin-User directory/name editing/promotion,
+  Admin-Invite administration/onboarding, Admin-User directory/name editing/promotion/lifecycle,
   Module-Selection, and Course-archival slices,
   source roots,
   manifest ownership,
@@ -179,7 +182,7 @@ JavaScript conventions, and ESLint-enforced dependency rules.
   lifecycle/deletion and terminal Course-archival presentation plus
   Participant onboarding/profile/lifecycle/assigned-Course/directory/Course-
   Assignment-lifecycle/Module-Selection and Admin-Invite-onboarding navigation
-  plus Admin-User-directory/name-edit/promotion navigation and accessible interaction,
+  plus Admin-User-directory/name-edit/promotion/lifecycle navigation and accessible interaction,
   Better Auth session
   actions,
   classnames, debug, i18next, localization, routes, and vertical-slice

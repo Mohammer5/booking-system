@@ -72,7 +72,12 @@ Current reality:
   identities/relationships/Participant data, exact no-store HTTP, same-session
   fresh authority, actor-specific directory/detail actions, one-way German
   confirmation, dialog focus restoration, narrow stale/Disabled presentation,
-  and axe. The
+  and axe. The Admin User lifecycle layer additionally proves pure permitted-
+  action policy, guarded state-only transitions and identity-only deletion,
+  history-preserving migration, final-Super concurrency, complete named non-
+  cascade evidence, same-session access loss/restoration, new-Invite return,
+  server-derived German directory/detail controls, destructive consequence
+  copy, removed-row success, responsive keyboard/focus behavior, and axe. The
   tag-gated release policy remains unimplemented.
 - x86_64 NixOS developers can enter a pinned host-tooling environment with
   `nix develop`; `pnpm check` remains the verification contract and GitHub

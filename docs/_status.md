@@ -58,13 +58,14 @@ terminal Course archival with private read-only history,
 Participant registration/profile/lifecycle
 maintenance, Course Assignment creation/lifecycle, assigned Participant
 Course access, shared Course Invite management/recognition/Join, Admin Invite
-administration/onboarding, Admin User directory/name maintenance/promotion, and
+administration/onboarding, Admin User directory/name maintenance/promotion/
+lifecycle, and
 Participant Module Selection slices are now
 implemented:
 
 - `@booking-system/booking` at `packages/booking` owns the implemented
   `admin-access` first-bootstrap and Admin Invite create/list/revoke/
-  recognition/claim plus current Admin User list/name-edit/promotion behavior
+  recognition/claim plus current Admin User list/name-edit/promotion/lifecycle behavior
   plus `course-structure` Course, Course-wide Group,
   future Module creation, lifetime descriptive editing, pre-start
   rescheduling, terminal cancellation with retained Selection history,
@@ -97,15 +98,15 @@ implemented:
   `/admin/invite` signed continuation and ordinary-Admin onboarding,
   `/admin/users` current Admin directory and stable
   `/admin/users/:adminUserId` name detail/edit plus permanent Super Admin
-  promotion confirmation, and query-driven
+  promotion and lifecycle confirmations, and query-driven
   assigned-Course home, Worker/API
   handling, Better Auth composition, D1
   persistence, Vite/Workers Static Assets integration, and local runtime;
-- eight version-controlled migrations create the Better Auth/Admin foundation,
+- nine version-controlled migrations create the Better Auth/Admin foundation,
   Courses, additive Group/Module schema with permanent first-Module scheduling
   history, constrained Participants, constrained Course Assignments, and
   same-Course Module Selections, constrained Course Invites, and digest-only
-  terminal Admin Invites, with clean-
+  terminal Admin Invites and history-preserving Admin deletion, with clean-
   state construction and
   data-preserving upgrade evidence;
 - production and explicit non-production Worker compositions structurally
@@ -209,7 +210,8 @@ implemented:
   principal return, same-Invite/same-principal competition, Revoke races, and
   insert rollback leave one coherent outcome and create no Participant;
 - the Admin User directory lists every current Active or Disabled Admin with
-  narrow name/state/authority data and server-derived name-edit/promotion
+  narrow name/state/authority data and server-derived name-edit/promotion/
+  lifecycle
   availability.
   One guarded name-only update permits Active self edits, ordinary-to-ordinary
   edits, and Super-Admin edits of ordinary or Super targets, while current
@@ -222,6 +224,14 @@ implemented:
   same-principal Participant, coherently refuses concurrent losers, and makes
   the promoted authority visible to an already-established session on its next
   current-domain resolution;
+- guarded Admin User Disable/Re-enable/delete rechecks a different Active
+  actor, the ordinary/Super target matrix, current target state, self-
+  protection, and an Active-Super remainder in the accepting D1 statement.
+  Re-enable changes state only; deletion removes only the current Admin
+  identity, immediately removes Admin access from the retained authentication
+  session, and permits later return only through a new Invite/new ordinary
+  identity. Historical bootstrap/Admin-Invite attribution, all booking rows,
+  and any same-principal Participant remain unchanged;
 - the stable Course detail lists and creates Course-wide Groups with unique
   normalized Active names and future Scheduled Modules, resolves local minute
   input through the Course IANA timezone, rejects DST gaps, requires an
@@ -282,6 +292,11 @@ implemented:
   a permanent one-way German confirmation, ordinary/Disabled/self/already-
   Super refusal, real multi-Super success, same-session fresh authority,
   dialog focus restoration, responsive stale results, and axe;
+- Admin User lifecycle browser evidence adds ordinary/Super permitted-action
+  presentation, destructive German access-loss/non-cascade confirmations,
+  Disable/Re-enable/delete and removed-row success, same-session access loss/
+  restoration, shared-Participant independence, new-Invite return, final-Super
+  and self-protection messaging, desktop/360px layout, keyboard/focus, and axe;
 - both workspace boundary maps are registered in ESLint with exact module,
   workspace, composition, third-party, and test-only permissions;
 - the root Nix flake supplies NixOS developer-host tooling: Node, pnpm,
@@ -292,7 +307,7 @@ implemented:
   build, and Chromium browser evidence.
 
 Apple, Microsoft, and Facebook providers, Admin-assisted Module Selection,
-Admin User lifecycle capabilities, remote Google credentials and production
+remote Google credentials and production
 callback/domain configuration, remote Cloudflare staging/production resources,
 release
 automation, deployment credentials, and production deployment remain absent.

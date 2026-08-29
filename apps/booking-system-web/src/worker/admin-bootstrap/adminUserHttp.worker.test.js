@@ -86,7 +86,14 @@ describe("Admin User list and detail HTTP", () => {
 
     expect(detail.status).toBe(200);
     await expect(detail.json()).resolves.toEqual(
-      adminResponse("super", "Super Target", "active", "super-admin", true),
+      adminResponse(
+        "super",
+        "Super Target",
+        "active",
+        "super-admin",
+        true,
+        selfLifecycle,
+      ),
     );
     await expectOutcome(missing, 404, "admin-user-not-found");
     await expectOutcome(nested, 404, "not-found");
@@ -212,10 +219,13 @@ function createDirectHandler(overrides) {
       externalPrincipalId: actor.externalPrincipalId,
     }),
     adminPersistence: {
+      deleteAuthorizedAdminUser: async () => "deleted",
+      disableAuthorizedAdminUser: async () => "disabled",
       findAdminUserByExternalPrincipalId: async () => actor,
       findAdminUserById: async () => target,
       listCurrentAdminUsers: async () => [actor, target],
       promoteAuthorizedAdminUser: async () => "promoted",
+      reenableAuthorizedAdminUser: async () => "re-enabled",
       updateAuthorizedAdminUserName: async () => "updated",
       ...overrides,
     },
@@ -239,7 +249,14 @@ async function insertAdmin(suffix, principal, name, state, authority) {
 }
 
 /** @returns {object} One exact narrow HTTP representation. */
-function adminResponse(suffix, name, state, authority, isNameEditable) {
+function adminResponse(
+  suffix,
+  name,
+  state,
+  authority,
+  isNameEditable,
+  lifecycle = ordinaryActorLifecycle(suffix, state, authority),
+) {
   return {
     id: `admin-${suffix}`,
     name,
@@ -247,6 +264,27 @@ function adminResponse(suffix, name, state, authority, isNameEditable) {
     authority,
     isNameEditable,
     isPromotionAvailable: false,
+    ...lifecycle,
+  };
+}
+
+const selfLifecycle = {
+  isDisableAvailable: false,
+  isReenableAvailable: false,
+  isDeleteAvailable: false,
+  lifecycleRestriction: "self-protected",
+};
+
+/** @returns {object} Lifecycle response for the standard ordinary actor. */
+function ordinaryActorLifecycle(suffix, state, authority) {
+  if (suffix === "actor") return selfLifecycle;
+  const isProtected = authority === "super-admin";
+
+  return {
+    isDisableAvailable: !isProtected && state === "active",
+    isReenableAvailable: !isProtected && state === "disabled",
+    isDeleteAvailable: !isProtected,
+    lifecycleRestriction: isProtected ? "super-admin-protected" : null,
   };
 }
 

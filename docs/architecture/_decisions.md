@@ -167,6 +167,17 @@ and consuming bootstrap are one atomic authoritative claim so stale or
 concurrent requests cannot leave partial state or create two first
 administrators.
 
+## Keep Accepted Admin Attribution After Current Identity Deletion
+
+Bootstrap completion and Admin Invite creation are accepted historical facts.
+Their recorded Admin IDs therefore remain unchanged when the corresponding
+current Admin User identity is later deleted. Modeling those columns as
+historical text instead of current-identity foreign keys avoids an automatic
+`SET NULL` rewrite that would contradict the product's non-cascade rule, while
+still allowing `admin_users` to represent only current identities. This is not
+an audit-log system and does not make the historical ID resolvable as a current
+Admin User.
+
 ## Use Better Auth With D1-Backed Opaque Sessions
 
 Better Auth runs inside `apps/booking-system-web` and uses the application's

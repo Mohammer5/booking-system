@@ -17,22 +17,38 @@ import {
   TableRow,
   Typography,
 } from "@mui/material";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Link as RouterLink } from "react-router";
+import { Link as RouterLink, useLocation, useNavigate } from "react-router";
 
-import { useAdminUsers } from "./useAdminUsers.js";
+import { AdminUserLifecycleControls } from "./AdminUserLifecycleControls.jsx";
 import { AdminUserPromotionControl } from "./AdminUserPromotionControl.jsx";
+import { useAdminUsers } from "./useAdminUsers.js";
 
 /** @returns {import("react").ReactElement} Current Admin User directory route. */
 export function AdminUserDirectoryPage() {
   const { t: translate } = useTranslation();
+  const location = useLocation();
+  const navigate = useNavigate();
   const query = useAdminUsers();
   const errorRef = useRef(null);
+  const successRef = useRef(null);
+  const [lifecycleSuccess, setLifecycleSuccess] = useState(
+    location.state?.adminUserLifecycleSuccess ?? null,
+  );
 
   useEffect(() => {
     if (query.isError) errorRef.current?.focus();
   }, [query.isError]);
+
+  useEffect(() => {
+    if (lifecycleSuccess !== null) successRef.current?.focus();
+  }, [lifecycleSuccess]);
+
+  useEffect(() => {
+    if (location.state?.adminUserLifecycleSuccess === undefined) return;
+    navigate(location.pathname, { replace: true, state: null });
+  }, [location.pathname, location.state, navigate]);
 
   return (
     <Paper elevation={2} sx={{ mx: "auto", p: { xs: 3, sm: 5 } }}>
@@ -41,11 +57,23 @@ export function AdminUserDirectoryPage() {
           {translate("adminUsers.directory.title")}
         </Typography>
         <Typography>{translate("adminUsers.directory.description")}</Typography>
+        {lifecycleSuccess !== null ? (
+          <Alert ref={successRef} role="status" severity="success" tabIndex={-1}>
+            {translate(
+              `adminUsers.lifecycle.success.${lifecycleSuccess.action}`,
+              { name: lifecycleSuccess.name },
+            )}
+          </Alert>
+        ) : null}
         <Button component={RouterLink} sx={{ alignSelf: "flex-start" }} to="/admin">
           {translate("adminUsers.toAdministration")}
         </Button>
         <AdminUserDirectoryState
           errorRef={errorRef}
+          onDeleted={(adminUser) => setLifecycleSuccess({
+            action: "delete",
+            name: adminUser.name,
+          })}
           query={query}
           translate={translate}
         />
@@ -55,7 +83,7 @@ export function AdminUserDirectoryPage() {
 }
 
 /** @returns {import("react").ReactElement} Current directory state. */
-function AdminUserDirectoryState({ errorRef, query, translate }) {
+function AdminUserDirectoryState({ errorRef, onDeleted, query, translate }) {
   if (query.isPending) {
     return (
       <Stack aria-live="polite" role="status" spacing={2} sx={{ alignItems: "center" }}>
@@ -77,11 +105,17 @@ function AdminUserDirectoryState({ errorRef, query, translate }) {
     return <Alert severity="info">{translate("adminUsers.status.empty")}</Alert>;
   }
 
-  return <AdminUserDirectory adminUsers={query.data.adminUsers} translate={translate} />;
+  return (
+    <AdminUserDirectory
+      adminUsers={query.data.adminUsers}
+      onDeleted={onDeleted}
+      translate={translate}
+    />
+  );
 }
 
 /** @returns {import("react").ReactElement} Responsive table and card alternatives. */
-function AdminUserDirectory({ adminUsers, translate }) {
+function AdminUserDirectory({ adminUsers, onDeleted, translate }) {
   return (
     <>
       <TableContainer sx={{ display: { xs: "none", md: "block" } }}>
@@ -99,6 +133,7 @@ function AdminUserDirectory({ adminUsers, translate }) {
               <AdminUserTableRow
                 adminUser={adminUser}
                 key={adminUser.id}
+                onDeleted={onDeleted}
                 translate={translate}
               />
             ))}
@@ -112,7 +147,11 @@ function AdminUserDirectory({ adminUsers, translate }) {
       >
         {adminUsers.map((adminUser) => (
           <ListItem disablePadding key={adminUser.id} sx={{ mb: 2 }}>
-            <AdminUserCard adminUser={adminUser} translate={translate} />
+            <AdminUserCard
+              adminUser={adminUser}
+              onDeleted={onDeleted}
+              translate={translate}
+            />
           </ListItem>
         ))}
       </List>
@@ -121,7 +160,7 @@ function AdminUserDirectory({ adminUsers, translate }) {
 }
 
 /** @returns {import("react").ReactElement} One desktop Admin User row. */
-function AdminUserTableRow({ adminUser, translate }) {
+function AdminUserTableRow({ adminUser, onDeleted, translate }) {
   return (
     <TableRow>
       <TableCell component="th" scope="row">{adminUser.name}</TableCell>
@@ -134,6 +173,11 @@ function AdminUserTableRow({ adminUser, translate }) {
             adminUser={adminUser}
             translate={translate}
           />
+          <AdminUserLifecycleControls
+            adminUser={adminUser}
+            onDeleted={onDeleted}
+            translate={translate}
+          />
         </Stack>
       </TableCell>
     </TableRow>
@@ -141,7 +185,7 @@ function AdminUserTableRow({ adminUser, translate }) {
 }
 
 /** @returns {import("react").ReactElement} One narrow Admin User card. */
-function AdminUserCard({ adminUser, translate }) {
+function AdminUserCard({ adminUser, onDeleted, translate }) {
   return (
     <Card sx={{ width: "100%" }} variant="outlined">
       <CardContent>
@@ -154,6 +198,11 @@ function AdminUserCard({ adminUser, translate }) {
           <AdminUserDetailLink adminUser={adminUser} translate={translate} />
           <AdminUserPromotionControl
             adminUser={adminUser}
+            translate={translate}
+          />
+          <AdminUserLifecycleControls
+            adminUser={adminUser}
+            onDeleted={onDeleted}
             translate={translate}
           />
         </Stack>

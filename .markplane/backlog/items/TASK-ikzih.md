@@ -1,12 +1,12 @@
 ---
 id: TASK-ikzih
 title: Disable, re-enable, and delete Admin Users
-status: backlog
+status: done
 priority: medium
 type: feature
 effort: large
 epic: EPIC-hc9uu
-plan: null
+plan: PLAN-86fxe
 depends_on:
 - TASK-qhred
 - TASK-jvqrk
@@ -15,7 +15,7 @@ blocks:
 - TASK-h37zt
 related:
 - TASK-25j4s
-assignee: null
+assignee: gerkules
 tags:
 - admin
 - lifecycle
@@ -23,7 +23,7 @@ tags:
 - authorization
 position: g50
 created: 2026-08-27
-updated: 2026-08-27
+updated: 2026-08-29
 ---
 
 # Disable, re-enable, and delete Admin Users
@@ -38,26 +38,26 @@ state. Domain content and a Participant sharing the principal never cascade.
 
 ## Acceptance Criteria
 
-- [ ] An ordinary Active Admin may Disable, Re-enable, or delete another
+- [x] An ordinary Active Admin may Disable, Re-enable, or delete another
       ordinary Admin but may not mutate any Super Admin. An Active Super Admin
       may perform those actions on another ordinary or Super Admin subject to
       the invariant below.
-- [ ] No Admin User may Disable/delete themselves or alter their own authority,
+- [x] No Admin User may Disable/delete themselves or alter their own authority,
       even when several Super Admins exist. Disabled actors have no Admin
       access or mutation authority.
-- [ ] Every accepted Disable/delete leaves at least one Active Super Admin.
+- [x] Every accepted Disable/delete leaves at least one Active Super Admin.
       Stale and concurrent requests that would remove the final Active Super
       Admin are refused atomically; a Disabled Super Admin does not satisfy the
       invariant until Re-enabled.
-- [ ] Re-enable preserves Admin identity and authority. Deletion removes the
+- [x] Re-enable preserves Admin identity and authority. Deletion removes the
       current Admin identity; its principal receives no Admin access through
       the still-existing Better Auth session and can return only through a new
       Invite as a new ordinary identity.
-- [ ] Disable/delete never changes Courses, Groups, Modules, Participants,
+- [x] Disable/delete never changes Courses, Groups, Modules, Participants,
       Assignments, Selections, Course Invites, Admin Invites, or a Participant
       backed by the same external principal. Previously accepted actions remain
       authoritative.
-- [ ] Every request resolves actor/target current state and authority fresh;
+- [x] Every request resolves actor/target current state and authority fresh;
       no session role or stale list action bypasses the rules, and refusal has
       no partial side effect.
 

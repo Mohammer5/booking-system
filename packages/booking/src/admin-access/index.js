@@ -1,13 +1,17 @@
 export { createAdminInvite } from "./createAdminInvite.js";
 export { createBootstrapFirstAdmin } from "./createBootstrapFirstAdmin.js";
 export { createClaimAdminInvite } from "./createClaimAdminInvite.js";
+export { createDeleteAdminUser } from "./createDeleteAdminUser.js";
+export { createDisableAdminUser } from "./createDisableAdminUser.js";
 export { createGetAdminAuthenticationEntry } from "./createGetAdminAuthenticationEntry.js";
 export { createListAdminInvites } from "./createListAdminInvites.js";
 export { createListAdminUsers } from "./createListAdminUsers.js";
 export { createPromoteAdminUser } from "./createPromoteAdminUser.js";
+export { createReenableAdminUser } from "./createReenableAdminUser.js";
 export { createRevokeAdminInvite } from "./createRevokeAdminInvite.js";
 export { createResolveAdminContext } from "./createResolveAdminContext.js";
 export { createUpdateAdminUserName } from "./createUpdateAdminUserName.js";
+export { deriveAdminUserLifecycleActions } from "./adminUserLifecyclePolicy.js";
 export { isAdminUserNameEditable } from "./isAdminUserNameEditable.js";
 export { isAdminUserPromotable } from "./isAdminUserPromotable.js";
 export { recognizeAdminInvite } from "./recognizeAdminInvite.js";

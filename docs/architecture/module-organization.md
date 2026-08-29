@@ -4,7 +4,7 @@
 
 The `packages/booking` workspace currently contains `admin-access` for first
 Admin bootstrap, Admin Invite create/list/revoke/recognize/claim policy, and
-current Admin User list/name-edit/promotion authorization,
+current Admin User list/name-edit/promotion/lifecycle authorization,
 `course-structure` for Course creation/editing, Course-wide
 Group creation/editing/archival/reactivation/permanent deletion, and future Scheduled Module
 creation plus descriptive editing, pre-start rescheduling, and terminal
@@ -27,7 +27,10 @@ access` and `worker/admin-bootstrap` responsibilities; this concrete slice does
 not introduce another package or first-level application module. Promotion
 adds one domain operation/predicate, one existing-handler action route, one
 guarded persistence capability, and one browser confirmation component within
-those owners.
+those owners. Lifecycle adds three domain operations around one pure policy,
+one split lifecycle-persistence capability factory, three existing-handler
+commands, and one shared directory/detail control without another package,
+first-level responsibility, or generic lifecycle framework.
 
 The `apps/booking-system-web` workspace is the single application composition
 boundary. Its first-level source responsibilities are `browser`, `worker`, and
