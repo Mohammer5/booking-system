@@ -20,8 +20,8 @@ JavaScript conventions, and ESLint-enforced dependency rules.
   Participant-registration/profile/
   lifecycle, Assignment-
   lifecycle, and assigned Participant Course-access plus Module-Selection and
-  shared-Course-Invite management/Join and Admin-Invite-administration slices
-  and terminal Course archival/
+  shared-Course-Invite management/Join and Admin-Invite-administration/
+  onboarding slices and terminal Course archival/
   read-only history,
   React browser routes and
   responsive Admin/Participant experience, Google
@@ -41,7 +41,7 @@ JavaScript conventions, and ESLint-enforced dependency rules.
   manifest per workspace, React, MUI, and browser-library responsibilities,
   functional composition, one same-origin Cloudflare Worker, D1 with SQLite
   semantics, signed Course Invite continuation, digest-only terminal Admin
-  Invite authority, Node/runtime and NixOS host-
+  Invite authority and atomic signed onboarding, Node/runtime and NixOS host-
   tooling separation, explicit ESLint enforcement, and deferred remote
   infrastructure.
 - Read when: You need to understand why the project chose one web application,
@@ -68,7 +68,7 @@ JavaScript conventions, and ESLint-enforced dependency rules.
   contexts, Participant onboarding/profile/lifecycle/assigned-Course access/
   directory, Course Assignment creation/revocation/reactivation, Participant
   Module Selection, shared Course Invite management/recognition/Join, Admin
-  Invite administration, guarded
+  Invite administration/onboarding, guarded
   Course editing, Course/Group/Module creation,
   Module editing/rescheduling/cancellation/deletion, and Group editing/
   archival/reactivation/deletion plus Course archival
@@ -81,8 +81,8 @@ JavaScript conventions, and ESLint-enforced dependency rules.
 - Path: `docs/architecture/runtime-and-hosting.md`
 - Summary: Defines the implemented local `booking-system-web` Cloudflare Worker
   and Vite composition, static assets, direct Participant, Admin, Participant
-  profile/directory/detail, assigned Participant Course, Admin Invite, and
-  Admin Course SPA
+  profile/directory/detail, assigned Participant Course, public/Admin Invite,
+  and Admin Course SPA
   routing including Archived read-only detail,
   compatibility, separate browser/Worker graphs, NixOS host-tooling boundary,
   public Invite plus private Participant/Admin SPA routing, and minimal
@@ -98,7 +98,7 @@ JavaScript conventions, and ESLint-enforced dependency rules.
 - Summary: Defines SQLite-compatible semantics, implemented local/test D1,
   first-Admin, Course, Group/Module, Participant, Course Assignment, Module
   Selection, Course Invite, and digest-only terminal Admin Invite migrations,
-  assigned Participant Course reads,
+  assigned Participant Course reads and atomic Admin Invite claim,
   guarded Participant
   profile/lifecycle updates, retained Assignment lifecycle with atomic
   Selection retention, guarded Course and Group editing/lifecycle/deletion with
@@ -117,7 +117,8 @@ JavaScript conventions, and ESLint-enforced dependency rules.
 - Summary: Defines Better Auth as the application-owned authentication layer,
   the implemented Google provider, D1-backed opaque sessions, stable-principal
   mapping, lifecycle-sensitive contextual domain resolution, fixed Admin/
-  Participant destinations, provider-linking policy, Invite continuation,
+  Participant destinations, provider-linking policy, Course/Admin Invite
+  continuation,
   manual local smoke, and fail-closed non-production authentication.
 - Read when: A task affects authentication, sessions, external principals,
   provider integration or linking, Participant/Admin identity resolution,
@@ -129,7 +130,8 @@ JavaScript conventions, and ESLint-enforced dependency rules.
 ### Packages
 - Path: `docs/architecture/packages.md`
 - Summary: Defines conceptual package boundaries, the implemented
-  `packages/booking` with first-bootstrap/Admin-Invite `admin-access`, Course
+  `packages/booking` with first-bootstrap/Admin-Invite-administration/
+  onboarding `admin-access`, Course
   editing and Course/Group/Module
   `course-structure` including Group lifecycle/deletion and Course archival,
   and Participant-registration/profile/lifecycle/Assignment-lifecycle/assigned-
@@ -146,7 +148,7 @@ JavaScript conventions, and ESLint-enforced dependency rules.
   editing, Group lifecycle/deletion and structure,
   Participant-registration/profile/lifecycle, Assignment-lifecycle, and
   assigned Active/Archived Participant Course plus shared-Course-Invite Join,
-  Admin-Invite administration, Module-Selection, and Course-archival slices,
+  Admin-Invite administration/onboarding, Module-Selection, and Course-archival slices,
   source roots,
   manifest ownership,
   browser/Worker/authentication separation, interfaces, entrypoints, adapters,
@@ -172,7 +174,8 @@ JavaScript conventions, and ESLint-enforced dependency rules.
   cancellation/deletion, and Group
   lifecycle/deletion and terminal Course-archival presentation plus
   Participant onboarding/profile/lifecycle/assigned-Course/directory/Course-
-  Assignment-lifecycle/Module-Selection navigation and accessible interaction,
+  Assignment-lifecycle/Module-Selection and Admin-Invite-onboarding navigation
+  and accessible interaction,
   Better Auth session
   actions,
   classnames, debug, i18next, localization, routes, and vertical-slice

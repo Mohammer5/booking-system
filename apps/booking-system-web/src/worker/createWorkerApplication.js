@@ -1,5 +1,6 @@
 import {
   createAdminHttpHandler,
+  createAdminInviteOnboardingHttpHandler,
   createAdminInviteHttpHandler,
 } from "./admin-bootstrap/index.js";
 import {
@@ -33,20 +34,7 @@ export function createWorkerApplication(capabilities) {
  */
 function createWorkerHandlers(capabilities) {
   const { authentication } = capabilities;
-  const handleAdminHttpRequest = createAdminHttpHandler({
-    authenticate: authentication.authenticate,
-    createAdminUserId: capabilities.createAdminUserId,
-    persistence: capabilities.adminPersistence,
-  });
-  const handleAdminInviteHttpRequest = createAdminInviteHttpHandler({
-    authenticate: authentication.authenticate,
-    adminInviteNow: capabilities.adminInviteNow,
-    createAdminInviteId: capabilities.createAdminInviteId,
-    createAdminInviteToken: capabilities.createAdminInviteToken,
-    hashAdminInviteToken: capabilities.hashAdminInviteToken,
-    adminPersistence: capabilities.adminPersistence,
-    invitePersistence: capabilities.adminInvitePersistence,
-  });
+  const adminHandlers = createAdminHandlers(capabilities, authentication);
   const handleCourseHttpRequest = createCourseHttpHandler({
     authenticate: authentication.authenticate,
     createCourseId: capabilities.createCourseId,
@@ -67,22 +55,51 @@ function createWorkerHandlers(capabilities) {
     coursePersistence: capabilities.coursePersistence,
     participantPersistence: capabilities.participantPersistence,
   });
-  const inviteHandlers = createInviteHandlers(
-    capabilities,
-    authentication,
-  );
+  const inviteHandlers = createInviteHandlers(capabilities, authentication);
   const participantHandlers = createParticipantHandlers(
     capabilities,
     authentication,
   );
 
   return {
-    handleAdminHttpRequest,
-    handleAdminInviteHttpRequest,
+    ...adminHandlers,
     handleCourseAccessHttpRequest,
     ...inviteHandlers,
     handleCourseHttpRequest,
     ...participantHandlers,
+  };
+}
+
+/** @returns {object} Admin bootstrap, Invite, and onboarding handlers. */
+function createAdminHandlers(capabilities, authentication) {
+  const handleAdminHttpRequest = createAdminHttpHandler({
+    authenticate: authentication.authenticate,
+    createAdminUserId: capabilities.createAdminUserId,
+    persistence: capabilities.adminPersistence,
+  });
+  const handleAdminInviteHttpRequest = createAdminInviteHttpHandler({
+    authenticate: authentication.authenticate,
+    adminInviteNow: capabilities.adminInviteNow,
+    createAdminInviteId: capabilities.createAdminInviteId,
+    createAdminInviteToken: capabilities.createAdminInviteToken,
+    hashAdminInviteToken: capabilities.hashAdminInviteToken,
+    adminPersistence: capabilities.adminPersistence,
+    invitePersistence: capabilities.adminInvitePersistence,
+  });
+  const handleAdminInviteOnboardingHttpRequest =
+    createAdminInviteOnboardingHttpHandler({
+      authenticate: authentication.authenticate,
+      createAdminUserId: capabilities.createAdminUserId,
+      hashAdminInviteToken: capabilities.hashAdminInviteToken,
+      adminPersistence: capabilities.adminPersistence,
+      inviteContinuation: capabilities.adminInviteContinuation,
+      invitePersistence: capabilities.adminInvitePersistence,
+    });
+
+  return {
+    handleAdminHttpRequest,
+    handleAdminInviteOnboardingHttpRequest,
+    handleAdminInviteHttpRequest,
   };
 }
 
@@ -162,12 +179,9 @@ async function handleWorkerRequest(request, authentication, handlers) {
 
 /** @returns {Promise<Response>} Dispatch one booking-domain HTTP request. */
 function handleDomainRequest(request, requestURL, handlers) {
-  if (
-    requestURL.pathname === "/api/admin/invites" ||
-    requestURL.pathname.startsWith("/api/admin/invites/")
-  ) {
-    return handlers.handleAdminInviteHttpRequest(request);
-  }
+  const adminResponse = handleAdminDomainRequest(request, requestURL, handlers);
+
+  if (adminResponse !== null) return adminResponse;
 
   if (
     requestURL.pathname === "/api/course-invites/recognition" ||
@@ -177,36 +191,44 @@ function handleDomainRequest(request, requestURL, handlers) {
     return handlers.handleCourseInviteJoinHttpRequest(request);
   }
 
-  if (
-    isAdminCourseInvitePath(requestURL.pathname)
-  ) {
-    return handlers.handleCourseInviteHttpRequest(request);
-  }
-
-  if (
-    requestURL.pathname.startsWith("/api/admin/participants") ||
-    (requestURL.pathname.startsWith("/api/admin/courses/") &&
-      requestURL.pathname.split("/").includes("assignments"))
-  ) {
-    return handlers.handleCourseAccessHttpRequest(request);
-  }
-
-  if (
-    requestURL.pathname === "/api/admin/courses" ||
-    requestURL.pathname.startsWith("/api/admin/courses/")
-  ) {
-    return handlers.handleCourseHttpRequest(request);
-  }
-
-  if (requestURL.pathname.startsWith("/api/admin/")) {
-    return handlers.handleAdminHttpRequest(request);
-  }
-
   if (requestURL.pathname.startsWith("/api/participant/")) {
     return handleParticipantRequest(request, requestURL, handlers);
   }
 
   return Response.json({ outcome: "not-found" }, { status: 404 });
+}
+
+/** @returns {Response | Promise<Response> | null} One Admin API dispatch. */
+function handleAdminDomainRequest(request, requestURL, handlers) {
+  const { pathname } = requestURL;
+
+  if (pathname.startsWith("/api/admin-invite/")) {
+    return handlers.handleAdminInviteOnboardingHttpRequest(request);
+  }
+
+  if (pathname === "/api/admin/invites" || pathname.startsWith("/api/admin/invites/")) {
+    return handlers.handleAdminInviteHttpRequest(request);
+  }
+
+  if (isAdminCourseInvitePath(pathname)) {
+    return handlers.handleCourseInviteHttpRequest(request);
+  }
+
+  if (
+    pathname.startsWith("/api/admin/participants") ||
+    (pathname.startsWith("/api/admin/courses/") &&
+      pathname.split("/").includes("assignments"))
+  ) {
+    return handlers.handleCourseAccessHttpRequest(request);
+  }
+
+  if (pathname === "/api/admin/courses" || pathname.startsWith("/api/admin/courses/")) {
+    return handlers.handleCourseHttpRequest(request);
+  }
+
+  return pathname.startsWith("/api/admin/")
+    ? handlers.handleAdminHttpRequest(request)
+    : null;
 }
 
 /** @returns {boolean} Whether a path is nested Admin Course Invite API. */
@@ -248,6 +270,7 @@ function authenticationFailureResponse(request, requestURL) {
 
   const destinations = new Map([
     ["/api/auth/application-error", "/admin"],
+    ["/api/auth/admin-invite-error", "/admin/invite"],
     ["/api/auth/invite-error", "/invite"],
     ["/api/auth/participant-error", "/"],
   ]);

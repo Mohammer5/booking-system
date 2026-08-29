@@ -58,6 +58,46 @@ const fixturesByPath = new Map([
       email: "selection-participant@fixture.invalid",
     },
   ],
+  [
+    "/api/_fixtures/session/admin-invite-a",
+    {
+      id: "fixture-admin-invite-a",
+      name: "Admin Invite A Fixture",
+      email: "admin-invite-a@fixture.invalid",
+    },
+  ],
+  [
+    "/api/_fixtures/session/admin-invite-b",
+    {
+      id: "fixture-admin-invite-b",
+      name: "Admin Invite B Fixture",
+      email: "admin-invite-b@fixture.invalid",
+    },
+  ],
+  [
+    "/api/_fixtures/session/admin-invite-c",
+    {
+      id: "fixture-admin-invite-c",
+      name: "Admin Invite C Fixture",
+      email: "admin-invite-c@fixture.invalid",
+    },
+  ],
+  [
+    "/api/_fixtures/session/admin-invite-d",
+    {
+      id: "fixture-admin-invite-d",
+      name: "Admin Invite D Fixture",
+      email: "admin-invite-d@fixture.invalid",
+    },
+  ],
+  [
+    "/api/_fixtures/session/returning-admin",
+    {
+      id: "fixture-returning-admin",
+      name: "Returning Admin Fixture",
+      email: "returning-admin@fixture.invalid",
+    },
+  ],
 ]);
 
 /**

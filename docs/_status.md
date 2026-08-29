@@ -58,10 +58,12 @@ terminal Course archival with private read-only history,
 Participant registration/profile/lifecycle
 maintenance, Course Assignment creation/lifecycle, assigned Participant
 Course access, shared Course Invite management/recognition/Join, Admin Invite
-administration, and Participant Module Selection slices are now implemented:
+administration/onboarding, and Participant Module Selection slices are now
+implemented:
 
 - `@booking-system/booking` at `packages/booking` owns the implemented
-  `admin-access` first-bootstrap and Admin Invite create/list/revoke behavior
+  `admin-access` first-bootstrap and Admin Invite create/list/revoke/
+  recognition/claim behavior
   plus `course-structure` Course, Course-wide Group,
   future Module creation, lifetime descriptive editing, pre-start
   rescheduling, terminal cancellation with retained Selection history,
@@ -90,7 +92,8 @@ administration, and Participant Module Selection slices are now implemented:
   Selection controls, `/profile` self-service and
   `/admin/participants/:participantId` administration, Active-Course Invite
   controls, the public `/invite` continuation/Join route, directly navigable
-  `/admin/invites` administration with one-time creation results, and query-driven
+  `/admin/invites` administration with one-time creation results, public
+  `/admin/invite` signed continuation and ordinary-Admin onboarding, and query-driven
   assigned-Course home, Worker/API
   handling, Better Auth composition, D1
   persistence, Vite/Workers Static Assets integration, and local runtime;
@@ -192,6 +195,13 @@ administration, and Participant Module Selection slices are now implemented:
   Any Active Admin may Revoke an Active row, while constraints and triggers
   make Claimed and Revoked terminal and concurrent claim/Revoke choose one
   complete winner;
+- Admin Invite recognition moves one raw fragment token into an Admin-specific
+  purpose-signed `HttpOnly` digest continuation, then cleans browser authority.
+  Fixed Google return and refresh consume nothing. Final explicit-name
+  acceptance uses one guarded D1 batch whose winning terminal update gates the
+  ordinary Active Admin insert; existing Active/Disabled principals, deleted-
+  principal return, same-Invite/same-principal competition, Revoke races, and
+  insert rollback leave one coherent outcome and create no Participant;
 - the stable Course detail lists and creates Course-wide Groups with unique
   normalized Active names and future Scheduled Modules, resolves local minute
   input through the Course IANA timezone, rejects DST gaps, requires an
@@ -239,7 +249,11 @@ administration, and Participant Module Selection slices are now implemented:
   axe results. Admin Invite evidence covers empty/create/copy, one-time URL
   loss across dialog close and refresh, non-secret list state, revoke/repeat,
   replacement after loss, terminal results, desktop/narrow layout, focus, and
-  axe;
+  axe. Invited Admin evidence additionally covers fragment cleanup, refresh and
+  abandonment, fixed Google continuation without raw authority, explicit-name
+  validation, ordinary-Admin creation, existing/Disabled refusal without
+  consumption, deleted-principal return, two-principal competition, stale and
+  unavailable privacy, responsive layout, focus, and axe;
 - both workspace boundary maps are registered in ESLint with exact module,
   workspace, composition, third-party, and test-only permissions;
 - the root Nix flake supplies NixOS developer-host tooling: Node, pnpm,
@@ -250,8 +264,7 @@ administration, and Participant Module Selection slices are now implemented:
   build, and Chromium browser evidence.
 
 Apple, Microsoft, and Facebook providers, Admin-assisted Module Selection,
-Admin Invite claim/onboarding, later Admin capabilities, remote Google
-credentials and production
+later Admin capabilities, remote Google credentials and production
 callback/domain configuration, remote Cloudflare staging/production resources,
 release
 automation, deployment credentials, and production deployment remain absent.

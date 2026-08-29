@@ -312,6 +312,21 @@ journey, fresh replacement after URL loss, routed terminal/loading/error
 states, response and browser-artifact secret scanning, desktop/360px layout,
 keyboard/Dialog focus, and axe evidence.
 
+For invited Admin onboarding, booking-domain Vitest owns privacy-preserving
+recognition, required-name validation, current Active/Disabled and deleted-
+principal policy, ordinary Active authority, and terminal outcome translation.
+Worker/D1 Vitest owns existing-schema claim support, digest lookup, separately
+purpose-signed continuation, exact no-store HTTP, atomic update-plus-insert,
+rollback, same-Invite/same-principal/Revoke races, existing-principal no-
+consumption, deleted-principal new identity, production composition, and
+secret/error scanning. Authentication tests own fixed `/admin/invite` Google
+success/error destinations and prove raw authority never enters provider URLs.
+Playwright owns fragment cleanup, refresh and abandonment, authentication
+initiation, invalid/explicit name, real ordinary-Admin success, existing and
+Disabled refusal without consumption, returning-principal onboarding, common
+terminal/unknown privacy, two fixed-principal competition, desktop/360px,
+keyboard/result focus, overflow, and axe without contacting Google's UI.
+
 The implemented integration uses project-pinned `@cloudflare/vitest-plugin`
 with isolated D1 state and the version-controlled migration sequence.
 

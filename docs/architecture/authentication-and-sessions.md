@@ -279,9 +279,11 @@ explicit Join
 revalidate Invite, Course, Participant, and Assignment
 ```
 
-Future Admin Invite continuation follows the analogous separation.
-Authentication or onboarding never joins a Course, consumes an Admin Invite,
-or creates a Course Assignment merely because an Invite was opened.
+Admin Invite continuation follows the analogous separation: recognition,
+authentication, and explicit-name collection consume nothing; only the final
+authenticated claim may atomically create an Admin User and make the Invite
+Claimed. Authentication or onboarding never joins a Course, creates a Course
+Assignment, or consumes an Admin Invite merely because it was opened.
 
 Security-sensitive Invite secrets must not enter third-party OAuth URLs,
 referrers, browser or technical logs, or analytics. Prefer server-side or
@@ -308,14 +310,28 @@ Join, or create an Assignment. Only the separate authenticated, body-free
 `POST /api/course-invites/join` revalidates the signed continuation and all
 current booking state before membership can change.
 
+The implemented Admin Invite flow uses `/admin/invite#<token>` and a distinct
+`booking-system.admin-invite-token` session-storage key. Initial `POST
+/api/admin-invite/recognition` replaces the raw value with the separately named
+`booking_admin_invite_continuation` cookie. Its HMAC key is purpose-derived as
+`booking-system:admin-invite-continuation:v1:key`, so Course and Admin Invite
+continuations cannot substitute for one another despite using the same proven
+cookie attributes and signing primitive. Refresh and the fixed Google success
+destination `/admin/invite` use only `GET /api/admin-invite/continuation`; the
+sanitized failure destination is `/api/auth/admin-invite-error`. Only explicit
+authenticated `POST /api/admin-invite/claim` may consume the Invite, and
+success clears the continuation.
+
 ## Non-Production Authentication
 
 The application uses a separate explicitly
 [non-production authentication](../DICTIONARY.md#non-production-authentication)
 composition. The authentication-owned fixture interface uses Better Auth's
-`testUtils` plugin to create normal signed D1-backed sessions for seven fixed
+`testUtils` plugin to create normal signed D1-backed sessions for twelve fixed
 identities: `first-admin`, `later-admin`, `participant-a`, `participant-b`,
-`invite-participant-a`, `invite-participant-b`, and `selection-participant`.
+`invite-participant-a`, `invite-participant-b`, `selection-participant`,
+`admin-invite-a`, `admin-invite-b`, `admin-invite-c`, `admin-invite-d`, and
+`returning-admin`.
 
 Production and non-production authentication are different executable
 compositions rather than one production composition conditionally exposing a
@@ -337,8 +353,9 @@ The mechanism must:
 
 - establish normal Better Auth application sessions for deterministic named
   fixture identities, currently `first-admin`, `later-admin`, `participant-a`,
-  `participant-b`, `invite-participant-a`, `invite-participant-b`, and
-  `selection-participant`;
+  `participant-b`, `invite-participant-a`, `invite-participant-b`,
+  `selection-participant`, `admin-invite-a`, `admin-invite-b`,
+  `admin-invite-c`, `admin-invite-d`, and `returning-admin`;
 - let Playwright exercise the normal authenticated application and real domain
   authorization after session establishment;
 - prevent arbitrary-principal impersonation, including a caller-supplied

@@ -3,8 +3,8 @@
 ## Accepted Initial Conceptual Target
 
 The `packages/booking` workspace currently contains `admin-access` for first
-Admin bootstrap and Admin Invite create/list/revoke policy, `course-structure`
-for Course creation/editing, Course-wide
+Admin bootstrap and Admin Invite create/list/revoke/recognize/claim policy,
+`course-structure` for Course creation/editing, Course-wide
 Group creation/editing/archival/reactivation/permanent deletion, and future Scheduled Module
 creation plus descriptive editing, pre-start rescheduling, and terminal
 cancellation with retained Selection history plus permanent unreferenced

@@ -118,6 +118,7 @@ describe("Public booking package interface", () => {
       "createAssignParticipantToCourse",
       "createBootstrapFirstAdmin",
       "createCancelModule",
+      "createClaimAdminInvite",
       "createCourseInvite",
       "createCreateCourse",
       "createCreateGroup",
@@ -151,6 +152,7 @@ describe("Public booking package interface", () => {
       "deriveModuleSelectionAvailability",
       "deriveModuleSelectionPresentation",
       "hasParticipantCourseAccess",
+      "recognizeAdminInvite",
       "recognizeCourseInvite",
     ]);
   });

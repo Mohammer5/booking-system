@@ -228,6 +228,19 @@ concurrent claim/Revoke choose one terminal outcome without adding expiry,
 deletion, reactivation, a generic token store, or a second architecture
 mechanism.
 
+After initial fragment recognition, Admin onboarding uses a separately named
+`HttpOnly` cookie signed by an HMAC key purpose-derived specifically for Admin
+Invite continuation. It never reuses the Course Invite cookie or HMAC purpose.
+Authentication, refresh, and name entry therefore retain only a signed digest
+and consume nothing; the raw authority cannot enter OAuth destinations.
+
+Final claim uses one D1 batch ordered as a guarded Active-to-Claimed update and
+an Admin insert conditional on SQLite `changes() = 1`. A losing Invite or
+existing-principal guard changes zero rows and inserts nothing; an Admin
+integrity failure rolls the preceding update back. This keeps the already
+sufficient `0008` schema, avoids pending/claimant state, and gives same-Invite,
+same-principal, and Revoke competition one coherent winner.
+
 ## Keep Node Tooling Separate From The Worker Runtime
 
 Node.js remains the repository tooling, build, and CI runtime. Application

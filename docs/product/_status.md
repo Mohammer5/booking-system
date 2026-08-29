@@ -130,7 +130,15 @@ independently Active Admin Invites, see and copy each complete URL only in its
 successful creation result, list later non-secret creation time and terminal
 state, and Revoke an Active Invite regardless of creator. Claimed and Revoked
 Invites remain terminal, no Invite expires, and a lost URL is replaced by
-Revoking it and creating another. Admin Invite claim/onboarding and later Admin
-management behavior remain unimplemented. Technology, persistence, API,
+Revoking it and creating another. A valid Active Admin Invite now reveals only
+registration availability, continues through fixed Google authentication, and
+requires an explicit nonblank booking-system name before one atomic final
+acceptance creates a fresh ordinary Active Admin User and makes the Invite
+Claimed. Opening, authenticating, refreshing, invalid input, abandonment,
+existing Active/Disabled Admin principals, terminal state, and competing losers
+create nothing and consume nothing. A legitimately deleted principal may
+return through a new Invite as a new ordinary identity without restored state
+or authority. Later Admin management behavior remains unimplemented.
+Technology, persistence, API,
 frontend, and infrastructure mechanics remain outside this product
 specification and do not alter its contracts.

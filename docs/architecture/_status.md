@@ -77,7 +77,8 @@
   reactivate/revoke HTTP, and private assigned Participant Course list/detail
   HTTP for Active or Archived Courses, shared Course Invite management and
   public recognition/signed-continuation/explicit-Join HTTP, authenticated
-  Admin Invite create/list/revoke HTTP, plus terminal
+  Admin Invite create/list/revoke and public recognition/signed-continuation/
+  atomic-claim HTTP, plus terminal
   body-free Course archival HTTP.
   Application destinations remain fixed and browser input cannot select
   principal, authority, Assignment identity/state, lifecycle state,
@@ -101,7 +102,8 @@
 - `@booking-system/booking` and `@booking-system/booking-system-web` are real
   modern-ESM workspaces with one manifest each.
 - The booking package exposes the first-bootstrap/fresh-context and Admin
-  Invite create/list/revoke `admin-access` operation factories plus
+  Invite create/list/revoke/recognize/claim `admin-access` operation factories
+  plus
   `course-structure` factories for Course creation/editing, Course-wide Group
   creation/editing/archival/reactivation/permanent deletion, and future Module
   creation, lifetime descriptive editing, pre-start rescheduling, and terminal
@@ -124,7 +126,8 @@
 - React Router serves the independently navigable `/` Participant entry,
   public `/invite` continuation and Join,
   Participant `/profile` and `/courses/:courseId` detail,
-  `/admin` administration entry, `/admin/invites`, `/admin/participants`, stable
+  `/admin` administration entry, public `/admin/invite` onboarding,
+  `/admin/invites`, `/admin/participants`, stable
   `/admin/participants/:participantId` detail/edit, and nested
   `/admin/courses`, `/admin/courses/new`, and `/admin/courses/:courseId` views.
   They use one responsive browser-owned MUI shell with desktop list navigation,
@@ -158,6 +161,11 @@
   copy. The Admin Invite route lists non-secret creation time and explicit
   Active/Claimed/Revoked state, exposes Revoke only for Active rows, and keeps
   each complete fragment URL only in the transient successful creation Dialog.
+  The public Admin Invite route cleans raw fragment authority, continues with
+  a separately purpose-signed `HttpOnly` digest cookie through fixed Google
+  return, resolves current Admin state, requires an explicit name, and presents
+  common unavailable, existing-principal, stale, and ordinary-Admin success
+  states without mounting administration data.
 - TanStack Query owns remote Admin, Admin Invite, Course, Participant profile,
   Assignment, and Module Selection state;
   React Hook Form owns the Admin-name, Course, Group create/edit, Module, and Participant-
@@ -181,8 +189,9 @@
 - Better Auth 1.7.2 uses D1-backed normal sessions and crosses into booking
   behavior only as `externalPrincipalId`. Google sign-in uses the one normal
   `/api/auth/callback/google` provider callback and returns to the fixed
-  `/admin` or `/` application context. Five fixed non-production fixture
-  identities use a separate executable composition.
+  `/admin`, `/admin/invite`, `/invite`, or `/` application context. Twelve
+  fixed non-production fixture identities use a separate executable
+  composition.
 - Eight version-controlled D1 migrations implement the authentication/Admin
   foundation plus additive Course, Group/Module, Participant, Course
   Assignment, same-Course Module Selection, Course Invite, and Admin Invite

@@ -96,7 +96,8 @@ removal, plus one-current Course Invite lifecycle and recognition lookup over
 guarded `insert ... select` over `course_assignments`, `participants`,
 `courses`, and `course_invites`; it creates no pending continuation row. The
 `admin-access` persistence additionally owns guarded Admin Invite creation,
-non-secret ordered listing, and terminal revocation over `admin_invites`.
+non-secret ordered listing and digest recognition, terminal revocation, and
+atomic ordinary-Admin claim over `admin_invites` and `admin_users`.
 
 ## Environment Isolation
 
@@ -341,7 +342,13 @@ Claimed or Active to Revoked, so both terminal states reject repetition,
 reactivation, and cross-terminal changes. Creator deletion sets attribution to
 null without deleting the Invite. Guarded create and revoke statements recheck
 the acting Admin as Active; a concurrent claim/Revoke race lets one terminal
-write win and classifies the other without partial effects.
+write win and classifies the other without partial effects. Final claim first
+updates one exact Active Invite only when the external principal has no current
+Admin row, then inserts the ordinary Active candidate only when SQLite
+`changes()` reports that exact update won. Both statements run in one D1
+`batch()`: zero-change losers insert nothing, while any insert integrity failure
+rolls the terminal update back. This also serializes same-Invite,
+same-principal, and Revoke competition without another table or migration.
 
 The full migration sequence is applied to clean isolated state in Worker tests
 and before browser E2E. The schema is designed for eventual D1 deployment. A

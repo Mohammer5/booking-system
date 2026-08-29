@@ -3,6 +3,7 @@ import { createFixtureSessionEstablishment } from "./authentication/fixture-sess
 import {
   createAdminPersistence,
   createAdminInvitePersistence,
+  createAdminInviteContinuation,
   createAdminInviteToken,
   createCourseAssignmentPersistence,
   createCourseInvitePersistence,
@@ -61,6 +62,9 @@ export default {
       hashCourseInviteToken,
       hashAdminInviteToken,
       adminInvitePersistence: createAdminInvitePersistence(environment.DB),
+      adminInviteContinuation: createAdminInviteContinuation(
+        environment.BETTER_AUTH_SECRET,
+      ),
       inviteContinuation: createCourseInviteContinuation(
         environment.BETTER_AUTH_SECRET,
       ),

@@ -1,10 +1,12 @@
 export {
   createAdminInvite,
   createBootstrapFirstAdmin,
+  createClaimAdminInvite,
   createGetAdminAuthenticationEntry,
   createListAdminInvites,
   createRevokeAdminInvite,
   createResolveAdminContext,
+  recognizeAdminInvite,
 } from "./admin-access/index.js";
 export {
   createArchiveCourse,

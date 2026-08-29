@@ -1,12 +1,12 @@
 ---
 id: TASK-rrp92
 title: Complete invited Admin onboarding
-status: backlog
+status: done
 priority: medium
 type: feature
 effort: large
 epic: EPIC-hc9uu
-plan: null
+plan: PLAN-5inhn
 depends_on:
 - TASK-wny83
 - TASK-t65sy
@@ -15,7 +15,7 @@ blocks:
 related:
 - TASK-7uxjj
 - TASK-5gny6
-assignee: null
+assignee: gerkules
 tags:
 - admin-invite
 - onboarding
@@ -23,7 +23,7 @@ tags:
 - atomicity
 position: g20
 created: 2026-08-27
-updated: 2026-08-27
+updated: 2026-08-29
 ---
 
 # Complete invited Admin onboarding
@@ -38,27 +38,27 @@ nothing and consumes nothing.
 
 ## Acceptance Criteria
 
-- [ ] A valid Active Invite reveals only that Admin registration is available;
+- [x] A valid Active Invite reveals only that Admin registration is available;
       unknown, Claimed, Revoked, or otherwise unusable Invites show a common
       unavailable result with no Admin/creator/Course information.
-- [ ] Authentication continuation preserves application state without placing
+- [x] Authentication continuation preserves application state without placing
       the raw Invite secret in Google OAuth URLs, callback parameters,
       referrers, logs, analytics, or unrelated responses.
-- [ ] After authentication, onboarding requires an explicit non-blank Admin
+- [x] After authentication, onboarding requires an explicit non-blank Admin
       User name. Provider profile data may prefill but is not authoritative.
-- [ ] Final acceptance atomically revalidates Invite and principal, creates one
+- [x] Final acceptance atomically revalidates Invite and principal, creates one
       new ordinary Active Admin User with a new stable domain identity, and
       transitions the Invite from Active to terminal Claimed.
-- [ ] A principal already backing a current Active or Disabled Admin User is
+- [x] A principal already backing a current Active or Disabled Admin User is
       refused without creating/re-enabling an Admin User or consuming/changing
       the Invite.
-- [ ] A legitimately deleted Admin principal may use a new Active Invite to
+- [x] A legitimately deleted Admin principal may use a new Active Invite to
       create a new ordinary identity/name; deleted identity, state, and Super
       Admin authority are not restored.
-- [ ] Competing claims allow only the first accepted completion; every loser
+- [x] Competing claims allow only the first accepted completion; every loser
       receives refusal and leaves no partial Admin User. Starting earlier gives
       no precedence.
-- [ ] Invited onboarding never grants Super Admin directly, creates a pending
+- [x] Invited onboarding never grants Super Admin directly, creates a pending
       Admin, expires/reactivates an Invite, or creates a Participant.
 
 ## UI/UX Expectations

@@ -48,7 +48,8 @@ The implemented browser exposes Participant Google entry, onboarding, and
 assigned-Course home at `/`, public Course Invite recognition at `/invite`,
 self-profile maintenance at `/profile`, private
 Participant Course detail at `/courses/:courseId`, the administration entry at
-`/admin`, Admin Invite administration at `/admin/invites`, the Participant
+`/admin`, public invited-Admin onboarding at `/admin/invite`, Admin Invite
+administration at `/admin/invites`, the Participant
 directory at `/admin/participants`, stable
 Participant detail/edit/lifecycle at `/admin/participants/:participantId`, and
 nested Course index/create/detail routes through one responsive MUI shell.
@@ -417,8 +418,35 @@ change no row or secret. Every response is `no-store`.
 The directly navigable `/admin/invites` view owns German-first empty, loading,
 error, list, one-time creation-result, and destructive revocation states. The
 raw creation URL remains transient mutation state rather than query-cache data,
-so closing the result or refreshing cannot recover it. Admin Invite
-claim/onboarding at `/admin/invite` remains deferred.
+so closing the result or refreshing cannot recover it.
+
+The public onboarding half uses three additional operations:
+
+```text
+POST /api/admin-invite/recognition
+GET  /api/admin-invite/continuation
+POST /api/admin-invite/claim
+```
+
+Recognition accepts the raw 64-hex fragment token only in the initial request
+body, hashes it, and returns only `{ outcome: "available" }` for an Active
+Invite while installing a separately purpose-signed `HttpOnly` digest cookie.
+Continuation rechecks that cookie and current Invite state without returning
+the digest. Missing, malformed, Claimed, Revoked, and unknown authority share
+one `404 invite-unavailable` result.
+
+Claim requires the normal session and explicit `{ name }`, re-resolves the
+current Admin principal and Invite, and atomically gates one ordinary Active
+Admin insert on the winning Active-to-Claimed update. Success returns `201`
+with only `id`, `name`, Active state, and ordinary authority, then clears the
+continuation. Existing Active/Disabled principals, invalid names, concurrent
+losers, Revoke races, and technical failures create no partial Admin and do not
+consume an otherwise Active Invite. Every operation is `no-store`.
+
+The German `/admin/invite` view cleans the fragment immediately, survives
+refresh and fixed Google return without consuming, requires an explicit name,
+and exposes common unavailable, existing-principal, stale/concurrent, and
+success states. It creates no Participant and reveals no administration data.
 
 ### No Separate API Application
 

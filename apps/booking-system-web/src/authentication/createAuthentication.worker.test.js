@@ -83,6 +83,18 @@ describe("Google authorization boundary", () => {
       "http://localhost/api/auth/callback/google",
     );
     expect(inviteAuthorizationURL.toString()).not.toContain("invite-secret");
+
+    const adminInviteResponse = await initiateGoogleSignIn("/admin/invite");
+    const adminInviteAuthorizationURL = new URL(
+      (await adminInviteResponse.json()).url,
+    );
+
+    expect(adminInviteResponse.status).toBe(200);
+    expect(adminInviteAuthorizationURL.searchParams.get("redirect_uri")).toBe(
+      "http://localhost/api/auth/callback/google",
+    );
+    expect(adminInviteAuthorizationURL.toString())
+      .not.toContain("admin-invite-secret");
   });
 
   it("removes provider callback payloads before returning to Admin UI", async () => {
@@ -130,6 +142,23 @@ describe("Google authorization boundary", () => {
       "http://localhost/invite?authentication=failed",
     );
     expect(response.headers.get("location")).not.toContain("invite-secret");
+    expect(response.headers.get("cache-control")).toBe("no-store");
+  });
+
+  it("returns Admin Invite failures to its fixed sanitized destination", async () => {
+    const response = await productionWorker.fetch(
+      new Request(
+        "http://localhost/api/auth/admin-invite-error?error=provider-error&error_description=admin-invite-secret",
+      ),
+      env,
+    );
+
+    expect(response.status).toBe(303);
+    expect(response.headers.get("location")).toBe(
+      "http://localhost/admin/invite?authentication=failed",
+    );
+    expect(response.headers.get("location"))
+      .not.toContain("admin-invite-secret");
     expect(response.headers.get("cache-control")).toBe("no-store");
   });
 });

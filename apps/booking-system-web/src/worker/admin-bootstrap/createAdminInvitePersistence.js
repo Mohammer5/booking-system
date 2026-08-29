@@ -6,11 +6,63 @@
  */
 export function createAdminInvitePersistence(database) {
   return {
+    claimActiveAdminInvite: (input) => claimActiveInvite(database, input),
     createActiveAdminInvite: (invite) => createActiveInvite(database, invite),
     findAdminInviteById: (inviteId) => findInviteById(database, inviteId),
+    findRecognizedAdminInviteByDigest: (tokenDigest) =>
+      findRecognizedInviteByDigest(database, tokenDigest),
     listAdminInvites: (adminUserId) => listInvites(database, adminUserId),
     revokeActiveAdminInvite: (input) => revokeActiveInvite(database, input),
   };
+}
+
+/** @returns {Promise<string>} Atomic Invite claim and ordinary Admin creation. */
+async function claimActiveInvite(database, input) {
+  try {
+    const [inviteResult, adminResult] = await database.batch([
+      claimInviteStatement(database, input),
+      insertInvitedAdminStatement(database, input.adminUser),
+    ]);
+
+    if (inviteResult.meta.changes === 1 && adminResult.meta.changes === 1) {
+      return "claimed";
+    }
+
+    return classifyClaimRefusal(database, input);
+  } catch (error) {
+    const refusal = await classifyClaimRefusal(database, input);
+
+    if (refusal !== "admin-invite-not-claimed") return refusal;
+    throw error;
+  }
+}
+
+/** @returns {object} Guarded terminal transition that must win first. */
+function claimInviteStatement(database, input) {
+  return database.prepare(
+    `update admin_invites
+        set state = 'claimed'
+      where id = ? and state = 'active'
+        and not exists (
+          select 1 from admin_users
+           where external_principal_id = ?
+        )`,
+  ).bind(input.inviteId, input.adminUser.externalPrincipalId);
+}
+
+/** @returns {object} Candidate insert coupled to the preceding update count. */
+function insertInvitedAdminStatement(database, adminUser) {
+  return database.prepare(
+    `insert into admin_users
+       (id, external_principal_id, name, state, authority)
+     select ?, ?, ?, ?, ? where changes() = 1`,
+  ).bind(
+    adminUser.id,
+    adminUser.externalPrincipalId,
+    adminUser.name,
+    adminUser.state,
+    adminUser.authority,
+  );
 }
 
 /** @returns {Promise<string>} Guarded Active Invite creation outcome. */
@@ -87,6 +139,31 @@ async function findInviteById(database, inviteId) {
   ).bind(inviteId).first();
 
   return row === null ? null : mapInvite(row);
+}
+
+/** @returns {Promise<object | null>} One non-secret Invite resolved by digest. */
+async function findRecognizedInviteByDigest(database, tokenDigest) {
+  const row = await database.prepare(
+    `select id, created_at, state
+       from admin_invites where token_digest = ?`,
+  ).bind(tokenDigest).first();
+
+  return row === null ? null : mapInvite(row);
+}
+
+/** @returns {Promise<string>} Exact principal, Invite, or technical refusal. */
+async function classifyClaimRefusal(database, input) {
+  const [adminUser, invite] = await Promise.all([
+    database.prepare(
+      "select id from admin_users where external_principal_id = ?",
+    ).bind(input.adminUser.externalPrincipalId).first(),
+    findInviteById(database, input.inviteId),
+  ]);
+
+  if (adminUser !== null) return "admin-user-already-exists";
+  return invite?.state !== "active"
+    ? "invite-unavailable"
+    : "admin-invite-not-claimed";
 }
 
 /** @returns {object} Plain non-secret Admin Invite data. */

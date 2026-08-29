@@ -48,4 +48,37 @@ export const adminInviteTranslations = {
         "Die Admin-Einladungen konnten nicht geladen oder gespeichert werden. Bitte versuchen Sie es erneut.",
     },
   },
+  adminInviteOnboarding: {
+    title: "Admin-Einladung",
+    description:
+      "Mit einer verfügbaren Einladung können Sie ein Administrationskonto einrichten.",
+    loading: "Admin-Einladung wird geprüft …",
+    contextLoading: "Anmeldestatus wird geprüft …",
+    unavailable:
+      "Diese Admin-Einladung ist nicht verfügbar.",
+    technicalError:
+      "Die Admin-Einladung konnte nicht geprüft oder verwendet werden. Bitte versuchen Sie es erneut.",
+    existing:
+      "Für dieses Anmeldekonto besteht bereits ein Administrationskonto. Die Einladung wurde nicht verwendet.",
+    stale:
+      "Die Admin-Einladung ist inzwischen nicht mehr verfügbar. Es wurde kein Administrationskonto erstellt.",
+    success:
+      "Ihr Administrationskonto wurde erstellt und die Einladung wurde eingelöst.",
+    toAdministration: "Zur Administration",
+    authentication: {
+      description:
+        "Melden Sie sich mit Google an. Dadurch wird die Einladung noch nicht eingelöst.",
+      required: "Bitte melden Sie sich erneut an.",
+      failed: "Die Anmeldung ist fehlgeschlagen. Die Einladung wurde nicht verwendet.",
+    },
+    name: {
+      title: "Administrationskonto einrichten",
+      description:
+        "Geben Sie den Namen ein, der im Buchungssystem für dieses Administrationskonto verwendet werden soll.",
+      label: "Name",
+      required: "Geben Sie einen Namen ein.",
+      submit: "Administrationskonto erstellen",
+      submitting: "Administrationskonto wird erstellt …",
+    },
+  },
 };

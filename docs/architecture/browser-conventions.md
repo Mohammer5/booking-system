@@ -148,8 +148,9 @@ remains Worker/API-owned. [Runtime and hosting](runtime-and-hosting.md) owns the
 deployment and fallback behavior. The current independently navigable routes
 are the Participant entry at `/`, Participant profile at `/profile`,
 public Course Invite continuation and Join at `/invite`,
-administration entry at `/admin`, Admin Invite administration at
-`/admin/invites`, global Participant directory at
+administration entry at `/admin`, public Admin Invite onboarding at
+`/admin/invite`, Admin Invite administration at `/admin/invites`, global
+Participant directory at
 `/admin/participants`, stable Participant detail/edit at
 `/admin/participants/:participantId`, Course index at
 `/admin/courses`, creation at `/admin/courses/new`, and stable detail at
@@ -162,6 +163,12 @@ creation and revocation Dialogs remain incidental state on `/admin/invites`;
 the complete URL exists only in the successful creation Dialog's transient
 mutation result and is discarded on close or refresh rather than entering the
 query cache.
+The public Admin Invite route keeps its raw fragment only in slice-owned
+session storage until initial recognition, removes it from the address bar,
+and then uses only the signed server continuation. Authentication, refresh,
+local name validation, and abandonment consume nothing; current Active or
+Disabled Admin principals receive a common refusal, while a principal with no
+current Admin receives the explicit-name form and one focused terminal result.
 
 ## Browser Authentication
 

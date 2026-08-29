@@ -1,6 +1,9 @@
 import { Navigate, Route, Routes } from "react-router";
 
-import { AdminInvitePage } from "./admin-access/index.js";
+import {
+  AdminInviteOnboardingPage,
+  AdminInvitePage,
+} from "./admin-access/index.js";
 import {
   AdminBootstrapPage,
   AdministrationContextRoute,
@@ -31,6 +34,14 @@ import {
 export function BrowserApplication() {
   return (
     <Routes>
+      <Route
+        path="/admin/invite"
+        element={
+          <ResponsiveApplicationShell context="admin">
+            <AdminInviteOnboardingPage />
+          </ResponsiveApplicationShell>
+        }
+      />
       <Route
         path="/invite"
         element={

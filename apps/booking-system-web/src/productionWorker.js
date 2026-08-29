@@ -2,6 +2,7 @@ import { createAuthentication } from "./authentication/index.js";
 import {
   createAdminPersistence,
   createAdminInvitePersistence,
+  createAdminInviteContinuation,
   createAdminInviteToken,
   createCourseAssignmentPersistence,
   createCourseInvitePersistence,
@@ -47,6 +48,9 @@ export default {
       hashCourseInviteToken,
       hashAdminInviteToken,
       adminInvitePersistence: createAdminInvitePersistence(environment.DB),
+      adminInviteContinuation: createAdminInviteContinuation(
+        environment.BETTER_AUTH_SECRET,
+      ),
       inviteContinuation: createCourseInviteContinuation(
         environment.BETTER_AUTH_SECRET,
       ),
