@@ -2,6 +2,8 @@ import { createAuthentication } from "./authentication/index.js";
 import { createFixtureSessionEstablishment } from "./authentication/fixture-session/index.js";
 import {
   createAdminPersistence,
+  createAdminInvitePersistence,
+  createAdminInviteToken,
   createCourseAssignmentPersistence,
   createCourseInvitePersistence,
   createCourseInviteContinuation,
@@ -15,6 +17,7 @@ import {
   createParticipantPersistence,
   createWorkerApplication,
   hashCourseInviteToken,
+  hashAdminInviteToken,
 } from "./worker/index.js";
 
 export default {
@@ -40,6 +43,11 @@ export default {
 
     const handleWorkerRequest = createWorkerApplication({
       authentication: normalAuthentication,
+      adminInviteNow: () => Math.floor(
+        new Date(environment.BOOKING_TEST_NOW).getTime() / 1000,
+      ),
+      createAdminInviteId: () => crypto.randomUUID(),
+      createAdminInviteToken,
       createAdminUserId: () => crypto.randomUUID(),
       createCourseAssignmentId: () => crypto.randomUUID(),
       createCourseInviteId: () => crypto.randomUUID(),
@@ -51,6 +59,8 @@ export default {
       createParticipantId: () => crypto.randomUUID(),
       now: () => environment.BOOKING_TEST_NOW,
       hashCourseInviteToken,
+      hashAdminInviteToken,
+      adminInvitePersistence: createAdminInvitePersistence(environment.DB),
       inviteContinuation: createCourseInviteContinuation(
         environment.BETTER_AUTH_SECRET,
       ),

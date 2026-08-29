@@ -20,7 +20,8 @@ JavaScript conventions, and ESLint-enforced dependency rules.
   Participant-registration/profile/
   lifecycle, Assignment-
   lifecycle, and assigned Participant Course-access plus Module-Selection and
-  shared-Course-Invite management/Join slices and terminal Course archival/
+  shared-Course-Invite management/Join and Admin-Invite-administration slices
+  and terminal Course archival/
   read-only history,
   React browser routes and
   responsive Admin/Participant experience, Google
@@ -39,7 +40,8 @@ JavaScript conventions, and ESLint-enforced dependency rules.
 - Summary: Rationale for the booking application/package boundaries, one
   manifest per workspace, React, MUI, and browser-library responsibilities,
   functional composition, one same-origin Cloudflare Worker, D1 with SQLite
-  semantics, signed Course Invite continuation, Node/runtime and NixOS host-
+  semantics, signed Course Invite continuation, digest-only terminal Admin
+  Invite authority, Node/runtime and NixOS host-
   tooling separation, explicit ESLint enforcement, and deferred remote
   infrastructure.
 - Read when: You need to understand why the project chose one web application,
@@ -65,7 +67,8 @@ JavaScript conventions, and ESLint-enforced dependency rules.
   `apps/booking-system-web` workspace with responsive Participant/Admin
   contexts, Participant onboarding/profile/lifecycle/assigned-Course access/
   directory, Course Assignment creation/revocation/reactivation, Participant
-  Module Selection, shared Course Invite management/recognition/Join, guarded
+  Module Selection, shared Course Invite management/recognition/Join, Admin
+  Invite administration, guarded
   Course editing, Course/Group/Module creation,
   Module editing/rescheduling/cancellation/deletion, and Group editing/
   archival/reactivation/deletion plus Course archival
@@ -78,7 +81,8 @@ JavaScript conventions, and ESLint-enforced dependency rules.
 - Path: `docs/architecture/runtime-and-hosting.md`
 - Summary: Defines the implemented local `booking-system-web` Cloudflare Worker
   and Vite composition, static assets, direct Participant, Admin, Participant
-  profile/directory/detail, assigned Participant Course, and Admin Course SPA
+  profile/directory/detail, assigned Participant Course, Admin Invite, and
+  Admin Course SPA
   routing including Archived read-only detail,
   compatibility, separate browser/Worker graphs, NixOS host-tooling boundary,
   public Invite plus private Participant/Admin SPA routing, and minimal
@@ -93,7 +97,8 @@ JavaScript conventions, and ESLint-enforced dependency rules.
 - Path: `docs/architecture/persistence.md`
 - Summary: Defines SQLite-compatible semantics, implemented local/test D1,
   first-Admin, Course, Group/Module, Participant, Course Assignment, Module
-  Selection, and Course Invite migrations, assigned Participant Course reads,
+  Selection, Course Invite, and digest-only terminal Admin Invite migrations,
+  assigned Participant Course reads,
   guarded Participant
   profile/lifecycle updates, retained Assignment lifecycle with atomic
   Selection retention, guarded Course and Group editing/lifecycle/deletion with
@@ -124,7 +129,8 @@ JavaScript conventions, and ESLint-enforced dependency rules.
 ### Packages
 - Path: `docs/architecture/packages.md`
 - Summary: Defines conceptual package boundaries, the implemented
-  `packages/booking` with `admin-access`, Course editing and Course/Group/Module
+  `packages/booking` with first-bootstrap/Admin-Invite `admin-access`, Course
+  editing and Course/Group/Module
   `course-structure` including Group lifecycle/deletion and Course archival,
   and Participant-registration/profile/lifecycle/Assignment-lifecycle/assigned-
   Active/Archived-Course and shared-Invite management/Join `course-access`
@@ -140,7 +146,8 @@ JavaScript conventions, and ESLint-enforced dependency rules.
   editing, Group lifecycle/deletion and structure,
   Participant-registration/profile/lifecycle, Assignment-lifecycle, and
   assigned Active/Archived Participant Course plus shared-Course-Invite Join,
-  Module-Selection, and Course-archival slices, source roots,
+  Admin-Invite administration, Module-Selection, and Course-archival slices,
+  source roots,
   manifest ownership,
   browser/Worker/authentication separation, interfaces, entrypoints, adapters,
   and dependency direction.

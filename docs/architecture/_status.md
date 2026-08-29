@@ -76,7 +76,8 @@
   profile detail plus Disable/Re-enable HTTP, Course Assignment list/create/
   reactivate/revoke HTTP, and private assigned Participant Course list/detail
   HTTP for Active or Archived Courses, shared Course Invite management and
-  public recognition/signed-continuation/explicit-Join HTTP, plus terminal
+  public recognition/signed-continuation/explicit-Join HTTP, authenticated
+  Admin Invite create/list/revoke HTTP, plus terminal
   body-free Course archival HTTP.
   Application destinations remain fixed and browser input cannot select
   principal, authority, Assignment identity/state, lifecycle state,
@@ -99,8 +100,8 @@
 
 - `@booking-system/booking` and `@booking-system/booking-system-web` are real
   modern-ESM workspaces with one manifest each.
-- The booking package exposes the three `admin-access` operation factories
-  required by first Admin bootstrap/fresh context resolution plus
+- The booking package exposes the first-bootstrap/fresh-context and Admin
+  Invite create/list/revoke `admin-access` operation factories plus
   `course-structure` factories for Course creation/editing, Course-wide Group
   creation/editing/archival/reactivation/permanent deletion, and future Module
   creation, lifetime descriptive editing, pre-start rescheduling, and terminal
@@ -123,7 +124,7 @@
 - React Router serves the independently navigable `/` Participant entry,
   public `/invite` continuation and Join,
   Participant `/profile` and `/courses/:courseId` detail,
-  `/admin` administration entry, `/admin/participants`, stable
+  `/admin` administration entry, `/admin/invites`, `/admin/participants`, stable
   `/admin/participants/:participantId` detail/edit, and nested
   `/admin/courses`, `/admin/courses/new`, and `/admin/courses/:courseId` views.
   They use one responsive browser-owned MUI shell with desktop list navigation,
@@ -154,9 +155,11 @@
   no private Course context before a separate explicit Join confirmation.
   Membership cards expose only current
   permitted revoke/reactivate actions with confirmation and accurate retention
-  copy.
-- TanStack Query owns remote Admin, Course, Participant profile, Assignment,
-  and Module Selection state;
+  copy. The Admin Invite route lists non-secret creation time and explicit
+  Active/Claimed/Revoked state, exposes Revoke only for Active rows, and keeps
+  each complete fragment URL only in the transient successful creation Dialog.
+- TanStack Query owns remote Admin, Admin Invite, Course, Participant profile,
+  Assignment, and Module Selection state;
   React Hook Form owns the Admin-name, Course, Group create/edit, Module, and Participant-
   onboarding/profile forms; and German-first slice-owned i18next resources own
   all browser copy.
@@ -180,9 +183,10 @@
   `/api/auth/callback/google` provider callback and returns to the fixed
   `/admin` or `/` application context. Five fixed non-production fixture
   identities use a separate executable composition.
-- Six version-controlled D1 migrations implement the authentication/Admin
-  foundation plus additive Course, Group/Module, Participant, and Course
-  Assignment schemas and constrained same-Course Module Selections. Manual
+- Eight version-controlled D1 migrations implement the authentication/Admin
+  foundation plus additive Course, Group/Module, Participant, Course
+  Assignment, same-Course Module Selection, Course Invite, and Admin Invite
+  schemas. Manual
   development and fixture/Playwright runs use
   separate generated Wrangler persistence roots, so test preparation cannot
   invalidate a running development database. Atomic

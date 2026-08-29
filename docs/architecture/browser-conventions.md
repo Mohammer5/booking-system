@@ -148,7 +148,8 @@ remains Worker/API-owned. [Runtime and hosting](runtime-and-hosting.md) owns the
 deployment and fallback behavior. The current independently navigable routes
 are the Participant entry at `/`, Participant profile at `/profile`,
 public Course Invite continuation and Join at `/invite`,
-administration entry at `/admin`, global Participant directory at
+administration entry at `/admin`, Admin Invite administration at
+`/admin/invites`, global Participant directory at
 `/admin/participants`, stable Participant detail/edit at
 `/admin/participants/:participantId`, Course index at
 `/admin/courses`, creation at `/admin/courses/new`, and stable detail at
@@ -156,7 +157,11 @@ administration entry at `/admin`, global Participant directory at
 navigable at `/courses/:courseId` beneath the Participant gate. Course
 membership and its owned actions remain on stable Admin Course detail because
 they are not independently navigable views; assigned Participant Module and
-Group structure remains on stable Participant Course detail.
+Group structure remains on stable Participant Course detail. Admin Invite
+creation and revocation Dialogs remain incidental state on `/admin/invites`;
+the complete URL exists only in the successful creation Dialog's transient
+mutation result and is discarded on close or refresh rather than entering the
+query cache.
 
 ## Browser Authentication
 

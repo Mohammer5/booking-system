@@ -1,5 +1,6 @@
 import { Navigate, Route, Routes } from "react-router";
 
+import { AdminInvitePage } from "./admin-access/index.js";
 import {
   AdminBootstrapPage,
   AdministrationContextRoute,
@@ -62,6 +63,7 @@ export function BrowserApplication() {
         }
       >
         <Route index element={<AdministrationContextRoute />} />
+        <Route path="invites" element={<AdminInvitePage />} />
         <Route path="participants" element={<ParticipantDirectoryPage />} />
         <Route
           path="participants/:participantId"

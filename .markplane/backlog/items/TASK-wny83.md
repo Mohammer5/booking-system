@@ -1,12 +1,12 @@
 ---
 id: TASK-wny83
 title: Create, list, and revoke Admin Invites
-status: backlog
+status: done
 priority: medium
 type: feature
 effort: medium
 epic: EPIC-hc9uu
-plan: null
+plan: PLAN-mdzku
 depends_on:
 - TASK-dfq2k
 - TASK-t65sy
@@ -14,14 +14,14 @@ blocks:
 - TASK-rrp92
 related:
 - TASK-k2ckf
-assignee: null
+assignee: gerkules
 tags:
 - admin-invite
 - security
 - ui
 position: g10
 created: 2026-08-27
-updated: 2026-08-27
+updated: 2026-08-29
 ---
 
 # Create, list, and revoke Admin Invites
@@ -35,20 +35,20 @@ Active Invite. Admin Invites remain distinct from reusable Course Invites.
 
 ## Acceptance Criteria
 
-- [ ] Any freshly resolved Active Admin User can create a new Active Admin
+- [x] Any freshly resolved Active Admin User can create a new Active Admin
       Invite; several independently Active Invites may coexist.
-- [ ] The complete URL/secret is shown and copyable exactly in the successful
+- [x] The complete URL/secret is shown and copyable exactly in the successful
       creation result and is not recoverable through later reads, refresh,
       logs, analytics, or persistence-facing representations.
-- [ ] The Admin Invite list exposes creation time and Active, Claimed, or
+- [x] The Admin Invite list exposes creation time and Active, Claimed, or
       Revoked state for every Invite, plus Revoke only for currently Active
       Invites; it never returns the complete URL.
-- [ ] Any Active Admin User may transition an Active Invite to terminal
+- [x] Any Active Admin User may transition an Active Invite to terminal
       Revoked regardless of creator. Claimed and Revoked Invites cannot be
       revoked again, re-enabled, reactivated, deleted, or reused.
-- [ ] Admin Invites do not expire automatically. Losing an Active URL is
+- [x] Admin Invites do not expire automatically. Losing an Active URL is
       handled by Revoking it and creating another, not secret recovery.
-- [ ] Current actor and Invite state is revalidated so concurrent Revoke/claim
+- [x] Current actor and Invite state is revalidated so concurrent Revoke/claim
       attempts produce one terminal outcome and no partial or secret-leaking
       result.
 

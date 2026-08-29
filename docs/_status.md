@@ -57,11 +57,12 @@ lifecycle/permanent deletion, Module creation/editing/cancellation/deletion,
 terminal Course archival with private read-only history,
 Participant registration/profile/lifecycle
 maintenance, Course Assignment creation/lifecycle, assigned Participant
-Course access, shared Course Invite management/recognition/Join, and Participant
-Module Selection slices are now implemented:
+Course access, shared Course Invite management/recognition/Join, Admin Invite
+administration, and Participant Module Selection slices are now implemented:
 
 - `@booking-system/booking` at `packages/booking` owns the implemented
-  `admin-access` behavior plus `course-structure` Course, Course-wide Group,
+  `admin-access` first-bootstrap and Admin Invite create/list/revoke behavior
+  plus `course-structure` Course, Course-wide Group,
   future Module creation, lifetime descriptive editing, pre-start
   rescheduling, terminal cancellation with retained Selection history,
   permanent deletion with exact retained-reference and timezone-history policy,
@@ -88,14 +89,16 @@ Module Selection slices are now implemented:
   detail, explicit Module
   Selection controls, `/profile` self-service and
   `/admin/participants/:participantId` administration, Active-Course Invite
-  controls, the public `/invite` continuation/Join route, and query-driven
+  controls, the public `/invite` continuation/Join route, directly navigable
+  `/admin/invites` administration with one-time creation results, and query-driven
   assigned-Course home, Worker/API
   handling, Better Auth composition, D1
   persistence, Vite/Workers Static Assets integration, and local runtime;
-- seven version-controlled migrations create the Better Auth/Admin foundation,
+- eight version-controlled migrations create the Better Auth/Admin foundation,
   Courses, additive Group/Module schema with permanent first-Module scheduling
   history, constrained Participants, constrained Course Assignments, and
-  same-Course Module Selections, and constrained Course Invites, with clean-
+  same-Course Module Selections, constrained Course Invites, and digest-only
+  terminal Admin Invites, with clean-
   state construction and
   data-preserving upgrade evidence;
 - production and explicit non-production Worker compositions structurally
@@ -182,6 +185,13 @@ Module Selection slices are now implemented:
   onboarding return creates no membership; separate body-free Join atomically
   creates one Assignment, repeats Active membership, and refuses Disabled,
   Revoked, unavailable, or Archived state without change;
+- guarded Admin Invite creation/list/revocation rechecks the current Active
+  Admin at acceptance. D1 stores only a unique SHA-256 digest, stable identity,
+  creation time, optional creator reference, and Active/Claimed/Revoked state;
+  the complete fragment URL exists only in the `no-store` creation response.
+  Any Active Admin may Revoke an Active row, while constraints and triggers
+  make Claimed and Revoked terminal and concurrent claim/Revoke choose one
+  complete winner;
 - the stable Course detail lists and creates Course-wide Groups with unique
   normalized Active names and future Scheduled Modules, resolves local minute
   input through the Course IANA timezone, rejects DST gaps, requires an
@@ -226,7 +236,10 @@ Module Selection slices are now implemented:
   continuation/refresh, fixed authentication/onboarding return, explicit Join,
   two-Participant reuse, repeat no-op, Revoked/Disabled/stale refusal,
   destructive Dialog focus, technical sanitization, responsive layout, and
-  axe results;
+  axe results. Admin Invite evidence covers empty/create/copy, one-time URL
+  loss across dialog close and refresh, non-secret list state, revoke/repeat,
+  replacement after loss, terminal results, desktop/narrow layout, focus, and
+  axe;
 - both workspace boundary maps are registered in ESLint with exact module,
   workspace, composition, third-party, and test-only permissions;
 - the root Nix flake supplies NixOS developer-host tooling: Node, pnpm,
@@ -236,10 +249,9 @@ Module Selection slices are now implemented:
 - the canonical `pnpm check` now runs repository, domain, Worker/D1, migration,
   build, and Chromium browser evidence.
 
-Apple, Microsoft, and Facebook providers, Admin-assisted Module
-Selection,
-Admin Invites,
-later Admin capabilities, remote Google credentials and production
+Apple, Microsoft, and Facebook providers, Admin-assisted Module Selection,
+Admin Invite claim/onboarding, later Admin capabilities, remote Google
+credentials and production
 callback/domain configuration, remote Cloudflare staging/production resources,
 release
 automation, deployment credentials, and production deployment remain absent.

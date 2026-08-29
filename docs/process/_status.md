@@ -53,6 +53,10 @@ Current reality:
   recoverable authority, digest-only predecessors, narrow recognition, real
   Admin create/retrieve/copy/disable/re-enable/replace, unknown and Archived
   states, fragment cleanup, refresh, focus, responsive layout, and axe. The
+  Admin Invite layer additionally proves independently Active creation,
+  digest-only persistence, one-time URL delivery and refresh loss, non-secret
+  ordered listing, fresh-actor Revoke, terminal and concurrent claim/Revoke
+  outcomes, replacement after loss, responsive/focus behavior, and axe. The
   tag-gated release policy remains unimplemented.
 - x86_64 NixOS developers can enter a pinned host-tooling environment with
   `nix develop`; `pnpm check` remains the verification contract and GitHub

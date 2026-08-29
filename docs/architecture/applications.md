@@ -48,7 +48,8 @@ The implemented browser exposes Participant Google entry, onboarding, and
 assigned-Course home at `/`, public Course Invite recognition at `/invite`,
 self-profile maintenance at `/profile`, private
 Participant Course detail at `/courses/:courseId`, the administration entry at
-`/admin`, the Participant directory at `/admin/participants`, stable
+`/admin`, Admin Invite administration at `/admin/invites`, the Participant
+directory at `/admin/participants`, stable
 Participant detail/edit/lifecycle at `/admin/participants/:participantId`, and
 nested Course index/create/detail routes through one responsive MUI shell.
 Stable Admin Course detail contains complete Course editing with its permanent
@@ -392,6 +393,32 @@ already-joined` with the same identity. Disabled Participants, unavailable
 Invites, Archived Courses, and Revoked Assignments are refused without a
 membership change. Every Invite response remains `no-store`, and unexpected
 failures collapse to a language-neutral technical outcome.
+
+### Admin Invite Administration HTTP Surface
+
+The implemented `admin-access` Invite slice adds three same-origin operations:
+
+```text
+GET  /api/admin/invites
+POST /api/admin/invites
+POST /api/admin/invites/:inviteId/revocation
+```
+
+Every operation requires a normal session resolving a current Active Admin.
+Creation returns `201` with stable Invite metadata and the complete
+`/admin/invite#<token>` URL exactly once; the URL and raw token are absent from
+D1, later list reads, logs, and every persistence-facing representation. The
+list returns only ordered `id`, `createdAt`, and explicit Active, Claimed, or
+Revoked state. Revocation returns the updated terminal representation for an
+Active Invite and may be performed by any Active Admin regardless of creator.
+Claimed, Revoked, missing, stale-actor, concurrent-loser, and technical outcomes
+change no row or secret. Every response is `no-store`.
+
+The directly navigable `/admin/invites` view owns German-first empty, loading,
+error, list, one-time creation-result, and destructive revocation states. The
+raw creation URL remains transient mutation state rather than query-cache data,
+so closing the result or refreshing cannot recover it. Admin Invite
+claim/onboarding at `/admin/invite` remains deferred.
 
 ### No Separate API Application
 

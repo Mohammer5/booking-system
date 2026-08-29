@@ -1,4 +1,7 @@
-import { createAdminHttpHandler } from "./admin-bootstrap/index.js";
+import {
+  createAdminHttpHandler,
+  createAdminInviteHttpHandler,
+} from "./admin-bootstrap/index.js";
 import {
   createCourseAccessHttpHandler,
   createCourseInviteHttpHandler,
@@ -35,6 +38,15 @@ function createWorkerHandlers(capabilities) {
     createAdminUserId: capabilities.createAdminUserId,
     persistence: capabilities.adminPersistence,
   });
+  const handleAdminInviteHttpRequest = createAdminInviteHttpHandler({
+    authenticate: authentication.authenticate,
+    adminInviteNow: capabilities.adminInviteNow,
+    createAdminInviteId: capabilities.createAdminInviteId,
+    createAdminInviteToken: capabilities.createAdminInviteToken,
+    hashAdminInviteToken: capabilities.hashAdminInviteToken,
+    adminPersistence: capabilities.adminPersistence,
+    invitePersistence: capabilities.adminInvitePersistence,
+  });
   const handleCourseHttpRequest = createCourseHttpHandler({
     authenticate: authentication.authenticate,
     createCourseId: capabilities.createCourseId,
@@ -66,6 +78,7 @@ function createWorkerHandlers(capabilities) {
 
   return {
     handleAdminHttpRequest,
+    handleAdminInviteHttpRequest,
     handleCourseAccessHttpRequest,
     ...inviteHandlers,
     handleCourseHttpRequest,
@@ -149,6 +162,13 @@ async function handleWorkerRequest(request, authentication, handlers) {
 
 /** @returns {Promise<Response>} Dispatch one booking-domain HTTP request. */
 function handleDomainRequest(request, requestURL, handlers) {
+  if (
+    requestURL.pathname === "/api/admin/invites" ||
+    requestURL.pathname.startsWith("/api/admin/invites/")
+  ) {
+    return handlers.handleAdminInviteHttpRequest(request);
+  }
+
   if (
     requestURL.pathname === "/api/course-invites/recognition" ||
     requestURL.pathname === "/api/course-invites/continuation" ||

@@ -300,6 +300,18 @@ two-Participant reuse, repeat no-op, Disabled/Revoked/Invite/Course stale
 refusals, privacy, desktop/360px, keyboard/Dialog/result focus, overflow, and
 axe evidence without contacting Google's UI.
 
+For Admin Invite administration, booking-domain Vitest owns independent
+coexistence, current-actor authorization, no-expiry lifecycle, Active-only
+revocation, and Claimed/Revoked terminal policy. Worker/D1 Vitest owns the
+additive digest-only migration, 256-bit token/SHA-256 adapters, secret-safe
+persistence and serialization, fresh authorization, one-time `no-store`
+creation response, ordered non-secret list, concurrent claim/Revoke outcome,
+creator deletion retention, and sanitized technical failures. Playwright owns
+the real German empty/create/copy/close/refresh-no-recovery/list/revoke/repeat
+journey, fresh replacement after URL loss, routed terminal/loading/error
+states, response and browser-artifact secret scanning, desktop/360px layout,
+keyboard/Dialog focus, and axe evidence.
+
 The implemented integration uses project-pinned `@cloudflare/vitest-plugin`
 with isolated D1 state and the version-controlled migration sequence.
 

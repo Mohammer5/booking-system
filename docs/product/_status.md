@@ -125,8 +125,12 @@ authentication and optional Participant onboarding without creating
 membership, then accepts one separate explicit Join. Missing membership is
 created once, Active membership repeats successfully, and Disabled
 Participants, Revoked Assignments, unavailable Invites, and Archived Courses
-are refused without change. Admin Invites, later Admin onboarding, and later
-Admin management
-behavior remain unimplemented. Technology, persistence, API,
+are refused without change. Any Active Admin User can now create multiple
+independently Active Admin Invites, see and copy each complete URL only in its
+successful creation result, list later non-secret creation time and terminal
+state, and Revoke an Active Invite regardless of creator. Claimed and Revoked
+Invites remain terminal, no Invite expires, and a lost URL is replaced by
+Revoking it and creating another. Admin Invite claim/onboarding and later Admin
+management behavior remain unimplemented. Technology, persistence, API,
 frontend, and infrastructure mechanics remain outside this product
 specification and do not alter its contracts.

@@ -94,7 +94,9 @@ Assignment reactivation and atomic revocation with exact future-Selection
 removal, plus one-current Course Invite lifecycle and recognition lookup over
 `course_invites`. Invite Join uses a narrow Assignment-pair lookup and a
 guarded `insert ... select` over `course_assignments`, `participants`,
-`courses`, and `course_invites`; it creates no pending continuation row.
+`courses`, and `course_invites`; it creates no pending continuation row. The
+`admin-access` persistence additionally owns guarded Admin Invite creation,
+non-secret ordered listing, and terminal revocation over `admin_invites`.
 
 ## Environment Isolation
 
@@ -136,7 +138,7 @@ change requires an explicit exceptional deployment decision.
 
 ## Current State And Persistence Lifecycle
 
-The application has local/test D1 bindings and seven version-controlled
+The application has local/test D1 bindings and eight version-controlled
 migrations. `0001_first_admin_foundation.sql` creates the Better Auth `user`,
 `session`, `account`, and `verification` technical tables and indexes plus
 `admin_users` and `admin_bootstrap_history`. `0002_courses.sql` adds the
@@ -147,8 +149,9 @@ Course-owned Groups and Modules. `0004_participants.sql` adds registered
 Participants. `0005_course_assignments.sql` adds retained ordinary Course
 membership. `0006_module_selections.sql` adds Participant Module Selections
 with same-Course ownership constraints. `0007_course_invites.sql` adds shared
-Course Invites with one-current and replacement constraints. No remote D1
-database exists.
+Course Invites with one-current and replacement constraints.
+`0008_admin_invites.sql` adds independent digest-only Admin Invites with
+terminal state transitions. No remote D1 database exists.
 
 ### Implemented First Schema
 
@@ -328,6 +331,17 @@ The Participant/Course uniqueness constraint makes concurrent or repeated
 acceptance one membership; post-insert classification treats an Active row as
 idempotent success and a retained Revoked row as refusal, with no conflict
 update or reactivation.
+
+The eighth additive migration preserves existing application data and adds
+`admin_invites` with stable identity, a unique lowercase SHA-256 token digest,
+optional creator attribution, epoch creation time, and constrained Active,
+Claimed, or Revoked state. It stores no raw token or recoverable URL. Triggers
+make identity, digest, and creation time immutable and permit only Active to
+Claimed or Active to Revoked, so both terminal states reject repetition,
+reactivation, and cross-terminal changes. Creator deletion sets attribution to
+null without deleting the Invite. Guarded create and revoke statements recheck
+the acting Admin as Active; a concurrent claim/Revoke race lets one terminal
+write win and classifies the other without partial effects.
 
 The full migration sequence is applied to clean isolated state in Worker tests
 and before browser E2E. The schema is designed for eventual D1 deployment. A

@@ -211,6 +211,23 @@ that revalidates the digest and current domain state. This design prevents the
 raw token from entering provider URLs and preserves the product rule that
 recognition, authentication, and onboarding do not create membership.
 
+## Store Admin Invite Authority As A Digest Only
+
+Admin Invite creation generates 256 bits of browser-delivered authority and
+persists only its unique SHA-256 digest alongside stable identity, creation
+time, optional creator attribution, and lifecycle state. The complete
+`/admin/invite#<token>` URL is returned once in a `no-store` creation response
+and is deliberately unrecoverable from later reads, D1, logs, or query state.
+This differs intentionally from the recoverable one-current Course Invite:
+multiple Admin Invites coexist independently, and loss is handled by terminal
+revocation plus fresh creation.
+
+SQLite constraints and triggers allow only Active to Claimed or Active to
+Revoked. Guarded writes freshly authorize the actor and current Invite, making
+concurrent claim/Revoke choose one terminal outcome without adding expiry,
+deletion, reactivation, a generic token store, or a second architecture
+mechanism.
+
 ## Keep Node Tooling Separate From The Worker Runtime
 
 Node.js remains the repository tooling, build, and CI runtime. Application

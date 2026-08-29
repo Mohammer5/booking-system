@@ -22,8 +22,8 @@ domain and behavior.
   Participant onboarding, Course Assignment creation/lifecycle, terminal
   Course archival with private read-only historical access, and assigned
   Active/Archived-Course access plus Participant profile/lifecycle maintenance
-  and Module Selection plus shared-Course-Invite management/Join subsets, and
-  the remaining product implementation gap.
+  and Module Selection plus shared-Course-Invite management/Join and Admin-
+  Invite administration subsets, and the remaining product implementation gap.
 - Read when: You need to distinguish accepted first-release behavior and
   non-goals from implementation state.
 - Tags: product, status, current-state, v1, implementation

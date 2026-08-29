@@ -78,6 +78,13 @@ function AdministrationNavigation({ translate }) {
       >
         {translate("courseAccess.navigation.participants")}
       </Button>
+      <Button
+        component={RouterLink}
+        to="/admin/invites"
+        variant="outlined"
+      >
+        {translate("adminInvites.navigation")}
+      </Button>
     </Stack>
   );
 }

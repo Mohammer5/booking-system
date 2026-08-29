@@ -36,7 +36,9 @@ modules:
 - `module-participation` for Module participation.
 
 All four responsibility modules now exist in source.
-The first implements the first Admin bootstrap subset; the second implements
+The first implements first Admin bootstrap plus Admin Invite creation,
+non-secret listing, and terminal revocation policy while claim/onboarding and
+later Admin User management remain deferred; the second implements
 Active Course creation and complete editing, permanent first-Module timezone
 locking, Course-wide Group creation/complete editing/archival/reactivation/
 permanent deletion,
