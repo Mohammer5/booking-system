@@ -78,8 +78,8 @@
   HTTP for Active or Archived Courses, shared Course Invite management and
   public recognition/signed-continuation/explicit-Join HTTP, authenticated
   Admin Invite create/list/revoke and public recognition/signed-continuation/
-  atomic-claim HTTP, current Admin User list/detail/name-edit HTTP, plus terminal
-  body-free Course archival HTTP.
+  atomic-claim HTTP, current Admin User list/detail/name-edit and body-free
+  promotion HTTP, plus terminal body-free Course archival HTTP.
   Application destinations remain fixed and browser input cannot select
   principal, authority, Assignment identity/state, lifecycle state,
   normalized email, definite instant, or permanent scheduling history.
@@ -103,7 +103,8 @@
   modern-ESM workspaces with one manifest each.
 - The booking package exposes the first-bootstrap/fresh-context and Admin
   Invite create/list/revoke/recognize/claim plus current Admin User list/
-  name-edit `admin-access` operations and edit-availability predicate, plus
+  name-edit/one-way-promotion `admin-access` operations and server-affordance
+  predicates, plus
   `course-structure` factories for Course creation/editing, Course-wide Group
   creation/editing/archival/reactivation/permanent deletion, and future Module
   creation, lifetime descriptive editing, pre-start rescheduling, and terminal
@@ -169,9 +170,11 @@
   states without mounting administration data.
 - The Admin User directory renders a semantic table on desktop and card list at
   narrow width, while stable detail exposes explicit authority/state and only
-  the server-derived permitted name form. Success and stale outcomes reconcile
-  directory, detail, and current-Admin caches without making provider data
-  authoritative.
+  the server-derived permitted name form and promotion action. The shared
+  German promotion Dialog explains the permanent one-way change and owns
+  keyboard, cancel-restoration, stale-error, and success focus. Success and
+  stale outcomes reconcile directory, detail, and current-Admin caches without
+  making provider data authoritative or exposing demotion.
 - TanStack Query owns remote Admin, Admin User, Admin Invite, Course, Participant profile,
   Assignment, and Module Selection state;
   React Hook Form owns the Admin-name, Course, Group create/edit, Module, and Participant-

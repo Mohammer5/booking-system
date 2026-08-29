@@ -133,6 +133,7 @@ describe("Public booking package interface", () => {
       "createListAdminInvites",
       "createListAdminUsers",
       "createListParticipantCourses",
+      "createPromoteAdminUser",
       "createReactivateGroup",
       "createReenableCourseInvite",
       "createReenableParticipant",
@@ -155,6 +156,7 @@ describe("Public booking package interface", () => {
       "deriveModuleSelectionPresentation",
       "hasParticipantCourseAccess",
       "isAdminUserNameEditable",
+      "isAdminUserPromotable",
       "recognizeAdminInvite",
       "recognizeCourseInvite",
     ]);

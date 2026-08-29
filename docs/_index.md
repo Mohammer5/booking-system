@@ -22,7 +22,7 @@ This repository uses an indexed global documentation system.
   Participant
   registration/profile/lifecycle/Assignment-lifecycle/assigned-Course-access/
   Module-Selection/shared-Course-Invite-management/Join/Admin-Invite-
-  administration/onboarding/Admin-User-directory/name-maintenance
+  administration/onboarding/Admin-User-directory/name-maintenance/promotion
   slices, responsive MUI
   Admin/Participant experience, Google authentication, live tooling, and
   intentionally deferred release surfaces.
@@ -72,7 +72,8 @@ This repository uses an indexed global documentation system.
   Admin/Participant shell, Participant onboarding/profile/directory, Course
   Assignment creation/revocation/reactivation, Participant lifecycle, assigned
   Participant Course access, shared Course Invite management/recognition/Join,
-  Admin Invite administration/onboarding and Admin User directory/name editing,
+  Admin Invite administration/onboarding and Admin User directory/name editing/
+  promotion,
   and
   Participant Module Selection plus Course/
   Group/Module creation, Module editing/rescheduling/cancellation/deletion,

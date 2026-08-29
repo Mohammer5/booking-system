@@ -215,6 +215,7 @@ function createDirectHandler(overrides) {
       findAdminUserByExternalPrincipalId: async () => actor,
       findAdminUserById: async () => target,
       listCurrentAdminUsers: async () => [actor, target],
+      promoteAuthorizedAdminUser: async () => "promoted",
       updateAuthorizedAdminUserName: async () => "updated",
       ...overrides,
     },
@@ -239,7 +240,14 @@ async function insertAdmin(suffix, principal, name, state, authority) {
 
 /** @returns {object} One exact narrow HTTP representation. */
 function adminResponse(suffix, name, state, authority, isNameEditable) {
-  return { id: `admin-${suffix}`, name, state, authority, isNameEditable };
+  return {
+    id: `admin-${suffix}`,
+    name,
+    state,
+    authority,
+    isNameEditable,
+    isPromotionAvailable: false,
+  };
 }
 
 /** @returns {Promise<object>} Read one raw Admin row. */

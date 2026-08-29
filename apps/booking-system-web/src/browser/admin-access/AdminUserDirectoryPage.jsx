@@ -22,6 +22,7 @@ import { useTranslation } from "react-i18next";
 import { Link as RouterLink } from "react-router";
 
 import { useAdminUsers } from "./useAdminUsers.js";
+import { AdminUserPromotionControl } from "./AdminUserPromotionControl.jsx";
 
 /** @returns {import("react").ReactElement} Current Admin User directory route. */
 export function AdminUserDirectoryPage() {
@@ -126,7 +127,15 @@ function AdminUserTableRow({ adminUser, translate }) {
       <TableCell component="th" scope="row">{adminUser.name}</TableCell>
       <TableCell><AdminAuthorityChip adminUser={adminUser} translate={translate} /></TableCell>
       <TableCell><AdminStateChip adminUser={adminUser} translate={translate} /></TableCell>
-      <TableCell><AdminUserDetailLink adminUser={adminUser} translate={translate} /></TableCell>
+      <TableCell>
+        <Stack spacing={1.5}>
+          <AdminUserDetailLink adminUser={adminUser} translate={translate} />
+          <AdminUserPromotionControl
+            adminUser={adminUser}
+            translate={translate}
+          />
+        </Stack>
+      </TableCell>
     </TableRow>
   );
 }
@@ -143,6 +152,10 @@ function AdminUserCard({ adminUser, translate }) {
             <AdminStateChip adminUser={adminUser} translate={translate} />
           </Stack>
           <AdminUserDetailLink adminUser={adminUser} translate={translate} />
+          <AdminUserPromotionControl
+            adminUser={adminUser}
+            translate={translate}
+          />
         </Stack>
       </CardContent>
     </Card>

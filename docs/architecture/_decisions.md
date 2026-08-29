@@ -252,6 +252,19 @@ authority or a partial mutation. The existing `admin_users` schema already
 contains every required fact; no version column, generic permission store, or
 profile abstraction is added.
 
+## Express Promotion As One Guarded Authority Command
+
+Super Admin promotion is an explicit body-free action rather than a generic
+browser-supplied authority replacement. Directory/detail responses derive
+`isPromotionAvailable` from freshly resolved actor and target data, while one
+guarded D1 statement repeats the different-Active-Super-actor and Active-
+ordinary-target predicates and changes only `authority`. This preserves every
+identity, profile, principal, and relationship fact, makes concurrent attempts
+choose one coherent winner, and lets existing sessions observe new authority
+through their normal current-domain resolution. The existing schema supports
+several Super Admins, so no migration, session claim, generic permission store,
+version column, or demotion mechanism is added.
+
 ## Keep Node Tooling Separate From The Worker Runtime
 
 Node.js remains the repository tooling, build, and CI runtime. Application

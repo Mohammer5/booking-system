@@ -15,6 +15,8 @@ export function createAdminPersistence(database) {
 
     listCurrentAdminUsers: (adminUserId) =>
       listCurrentAdminUsers(database, adminUserId),
+    promoteAuthorizedAdminUser: (input) =>
+      promoteAuthorizedAdminUser(database, input),
     updateAuthorizedAdminUserName: (input) =>
       updateAuthorizedAdminUserName(database, input),
 
@@ -121,6 +123,58 @@ async function listCurrentAdminUsers(database, adminUserId) {
     : directoryResult.results.map(mapAdminUser);
 }
 
+/** @returns {Promise<string>} Guarded one-way Admin User promotion. */
+async function promoteAuthorizedAdminUser(database, input) {
+  const result = await database
+    .prepare(
+      `update admin_users
+          set authority = 'super-admin'
+        where id = ?
+          and id <> ?
+          and state = 'active'
+          and authority = 'admin'
+          and exists (
+            select 1 from admin_users actor
+             where actor.id = ?
+               and actor.state = 'active'
+               and actor.authority = 'super-admin'
+          )`,
+    )
+    .bind(
+      input.targetAdminUserId,
+      input.adminUserId,
+      input.adminUserId,
+    )
+    .run();
+
+  return result.meta.changes === 1
+    ? "promoted"
+    : classifyAdminUserPromotionRefusal(database, input);
+}
+
+/** @returns {Promise<string>} Exact stale actor or target promotion refusal. */
+async function classifyAdminUserPromotionRefusal(database, input) {
+  const [adminUser, targetAdminUser] = await loadAdminUserPair(database, input);
+
+  if (adminUser?.state !== "active") {
+    return "admin-not-active";
+  }
+
+  if (targetAdminUser === null) {
+    return "admin-user-not-found";
+  }
+
+  const isPromotable =
+    adminUser.authority === "super-admin" &&
+    targetAdminUser.state === "active" &&
+    targetAdminUser.authority === "admin" &&
+    adminUser.id !== targetAdminUser.id;
+
+  return isPromotable
+    ? "admin-user-not-promoted"
+    : "admin-user-not-promotable";
+}
+
 /** @returns {Promise<string>} Guarded name-only Admin User update. */
 async function updateAuthorizedAdminUserName(database, input) {
   const result = await database
@@ -148,16 +202,7 @@ async function updateAuthorizedAdminUserName(database, input) {
 
 /** @returns {Promise<string>} Exact stale actor or target edit refusal. */
 async function classifyAdminUserNameRefusal(database, input) {
-  const [adminUser, targetAdminUser] = await Promise.all([
-    database
-      .prepare("select id, state, authority from admin_users where id = ?")
-      .bind(input.adminUserId)
-      .first(),
-    database
-      .prepare("select id, state, authority from admin_users where id = ?")
-      .bind(input.targetAdminUserId)
-      .first(),
-  ]);
+  const [adminUser, targetAdminUser] = await loadAdminUserPair(database, input);
 
   if (adminUser?.state !== "active") {
     return "admin-not-active";
@@ -175,6 +220,20 @@ async function classifyAdminUserNameRefusal(database, input) {
   return isAuthorized
     ? "admin-user-not-updated"
     : "admin-user-not-editable";
+}
+
+/** @returns {Promise<Array<object | null>>} Current actor and target rows. */
+function loadAdminUserPair(database, input) {
+  return Promise.all([
+    database
+      .prepare("select id, state, authority from admin_users where id = ?")
+      .bind(input.adminUserId)
+      .first(),
+    database
+      .prepare("select id, state, authority from admin_users where id = ?")
+      .bind(input.targetAdminUserId)
+      .first(),
+  ]);
 }
 
 /**

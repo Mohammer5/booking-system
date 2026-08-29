@@ -1,25 +1,25 @@
 ---
 id: TASK-qhred
 title: Promote Admin Users to Super Admin
-status: backlog
+status: done
 priority: medium
 type: feature
 effort: medium
 epic: EPIC-hc9uu
-plan: null
+plan: PLAN-vyd23
 depends_on:
 - TASK-45jmb
 blocks:
 - TASK-ikzih
 related: []
-assignee: null
+assignee: gerkules
 tags:
 - admin
 - super-admin
 - authorization
 position: g40
 created: 2026-08-27
-updated: 2026-08-27
+updated: 2026-08-29
 ---
 
 # Promote Admin Users to Super Admin
@@ -33,17 +33,17 @@ or removes this authority outside the accepted operation.
 
 ## Acceptance Criteria
 
-- [ ] A freshly resolved Active Super Admin may promote another current Active
+- [x] A freshly resolved Active Super Admin may promote another current Active
       ordinary Admin User; identity, name, state, principal, and all existing
       relationships remain unchanged.
-- [ ] Multiple Super Admins may coexist, and every promoted user immediately
+- [x] Multiple Super Admins may coexist, and every promoted user immediately
       receives current Super Admin mutation authority through fresh domain
       resolution rather than session claims.
-- [ ] Ordinary Admins, Disabled actors, self-promotion, Disabled targets,
+- [x] Ordinary Admins, Disabled actors, self-promotion, Disabled targets,
       already-Super targets, and Invite creation/claim cannot perform or imply
       promotion.
-- [ ] Promotion is one-way in v1: no demotion action exists for self or others.
-- [ ] Actor and target authority/state are revalidated at acceptance;
+- [x] Promotion is one-way in v1: no demotion action exists for self or others.
+- [x] Actor and target authority/state are revalidated at acceptance;
       concurrent/stale promotions are idempotent or refused coherently and
       never create another Admin identity or partial authority state.
 

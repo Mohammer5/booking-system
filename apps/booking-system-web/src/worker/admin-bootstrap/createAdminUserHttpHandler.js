@@ -1,8 +1,10 @@
 import {
   createListAdminUsers,
+  createPromoteAdminUser,
   createResolveAdminContext,
   createUpdateAdminUserName,
   isAdminUserNameEditable,
+  isAdminUserPromotable,
 } from "@booking-system/booking";
 
 const collectionPath = "/api/admin/users";
@@ -42,6 +44,10 @@ function createOperations(capabilities) {
       listCurrentAdminUsers:
         capabilities.adminPersistence.listCurrentAdminUsers,
     }),
+    promoteAdminUser: createPromoteAdminUser({
+      promoteAuthorizedAdminUser:
+        capabilities.adminPersistence.promoteAuthorizedAdminUser,
+    }),
     resolveAdminContext: createResolveAdminContext({
       findAdminUserByExternalPrincipalId:
         capabilities.adminPersistence.findAdminUserByExternalPrincipalId,
@@ -64,10 +70,19 @@ function matchRoute(request) {
   if (!pathname.startsWith(`${collectionPath}/`)) return null;
   const segments = pathname.slice(collectionPath.length + 1).split("/");
 
-  return segments.length === 1 &&
+  if (
+    segments.length === 1 &&
     segments[0].length > 0 &&
     new Set(["GET", "PUT"]).has(request.method)
-    ? { kind: "detail", adminUserId: segments[0] }
+  ) {
+    return { kind: "detail", adminUserId: segments[0] };
+  }
+
+  return segments.length === 2 &&
+    segments[0].length > 0 &&
+    segments[1] === "promotion" &&
+    request.method === "POST"
+    ? { kind: "promotion", adminUserId: segments[0] }
     : null;
 }
 
@@ -111,9 +126,28 @@ async function handleAuthorizedRequest(context, operations) {
     return jsonResponse({ outcome: "admin-user-not-found" }, 404);
   }
 
+  if (context.route.kind === "promotion") {
+    return handlePromotion(context, targetAdminUser, operations);
+  }
+
   return context.request.method === "GET"
     ? jsonResponse(toAdminUserResponse(targetAdminUser, context.adminUser), 200)
     : handleNameUpdate(context, targetAdminUser, operations);
+}
+
+/** @returns {Promise<Response>} Apply one guarded one-way promotion. */
+async function handlePromotion(context, targetAdminUser, operations) {
+  const result = await operations.promoteAdminUser({
+    adminUser: context.adminUser,
+    targetAdminUser,
+  });
+
+  return result.outcome === "promoted"
+    ? jsonResponse(
+        toAdminUserResponse(result.adminUser, context.adminUser),
+        200,
+      )
+    : refusalResponse(result);
 }
 
 /** @returns {Promise<Response>} Validate and apply one guarded name update. */
@@ -141,6 +175,8 @@ function refusalResponse(result) {
     "admin-not-active": 403,
     "admin-user-not-editable": 409,
     "admin-user-not-found": 404,
+    "admin-user-not-promotable": 409,
+    "admin-user-not-promoted": 409,
     "admin-user-not-updated": 409,
     "invalid-name": 422,
   };
@@ -156,6 +192,10 @@ function toAdminUserResponse(targetAdminUser, adminUser) {
     state: targetAdminUser.state,
     authority: targetAdminUser.authority,
     isNameEditable: isAdminUserNameEditable({ adminUser, targetAdminUser }),
+    isPromotionAvailable: isAdminUserPromotable({
+      adminUser,
+      targetAdminUser,
+    }),
   };
 }
 

@@ -98,13 +98,21 @@ guarded `insert ... select` over `course_assignments`, `participants`,
 `admin-access` persistence additionally owns guarded Admin Invite creation,
 non-secret ordered listing and digest recognition, terminal revocation, and
 atomic ordinary-Admin claim over `admin_invites` and `admin_users`.
-It also owns current Admin User lookup/listing and a name-only update over the
-existing `admin_users` schema. Listing rechecks the actor remains Active. The
-single guarded update accepts self, ordinary-target, or Super-authorized
+It also owns current Admin User lookup/listing, a name-only update, and one-way
+promotion over the existing `admin_users` schema. Listing rechecks the actor
+remains Active. The single guarded name update accepts self, ordinary-target,
+or Super-authorized
 target edits only while the actor is still Active and the target still exists
 with an allowed current authority. It updates no identity, external principal,
 state, authority, relationship, or same-principal Participant row; target
 Active/Disabled state remains retained and duplicate names remain valid.
+The single guarded promotion update changes only `authority` from `admin` to
+`super-admin` while rechecking a different current Active Super Admin actor and
+an Active ordinary target. An ordinary/Disabled actor, self, Disabled/deleted/
+already-Super target, concurrent loser, or trigger failure changes no Admin,
+Invite, relationship, or same-principal Participant fact. Multiple Super Admin
+rows require no migration because the original authority constraint already
+admits both values without a uniqueness restriction.
 
 ## Environment Isolation
 

@@ -450,23 +450,24 @@ refresh and fixed Google return without consuming, requires an explicit name,
 and exposes common unavailable, existing-principal, stale/concurrent, and
 success states. It creates no Participant and reveals no administration data.
 
-### Admin User Directory And Name HTTP Surface
+### Admin User Directory, Name, And Promotion HTTP Surface
 
-Current Admin User administration uses three same-origin operations:
+Current Admin User administration uses four same-origin operations:
 
 ```text
 GET /api/admin/users
 GET /api/admin/users/:adminUserId
 PUT /api/admin/users/:adminUserId
+POST /api/admin/users/:adminUserId/promotion
 ```
 
 Every operation authenticates normally and freshly resolves an Active current
 Admin User. The collection returns every current Admin User in deterministic
 name/identity order. Collection and detail representations contain only `id`,
 required booking-system `name`, Active/Disabled `state`, ordinary/Super
-`authority`, and server-derived `isNameEditable`; external principals,
-provider data, Participant data, and relationships never cross this HTTP
-surface.
+`authority`, and server-derived `isNameEditable` and
+`isPromotionAvailable`; external principals, provider data, Participant data,
+and relationships never cross this HTTP surface.
 
 The `PUT` accepts `{ name }` only. One guarded D1 statement changes only the
 target name while rechecking actor Active state, target existence, self access,
@@ -475,7 +476,13 @@ target returns `404`; a stale actor or no-longer-authorized target is refused
 without partial mutation. The directly navigable German `/admin/users` and
 `/admin/users/:adminUserId` views use responsive table/card alternatives,
 explicit state/authority labels, and mount the accessible name form only when
-the server representation permits it.
+the server representation permits it. The body-free promotion `POST` accepts
+no generic authority value. One guarded D1 update changes only an eligible
+Active ordinary target's authority after rechecking a different Active Super
+Admin actor; concurrent/already-Super, Disabled, self, ordinary-actor, and
+missing-target attempts make no partial change. The same directory/detail
+views expose the server-derived action through a German permanent one-way
+confirmation and reconcile the promoted representation immediately.
 
 ### No Separate API Application
 

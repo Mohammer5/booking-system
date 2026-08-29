@@ -46,6 +46,18 @@ export const adminUserTranslations = {
       unavailable:
         "Der Name kann wegen eines geänderten Administrationsstatus oder einer geänderten Berechtigung nicht bearbeitet werden.",
     },
+    promotion: {
+      action: "Zum Super Admin befördern",
+      title: "Administrationskonto zum Super Admin befördern?",
+      description:
+        "Diese dauerhafte Berechtigungsänderung kann nicht rückgängig gemacht werden. Das Administrationskonto erhält sofort alle Befugnisse eines Super Admins.",
+      cancel: "Abbrechen",
+      confirm: "Dauerhaft befördern",
+      pending: "Beförderung läuft …",
+      success: "{{name}} wurde dauerhaft zum Super Admin befördert.",
+      unavailable:
+        "Die Beförderung ist wegen eines geänderten Status oder einer geänderten Berechtigung nicht mehr möglich.",
+    },
     status: {
       loading: "Administrationskonten werden geladen …",
       empty: "Es sind keine aktuellen Administrationskonten vorhanden.",

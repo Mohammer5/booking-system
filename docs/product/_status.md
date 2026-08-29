@@ -144,8 +144,14 @@ Active Admin may edit their own required booking-system name; ordinary Admins
 may edit other ordinary Admins but not Super Admins, while Super Admins may edit
 ordinary or Super Admin targets. Authorized edits may retain an Active or
 Disabled target, change only the name, and revalidate current actor/target
-state and authority at acceptance. Promotion and Admin User lifecycle actions
-remain unimplemented.
+state and authority at acceptance. An Active Super Admin can now explicitly
+promote another Active ordinary Admin
+to Super Admin. Promotion changes only authority, creates no identity, admits
+multiple Super Admins, is immediately authoritative for the promoted user's
+existing session, and is one-way with no demotion action. Ordinary/Disabled
+actors, self, Disabled/already-Super targets, and stale concurrent losers
+change nothing. Admin User Disable/Re-enable/delete actions remain
+unimplemented.
 Technology, persistence, API,
 frontend, and infrastructure mechanics remain outside this product
 specification and do not alter its contracts.

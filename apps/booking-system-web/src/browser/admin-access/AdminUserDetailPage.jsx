@@ -8,6 +8,7 @@ import {
   AdminStateChip,
 } from "./AdminUserDirectoryPage.jsx";
 import { AdminUserNameForm } from "./AdminUserNameForm.jsx";
+import { AdminUserPromotionControl } from "./AdminUserPromotionControl.jsx";
 import { useAdminUser, useUpdateAdminUserName } from "./useAdminUsers.js";
 
 /** @returns {import("react").ReactElement} Direct Admin User detail/edit route. */
@@ -75,6 +76,10 @@ function AdminUserDetailState({ errorRef, mutation, query, translate }) {
         <AdminAuthorityChip adminUser={query.data} translate={translate} />
         <AdminStateChip adminUser={query.data} translate={translate} />
       </Stack>
+      <AdminUserPromotionControl
+        adminUser={query.data}
+        translate={translate}
+      />
       {query.data.isNameEditable ? (
         <AdminUserNameForm
           adminUser={query.data}

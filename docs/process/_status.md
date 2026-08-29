@@ -66,7 +66,13 @@ Current reality:
   current ordered rows, fresh self/ordinary/Super authorization, Disabled
   target retention, guarded name-only persistence, identity/Participant
   isolation, real fixed Super/ordinary journeys, responsive table/cards,
-  direct refresh, focused stale/error states, and axe. The
+  direct refresh, focused stale/error states, and axe. The Super Admin
+  promotion layer additionally proves the complete actor/target matrix,
+  authority-only concurrency and rollback, several Super Admins, retained
+  identities/relationships/Participant data, exact no-store HTTP, same-session
+  fresh authority, actor-specific directory/detail actions, one-way German
+  confirmation, dialog focus restoration, narrow stale/Disabled presentation,
+  and axe. The
   tag-gated release policy remains unimplemented.
 - x86_64 NixOS developers can enter a pinned host-tooling environment with
   `nix develop`; `pnpm check` remains the verification contract and GitHub

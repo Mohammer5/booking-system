@@ -32,27 +32,56 @@ export function useUpdateAdminUserName(adminUserId) {
       body: JSON.stringify({ name }),
     }),
     async onSuccess(adminUser) {
-      queryClient.setQueryData(
-        ["admin-access", "admin-user", adminUserId],
-        adminUser,
-      );
-      queryClient.setQueryData(directoryQueryKey, (current) => ({
-        adminUsers: (current?.adminUsers ?? []).map((candidate) =>
-          candidate.id === adminUser.id ? adminUser : candidate),
-      }));
+      reconcileAdminUser(queryClient, adminUserId, adminUser);
       await queryClient.invalidateQueries({ queryKey: currentAdminQueryKey });
     },
     async onError(error) {
       if (!isStaleAdminUserError(error)) return;
-      await Promise.all([
-        queryClient.invalidateQueries({ queryKey: directoryQueryKey }),
-        queryClient.invalidateQueries({
-          queryKey: ["admin-access", "admin-user", adminUserId],
-        }),
-        queryClient.invalidateQueries({ queryKey: currentAdminQueryKey }),
-      ]);
+      await invalidateAdminUserQueries(queryClient, adminUserId);
     },
   });
+}
+
+/** @returns {object} Guarded one-way Admin User promotion mutation. */
+export function usePromoteAdminUser(adminUserId) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: () => requestJson(
+      `/api/admin/users/${adminUserId}/promotion`,
+      { method: "POST" },
+    ),
+    onSuccess(adminUser) {
+      reconcileAdminUser(queryClient, adminUserId, adminUser);
+    },
+    async onError(error) {
+      if (!isStaleAdminUserError(error)) return;
+      await invalidateAdminUserQueries(queryClient, adminUserId);
+    },
+  });
+}
+
+/** @returns {void} Replace one authoritative Admin in detail and directory. */
+function reconcileAdminUser(queryClient, adminUserId, adminUser) {
+  queryClient.setQueryData(
+    ["admin-access", "admin-user", adminUserId],
+    adminUser,
+  );
+  queryClient.setQueryData(directoryQueryKey, (current) => ({
+    adminUsers: (current?.adminUsers ?? []).map((candidate) =>
+      candidate.id === adminUser.id ? adminUser : candidate),
+  }));
+}
+
+/** @returns {Promise<void>} Refresh stale Admin action and actor state. */
+async function invalidateAdminUserQueries(queryClient, adminUserId) {
+  await Promise.all([
+    queryClient.invalidateQueries({ queryKey: directoryQueryKey }),
+    queryClient.invalidateQueries({
+      queryKey: ["admin-access", "admin-user", adminUserId],
+    }),
+    queryClient.invalidateQueries({ queryKey: currentAdminQueryKey }),
+  ]);
 }
 
 /** @returns {boolean} Whether fresh Admin state should replace cached detail. */
@@ -61,6 +90,8 @@ function isStaleAdminUserError(error) {
     "admin-not-active",
     "admin-user-not-editable",
     "admin-user-not-found",
+    "admin-user-not-promotable",
+    "admin-user-not-promoted",
     "admin-user-not-updated",
     "disabled-admin",
     "no-admin-user",

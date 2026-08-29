@@ -305,7 +305,14 @@ function nameSuccess(page) {
 
 /** @returns {object} One narrow intercepted Admin User representation. */
 function contractAdmin(id, name, state, authority, isNameEditable) {
-  return { id, name, state, authority, isNameEditable };
+  return {
+    id,
+    name,
+    state,
+    authority,
+    isNameEditable,
+    isPromotionAvailable: false,
+  };
 }
 
 /** @returns {Promise<void>} Fulfill one bounded JSON response. */

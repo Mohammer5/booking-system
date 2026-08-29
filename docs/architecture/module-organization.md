@@ -4,7 +4,7 @@
 
 The `packages/booking` workspace currently contains `admin-access` for first
 Admin bootstrap, Admin Invite create/list/revoke/recognize/claim policy, and
-current Admin User list/name-edit authorization,
+current Admin User list/name-edit/promotion authorization,
 `course-structure` for Course creation/editing, Course-wide
 Group creation/editing/archival/reactivation/permanent deletion, and future Scheduled Module
 creation plus descriptive editing, pre-start rescheduling, and terminal
@@ -24,7 +24,10 @@ authentication-provider SDK, HTTP, D1, or browser UI mechanics.
 The application keeps the corresponding Admin User and Admin Invite browser,
 HTTP, secret adapter, and D1 persistence files together under the existing `browser/admin-
 access` and `worker/admin-bootstrap` responsibilities; this concrete slice does
-not introduce another package or first-level application module.
+not introduce another package or first-level application module. Promotion
+adds one domain operation/predicate, one existing-handler action route, one
+guarded persistence capability, and one browser confirmation component within
+those owners.
 
 The `apps/booking-system-web` workspace is the single application composition
 boundary. Its first-level source responsibilities are `browser`, `worker`, and

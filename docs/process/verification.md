@@ -340,6 +340,21 @@ second-Super and Disabled presentation, stale loss, direct refresh, responsive
 table/card alternatives, required-name/provider copy, loading/empty/error/
 unavailable states, privacy, keyboard/result focus, overflow, and axe.
 
+For one-way Super Admin promotion, booking-domain Vitest owns the complete
+Active/Disabled ordinary/Super actor and Active/Disabled/already-Super/self/
+missing target matrix, server-affordance derivation, identity/relationship
+preservation, guarded outcome translation, and absence of demotion. Worker/D1
+Vitest owns the single authority-only guarded update, fresh actor/target
+authorization, several coexisting Super Admins, concurrent same-target
+competition, Admin Invite and same-principal Participant retention, exact
+narrow no-store HTTP, production composition, technical rollback/sanitization,
+and same-cookie current-authority resolution. Playwright owns real fixed first-
+Super and invited-ordinary refusal/promotion, immediate promoted authority,
+refresh persistence, no-demotion presentation, desktop table and narrow-card/
+detail affordances, the German permanent confirmation, keyboard/Dialog cancel
+restoration, focused success/stale results, bounded Disabled presentation,
+privacy, overflow, and axe.
+
 The implemented integration uses project-pinned `@cloudflare/vitest-plugin`
 with isolated D1 state and the version-controlled migration sequence.
 
@@ -421,7 +436,7 @@ onboarding/assigned-Course/zero-membership/privacy states, Participant
 directory and Course membership/Assignment-lifecycle states, Participant
 self/Admin profile editing and lifecycle, Course editing and permanent
 timezone-lock presentation, Disabled-target detail, and absence of horizontal
-overflow. The current 57-test browser suite also proves that one
+overflow. The current 59-test browser suite also proves that one
 fixed normal session remains usable while navigating between Participant and
 Admin contexts, successful sign-out terminates that session, an Active Admin
 can create, edit, and revisit a Course with Groups, a future Module, a

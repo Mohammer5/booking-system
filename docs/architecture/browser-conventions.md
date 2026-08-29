@@ -172,13 +172,18 @@ local name validation, and abandonment consume nothing; current Active or
 Disabled Admin principals receive a common refusal, while a principal with no
 current Admin receives the explicit-name form and one focused terminal result.
 
-The Admin User directory consumes server-derived `isNameEditable` rather than
-reimplementing the self/ordinary/Super matrix in browser code. Desktop uses a
-semantic table and narrow viewports use a named card list without horizontal
-overflow. Stable detail always shows explicit authority and state, mounts the
-name-only React Hook Form only when permitted, explains provider-data
-independence, and focuses validation, success, or stale refusal. Successful
-self-edit invalidates current-Admin state as well as directory/detail data.
+The Admin User directory consumes server-derived `isNameEditable` and
+`isPromotionAvailable` rather than reimplementing the self/ordinary/Super
+matrices in browser code. Desktop uses a semantic table and narrow viewports
+use a named card list without horizontal overflow. Stable detail always shows
+explicit authority and state, mounts the name-only React Hook Form only when
+permitted, explains provider-data independence, and focuses validation,
+success, or stale refusal. Successful self-edit invalidates current-Admin
+state as well as directory/detail data. Eligible directory and detail targets
+share one incidental MUI promotion Dialog that identifies the target, explains
+the permanent one-way change, initially focuses Cancel, restores its opener on
+cancellation, focuses a stale refusal in-place, and focuses the reconciled
+success after close. No demotion control exists.
 
 ## Browser Authentication
 
