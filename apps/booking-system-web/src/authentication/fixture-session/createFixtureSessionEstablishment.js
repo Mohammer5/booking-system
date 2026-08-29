@@ -35,6 +35,22 @@ const fixturesByPath = new Map([
     },
   ],
   [
+    "/api/_fixtures/session/invite-participant-a",
+    {
+      id: "fixture-invite-participant-a",
+      name: "Invite Participant A Fixture",
+      email: "invite-participant-a@fixture.invalid",
+    },
+  ],
+  [
+    "/api/_fixtures/session/invite-participant-b",
+    {
+      id: "fixture-invite-participant-b",
+      name: "Invite Participant B Fixture",
+      email: "invite-participant-b@fixture.invalid",
+    },
+  ],
+  [
     "/api/_fixtures/session/selection-participant",
     {
       id: "fixture-selection-participant",

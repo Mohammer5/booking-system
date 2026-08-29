@@ -1,4 +1,6 @@
 const publicRecognitionPath = "/api/course-invites/recognition";
+const publicContinuationPath = "/api/course-invites/continuation";
+const publicJoinPath = "/api/course-invites/join";
 const adminCoursePrefix = "/api/admin/courses/";
 
 /** @returns {object | null} Exact public or Admin Course Invite route. */
@@ -6,6 +8,12 @@ export function matchCourseInviteRoute(pathname) {
   if (pathname === publicRecognitionPath) {
     return { kind: "invite-recognition" };
   }
+
+  if (pathname === publicContinuationPath) {
+    return { kind: "invite-continuation" };
+  }
+
+  if (pathname === publicJoinPath) return { kind: "invite-join" };
 
   if (!pathname.startsWith(adminCoursePrefix)) return null;
 
@@ -61,9 +69,9 @@ export function toCourseInviteResponse(request, invite) {
 }
 
 /** @returns {Response} JSON response excluded from HTTP caching. */
-export function inviteJsonResponse(body, status) {
+export function inviteJsonResponse(body, status, headers = {}) {
   return Response.json(body, {
     status,
-    headers: { "cache-control": "no-store" },
+    headers: { "cache-control": "no-store", ...headers },
   });
 }

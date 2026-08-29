@@ -285,22 +285,37 @@ or creates a Course Assignment merely because an Invite was opened.
 
 Security-sensitive Invite secrets must not enter third-party OAuth URLs,
 referrers, browser or technical logs, or analytics. Prefer server-side or
-session-backed continuation state when practical. Course Invite recognition
-now uses `/invite#<token>`: the browser immediately transfers the fragment to
-an Invite-specific `sessionStorage` key, removes it with `replaceState`, and
-sends it only in the body of `POST /api/course-invites/recognition`. This
-recognition state supports refresh but does not authenticate, onboard, Join,
-or create an Assignment. Authentication/onboarding return-to-Invite and final
-Join continuation remain deferred.
+session-backed continuation state when practical. The implemented Course
+Invite flow uses `/invite#<token>`: the browser immediately transfers the
+fragment to an Invite-specific `sessionStorage` key, removes it with
+`replaceState`, and sends it only in the body of
+`POST /api/course-invites/recognition`. A successful recognition replaces that
+raw value with an application-issued session cookie containing only the
+Invite's SHA-256 digest and an HMAC-SHA-256 signature. The cookie is
+`HttpOnly`, `SameSite=Lax`, root-scoped, `Secure` on HTTPS, and has no durable
+product lifetime. Its signing key is purpose-derived through Worker Web Crypto
+from the environment-owned Better Auth secret; no Invite continuation secret
+or pending booking-domain row is added.
+
+Later `/invite` refreshes, the fixed Google success destination `/invite`, and
+Participant onboarding return use only `GET
+/api/course-invites/continuation`. The Invite-specific authentication failure
+destination is sanitized through `/api/auth/invite-error`. The browser erases
+the raw `sessionStorage` value after an available or definitively unknown
+recognition, and neither raw token, digest, signature, nor cookie enters OAuth
+parameters or public responses. Continuation does not authenticate, onboard,
+Join, or create an Assignment. Only the separate authenticated, body-free
+`POST /api/course-invites/join` revalidates the signed continuation and all
+current booking state before membership can change.
 
 ## Non-Production Authentication
 
 The application uses a separate explicitly
 [non-production authentication](../DICTIONARY.md#non-production-authentication)
 composition. The authentication-owned fixture interface uses Better Auth's
-`testUtils` plugin to create normal signed D1-backed sessions for five fixed
-identities: `first-admin`, `later-admin`, `participant-a`, `participant-b`, and
-`selection-participant`.
+`testUtils` plugin to create normal signed D1-backed sessions for seven fixed
+identities: `first-admin`, `later-admin`, `participant-a`, `participant-b`,
+`invite-participant-a`, `invite-participant-b`, and `selection-participant`.
 
 Production and non-production authentication are different executable
 compositions rather than one production composition conditionally exposing a
@@ -322,7 +337,8 @@ The mechanism must:
 
 - establish normal Better Auth application sessions for deterministic named
   fixture identities, currently `first-admin`, `later-admin`, `participant-a`,
-  `participant-b`, and `selection-participant`;
+  `participant-b`, `invite-participant-a`, `invite-participant-b`, and
+  `selection-participant`;
 - let Playwright exercise the normal authenticated application and real domain
   authorization after session establishment;
 - prevent arbitrary-principal impersonation, including a caller-supplied

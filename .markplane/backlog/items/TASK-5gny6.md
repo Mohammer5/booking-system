@@ -1,12 +1,12 @@
 ---
 id: TASK-5gny6
 title: Join Courses through shared Invites
-status: backlog
+status: done
 priority: medium
 type: feature
 effort: large
 epic: EPIC-ziadc
-plan: null
+plan: PLAN-6g26a
 depends_on:
 - TASK-k2ckf
 - TASK-7uxjj
@@ -16,7 +16,7 @@ blocks:
 - TASK-h37zt
 related:
 - TASK-rrp92
-assignee: null
+assignee: gerkules
 tags:
 - course-invite
 - participant
@@ -24,7 +24,7 @@ tags:
 - security
 position: f20
 created: 2026-08-27
-updated: 2026-08-27
+updated: 2026-08-29
 ---
 
 # Join Courses through shared Invites
@@ -39,25 +39,25 @@ or preserves exactly one ordinary Course Assignment.
 
 ## Acceptance Criteria
 
-- [ ] A recognized Invite can continue across unauthenticated entry and
+- [x] A recognized Invite can continue across unauthenticated entry and
       Participant onboarding without accepting Join, creating an Assignment,
       or creating a pending domain record.
-- [ ] Continuation uses an application-owned server/session mechanism so the
+- [x] Continuation uses an application-owned server/session mechanism so the
       raw Invite secret never enters Google OAuth URLs, callback parameters,
       referrers, browser/technical logs, analytics, or unrelated responses.
-- [ ] After authentication/onboarding, an Active Participant sees Course name
+- [x] After authentication/onboarding, an Active Participant sees Course name
       and an explicit German Join confirmation; current Invite, Course,
       Participant, and Assignment state is revalidated only when accepted.
-- [ ] A valid enabled current Invite for an Active Course creates one Active
+- [x] A valid enabled current Invite for an Active Course creates one Active
       Assignment when missing. Repeating Join with an already-Active Assignment
       is an idempotent successful no-op with no duplicate.
-- [ ] Join is refused without membership change for Disabled Participants,
+- [x] Join is refused without membership change for Disabled Participants,
       Revoked Assignments, disabled/replaced Invites, Archived Courses, unknown
       tokens, or stale pages. Invite possession cannot self-reactivate a
       Revoked Assignment.
-- [ ] The same link may be forwarded and accepted independently by several
+- [x] The same link may be forwarded and accepted independently by several
       Active Participants, with one Assignment per Participant/Course.
-- [ ] Success grants only normal assigned-Course access. Before success and on
+- [x] Success grants only normal assigned-Course access. Before success and on
       refusal, no Course-private data beyond the recognized-token Course-name
       exception is exposed.
 

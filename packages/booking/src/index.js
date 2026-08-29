@@ -22,6 +22,7 @@ export {
   createAssignParticipantToCourse,
   createCourseInvite,
   createDisableCourseInvite,
+  createJoinCourseThroughInvite,
   createDisableParticipant,
   createGetParticipantCourse,
   createListParticipantCourses,

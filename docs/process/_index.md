@@ -58,7 +58,7 @@ development work is tracked and verified, and how releases are promoted.
   shell, Course creation/editing, Group lifecycle/deletion and structure,
   Module editing/rescheduling/cancellation/deletion, Participant registration/
   profile/lifecycle/assigned-Course access, Assignment-lifecycle/Module-
-  Selection, shared-Course-Invite management/recognition, terminal Course-
+  Selection, shared-Course-Invite management/recognition/Join, terminal Course-
   archival/read-only history, and accessibility
   policy, plus the external branch-protection requirement.
 - Read when: A task affects tests, CI, required checks, test environments,

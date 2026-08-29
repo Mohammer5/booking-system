@@ -1,6 +1,9 @@
 export { createCourseAssignmentPersistence } from "./createCourseAssignmentPersistence.js";
 export { createCourseInvitePersistence } from "./createCourseInvitePersistence.js";
 export { createCourseInviteHttpHandler } from "./createCourseInviteHttpHandler.js";
+export { createCourseInviteJoinPersistence } from "./createCourseInviteJoinPersistence.js";
+export { createCourseInviteJoinHttpHandler } from "./createCourseInviteJoinHttpHandler.js";
+export { createCourseInviteContinuation } from "./createCourseInviteContinuation.js";
 export {
   createCourseInviteToken,
   hashCourseInviteToken,

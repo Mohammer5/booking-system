@@ -54,7 +54,7 @@ The default routing model is same-origin:
 
 ```text
 /             -> Participant frontend entry through SPA fallback
-/invite       -> public Course Invite recognition through SPA fallback
+/invite       -> public Course Invite continuation and Join through SPA fallback
 /profile      -> Participant profile view through SPA fallback
 /courses/*    -> assigned Participant Course views through SPA fallback
 /admin        -> administration frontend entry through SPA fallback

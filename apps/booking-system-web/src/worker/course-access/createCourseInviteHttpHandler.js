@@ -4,20 +4,16 @@ import {
   createReenableCourseInvite,
   createReplaceCourseInvite,
   createResolveAdminContext,
-  recognizeCourseInvite,
 } from "@booking-system/booking";
 
 import {
   inviteJsonResponse,
   matchCourseInviteRoute,
-  readInviteJsonObject,
   toCourseInviteResponse,
 } from "./courseInviteHttpContract.js";
 
-const tokenPattern = /^[0-9a-f]{64}$/;
-
 /**
- * Create public recognition and Admin Course Invite HTTP handling.
+ * Create Admin Course Invite HTTP handling.
  *
  * @param {object} capabilities Invite application capabilities.
  * @returns {(request: Request) => Promise<Response>} Course Invite handler.
@@ -31,12 +27,6 @@ export function createCourseInviteHttpHandler(capabilities) {
 
       if (route === null || !isSupportedInviteRoute(route, request.method)) {
         return inviteJsonResponse({ outcome: "not-found" }, 404);
-      }
-
-      if (route.kind === "invite-recognition") {
-        const response = await handleInviteRecognition(request, operations);
-
-        return response;
       }
 
       const authorization = await authorizeAdminRequest(request, operations);
@@ -89,28 +79,15 @@ function createCourseInviteOperations(capabilities) {
 
 /** @returns {boolean} Whether one exact route/method is supported. */
 function isSupportedInviteRoute(route, method) {
-  return route.kind === "current-invite"
-    ? new Set(["GET", "POST"]).has(method)
-    : method === "POST";
-}
+  const lifecycleKinds = new Set([
+    "invite-disablement",
+    "invite-reenablement",
+    "invite-replacement",
+  ]);
 
-/** @returns {Promise<Response>} Minimal public recognition result. */
-async function handleInviteRecognition(request, operations) {
-  const body = await readInviteJsonObject(request);
-
-  if (!tokenPattern.test(body.token)) {
-    return inviteJsonResponse({ outcome: "invite-unavailable" }, 404);
-  }
-
-  const digest = await operations.hashCourseInviteToken(body.token);
-  const recognized = await operations.invitePersistence
-    .findRecognizedCourseInviteByDigest(digest);
-  const result = recognizeCourseInvite(recognized);
-
-  return inviteJsonResponse(
-    result,
-    result.outcome === "invite-unavailable" ? 404 : 200,
-  );
+  if (lifecycleKinds.has(route.kind)) return method === "POST";
+  if (route.kind !== "current-invite") return false;
+  return new Set(["GET", "POST"]).has(method);
 }
 
 /** @returns {Promise<Response>} Current Invite read/create/lifecycle result. */

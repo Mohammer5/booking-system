@@ -12,11 +12,14 @@ const currentParticipantQueryKey = ["course-access", "current-participant"];
  *
  * @returns {object} Query and mutation state for the Participant entry flow.
  */
-export function useParticipantEntry() {
+export function useParticipantEntry(options = {}) {
   const queryClient = useQueryClient();
+  const continueWithGoogle = options.continueWithGoogle ??
+    continueParticipantWithGoogle;
   const currentParticipantQuery = useQuery({
     queryKey: currentParticipantQueryKey,
     queryFn: fetchCurrentParticipant,
+    enabled: options.enabled ?? true,
     retry: false,
   });
   const registrationMutation = useMutation({
@@ -40,7 +43,7 @@ export function useParticipantEntry() {
     },
   });
   const signInMutation = useMutation({
-    mutationFn: continueParticipantWithGoogle,
+    mutationFn: continueWithGoogle,
   });
   const signOutMutation = useMutation({
     mutationFn: signOutParticipant,

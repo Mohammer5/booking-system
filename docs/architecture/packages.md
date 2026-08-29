@@ -58,8 +58,9 @@ also implements Active-Participant self profile editing and Active-Admin edits
 of Active/Disabled Participant profiles with the same complete-email policy,
 plus guarded global Participant Disable/Re-enable with exact Selection
 retention and fresh access effects. It also implements the one-current shared
-Course Invite lifecycle and minimal recognized-Invite visibility, without
-token, persistence, or browser mechanics. `module-participation` implements
+Course Invite lifecycle, minimal recognized-Invite visibility, and explicit
+Active-Participant Join policy for missing, Active, or Revoked Assignment
+state, without token, persistence, or browser mechanics. `module-participation` implements
 Participant Selection eligibility, replacement, removal, and derived
 current-versus-historical presentation; later Admin-assisted behavior remains
 with that owner. These are internal

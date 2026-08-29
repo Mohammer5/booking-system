@@ -7,7 +7,9 @@ import {
 } from "@mui/material";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useSearchParams } from "react-router";
 
+import { CourseInviteParticipation } from "./CourseInviteParticipation.jsx";
 import {
   captureCourseInviteToken,
   useRecognizedCourseInvite,
@@ -16,6 +18,7 @@ import {
 /** @returns {import("react").ReactElement} Minimal public Invite route. */
 export function CourseInvitePage() {
   const { t } = useTranslation();
+  const [searchParams] = useSearchParams();
   const [token, setToken] = useState(captureCourseInviteToken);
   const query = useRecognizedCourseInvite(token);
   const refetchRecognition = query.refetch;
@@ -40,8 +43,8 @@ export function CourseInvitePage() {
   }, [refetchRecognition, token]);
 
   useEffect(() => {
-    if (!query.isPending || token === null) resultRef.current?.focus();
-  }, [query.isPending, token]);
+    if (!query.isPending) resultRef.current?.focus();
+  }, [query.isPending]);
 
   return (
     <Paper
@@ -57,7 +60,9 @@ export function CourseInvitePage() {
         <PublicInviteState
           query={query}
           resultRef={resultRef}
-          token={token}
+          isAuthenticationFailure={
+            searchParams.get("authentication") === "failed"
+          }
           translate={t}
         />
       </Stack>
@@ -66,8 +71,10 @@ export function CourseInvitePage() {
 }
 
 /** @returns {import("react").ReactElement} Narrow recognition state. */
-function PublicInviteState({ query, resultRef, token, translate }) {
-  if (token !== null && query.isPending) {
+function PublicInviteState(props) {
+  const { query, resultRef, translate } = props;
+
+  if (query.isPending) {
     return (
       <Stack
         aria-live="polite"
@@ -81,7 +88,7 @@ function PublicInviteState({ query, resultRef, token, translate }) {
     );
   }
 
-  if (token === null || query.error?.status === 404) {
+  if (query.error?.status === 404) {
     return (
       <Alert ref={resultRef} severity="warning" tabIndex={-1}>
         {translate("courseAccess.publicInvite.unavailable")}
@@ -97,20 +104,27 @@ function PublicInviteState({ query, resultRef, token, translate }) {
     );
   }
 
-  const isAvailable = query.data.outcome === "available";
+  if (query.data.outcome === "available") {
+    return (
+      <CourseInviteParticipation
+        courseName={query.data.courseName}
+        isAuthenticationFailure={props.isAuthenticationFailure}
+      />
+    );
+  }
 
   return (
     <Alert
       ref={resultRef}
       role="status"
-      severity={isAvailable ? "success" : "warning"}
+      severity="warning"
       tabIndex={-1}
     >
       <Typography component="h2" variant="h2">
         {query.data.courseName}
       </Typography>
       <Typography sx={{ mt: 1 }}>
-        {translate(`courseAccess.publicInvite.${query.data.outcome}`)}
+        {translate("courseAccess.publicInvite.unavailable")}
       </Typography>
     </Alert>
   );

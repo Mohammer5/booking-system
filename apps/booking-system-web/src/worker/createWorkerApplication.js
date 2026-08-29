@@ -2,6 +2,7 @@ import { createAdminHttpHandler } from "./admin-bootstrap/index.js";
 import {
   createCourseAccessHttpHandler,
   createCourseInviteHttpHandler,
+  createCourseInviteJoinHttpHandler,
   createParticipantCourseHttpHandler,
   createParticipantHttpHandler,
 } from "./course-access/index.js";
@@ -54,7 +55,7 @@ function createWorkerHandlers(capabilities) {
     coursePersistence: capabilities.coursePersistence,
     participantPersistence: capabilities.participantPersistence,
   });
-  const handleCourseInviteHttpRequest = createInviteHandler(
+  const inviteHandlers = createInviteHandlers(
     capabilities,
     authentication,
   );
@@ -66,7 +67,7 @@ function createWorkerHandlers(capabilities) {
   return {
     handleAdminHttpRequest,
     handleCourseAccessHttpRequest,
-    handleCourseInviteHttpRequest,
+    ...inviteHandlers,
     handleCourseHttpRequest,
     ...participantHandlers,
   };
@@ -98,16 +99,29 @@ function createParticipantHandlers(capabilities, authentication) {
 }
 
 /** @returns {Function} Focused public and Admin Course Invite handler. */
-function createInviteHandler(capabilities, authentication) {
-  return createCourseInviteHttpHandler({
+function createInviteHandlers(capabilities, authentication) {
+  const shared = {
     authenticate: authentication.authenticate,
-    createCourseInviteId: capabilities.createCourseInviteId,
-    createCourseInviteToken: capabilities.createCourseInviteToken,
     hashCourseInviteToken: capabilities.hashCourseInviteToken,
-    adminPersistence: capabilities.adminPersistence,
-    coursePersistence: capabilities.coursePersistence,
     invitePersistence: capabilities.invitePersistence,
-  });
+  };
+
+  return {
+    handleCourseInviteHttpRequest: createCourseInviteHttpHandler({
+      ...shared,
+      createCourseInviteId: capabilities.createCourseInviteId,
+      createCourseInviteToken: capabilities.createCourseInviteToken,
+      adminPersistence: capabilities.adminPersistence,
+      coursePersistence: capabilities.coursePersistence,
+    }),
+    handleCourseInviteJoinHttpRequest: createCourseInviteJoinHttpHandler({
+      ...shared,
+      createCourseAssignmentId: capabilities.createCourseAssignmentId,
+      inviteContinuation: capabilities.inviteContinuation,
+      inviteJoinPersistence: capabilities.inviteJoinPersistence,
+      participantPersistence: capabilities.participantPersistence,
+    }),
+  };
 }
 
 /**
@@ -137,6 +151,13 @@ async function handleWorkerRequest(request, authentication, handlers) {
 function handleDomainRequest(request, requestURL, handlers) {
   if (
     requestURL.pathname === "/api/course-invites/recognition" ||
+    requestURL.pathname === "/api/course-invites/continuation" ||
+    requestURL.pathname === "/api/course-invites/join"
+  ) {
+    return handlers.handleCourseInviteJoinHttpRequest(request);
+  }
+
+  if (
     isAdminCourseInvitePath(requestURL.pathname)
   ) {
     return handlers.handleCourseInviteHttpRequest(request);
@@ -207,6 +228,7 @@ function authenticationFailureResponse(request, requestURL) {
 
   const destinations = new Map([
     ["/api/auth/application-error", "/admin"],
+    ["/api/auth/invite-error", "/invite"],
     ["/api/auth/participant-error", "/"],
   ]);
   const destination = destinations.get(requestURL.pathname);

@@ -92,7 +92,9 @@ Archived Course state before returning private data. The implemented
 `module_selections`. The same `course-access` persistence owns retained-row
 Assignment reactivation and atomic revocation with exact future-Selection
 removal, plus one-current Course Invite lifecycle and recognition lookup over
-`course_invites`.
+`course_invites`. Invite Join uses a narrow Assignment-pair lookup and a
+guarded `insert ... select` over `course_assignments`, `participants`,
+`courses`, and `course_invites`; it creates no pending continuation row.
 
 ## Environment Isolation
 
@@ -319,6 +321,13 @@ exact predecessor and clears its raw token, then inserts one enabled current
 Invite through a trigger-validated marker; any stale, concurrent, constraint,
 or technical loser rolls back both statements. Recognition joins only the
 matching digest to Course name/state and Invite enabled/current meaning.
+Invite Join reuses this digest lookup only to resolve an internal Invite
+identity. Its single guarded Assignment insert requires that exact Invite to
+remain enabled and current while the Course and Participant remain Active.
+The Participant/Course uniqueness constraint makes concurrent or repeated
+acceptance one membership; post-insert classification treats an Active row as
+idempotent success and a retained Revoked row as refusal, with no conflict
+update or reactivation.
 
 The full migration sequence is applied to clean isolated state in Worker tests
 and before browser E2E. The schema is designed for eventual D1 deployment. A

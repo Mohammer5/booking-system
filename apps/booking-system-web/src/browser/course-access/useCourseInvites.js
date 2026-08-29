@@ -37,13 +37,17 @@ export function useReplaceCourseInvite(courseId, inviteId) {
 export function useRecognizedCourseInvite(token) {
   return useQuery({
     queryKey: ["course-access", "recognized-invite", token],
-    queryFn: () => requestInviteJson("/api/course-invites/recognition", {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify({ token }),
-    }),
-    enabled: token !== null,
+    queryFn: () => recognizeOrContinueCourseInvite(token),
     retry: false,
+  });
+}
+
+/** @returns {object} Explicit body-free shared-Invite Join mutation. */
+export function useJoinCourseInvite() {
+  return useMutation({
+    mutationFn: () => requestInviteJson("/api/course-invites/join", {
+      method: "POST",
+    }),
   });
 }
 
@@ -66,6 +70,30 @@ export function captureCourseInviteToken() {
   }
 
   return globalThis.sessionStorage.getItem(inviteSessionKey);
+}
+
+/** @returns {Promise<object>} Initial raw recognition or signed continuation. */
+async function recognizeOrContinueCourseInvite(token) {
+  if (token === null) {
+    return requestInviteJson("/api/course-invites/continuation");
+  }
+
+  try {
+    const result = await requestInviteJson("/api/course-invites/recognition", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ token }),
+    });
+
+    globalThis.sessionStorage.removeItem(inviteSessionKey);
+    return result;
+  } catch (error) {
+    if (error.status === 404) {
+      globalThis.sessionStorage.removeItem(inviteSessionKey);
+    }
+
+    throw error;
+  }
 }
 
 /** @returns {object} One lifecycle mutation updating the related query. */

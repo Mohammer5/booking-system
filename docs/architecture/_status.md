@@ -76,7 +76,8 @@
   profile detail plus Disable/Re-enable HTTP, Course Assignment list/create/
   reactivate/revoke HTTP, and private assigned Participant Course list/detail
   HTTP for Active or Archived Courses, shared Course Invite management and
-  public recognition HTTP, plus terminal body-free Course archival HTTP.
+  public recognition/signed-continuation/explicit-Join HTTP, plus terminal
+  body-free Course archival HTTP.
   Application destinations remain fixed and browser input cannot select
   principal, authority, Assignment identity/state, lifecycle state,
   normalized email, definite instant, or permanent scheduling history.
@@ -111,7 +112,7 @@
   Disable/Re-enable, Course Assignment creation/revocation/reactivation, and
   current assigned Active/Archived-Course
   list/detail access, together with Course Invite create/disable/re-enable/
-  replace and minimal-recognition policy, plus
+  replace, minimal-recognition, and explicit Join policy, plus
   `module-participation` factories for Participant Selection set/change/remove
   and derived current/history presentation.
   Course-local time resolution and complete-email
@@ -120,7 +121,7 @@
   responsibilities plus thin browser, production Worker, and non-production
   Worker compositions.
 - React Router serves the independently navigable `/` Participant entry,
-  public `/invite` recognition,
+  public `/invite` continuation and Join,
   Participant `/profile` and `/courses/:courseId` detail,
   `/admin` administration entry, `/admin/participants`, stable
   `/admin/participants/:participantId` detail/edit, and nested
@@ -147,9 +148,10 @@
   revocation actionable.
   Active Course detail additionally owns the one-current shared Invite URL,
   copy and lifecycle controls. The public Invite route captures a token from a
-  URL fragment, removes it from the address bar, retains it only in Invite-
-  specific session storage, and renders no private Course context or Join
-  control.
+  URL fragment, removes it from the address bar, replaces it after recognition
+  with a signed `HttpOnly` digest continuation, and carries that continuation
+  through fixed Google authentication and Participant onboarding. It renders
+  no private Course context before a separate explicit Join confirmation.
   Membership cards expose only current
   permitted revoke/reactivate actions with confirmation and accurate retention
   copy.

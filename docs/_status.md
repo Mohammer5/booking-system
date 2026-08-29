@@ -57,7 +57,7 @@ lifecycle/permanent deletion, Module creation/editing/cancellation/deletion,
 terminal Course archival with private read-only history,
 Participant registration/profile/lifecycle
 maintenance, Course Assignment creation/lifecycle, assigned Participant
-Course access, shared Course Invite management/recognition, and Participant
+Course access, shared Course Invite management/recognition/Join, and Participant
 Module Selection slices are now implemented:
 
 - `@booking-system/booking` at `packages/booking` owns the implemented
@@ -72,7 +72,8 @@ Module Selection slices are now implemented:
   `course-access` Participant registration, fresh context, Course Assignment
   creation/revocation/reactivation, assigned Active/Archived-Course list/detail, and
   self/Admin profile-edit plus Participant Disable/Re-enable policy, together
-  with one-current Course Invite lifecycle and minimal recognition policy, and
+  with one-current Course Invite lifecycle, minimal recognition, and explicit
+  Join policy, and
   `module-participation` Participant selection eligibility, replacement,
   removal, and current-versus-historical presentation policy;
 - `@booking-system/booking-system-web` at `apps/booking-system-web` owns the
@@ -87,7 +88,7 @@ Module Selection slices are now implemented:
   detail, explicit Module
   Selection controls, `/profile` self-service and
   `/admin/participants/:participantId` administration, Active-Course Invite
-  controls, the public `/invite` recognition route, and query-driven
+  controls, the public `/invite` continuation/Join route, and query-driven
   assigned-Course home, Worker/API
   handling, Better Auth composition, D1
   persistence, Vite/Workers Static Assets integration, and local runtime;
@@ -176,8 +177,11 @@ Module Selection slices are now implemented:
   current token plus SHA-256 recognition digests, atomically clears predecessor
   authority on replacement, and preserves one coherent current Invite. The
   fragment-based public route immediately moves raw authority into Invite-only
-  session storage, cleans the address bar, and exposes only Course name plus
-  available/unavailable meaning for recognized current or predecessor tokens;
+  session storage, cleans the address bar, and replaces the raw value after
+  recognition with a signed `HttpOnly` digest continuation. Fixed Google/
+  onboarding return creates no membership; separate body-free Join atomically
+  creates one Assignment, repeats Active membership, and refuses Disabled,
+  Revoked, unavailable, or Archived state without change;
 - the stable Course detail lists and creates Course-wide Groups with unique
   normalized Active names and future Scheduled Modules, resolves local minute
   input through the Course IANA timezone, rejects DST gaps, requires an
@@ -219,8 +223,10 @@ Module Selection slices are now implemented:
 - Playwright also proves real shared-Invite creation, repeated retrieval and
   copy, disable/re-enable/replacement, permanent predecessor invalidation,
   Archived recognition, unknown-token privacy, fragment cleanup, session
-  refresh, destructive Dialog focus, technical sanitization, responsive
-  layout, and axe results;
+  continuation/refresh, fixed authentication/onboarding return, explicit Join,
+  two-Participant reuse, repeat no-op, Revoked/Disabled/stale refusal,
+  destructive Dialog focus, technical sanitization, responsive layout, and
+  axe results;
 - both workspace boundary maps are registered in ESLint with exact module,
   workspace, composition, third-party, and test-only permissions;
 - the root Nix flake supplies NixOS developer-host tooling: Node, pnpm,
@@ -231,7 +237,7 @@ Module Selection slices are now implemented:
   build, and Chromium browser evidence.
 
 Apple, Microsoft, and Facebook providers, Admin-assisted Module
-Selection, Course Invite Join,
+Selection,
 Admin Invites,
 later Admin capabilities, remote Google credentials and production
 callback/domain configuration, remote Cloudflare staging/production resources,

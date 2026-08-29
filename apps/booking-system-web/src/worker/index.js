@@ -3,6 +3,9 @@ export { createCoursePersistence } from "./course-structure/index.js";
 export {
   createCourseAssignmentPersistence,
   createCourseInvitePersistence,
+  createCourseInviteJoinPersistence,
+  createCourseInviteContinuation,
+  createCourseInviteJoinHttpHandler,
   createCourseInviteToken,
   createParticipantCoursePersistence,
   createParticipantPersistence,

@@ -285,6 +285,21 @@ create/retrieve/copy/disable/re-enable/replace, old/new/Archived and unknown
 public states, fragment cleanup, session refresh, privacy, desktop/360px,
 keyboard/Dialog/result focus, overflow, and axe evidence.
 
+For shared Course Invite Join, booking-domain Vitest owns missing/Active/
+Revoked Assignment translation, Active Participant/current Invite predicates,
+stable identity reuse, and refusal without side effects. Worker/D1 Vitest owns
+purpose-derived HMAC continuation, cookie attributes and tamper refusal,
+body-free authenticated HTTP, atomic current-state revalidation, concurrent
+and repeated acceptance, two-Participant reuse, Revoked no-reactivation,
+production composition, narrow responses, and technical sanitization.
+Authentication tests own fixed same-origin Google success/error destinations
+and prove no Invite authority enters provider URLs. Playwright owns raw-token
+cleanup, refresh/auth/onboarding continuation without automatic membership,
+explicit German Join confirmation, normal private access only after success,
+two-Participant reuse, repeat no-op, Disabled/Revoked/Invite/Course stale
+refusals, privacy, desktop/360px, keyboard/Dialog/result focus, overflow, and
+axe evidence without contacting Google's UI.
+
 The implemented integration uses project-pinned `@cloudflare/vitest-plugin`
 with isolated D1 state and the version-controlled migration sequence.
 
@@ -319,8 +334,9 @@ Detailed product invariants remain lower-level-test responsibilities.
 Routine E2E must not automate Google, Apple, Microsoft, or Facebook login UIs.
 The implemented direction is an explicitly non-production Better Auth
 test-capable composition that establishes normal application sessions for the
-fixed `first-admin`, `later-admin`, `participant-a`, `participant-b`, and
-`selection-participant` identities.
+fixed `first-admin`, `later-admin`, `participant-a`, `participant-b`,
+`invite-participant-a`, `invite-participant-b`, and `selection-participant`
+identities.
 Playwright then exercises the normal authenticated application and real
 booking-domain authorization; test authentication must not mock or bypass it or
 permit arbitrary-principal impersonation.

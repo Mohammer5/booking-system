@@ -45,7 +45,7 @@ describe("normal authentication configuration", () => {
 });
 
 describe("Google authorization boundary", () => {
-  it("uses the one normal provider callback and rejects an external application destination", async () => {
+  it("uses one provider callback for fixed application destinations", async () => {
     const response = await initiateGoogleSignIn("/admin");
     const body = await response.json();
     const authorizationURL = new URL(body.url);
@@ -74,6 +74,15 @@ describe("Google authorization boundary", () => {
     expect(participantAuthorizationURL.searchParams.get("redirect_uri")).toBe(
       "http://localhost/api/auth/callback/google",
     );
+
+    const inviteResponse = await initiateGoogleSignIn("/invite");
+    const inviteAuthorizationURL = new URL((await inviteResponse.json()).url);
+
+    expect(inviteResponse.status).toBe(200);
+    expect(inviteAuthorizationURL.searchParams.get("redirect_uri")).toBe(
+      "http://localhost/api/auth/callback/google",
+    );
+    expect(inviteAuthorizationURL.toString()).not.toContain("invite-secret");
   });
 
   it("removes provider callback payloads before returning to Admin UI", async () => {
@@ -106,6 +115,22 @@ describe("Google authorization boundary", () => {
     );
     expect(response.headers.get("cache-control")).toBe("no-store");
     await expect(response.text()).resolves.toBe("");
+  });
+
+  it("returns Invite authentication failures to one sanitized destination", async () => {
+    const response = await productionWorker.fetch(
+      new Request(
+        "http://localhost/api/auth/invite-error?error=provider-error&error_description=invite-secret",
+      ),
+      env,
+    );
+
+    expect(response.status).toBe(303);
+    expect(response.headers.get("location")).toBe(
+      "http://localhost/invite?authentication=failed",
+    );
+    expect(response.headers.get("location")).not.toContain("invite-secret");
+    expect(response.headers.get("cache-control")).toBe("no-store");
   });
 });
 

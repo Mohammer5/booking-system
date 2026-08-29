@@ -11,7 +11,7 @@ deletion plus terminal Course archival, and
 `course-access` for fresh
 Participant context resolution, registration/profile/lifecycle, Course Assignment lifecycle, and
 assigned Active/Archived-Course list/detail access plus shared Course Invite
-management and recognition. It also contains
+management, recognition, and Join. It also contains
 `module-participation` for
 Participant Selection eligibility, set/change/remove operations, and derived
 current-versus-historical presentation. These concepts remain modules inside
@@ -104,8 +104,8 @@ provides the shared current-context route gate. Participant profile/lifecycle,
 Assignment creation/lifecycle, and assigned-Course access use second-level
 `course-access` slices inside both browser and Worker without creating a new
 first-level application module. Shared Course Invite domain operations, D1/
-HTTP adapters, Admin controls, and public recognition likewise remain in those
-existing `course-access` slices. A thin
+HTTP adapters, signed continuation, Admin controls, public recognition, and
+explicit Join likewise remain in those existing `course-access` slices. A thin
 composition entry may join only the roles required for its executable graph.
 The browser communicates with Worker behavior through same-origin HTTP rather
 than importing Worker implementation to share transport data.

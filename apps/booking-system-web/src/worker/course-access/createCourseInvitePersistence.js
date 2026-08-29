@@ -221,7 +221,8 @@ async function findCurrentCourseInvite(database, courseId) {
 async function findRecognizedCourseInviteByDigest(database, tokenDigest) {
   const row = await database
     .prepare(
-      `select c.name as course_name, c.state as course_state,
+      `select i.id, i.course_id, c.name as course_name,
+              c.state as course_state,
               i.is_enabled, i.is_current
          from course_invites i
          join courses c on c.id = i.course_id
@@ -233,6 +234,8 @@ async function findRecognizedCourseInviteByDigest(database, tokenDigest) {
   return row === null
     ? null
     : {
+        id: row.id,
+        courseId: row.course_id,
         courseName: row.course_name,
         courseState: row.course_state,
         inviteState: row.is_enabled === 1 ? "enabled" : "disabled",

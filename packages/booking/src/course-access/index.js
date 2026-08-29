@@ -1,6 +1,7 @@
 export { createAssignParticipantToCourse } from "./createAssignParticipantToCourse.js";
 export { createCourseInvite } from "./createCourseInvite.js";
 export { createDisableCourseInvite } from "./createDisableCourseInvite.js";
+export { createJoinCourseThroughInvite } from "./createJoinCourseThroughInvite.js";
 export { createDisableParticipant } from "./createDisableParticipant.js";
 export { createGetParticipantCourse } from "./createGetParticipantCourse.js";
 export { createListParticipantCourses } from "./createListParticipantCourses.js";

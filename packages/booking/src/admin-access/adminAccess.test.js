@@ -127,6 +127,7 @@ describe("Public booking package interface", () => {
       "createDisableParticipant",
       "createGetAdminAuthenticationEntry",
       "createGetParticipantCourse",
+      "createJoinCourseThroughInvite",
       "createListParticipantCourses",
       "createReactivateGroup",
       "createReenableCourseInvite",

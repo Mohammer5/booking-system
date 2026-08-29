@@ -73,7 +73,9 @@ test("manages one shared Invite and recognizes its exact lifecycle publicly", as
     .toBeVisible();
   await expectPublicPrivacy(page, course.name);
   await page.reload();
-  await expect(page.getByRole("heading", { name: course.name })).toBeVisible();
+  await expect(page.getByRole("heading", { name: course.name })).toHaveCount(0);
+  await expect(page.getByText("Diese Kurseinladung ist nicht verfügbar."))
+    .toBeVisible();
 
   await page.goto(`/admin/courses/${course.id}`);
   await inviteSection(page)
@@ -85,7 +87,7 @@ test("manages one shared Invite and recognizes its exact lifecycle publicly", as
     }),
   ).toBeFocused();
   await page.goto(firstURL);
-  await expect(page.getByText("Diese Kurseinladung ist verfügbar.")).toBeVisible();
+  await expect(page.getByRole("heading", { name: course.name })).toBeVisible();
 
   await page.goto(`/admin/courses/${course.id}`);
   const replace = inviteSection(page).getByRole("button", {
@@ -112,7 +114,7 @@ test("manages one shared Invite and recognizes its exact lifecycle publicly", as
   await expect(page.getByText("Diese Kurseinladung ist nicht verfügbar."))
     .toBeVisible();
   await page.goto(replacementURL);
-  await expect(page.getByText("Diese Kurseinladung ist verfügbar.")).toBeVisible();
+  await expect(page.getByRole("heading", { name: course.name })).toBeVisible();
 
   await ensureActiveAdmin(page);
   const archived = await page.request.post(
@@ -130,6 +132,167 @@ test("manages one shared Invite and recognizes its exact lifecycle publicly", as
   await page.goto(`/admin/courses/${course.id}`);
   await expect(page.getByRole("heading", { name: "Geteilte Kurseinladung" }))
     .toHaveCount(0);
+});
+
+test("continues through onboarding and joins independently and idempotently", async ({
+  context,
+  page,
+}) => {
+  test.setTimeout(60_000);
+  const privateCourseRequests = [];
+
+  page.on("request", (request) => {
+    const pathname = new URL(request.url()).pathname;
+
+    if (pathname.startsWith("/api/participant/courses/")) {
+      privateCourseRequests.push(pathname);
+    }
+  });
+  await page.setViewportSize(desktopViewport);
+  await ensureActiveAdmin(page);
+  const course = await createCourse(page, "Einladungsbeitritt");
+  const invite = await createInviteThroughApi(page, course.id);
+  const rawToken = new URL(invite.url).hash.slice(1);
+
+  await context.clearCookies();
+  await page.goto(invite.url);
+  await expect(page).toHaveURL(/\/invite$/);
+  await expect(page.getByRole("heading", { name: course.name })).toBeVisible();
+  const google = page.getByRole("button", { name: "Weiter mit Google" });
+
+  await expect(google).toBeVisible();
+  await expect.poll(() => page.evaluate(() =>
+    sessionStorage.getItem("booking-system.course-invite-token"),
+  )).toBeNull();
+  expect(privateCourseRequests).toEqual([]);
+  await expectPublicPrivacy(page, course.name);
+
+  await page.route("**/api/auth/sign-in/social", async (route) => {
+    const body = route.request().postDataJSON();
+
+    expect(body).toEqual({
+      provider: "google",
+      callbackURL: "/invite",
+      errorCallbackURL: "/api/auth/invite-error",
+    });
+    expect(JSON.stringify(body)).not.toContain(rawToken);
+    await fulfillJson(route, 503, { message: "test initiation failure" });
+  });
+  await google.click();
+  await expect(page.getByRole("alert").filter({
+    hasText: "Die Anmeldung ist fehlgeschlagen.",
+  })).toBeFocused();
+  await page.unroute("**/api/auth/sign-in/social");
+
+  await establishFixture(page, "invite-participant-a");
+  await page.reload();
+  await expect(
+    page.getByRole("heading", { name: "Teilnahmeprofil einrichten" }),
+  ).toBeVisible();
+  await page.getByLabel("Name").fill("Invite Alice");
+  await page.getByLabel("E-Mail-Adresse").fill(
+    `invite-alice-${crypto.randomUUID()}@example.com`,
+  );
+  await page.getByRole("button", { name: "Teilnahmeprofil erstellen" }).click();
+  const joinAction = page.getByRole("button", { name: "Kursbeitritt prüfen" });
+
+  await expect(joinAction).toBeVisible();
+  const beforeJoin = await page.request.get("/api/participant/courses");
+
+  expect(beforeJoin.status()).toBe(200);
+  expect(await beforeJoin.json()).toEqual({ courses: [] });
+  expect(privateCourseRequests).toEqual([]);
+  await joinAction.focus();
+  await page.keyboard.press("Enter");
+  const dialog = page.getByRole("dialog", { name: "Kurs beitreten?" });
+
+  await expect(dialog.getByRole("button", { name: "Abbrechen" })).toBeFocused();
+  await expect(dialog).toContainText(course.name);
+  const aliceJoinPromise = page.waitForResponse((response) =>
+    new URL(response.url()).pathname === "/api/course-invites/join" &&
+    response.request().method() === "POST",
+  );
+  await dialog.getByRole("button", { name: "Jetzt Kurs beitreten" }).click();
+  const aliceJoin = await aliceJoinPromise;
+  const aliceAssignment = (await aliceJoin.json()).assignment;
+  const joined = page.getByRole("status").filter({
+    hasText: "Sie sind dem Kurs erfolgreich beigetreten.",
+  });
+
+  await expect(joined).toBeFocused();
+  await expect(page.getByRole("link", { name: "Zum Kurs" })).toBeVisible();
+  const aliceCourses = await page.request.get("/api/participant/courses");
+
+  expect(await aliceCourses.json()).toMatchObject({
+    courses: [{ id: course.id, name: course.name }],
+  });
+  await page.reload();
+  await page.getByRole("button", { name: "Kursbeitritt prüfen" }).click();
+  await dialog.getByRole("button", { name: "Jetzt Kurs beitreten" }).click();
+  await expect(page.getByRole("status").filter({
+    hasText: "Sie sind diesem Kurs bereits zugeordnet.",
+  })).toBeFocused();
+
+  await context.clearCookies();
+  await establishFixture(page, "invite-participant-b");
+  const bobProfile = await page.request.post("/api/participant/onboarding", {
+    data: {
+      name: "Invite Bob",
+      email: `invite-bob-${crypto.randomUUID()}@example.com`,
+    },
+  });
+
+  expect(bobProfile.status()).toBe(201);
+  await page.goto(invite.url);
+  await expect(page.getByRole("button", { name: "Kursbeitritt prüfen" }))
+    .toBeVisible();
+  await page.getByRole("button", { name: "Kursbeitritt prüfen" }).click();
+  await dialog.getByRole("button", { name: "Jetzt Kurs beitreten" }).click();
+  await expect(page.getByText("Sie sind dem Kurs erfolgreich beigetreten."))
+    .toBeVisible();
+  const bobCourses = await page.request.get("/api/participant/courses");
+
+  expect(await bobCourses.json()).toMatchObject({
+    courses: [{ id: course.id, name: course.name }],
+  });
+
+  await context.clearCookies();
+  await ensureActiveAdmin(page);
+  const revocation = await page.request.post(
+    `/api/admin/courses/${course.id}/assignments/${aliceAssignment.id}/revocation`,
+  );
+
+  expect(revocation.status()).toBe(200);
+  await context.clearCookies();
+  await establishFixture(page, "invite-participant-a");
+  await page.goto("/");
+  await page.goto(invite.url);
+  await page.getByRole("button", { name: "Kursbeitritt prüfen" }).click();
+  await dialog.getByRole("button", { name: "Jetzt Kurs beitreten" }).click();
+  await expect(page.getByRole("alert").filter({
+    hasText: "Ihre frühere Kurszuordnung wurde widerrufen",
+  })).toBeFocused();
+
+  await context.clearCookies();
+  await establishFixture(page, "invite-participant-b");
+  await page.goto("/");
+  await page.goto(invite.url);
+  await expect(page.getByRole("button", { name: "Kursbeitritt prüfen" }))
+    .toBeVisible();
+  await ensureActiveAdmin(page);
+  const disabled = await page.request.post(
+    `/api/admin/participants/${(await bobProfile.json()).id}/disablement`,
+  );
+
+  expect(disabled.status()).toBe(200);
+  await establishFixture(page, "invite-participant-b");
+  await page.getByRole("button", { name: "Kursbeitritt prüfen" }).click();
+  await dialog.getByRole("button", { name: "Jetzt Kurs beitreten" }).click();
+  await expect(page.getByRole("alert").filter({
+    hasText: "Dieses Teilnahmeprofil ist deaktiviert.",
+  })).toBeFocused();
+  await page.setViewportSize(narrowViewport);
+  await expectAccessibleLayout(page);
 });
 
 test("presents unknown, stale, and technical Invite states without private data", async ({
@@ -216,6 +379,15 @@ async function ensureActiveAdmin(page) {
   expect([201, 409]).toContain(response.status());
 }
 
+/** @returns {Promise<void>} Establish one fixed normal application session. */
+async function establishFixture(page, fixtureName) {
+  const response = await page.request.post(
+    `/api/_fixtures/session/${fixtureName}`,
+  );
+
+  expect(response.status()).toBe(204);
+}
+
 /** @returns {Promise<object>} Create one uniquely named Active Course. */
 async function createCourse(page, name) {
   const response = await page.request.post("/api/admin/courses", {
@@ -224,6 +396,16 @@ async function createCourse(page, name) {
 
   expect(response.status()).toBe(201);
   return response.json();
+}
+
+/** @returns {Promise<object>} Create one shared Invite through its Admin API. */
+async function createInviteThroughApi(page, courseId) {
+  const response = await page.request.post(
+    `/api/admin/courses/${courseId}/invites/current`,
+  );
+
+  expect(response.status()).toBe(201);
+  return (await response.json()).invite;
 }
 
 /** @returns {import("@playwright/test").Locator} Admin Invite section. */

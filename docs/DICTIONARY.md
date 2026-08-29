@@ -86,7 +86,11 @@ most one current Invite, which may be enabled, disabled, or replaced. A
 recognized unusable Invite may reveal only its Course name; an unknown Invite
 reveals no Course data. The local application implements the one-current
 create/disable/re-enable/replace lifecycle, current URL retrieval/copy, and
-minimal public recognition; explicit Join remains deferred. See [shared Course
+minimal public recognition, signed session continuation, and explicit atomic
+Join. Authentication or onboarding never accepts the Invite; missing
+membership is created only after an Active Participant confirms, Active
+membership is an idempotent success, and Revoked membership is not self-
+reactivated. See [shared Course
 Invite](product/course-access.md#shared-course-invite).
 
 ### Course Timezone
@@ -272,7 +276,7 @@ implemented `course-access` module owns fresh Participant context and
 registration/profile policy plus Course Assignment creation/lifecycle and
 Participant lifecycle plus assigned Active/Archived-Course access; Invite
 behavior in that module now includes one-current shared Course Invite
-management and minimal recognition. Its implemented
+management, minimal recognition, and explicit Join policy. Its implemented
 `module-participation` module owns Participant Selection eligibility,
 set/change/remove, and derived current/history policy, with Admin-assisted
 behavior still deferred. See
@@ -293,7 +297,7 @@ terminal Module cancellation with retained Selection history,
 permanent deletion of unreferenced Modules with Course timezone history intact,
 terminal Course archival with read-only Admin/Participant presentation,
 shared Course Invite persistence and Admin lifecycle HTTP plus the public
-fragment/session-backed `/invite` recognition surface,
+fragment-to-signed-session `/invite` continuation and explicit Join surface,
 private technical adapters, and composition roots.
 See
 [Applications](architecture/applications.md#accepted-initial-boundary).

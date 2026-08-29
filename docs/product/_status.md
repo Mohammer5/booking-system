@@ -120,8 +120,13 @@ shared Course Invite while its Course is Active. Recognized current and
 predecessor links reveal only Course name plus available/unavailable meaning;
 unknown or malformed links reveal no Course data. Replacement removes the
 predecessor's Join authority permanently, while no Invite expires or becomes
-person-specific. Course Invite Join, Admin Invites, later Admin onboarding,
-and later Admin management
+person-specific. A recognized Invite now continues through fixed Google
+authentication and optional Participant onboarding without creating
+membership, then accepts one separate explicit Join. Missing membership is
+created once, Active membership repeats successfully, and Disabled
+Participants, Revoked Assignments, unavailable Invites, and Archived Courses
+are refused without change. Admin Invites, later Admin onboarding, and later
+Admin management
 behavior remain unimplemented. Technology, persistence, API,
 frontend, and infrastructure mechanics remain outside this product
 specification and do not alter its contracts.

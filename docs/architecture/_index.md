@@ -20,7 +20,8 @@ JavaScript conventions, and ESLint-enforced dependency rules.
   Participant-registration/profile/
   lifecycle, Assignment-
   lifecycle, and assigned Participant Course-access plus Module-Selection and
-  shared-Course-Invite slices and terminal Course archival/read-only history,
+  shared-Course-Invite management/Join slices and terminal Course archival/
+  read-only history,
   React browser routes and
   responsive Admin/Participant experience, Google
   sign-in, browser-private MUI theme and accessibility baseline,
@@ -38,8 +39,9 @@ JavaScript conventions, and ESLint-enforced dependency rules.
 - Summary: Rationale for the booking application/package boundaries, one
   manifest per workspace, React, MUI, and browser-library responsibilities,
   functional composition, one same-origin Cloudflare Worker, D1 with SQLite
-  semantics, Node/runtime and NixOS host-tooling separation, explicit ESLint
-  enforcement, and deferred remote infrastructure.
+  semantics, signed Course Invite continuation, Node/runtime and NixOS host-
+  tooling separation, explicit ESLint enforcement, and deferred remote
+  infrastructure.
 - Read when: You need to understand why the project chose one web application,
   one booking domain package, browser libraries, functional composition,
   workspace-level manifest ownership, Cloudflare, D1, a non-Node production
@@ -63,7 +65,7 @@ JavaScript conventions, and ESLint-enforced dependency rules.
   `apps/booking-system-web` workspace with responsive Participant/Admin
   contexts, Participant onboarding/profile/lifecycle/assigned-Course access/
   directory, Course Assignment creation/revocation/reactivation, Participant
-  Module Selection, shared Course Invite management/recognition, guarded
+  Module Selection, shared Course Invite management/recognition/Join, guarded
   Course editing, Course/Group/Module creation,
   Module editing/rescheduling/cancellation/deletion, and Group editing/
   archival/reactivation/deletion plus Course archival
@@ -125,8 +127,8 @@ JavaScript conventions, and ESLint-enforced dependency rules.
   `packages/booking` with `admin-access`, Course editing and Course/Group/Module
   `course-structure` including Group lifecycle/deletion and Course archival,
   and Participant-registration/profile/lifecycle/Assignment-lifecycle/assigned-
-  Active/Archived-Course and shared-Invite `course-access` plus Participant-
-  Selection `module-participation` behavior, and why technical
+  Active/Archived-Course and shared-Invite management/Join `course-access`
+  plus Participant-Selection `module-participation` behavior, and why technical
   dependency segregation does not justify extraction.
 - Read when: A task adds, removes, extracts, or changes a package boundary or
   proposes a package to segregate technical dependencies.
@@ -137,7 +139,7 @@ JavaScript conventions, and ESLint-enforced dependency rules.
 - Summary: Defines the implemented responsibility modules, Course creation/
   editing, Group lifecycle/deletion and structure,
   Participant-registration/profile/lifecycle, Assignment-lifecycle, and
-  assigned Active/Archived Participant Course plus shared-Course-Invite,
+  assigned Active/Archived Participant Course plus shared-Course-Invite Join,
   Module-Selection, and Course-archival slices, source roots,
   manifest ownership,
   browser/Worker/authentication separation, interfaces, entrypoints, adapters,
@@ -187,7 +189,7 @@ JavaScript conventions, and ESLint-enforced dependency rules.
 - Path: `docs/architecture/boundaries.md`
 - Summary: Canonical human counterpart to the two implemented per-workspace
   deny-by-default maps, including profile maintenance, Assignment lifecycle,
-  Participant lifecycle, and shared Course Invites within existing
+  Participant lifecycle, and shared Course Invite management/Join within existing
   `course-access`, the booking
   `module-participation` responsibility, Course editing within existing
   `course-structure` including Group lifecycle/deletion and Module

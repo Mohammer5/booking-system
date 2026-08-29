@@ -147,7 +147,7 @@ accepted same-origin Worker and static-assets deployment, while `/api/*`
 remains Worker/API-owned. [Runtime and hosting](runtime-and-hosting.md) owns the
 deployment and fallback behavior. The current independently navigable routes
 are the Participant entry at `/`, Participant profile at `/profile`,
-public Course Invite recognition at `/invite`,
+public Course Invite continuation and Join at `/invite`,
 administration entry at `/admin`, global Participant directory at
 `/admin/participants`, stable Participant detail/edit at
 `/admin/participants/:participantId`, Course index at
@@ -344,10 +344,15 @@ restoration, and focused results. Archived Course detail mounts no Invite
 management. The independently navigable `/invite` route lives outside Admin
 and Participant gates: it captures raw authority from the URL fragment into an
 Invite-specific `sessionStorage` key, immediately cleans the address bar with
-`replaceState`, and submits only a no-store recognition body. Refresh reuses
-that session token. Its German MUI surface renders only Course name and non-
-color-only available/unavailable meaning for recognized tokens, one generic
-unknown/malformed state, a sanitized technical state, and no Join control.
+`replaceState`, and submits only a no-store recognition body. Successful
+recognition erases the raw browser value and later refresh/authentication/
+onboarding return reads an `HttpOnly` signed continuation. The German MUI
+surface renders only Course name and non-color-only Invite meaning before
+Join, reuses fixed Google entry and explicit Participant onboarding, then
+offers an explicit keyboard-accessible Join Dialog only to an Active
+Participant. Focused success, repeat, Revoked, stale, Disabled, and technical
+states never mount private Course data; successful Join exposes only a link to
+the normal assigned-Course route.
 
 Domain and application failures use machine-readable, language-neutral
 outcomes. Browser code translates those outcomes into localized messages;

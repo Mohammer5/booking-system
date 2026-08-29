@@ -41,10 +41,34 @@ export const courseAccessTranslations = {
     publicInvite: {
       title: "Kurseinladung",
       description:
-        "Hier wird ausschließlich geprüft, welchem Kurs ein Einladungslink zugeordnet ist und ob er aktuell verfügbar ist.",
+        "Prüfen Sie die Einladung, melden Sie sich an und entscheiden Sie anschließend ausdrücklich über den Kursbeitritt.",
       loading: "Kurseinladung wird geprüft …",
       available: "Diese Kurseinladung ist verfügbar.",
       unavailable: "Diese Kurseinladung ist nicht verfügbar.",
+      signInDescription:
+        "Melden Sie sich mit Google an. Dadurch treten Sie dem Kurs noch nicht bei.",
+      onboardingDescription:
+        "Richten Sie zuerst Ihr Teilnahmeprofil ein. Auch dadurch treten Sie dem Kurs noch nicht bei.",
+      disabledParticipant:
+        "Dieses Teilnahmeprofil ist deaktiviert. Ein Kursbeitritt ist nicht möglich.",
+      joinDescription:
+        "Die Einladung ist verfügbar. Erst mit der folgenden Bestätigung treten Sie dem Kurs bei.",
+      join: "Kursbeitritt prüfen",
+      joinTitle: "Kurs beitreten?",
+      joinConfirmation:
+        "Möchten Sie dem Kurs „{{courseName}}“ jetzt verbindlich beitreten?",
+      cancel: "Abbrechen",
+      joinConfirm: "Jetzt Kurs beitreten",
+      joining: "Kursbeitritt wird geprüft …",
+      joined: "Sie sind dem Kurs erfolgreich beigetreten.",
+      "already-joined": "Sie sind diesem Kurs bereits zugeordnet.",
+      "assignment-revoked":
+        "Ihre frühere Kurszuordnung wurde widerrufen und kann mit dieser Einladung nicht reaktiviert werden.",
+      "invite-unavailable":
+        "Der Kursbeitritt ist nicht mehr verfügbar. Es wurde keine Kurszuordnung geändert.",
+      toCourse: "Zum Kurs",
+      joinTechnicalError:
+        "Der Kursbeitritt konnte nicht geprüft werden. Bitte versuchen Sie es erneut.",
       technicalError:
         "Die Kurseinladung konnte nicht geprüft werden. Bitte versuchen Sie es erneut.",
     },

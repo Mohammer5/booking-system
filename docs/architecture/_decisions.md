@@ -194,6 +194,23 @@ Structural composition, rather than a production runtime flag, makes the
 fail-closed property independently verifiable and prevents a hidden test route
 from becoming an authentication bypass.
 
+## Continue Course Invites With A Signed Digest Session
+
+After first raw fragment recognition, Course Invite continuation uses an
+application-issued `HttpOnly` session cookie containing only the recognition
+digest and an HMAC-SHA-256 signature. The signing key is purpose-derived from
+the required environment-owned Better Auth secret through Worker Web Crypto.
+This reuses existing high-entropy deployment key material without treating the
+authentication session as Invite authority or adding another secret, database
+table, pending domain record, or generic continuation framework.
+
+The cookie is session-lived, `SameSite=Lax`, root-scoped, and `Secure` on
+HTTPS, so it survives the fixed top-level Google callback while remaining
+unavailable to browser JavaScript. Join stays a separate body-free request
+that revalidates the digest and current domain state. This design prevents the
+raw token from entering provider URLs and preserves the product rule that
+recognition, authentication, and onboarding do not create membership.
+
 ## Keep Node Tooling Separate From The Worker Runtime
 
 Node.js remains the repository tooling, build, and CI runtime. Application

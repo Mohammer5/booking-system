@@ -351,11 +351,13 @@ route.
 
 ### Shared Course Invite HTTP Surface
 
-The implemented `course-access` Invite slice adds six concrete same-origin
+The implemented `course-access` Invite slice adds eight concrete same-origin
 operations:
 
 ```text
 POST /api/course-invites/recognition
+GET  /api/course-invites/continuation
+POST /api/course-invites/join
 GET  /api/admin/courses/:courseId/invites/current
 POST /api/admin/courses/:courseId/invites/current
 POST /api/admin/courses/:courseId/invites/:inviteId/disablement
@@ -376,8 +378,20 @@ Public recognition accepts only `POST { token }`. A recognized digest returns
 disabled/replaced Invite or Archived Course. Unknown and malformed input share
 `404 { outcome: "invite-unavailable" }`. Public representations expose no URL,
 token, digest, roster, Participant, Selection, Group/Module access, Assignment,
-or Admin data. Recognition does not authenticate or Join; explicit Join is a
-later slice.
+or Admin data. Available recognition installs a signed `HttpOnly` digest
+continuation and erases the browser-held raw token; continuation GET returns
+the same narrow current meaning without accepting browser state or exposing
+the digest.
+
+Join is an authenticated body-free POST. It derives the Participant and Invite
+only from the normal session and verified continuation, then atomically
+rechecks the exact current enabled Invite, Active Course, Active Participant,
+and retained Assignment. A missing pair returns `201 joined` with only
+Assignment id/state and Course id/name; an Active pair returns `200
+already-joined` with the same identity. Disabled Participants, unavailable
+Invites, Archived Courses, and Revoked Assignments are refused without a
+membership change. Every Invite response remains `no-store`, and unexpected
+failures collapse to a language-neutral technical outcome.
 
 ### No Separate API Application
 
