@@ -15,6 +15,7 @@ import {
   toParticipantResponse,
 } from "./courseAccessHttpContract.js";
 import { handleParticipantLifecycleRequest } from "./handleParticipantLifecycleRequest.js";
+import { handleCourseAccessCollectionRequest } from "./handleCourseAccessCollectionRequest.js";
 
 /**
  * Create Admin Participant-directory and Course-membership HTTP operations.
@@ -101,6 +102,10 @@ function isSupportedRoute(route, method) {
     return method === "GET";
   }
 
+  if (route.kind === "participant-options") {
+    return method === "GET";
+  }
+
   if (route.kind === "assignment-revocation") {
     return method === "POST";
   }
@@ -122,8 +127,15 @@ function isSupportedRoute(route, method) {
  * @returns {Promise<Response>} Exact operation response.
  */
 function handleAuthorizedRoute(context, operations) {
-  if (context.route.kind === "participants") {
-    return handleParticipantListRequest(operations);
+  if (
+    new Set(["participants", "participant-options"]).has(context.route.kind) ||
+    (context.route.kind === "assignments" && context.request.method === "GET")
+  ) {
+    return handleCourseAccessCollectionRequest(
+      context,
+      operations,
+      staleAdminResponse,
+    );
   }
 
   if (context.route.kind === "participant") {
@@ -142,9 +154,7 @@ function handleAuthorizedRoute(context, operations) {
     return handleAssignmentRevocationRequest(context, operations);
   }
 
-  return context.request.method === "GET"
-    ? handleAssignmentListRequest(context.route.courseId, operations)
-    : handleAssignmentRequest(context, operations);
+  return handleAssignmentRequest(context, operations);
 }
 
 /** @returns {boolean} Whether one matched route is a Participant state action. */
@@ -255,44 +265,6 @@ async function participantProfileResultResponse(context, result, operations) {
   return result.outcome === "participant-not-editable"
     ? jsonResponse({ outcome: "participant-not-found" }, 404)
     : jsonResponse(result, 409);
-}
-
-/**
- * List every registered Participant after fresh Admin authorization.
- *
- * @param {object} operations Course-access operations.
- * @returns {Promise<Response>} Participant directory response.
- */
-async function handleParticipantListRequest(operations) {
-  const participants = await operations.participantPersistence.listParticipants();
-
-  return jsonResponse(
-    { participants: participants.map(toParticipantResponse) },
-    200,
-  );
-}
-
-/**
- * List current Course memberships for an Active or Archived Course.
- *
- * @param {string} courseId Course identity.
- * @param {object} operations Course-access operations.
- * @returns {Promise<Response>} Course Assignment collection response.
- */
-async function handleAssignmentListRequest(courseId, operations) {
-  const course = await operations.coursePersistence.findCourseById(courseId);
-
-  if (course === null) {
-    return jsonResponse({ outcome: "course-not-found" }, 404);
-  }
-
-  const assignments =
-    await operations.assignmentPersistence.listAssignmentsByCourseId(courseId);
-
-  return jsonResponse(
-    { assignments: assignments.map((value) => toAssignmentResponse(value)) },
-    200,
-  );
 }
 
 /**

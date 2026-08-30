@@ -1,9 +1,12 @@
 import {
   createAdminInvite,
-  createListAdminInvites,
   createResolveAdminContext,
   createRevokeAdminInvite,
 } from "@booking-system/booking";
+import {
+  adminCollectionConfigurations,
+  parseAdminCollectionQuery,
+} from "../admin-collections/index.js";
 
 const collectionPath = "/api/admin/invites";
 
@@ -45,9 +48,6 @@ function createOperations(capabilities) {
       now: capabilities.adminInviteNow,
       createActiveAdminInvite:
         capabilities.invitePersistence.createActiveAdminInvite,
-    }),
-    listInvites: createListAdminInvites({
-      listAdminInvites: capabilities.invitePersistence.listAdminInvites,
     }),
     resolveAdminContext: createResolveAdminContext({
       findAdminUserByExternalPrincipalId:
@@ -114,10 +114,25 @@ async function handleAuthorizedRequest(context, operations) {
   }
 
   if (context.route.kind === "list") {
-    const result = await operations.listInvites({ adminUser: context.adminUser });
+    const parsed = parseAdminCollectionQuery(
+      new URL(context.request.url).searchParams,
+      adminCollectionConfigurations.invites,
+    );
+
+    if (parsed.outcome !== "valid") {
+      return jsonResponse({ outcome: parsed.outcome }, 400);
+    }
+
+    const result = await operations.invitePersistence.listAdminInvitePage(
+      context.adminUser.id,
+      parsed.query,
+    );
 
     return result.outcome === "listed"
-      ? jsonResponse({ invites: result.invites }, 200)
+      ? jsonResponse({
+          invites: result.items,
+          pagination: result.pagination,
+        }, 200)
       : refusalResponse(result);
   }
 

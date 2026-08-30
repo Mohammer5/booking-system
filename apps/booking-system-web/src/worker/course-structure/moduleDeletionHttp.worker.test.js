@@ -118,7 +118,7 @@ describe("Module deletion HTTP contract", () => {
     await expect(detail.json()).resolves.toMatchObject({
       id: "course-1",
       isTimezoneEditable: false,
-      modules: [],
+      counts: { modules: 0 },
     });
     await expect(courseHistory()).resolves.toBe(1);
   });

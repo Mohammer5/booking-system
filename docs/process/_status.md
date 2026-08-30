@@ -18,8 +18,9 @@ Current reality:
 - `EPIC-ruijc` and its dependency-ordered tasks/plans track the active Admin
   collection/detail normalization; only dependency-ready work is activated and
   every completed conceptual task receives its own task-ID commit. The
-  canonical convention task and authenticated Admin navigation-layout task are
-  complete; Worker collection contracts are next in the dependency chain.
+  canonical convention, authenticated Admin navigation layout, and Worker
+  collection-contract tasks are complete; normalized top-level browser
+  collections are next in the dependency chain.
 - GitHub Actions runs the current canonical `pnpm check` gate for pull requests
   targeting `main` and pushes to `main` through the stable `verify` job.
 - Layered local application verification is implemented through domain Vitest,

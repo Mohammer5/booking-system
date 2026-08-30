@@ -87,6 +87,12 @@ describe("Admin Invite HTTP lifecycle and privacy", () => {
     expect(list.status).toBe(200);
     expect(list.headers.get("cache-control")).toBe("no-store");
     expect(listBody.invites).toHaveLength(2);
+    expect(listBody.pagination).toEqual({
+      page: 1,
+      pageSize: 25,
+      totalItems: 2,
+      totalPages: 1,
+    });
     expect(listBody.invites.every((invite) =>
       Object.keys(invite).sort().join(",") === "createdAt,id,state",
     )).toBe(true);
@@ -101,6 +107,18 @@ describe("Admin Invite HTTP lifecycle and privacy", () => {
         row.token_digest.length === 64 && !("token" in row)
       ),
     );
+  });
+
+  it("rejects search and malformed pagination on the non-searchable list", async () => {
+    const cookie = await activeAdminCookie();
+
+    for (const query of ["q=secret", "page=0", "sort=createdAt.sideways"]) {
+      await expectOutcome(
+        await request(`/api/admin/invites?${query}`, { cookie }),
+        400,
+        "invalid-list-query",
+      );
+    }
   });
 
   it("lets another Active Admin Revoke once and never returns the URL", async () => {

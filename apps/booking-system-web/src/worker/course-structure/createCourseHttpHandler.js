@@ -2,7 +2,6 @@ import {
   jsonResponse,
   matchCourseRoute,
   readJsonObject,
-  toCourseDetailResponse,
   toCourseResponse,
   toGroupResponse,
 } from "./courseHttpContract.js";
@@ -19,6 +18,7 @@ import {
   handleModuleManagementRequest,
   moduleCreationResultResponse,
 } from "./createModuleManagementHttp.js";
+import { handleCourseReadRequest } from "./handleCourseReadRequest.js";
 
 /**
  * Create the same-origin Course, Group, and Module HTTP operations.
@@ -61,12 +61,12 @@ function isSupportedRoute(route, method) {
     courses: new Set(["GET", "POST"]),
     course: new Set(["GET", "PUT"]),
     courseArchival: new Set(["POST"]),
-    groups: new Set(["POST"]),
-    group: new Set(["DELETE", "PUT"]),
+    groups: new Set(["GET", "POST"]),
+    group: new Set(["DELETE", "GET", "PUT"]),
     groupArchival: new Set(["POST"]),
     groupReactivation: new Set(["POST"]),
-    modules: new Set(["POST"]),
-    module: new Set(["DELETE", "PUT"]),
+    modules: new Set(["GET", "POST"]),
+    module: new Set(["DELETE", "GET", "PUT"]),
     moduleCancellation: new Set(["POST"]),
     moduleSchedule: new Set(["PUT"]),
   };
@@ -84,8 +84,8 @@ function isSupportedRoute(route, method) {
 function handleAuthorizedRoute(context, operations) {
   const { request, route, adminUser } = context;
 
-  if (route.kind === "courses" && request.method === "GET") {
-    return handleCourseListRequest(operations);
+  if (request.method === "GET") {
+    return handleCourseReadRequest(context, operations, staleAdminResponse);
   }
 
   if (route.kind === "courses") {
@@ -99,12 +99,10 @@ function handleAuthorizedRoute(context, operations) {
           operations,
           currentStateRefusal,
         )
-      : request.method === "GET"
-        ? handleCourseDetailRequest(route.courseId, operations)
-        : handleUpdateCourseRequest(
-            { request, courseId: route.courseId, adminUser },
-            operations,
-          );
+      : handleUpdateCourseRequest(
+          { request, courseId: route.courseId, adminUser },
+          operations,
+        );
   }
 
   if (
@@ -157,6 +155,7 @@ async function handleGroupManagementRequest(context, operations) {
  * Update one Active Course through complete fields and guarded current state.
  *
  * @param {object} context Request, target identity, and current Admin.
+ * @param {object} context Authorized request context.
  * @param {object} operations Course operations.
  * @returns {Promise<Response>} Exact update result or refusal.
  */
@@ -202,18 +201,6 @@ function courseUpdateResultResponse(result) {
 }
 
 /**
- * List Courses after fresh Active Admin resolution.
- *
- * @param {object} operations Course operations.
- * @returns {Promise<Response>} Course index response.
- */
-async function handleCourseListRequest(operations) {
-  const courses = await operations.coursePersistence.listCourses();
-
-  return jsonResponse({ courses: courses.map(toCourseResponse) }, 200);
-}
-
-/**
  * Create one Course from server-resolved Admin context.
  *
  * @returns {Promise<Response>} Course creation response.
@@ -234,33 +221,6 @@ async function handleCreateCourseRequest(request, adminUser, operations) {
   return result.outcome === "created"
     ? jsonResponse(toCourseResponse(result.course), 201)
     : jsonResponse(result, 422);
-}
-
-/**
- * Read one Course with its ordered owned structures.
- *
- * @returns {Promise<Response>} Complete Course detail response.
- */
-async function handleCourseDetailRequest(courseId, operations) {
-  const course = await operations.coursePersistence.findCourseById(courseId);
-
-  if (course === null) {
-    return jsonResponse({ outcome: "course-not-found" }, 404);
-  }
-
-  const [groups, modules] = await Promise.all([
-    operations.groupPersistence.listGroupsByCourseId(courseId),
-    operations.modulePersistence.listModulesByCourseId(courseId),
-  ]);
-
-  return jsonResponse(
-    toCourseDetailResponse(course, {
-      groups,
-      modules,
-      currentInstant: operations.now(),
-    }),
-    200,
-  );
 }
 
 /**

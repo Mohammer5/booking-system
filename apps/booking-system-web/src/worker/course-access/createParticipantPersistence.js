@@ -1,3 +1,5 @@
+import { createParticipantCollectionPersistence } from "./createParticipantCollectionPersistence.js";
+
 /**
  * Create narrow D1 capabilities owned by Participant identity and onboarding.
  *
@@ -6,6 +8,7 @@
  */
 export function createParticipantPersistence(database) {
   return {
+    ...createParticipantCollectionPersistence(database),
     disableActiveParticipant: (input) =>
       disableActiveParticipant(database, input),
     findParticipantById: (participantId) =>

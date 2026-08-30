@@ -67,9 +67,22 @@ describe("Admin User list and detail HTTP", () => {
         adminResponse("peer", "Ordinary Peer", "disabled", "admin", true),
         adminResponse("super", "Super Target", "active", "super-admin", false),
       ],
+      pagination: { page: 1, pageSize: 25, totalItems: 3, totalPages: 1 },
     });
     expect(JSON.stringify(body)).not.toContain("fixture-");
     expect(JSON.stringify(body)).not.toContain("email");
+  });
+
+  it("validates collection parameters before reading Admin User data", async () => {
+    await insertDirectory();
+    const cookie = await establishFixture("admin-invite-a");
+    const response = await request(
+      "GET",
+      "/api/admin/users?authority=owner",
+      cookie,
+    );
+
+    await expectOutcome(response, 400, "invalid-list-query");
   });
 
   it("returns one narrow detail or a private missing outcome on exact routes", async () => {

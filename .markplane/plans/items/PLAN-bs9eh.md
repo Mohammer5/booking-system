@@ -1,7 +1,7 @@
 ---
 id: PLAN-bs9eh
 title: Implementation plan for Implement validated Admin collection query contracts
-status: draft
+status: done
 implements:
 - TASK-9gxuv
 related: []
@@ -51,18 +51,18 @@ migration unless query plans demonstrate a required index.
 
 ### Phase 1: Contract and top-level reads
 
-- [ ] Add parser/serializer-independent Worker normalization and tests.
-- [ ] Paginate Courses, Participants, Admin Users, and Invites.
-- [ ] Preserve fresh Admin authorization and secret-safe mappings.
+- [x] Add parser/serializer-independent Worker normalization and tests.
+- [x] Paginate Courses, Participants, Admin Users, and Invites.
+- [x] Preserve fresh Admin authorization and secret-safe mappings.
 
 **Checkpoint**: every top-level list returns a validated paginated response.
 
 ### Phase 2: Course-owned reads
 
-- [ ] Paginate Assignment, Group, and Module collections with parent context.
-- [ ] Add same-Course Group/Module item GETs and participant options.
-- [ ] Replace Course full child arrays with counts/archival capability.
-- [ ] Add exhaustive Worker/D1 contract coverage.
+- [x] Paginate Assignment, Group, and Module collections with parent context.
+- [x] Add same-Course Group/Module item GETs and participant options.
+- [x] Replace Course full child arrays with counts/archival capability.
+- [x] Add exhaustive Worker/D1 contract coverage.
 
 **Checkpoint**: all nested reads, counts, options, and privacy tests pass.
 

@@ -139,13 +139,40 @@ describe("Course HTTP creation and reads", () => {
     await expect(detail.json()).resolves.toEqual({
       ...body,
       isArchivalAvailable: true,
-      groups: [],
-      modules: [],
+      counts: { participants: 0, groups: 0, modules: 0 },
     });
-    await expect(index.json()).resolves.toEqual({ courses: [body] });
+    await expect(index.json()).resolves.toEqual({
+      courses: [body],
+      pagination: { page: 1, pageSize: 25, totalItems: 1, totalPages: 1 },
+    });
     await expect(countRows("courses")).resolves.toBe(1);
     await expect(countRows("admin_users")).resolves.toBe(1);
     await expect(countRows("admin_bootstrap_history")).resolves.toBe(1);
+  });
+
+  it("returns a deliberate 400 for malformed Course list parameters", async () => {
+    const cookie = await establishActiveAdmin();
+
+    for (const query of [
+      "page=0",
+      "pageSize=20",
+      "sort=name.sideways",
+      "state=deleted",
+      "q=one&q=two",
+      "unknown=value",
+    ]) {
+      const response = await courseRequest(
+        "GET",
+        `/api/admin/courses?${query}`,
+        undefined,
+        cookie,
+      );
+
+      expect(response.status).toBe(400);
+      await expect(response.json()).resolves.toEqual({
+        outcome: "invalid-list-query",
+      });
+    }
   });
 
   it.each([

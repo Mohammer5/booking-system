@@ -1,3 +1,5 @@
+import { createCourseAssignmentCollectionPersistence } from "./createCourseAssignmentCollectionPersistence.js";
+
 /**
  * Create narrow D1 capabilities owned by Course membership.
  *
@@ -6,6 +8,7 @@
  */
 export function createCourseAssignmentPersistence(database) {
   return {
+    ...createCourseAssignmentCollectionPersistence(database),
     async assignParticipantToActiveCourse({ adminUserId, assignment }) {
       const result = await insertAssignment(database, adminUserId, assignment);
 

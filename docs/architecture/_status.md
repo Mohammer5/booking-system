@@ -131,6 +131,18 @@
 - The web application has distinct `browser`, `worker`, and `authentication`
   responsibilities plus thin browser, production Worker, and non-production
   Worker compositions.
+- The Worker now owns one private `admin-collections` contract for strict
+  pagination, search, filter, and sort parsing across Courses, global
+  Participants, Admin Users, Admin Invites, Course Assignments, Groups, and
+  Modules. D1 reads bind user-controlled values, choose ordering only from
+  resource-owned static maps with ID tie-breakers, count after filters, and
+  return requested page metadata. Course-owned lists include guarded parent
+  context; Group and Module item reads enforce same-Course ownership; the
+  focused Course detail returns retained relationship counts and an
+  authoritative archival affordance; and Participant options are bounded and
+  include Course-specific Assignment state or explicit absence. Existing
+  mutations and Invite-secret handling are unchanged, and no schema migration
+  or speculative index was required.
 - React Router serves the independently navigable `/` Participant entry,
   public `/invite` continuation and Join,
   Participant `/profile` and `/courses/:courseId` detail,
@@ -344,7 +356,9 @@ Release hardening and real staging verification remain mandatory before the
 first production release.
 
 The accepted Admin collection/detail normalization is tracked by
-`EPIC-ruijc`. The current implementation inventory above still describes the
-pre-normalization embedded Course detail and broad participation overview until
-the dependent implementation tasks replace those surfaces; this is active
-planned work rather than an alternative accepted convention.
+`EPIC-ruijc`. Its canonical convention, authenticated Admin navigation layout,
+and Worker collection contracts are implemented. The current browser inventory
+above still describes the pre-normalization embedded Course detail and broad
+participation overview until the dependent browser tasks replace those
+surfaces; this is active planned work rather than an alternative accepted
+convention.

@@ -1,4 +1,10 @@
 import { createCourseArchivalPersistence } from "./createCourseArchivalPersistence.js";
+import { createCourseDetailPersistence } from "./createCourseDetailPersistence.js";
+import {
+  literalLikePattern,
+  pageBindings,
+  readAdminCollection,
+} from "../admin-collections/index.js";
 
 /**
  * Create the narrow D1 capabilities owned by Course structure.
@@ -9,6 +15,7 @@ import { createCourseArchivalPersistence } from "./createCourseArchivalPersisten
 export function createCoursePersistence(database) {
   return {
     ...createCourseArchivalPersistence(database),
+    ...createCourseDetailPersistence(database),
     async createCourseForActiveAdmin({ adminUserId, course }) {
       const result = await database
         .prepare(
@@ -46,6 +53,9 @@ export function createCoursePersistence(database) {
       return results.map(mapCourse);
     },
 
+    listCoursePage: (adminUserId, query) =>
+      listCoursePage(database, adminUserId, query),
+
     async findCourseById(courseId) {
       const row = await database
         .prepare(
@@ -63,6 +73,63 @@ export function createCoursePersistence(database) {
     updateActiveCourseForActiveAdmin: (input) =>
       updateActiveCourseForActiveAdmin(database, input),
   };
+}
+
+/** @returns {Promise<object>} One guarded, filtered Course page. */
+function listCoursePage(database, adminUserId, query) {
+  const clauses = [];
+  const bindings = [];
+
+  if (query.q !== undefined) {
+    const pattern = literalLikePattern(query.q);
+
+    clauses.push(`(
+      lower(c.name) like lower(?) escape '\\'
+      or lower(coalesce(c.description, '')) like lower(?) escape '\\'
+      or lower(c.timezone) like lower(?) escape '\\'
+    )`);
+    bindings.push(pattern, pattern, pattern);
+  }
+
+  if (query.filters.state !== undefined) {
+    clauses.push("c.state = ?");
+    bindings.push(query.filters.state);
+  }
+
+  const where = clauses.length === 0 ? "" : `where ${clauses.join(" and ")}`;
+  const orderBy = courseOrderBy(query);
+  const countStatement = database
+    .prepare(`select count(*) as total_items from courses c ${where}`)
+    .bind(...bindings);
+  const pageStatement = database
+    .prepare(
+      `select c.id, c.name, c.description, c.timezone, c.state,
+              c.has_ever_had_module
+         from courses c ${where}
+        order by ${orderBy}
+        limit ? offset ?`,
+    )
+    .bind(...bindings, ...pageBindings(query));
+
+  return readAdminCollection(database, {
+    adminUserId,
+    countStatement,
+    pageStatement,
+    query,
+    mapItem: mapCourse,
+  });
+}
+
+/** @returns {string} Static Course ordering with a stable identity tie-break. */
+function courseOrderBy(query) {
+  const field = {
+    name: "c.name collate nocase",
+    state: "c.state",
+    timezone: "c.timezone collate nocase",
+  }[query.sortField];
+  const direction = { asc: "asc", desc: "desc" }[query.sortDirection];
+
+  return `${field} ${direction}, c.id asc`;
 }
 
 /**

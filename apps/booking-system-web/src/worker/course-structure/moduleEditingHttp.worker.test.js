@@ -242,7 +242,7 @@ describe("Module editing HTTP contract", () => {
     });
     const response = await createDirectHandler()(jsonRequest(
       "GET",
-      "/api/admin/courses/course-1",
+      "/api/admin/courses/course-1/modules",
     ));
     const body = await response.json();
     const editability = Object.fromEntries(

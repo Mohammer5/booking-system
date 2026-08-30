@@ -1,3 +1,8 @@
+import {
+  pageBindings,
+  readAdminCollection,
+} from "../admin-collections/index.js";
+
 /**
  * Create narrow D1 capabilities for Admin Invite administration.
  *
@@ -12,6 +17,8 @@ export function createAdminInvitePersistence(database) {
     findRecognizedAdminInviteByDigest: (tokenDigest) =>
       findRecognizedInviteByDigest(database, tokenDigest),
     listAdminInvites: (adminUserId) => listInvites(database, adminUserId),
+    listAdminInvitePage: (adminUserId, query) =>
+      listInvitePage(database, adminUserId, query),
     revokeActiveAdminInvite: (input) => revokeActiveInvite(database, input),
   };
 }
@@ -99,6 +106,43 @@ async function listInvites(database, adminUserId) {
   return actorResult.results.length === 0
     ? "admin-not-active"
     : inviteResult.results.map(mapInvite);
+}
+
+/** @returns {Promise<object>} One guarded, filtered non-secret Invite page. */
+function listInvitePage(database, adminUserId, query) {
+  const bindings = [];
+  const where = query.filters.state === undefined ? "" : "where i.state = ?";
+
+  if (query.filters.state !== undefined) bindings.push(query.filters.state);
+  const orderBy = inviteOrderBy(query);
+
+  return readAdminCollection(database, {
+    adminUserId,
+    countStatement: database
+      .prepare(`select count(*) as total_items from admin_invites i ${where}`)
+      .bind(...bindings),
+    pageStatement: database
+      .prepare(
+        `select i.id, i.created_at, i.state
+           from admin_invites i ${where}
+          order by ${orderBy}
+          limit ? offset ?`,
+      )
+      .bind(...bindings, ...pageBindings(query)),
+    query,
+    mapItem: mapInvite,
+  });
+}
+
+/** @returns {string} Static Invite ordering and identity tie-break. */
+function inviteOrderBy(query) {
+  const field = {
+    createdAt: "i.created_at",
+    state: "i.state",
+  }[query.sortField];
+  const direction = { asc: "asc", desc: "desc" }[query.sortDirection];
+
+  return `${field} ${direction}, i.id asc`;
 }
 
 /** @returns {Promise<string>} Guarded terminal Revoke outcome. */

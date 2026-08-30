@@ -43,9 +43,14 @@ export function matchCourseAccessRoute(pathname) {
   if (
     segments.length === 2 &&
     segments[0].length > 0 &&
-    segments[1] === "assignments"
+    new Set(["assignments", "participant-options"]).has(segments[1])
   ) {
-    return { kind: "assignments", courseId: segments[0] };
+    return {
+      kind: segments[1] === "assignments"
+        ? "assignments"
+        : "participant-options",
+      courseId: segments[0],
+    };
   }
 
   return segments.length === 4 &&
@@ -59,6 +64,26 @@ export function matchCourseAccessRoute(pathname) {
         assignmentId: segments[2],
       }
     : null;
+}
+
+/**
+ * Parse bounded incidental Participant-picker search.
+ *
+ * @param {URLSearchParams} searchParams Incoming option parameters.
+ * @returns {object} Normalized search or invalid query outcome.
+ */
+export function parseParticipantOptionQuery(searchParams) {
+  const keys = [...searchParams.keys()];
+
+  if (keys.some((key) => key !== "q") || keys.length > 1) {
+    return { outcome: "invalid-list-query" };
+  }
+
+  const q = searchParams.get("q")?.trim() ?? "";
+
+  return q.length > 100
+    ? { outcome: "invalid-list-query" }
+    : { outcome: "valid", q: q.length === 0 ? undefined : q };
 }
 
 /**

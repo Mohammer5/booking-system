@@ -1,4 +1,9 @@
 import { createAdminUserLifecyclePersistence } from "./createAdminUserLifecyclePersistence.js";
+import {
+  literalLikePattern,
+  pageBindings,
+  readAdminCollection,
+} from "../admin-collections/index.js";
 
 /**
  * Create the narrow D1 capabilities owned by Admin User identity management.
@@ -18,6 +23,8 @@ export function createAdminPersistence(database) {
 
     listCurrentAdminUsers: (adminUserId) =>
       listCurrentAdminUsers(database, adminUserId),
+    listAdminUserPage: (adminUserId, query) =>
+      listAdminUserPage(database, adminUserId, query),
     promoteAuthorizedAdminUser: (input) =>
       promoteAuthorizedAdminUser(database, input),
     updateAuthorizedAdminUserName: (input) =>
@@ -124,6 +131,56 @@ async function listCurrentAdminUsers(database, adminUserId) {
   return actorResult.results.length === 0
     ? "admin-not-active"
     : directoryResult.results.map(mapAdminUser);
+}
+
+/** @returns {Promise<object>} One guarded, filtered Admin User page. */
+function listAdminUserPage(database, adminUserId, query) {
+  const clauses = [];
+  const bindings = [];
+
+  if (query.q !== undefined) {
+    clauses.push("lower(a.name) like lower(?) escape '\\'");
+    bindings.push(literalLikePattern(query.q));
+  }
+
+  for (const key of ["state", "authority"]) {
+    if (query.filters[key] !== undefined) {
+      clauses.push(`a.${key} = ?`);
+      bindings.push(query.filters[key]);
+    }
+  }
+
+  const where = clauses.length === 0 ? "" : `where ${clauses.join(" and ")}`;
+  const orderBy = adminUserOrderBy(query);
+
+  return readAdminCollection(database, {
+    adminUserId,
+    countStatement: database
+      .prepare(`select count(*) as total_items from admin_users a ${where}`)
+      .bind(...bindings),
+    pageStatement: database
+      .prepare(
+        `select a.id, a.external_principal_id, a.name, a.state, a.authority
+           from admin_users a ${where}
+          order by ${orderBy}
+          limit ? offset ?`,
+      )
+      .bind(...bindings, ...pageBindings(query)),
+    query,
+    mapItem: mapAdminUser,
+  });
+}
+
+/** @returns {string} Static Admin User ordering and identity tie-break. */
+function adminUserOrderBy(query) {
+  const field = {
+    name: "a.name collate nocase",
+    state: "a.state",
+    authority: "a.authority",
+  }[query.sortField];
+  const direction = { asc: "asc", desc: "desc" }[query.sortDirection];
+
+  return `${field} ${direction}, a.id asc`;
 }
 
 /** @returns {Promise<string>} Guarded one-way Admin User promotion. */

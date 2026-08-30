@@ -1,7 +1,6 @@
 import {
   createDeleteAdminUser,
   createDisableAdminUser,
-  createListAdminUsers,
   createPromoteAdminUser,
   createReenableAdminUser,
   createResolveAdminContext,
@@ -10,6 +9,10 @@ import {
   isAdminUserNameEditable,
   isAdminUserPromotable,
 } from "@booking-system/booking";
+import {
+  adminCollectionConfigurations,
+  parseAdminCollectionQuery,
+} from "../admin-collections/index.js";
 
 const collectionPath = "/api/admin/users";
 
@@ -51,10 +54,6 @@ function createOperations(capabilities) {
     disableAdminUser: createDisableAdminUser({
       disableAuthorizedAdminUser:
         capabilities.adminPersistence.disableAuthorizedAdminUser,
-    }),
-    listAdminUsers: createListAdminUsers({
-      listCurrentAdminUsers:
-        capabilities.adminPersistence.listCurrentAdminUsers,
     }),
     promoteAdminUser: createPromoteAdminUser({
       promoteAuthorizedAdminUser:
@@ -135,16 +134,7 @@ async function authorize(request, operations) {
 /** @returns {Promise<Response>} One freshly authorized Admin User operation. */
 async function handleAuthorizedRequest(context, operations) {
   if (context.route.kind === "list") {
-    const result = await operations.listAdminUsers({
-      adminUser: context.adminUser,
-    });
-
-    return result.outcome === "listed"
-      ? jsonResponse({
-          adminUsers: result.adminUsers.map((adminUser) =>
-            toAdminUserResponse(adminUser, context.adminUser)),
-        }, 200)
-      : refusalResponse(result);
+    return handleAdminUserList(context, operations);
   }
 
   const targetAdminUser = await operations.adminPersistence.findAdminUserById(
@@ -167,6 +157,31 @@ async function handleAuthorizedRequest(context, operations) {
   return context.request.method === "GET"
     ? jsonResponse(toAdminUserResponse(targetAdminUser, context.adminUser), 200)
     : handleNameUpdate(context, targetAdminUser, operations);
+}
+
+/** @returns {Promise<Response>} One validated Admin User collection page. */
+async function handleAdminUserList(context, operations) {
+  const parsed = parseAdminCollectionQuery(
+    new URL(context.request.url).searchParams,
+    adminCollectionConfigurations.adminUsers,
+  );
+
+  if (parsed.outcome !== "valid") {
+    return jsonResponse({ outcome: parsed.outcome }, 400);
+  }
+
+  const result = await operations.adminPersistence.listAdminUserPage(
+    context.adminUser.id,
+    parsed.query,
+  );
+
+  return result.outcome === "listed"
+    ? jsonResponse({
+        adminUsers: result.items.map((adminUser) =>
+          toAdminUserResponse(adminUser, context.adminUser)),
+        pagination: result.pagination,
+      }, 200)
+    : refusalResponse(result);
 }
 
 /** @returns {Promise<Response>} Apply one guarded lifecycle command. */

@@ -112,9 +112,16 @@ describe("Participant directory and Course membership reads", () => {
           state: "active",
         },
       ],
+      pagination: { page: 1, pageSize: 25, totalItems: 3, totalPages: 1 },
     });
     expect(membership.status).toBe(200);
     await expect(membership.json()).resolves.toEqual({
+      course: {
+        id: "course-a",
+        name: "Assignment Course",
+        timezone: "Europe/Berlin",
+        state: "active",
+      },
       assignments: [
         {
           id: "assignment-a",
@@ -127,6 +134,7 @@ describe("Participant directory and Course membership reads", () => {
           },
         },
       ],
+      pagination: { page: 1, pageSize: 25, totalItems: 1, totalPages: 1 },
     });
 
     await env.DB.prepare("update courses set state = 'archived' where id = ?")
@@ -145,6 +153,62 @@ describe("Participant directory and Course membership reads", () => {
     expect(missingCourse.status).toBe(404);
     await expect(missingCourse.json()).resolves.toEqual({
       outcome: "course-not-found",
+    });
+  });
+
+  it("rejects malformed list state and serves bounded Course-specific options", async () => {
+    const cookie = await activeAdminCookie();
+    await insertCourse("course-a", "active");
+    const participants = Array.from({ length: 12 }, (_, index) => {
+      const suffix = String(index).padStart(2, "0");
+
+      return participant(
+        suffix,
+        `Option ${suffix}`,
+        index === 11 ? "disabled" : "active",
+      );
+    });
+
+    await insertParticipants(participants);
+    await insertAssignment("assignment-00", "participant-00", "revoked");
+
+    for (const path of [
+      "/api/admin/participants?page=0",
+      "/api/admin/courses/course-a/assignments?sort=name.sideways",
+      "/api/admin/courses/course-a/participant-options?page=1",
+      `/api/admin/courses/course-a/participant-options?q=${"a".repeat(101)}`,
+    ]) {
+      await expectHttpOutcome(
+        await get(path, cookie),
+        400,
+        "invalid-list-query",
+      );
+    }
+
+    const options = await get(
+      "/api/admin/courses/course-a/participant-options",
+      cookie,
+    );
+    const searched = await get(
+      "/api/admin/courses/course-a/participant-options?q=11%40example.com",
+      cookie,
+    );
+    const body = await options.json();
+
+    expect(options.status).toBe(200);
+    expect(body.course).toMatchObject({ id: "course-a", state: "active" });
+    expect(body.participants).toHaveLength(10);
+    expect(body.participants[0]).toMatchObject({
+      id: "participant-00",
+      state: "active",
+      assignmentState: "revoked",
+    });
+    await expect(searched.json()).resolves.toMatchObject({
+      participants: [{
+        id: "participant-11",
+        state: "disabled",
+        assignmentState: null,
+      }],
     });
   });
 });

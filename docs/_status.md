@@ -112,6 +112,13 @@ implemented:
   overview/Participant-detail routes, Worker/API
   handling, Better Auth composition, D1
   persistence, Vite/Workers Static Assets integration, and local runtime;
+- its Worker/API now validates and serves authoritative server-paginated pages
+  for all seven accepted Admin collections, including filtered totals, stable
+  sorting, literal search, Course parent context, same-Course Group/Module item
+  privacy, focused Course relationship counts and archival availability, and
+  bounded Course-specific Participant options. Existing lifecycle writes and
+  Invite-secret boundaries remain intact, and the existing schema required no
+  migration or new index;
 - nine version-controlled migrations create the Better Auth/Admin foundation,
   Courses, additive Group/Module schema with permanent first-Module scheduling
   history, constrained Participants, constrained Course Assignments, and
@@ -335,7 +342,8 @@ Further project-specific docs should be added only when accepted project truth
 gives them a concrete responsibility.
 
 `EPIC-ruijc` tracks implementation of the accepted Admin collection/detail
-normalization. Until its dependent tasks land, the current implementation
-inventory above accurately records the older embedded Course-detail and broad
-participation surfaces; those surfaces are transitional code, not competing
-canonical direction.
+normalization. The convention, Admin navigation layout, and Worker collection
+contracts have landed. Until the remaining dependent browser tasks land, the
+current implementation inventory above accurately records the older embedded
+Course-detail and broad participation surfaces; those surfaces are
+transitional code, not competing canonical direction.

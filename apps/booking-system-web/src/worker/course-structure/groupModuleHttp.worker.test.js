@@ -76,8 +76,7 @@ describe("Group and Module HTTP creation", () => {
 
     await expect(initialDetail.json()).resolves.toMatchObject({
       id: course.id,
-      groups: [],
-      modules: [],
+      counts: { participants: 0, groups: 0, modules: 0 },
     });
 
     const groupResponse = await structureRequest(
@@ -137,20 +136,134 @@ describe("Group and Module HTTP creation", () => {
     });
     expect(module.id).not.toBe("browser-module");
 
-    const detail = await structureRequest(
-      "GET",
-      `/api/admin/courses/${course.id}`,
-      undefined,
-      cookie,
-    );
+    const [detail, groups, modules] = await Promise.all([
+      structureRequest("GET", `/api/admin/courses/${course.id}`, undefined, cookie),
+      structureRequest("GET", `/api/admin/courses/${course.id}/groups`, undefined, cookie),
+      structureRequest("GET", `/api/admin/courses/${course.id}/modules`, undefined, cookie),
+    ]);
 
     await expect(detail.json()).resolves.toMatchObject({
-      groups: [group],
-      modules: [module],
+      counts: { participants: 0, groups: 1, modules: 1 },
     });
+    await expect(groups.json()).resolves.toMatchObject({ groups: [group] });
+    await expect(modules.json()).resolves.toMatchObject({ modules: [module] });
     await expect(courseModuleHistory(course.id)).resolves.toBe(1);
     await expect(hasTable("module_selections")).resolves.toBe(true);
     await expect(countRows("module_selections")).resolves.toBe(0);
+  });
+
+  it("reads collections and items without disclosing cross-Course resources", async () => {
+    const cookie = await establishActiveAdmin();
+    const owner = await createCourse(cookie, "Owner Course");
+    const other = await createCourse(cookie, "Other Course");
+    const groupResponse = await structureRequest(
+      "POST",
+      `/api/admin/courses/${owner.id}/groups`,
+      { name: "Readable Group", details: "Details" },
+      cookie,
+    );
+    const moduleResponse = await structureRequest(
+      "POST",
+      `/api/admin/courses/${owner.id}/modules`,
+      {
+        title: "Readable Module",
+        startsAtLocal: "2027-01-15T10:30",
+        endsAtLocal: "2027-01-15T11:30",
+      },
+      cookie,
+    );
+    const group = await groupResponse.json();
+    const module = await moduleResponse.json();
+    const [groups, modules, groupItem, moduleItem] = await Promise.all([
+      structureRequest(
+        "GET",
+        `/api/admin/courses/${owner.id}/groups?q=Readable&state=active`,
+        undefined,
+        cookie,
+      ),
+      structureRequest(
+        "GET",
+        `/api/admin/courses/${owner.id}/modules?q=Readable&state=scheduled`,
+        undefined,
+        cookie,
+      ),
+      structureRequest(
+        "GET",
+        `/api/admin/courses/${owner.id}/groups/${group.id}`,
+        undefined,
+        cookie,
+      ),
+      structureRequest(
+        "GET",
+        `/api/admin/courses/${owner.id}/modules/${module.id}`,
+        undefined,
+        cookie,
+      ),
+    ]);
+
+    await expect(groups.json()).resolves.toMatchObject({
+      course: { id: owner.id },
+      groups: [{ id: group.id }],
+      pagination: { totalItems: 1 },
+    });
+    await expect(modules.json()).resolves.toMatchObject({
+      course: { id: owner.id },
+      modules: [{ id: module.id }],
+      pagination: { totalItems: 1 },
+    });
+    await expect(groupItem.json()).resolves.toMatchObject({
+      course: { id: owner.id },
+      group: { id: group.id },
+    });
+    await expect(moduleItem.json()).resolves.toMatchObject({
+      course: { id: owner.id },
+      module: { id: module.id },
+    });
+
+    const [privateGroup, privateModule, missingParent, invalidQuery] =
+      await Promise.all([
+        structureRequest(
+          "GET",
+          `/api/admin/courses/${other.id}/groups/${group.id}`,
+          undefined,
+          cookie,
+        ),
+        structureRequest(
+          "GET",
+          `/api/admin/courses/${other.id}/modules/${module.id}`,
+          undefined,
+          cookie,
+        ),
+        structureRequest(
+          "GET",
+          "/api/admin/courses/missing/groups",
+          undefined,
+          cookie,
+        ),
+        structureRequest(
+          "GET",
+          `/api/admin/courses/${owner.id}/modules?pageSize=20`,
+          undefined,
+          cookie,
+        ),
+      ]);
+
+    expect(privateGroup.status).toBe(404);
+    await expect(privateGroup.json()).resolves.toEqual({
+      outcome: "group-not-found",
+    });
+    expect(privateModule.status).toBe(404);
+    await expect(privateModule.json()).resolves.toEqual({
+      outcome: "module-not-found",
+    });
+    expect(missingParent.status).toBe(404);
+    await expect(missingParent.json()).resolves.toEqual({
+      outcome: "course-not-found",
+    });
+    expect(invalidQuery.status).toBe(400);
+    await expect(invalidQuery.json()).resolves.toEqual({
+      outcome: "invalid-list-query",
+    });
   });
 
   it("enforces Group validation and normalized uniqueness without a second row", async () => {

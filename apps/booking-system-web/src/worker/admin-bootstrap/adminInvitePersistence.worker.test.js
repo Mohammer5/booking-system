@@ -1,6 +1,10 @@
 import { applyD1Migrations, env } from "cloudflare:test";
 import { beforeAll, beforeEach, describe, expect, it } from "vitest";
 
+import {
+  adminCollectionConfigurations,
+  parseAdminCollectionQuery,
+} from "../admin-collections/index.js";
 import { createAdminInvitePersistence } from "./createAdminInvitePersistence.js";
 
 beforeAll(async () => {
@@ -132,7 +136,48 @@ describe("Admin Invite persistence", () => {
       state: "active",
     });
   });
+
+  it("filters, sorts, counts, and pages only non-secret Invite metadata", async () => {
+    const persistence = createAdminInvitePersistence(env.DB);
+
+    await insertAdmin("admin-a");
+    for (let index = 0; index < 12; index += 1) {
+      await persistence.createActiveAdminInvite(
+        inviteInput(String(index).padStart(2, "0"), index),
+      );
+    }
+    await env.DB.prepare(
+      "update admin_invites set state = 'revoked' where id = 'invite-11'",
+    ).run();
+    const page = await persistence.listAdminInvitePage(
+      "admin-a",
+      inviteQuery("page=2&pageSize=10&sort=createdAt.asc"),
+    );
+    const revoked = await persistence.listAdminInvitePage(
+      "admin-a",
+      inviteQuery("state=revoked&sort=state.desc"),
+    );
+
+    expect(page).toMatchObject({
+      outcome: "listed",
+      pagination: { page: 2, pageSize: 10, totalItems: 12, totalPages: 2 },
+    });
+    expect(page.items).toHaveLength(2);
+    expect(revoked).toMatchObject({
+      items: [{ id: "invite-11", state: "revoked" }],
+      pagination: { totalItems: 1 },
+    });
+    expect(JSON.stringify({ page, revoked })).not.toContain("token");
+  });
 });
+
+/** @returns {object} One normalized Admin Invite collection query. */
+function inviteQuery(search) {
+  return parseAdminCollectionQuery(
+    new URLSearchParams(search),
+    adminCollectionConfigurations.invites,
+  ).query;
+}
 
 /** @returns {Promise<object>} Insert one Admin User. */
 function insertAdmin(id, state = "active") {
@@ -169,10 +214,8 @@ function readInvite(id) {
 
 /** @returns {string} Stable test-only valid hexadecimal digest. */
 function digestFor(value) {
-  const digit = Array.from(value).reduce(
-    (sum, character) => sum + character.charCodeAt(0),
-    0,
-  ).toString(16).at(-1);
+  const encoded = Array.from(value, (character) =>
+    character.charCodeAt(0).toString(16).padStart(2, "0")).join("");
 
-  return digit.repeat(64);
+  return encoded.padEnd(64, "0").slice(0, 64);
 }

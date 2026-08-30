@@ -1,6 +1,10 @@
 import { applyD1Migrations, env } from "cloudflare:test";
 import { beforeAll, beforeEach, describe, expect, it } from "vitest";
 
+import {
+  adminCollectionConfigurations,
+  parseAdminCollectionQuery,
+} from "../admin-collections/index.js";
 import { createAdminPersistence } from "./createAdminPersistence.js";
 
 beforeAll(async () => {
@@ -46,7 +50,49 @@ describe("current Admin User persistence", () => {
     await expect(persistence.listCurrentAdminUsers("admin-actor"))
       .resolves.toBe("admin-not-active");
   });
+
+  it("searches, filters, sorts, and counts a guarded Admin User page", async () => {
+    await insertAdmin("actor", "Actor", "active", "super-admin");
+    await insertAdmin("ordinary", "Same", "active", "admin");
+    await insertAdmin("disabled", "Same", "disabled", "admin");
+    const persistence = createAdminPersistence(env.DB);
+    const filtered = await persistence.listAdminUserPage(
+      "admin-actor",
+      collectionQuery("q=Same&state=disabled&authority=admin"),
+    );
+
+    expect(filtered).toMatchObject({
+      outcome: "listed",
+      items: [{ id: "admin-disabled" }],
+      pagination: { totalItems: 1, totalPages: 1 },
+    });
+
+    for (const field of ["name", "state", "authority"]) {
+      for (const direction of ["asc", "desc"]) {
+        await expect(persistence.listAdminUserPage(
+          "admin-actor",
+          collectionQuery(`sort=${field}.${direction}`),
+        )).resolves.toMatchObject({ outcome: "listed" });
+      }
+    }
+
+    await env.DB.prepare(
+      "update admin_users set state = 'disabled' where id = 'admin-actor'",
+    ).run();
+    await expect(persistence.listAdminUserPage(
+      "admin-actor",
+      collectionQuery(),
+    )).resolves.toEqual({ outcome: "admin-not-active" });
+  });
 });
+
+/** @returns {object} One normalized Admin User collection query. */
+function collectionQuery(search = "") {
+  return parseAdminCollectionQuery(
+    new URLSearchParams(search),
+    adminCollectionConfigurations.adminUsers,
+  ).query;
+}
 
 describe("guarded Admin User name persistence", () => {
   it.each([

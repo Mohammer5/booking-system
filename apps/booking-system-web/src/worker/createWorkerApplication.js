@@ -244,7 +244,8 @@ function handleAdminDomainRequest(request, requestURL, handlers) {
   if (
     pathname.startsWith("/api/admin/participants") ||
     (pathname.startsWith("/api/admin/courses/") &&
-      pathname.split("/").includes("assignments"))
+      new Set(["assignments", "participant-options"])
+        .has(pathname.split("/")[5]))
   ) {
     return handlers.handleCourseAccessHttpRequest(request);
   }

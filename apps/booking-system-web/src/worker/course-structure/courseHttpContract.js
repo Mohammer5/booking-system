@@ -124,24 +124,17 @@ export function toCourseResponse(course) {
 }
 
 /**
- * Compose one Course detail with its owned Groups and Modules.
+ * Compose one focused Course detail with retained relationship counts.
  *
  * @param {object} course Booking-domain Course.
- * @param {object} structures Groups, Modules, and definite response instant.
- * @returns {object} Narrow complete Course-detail representation.
+ * @param {object} detail Counts and archival capability.
+ * @returns {object} Narrow focused Course-detail representation.
  */
-export function toCourseDetailResponse(course, structures) {
+export function toCourseDetailResponse(course, detail) {
   return {
     ...toCourseResponse(course),
-    isArchivalAvailable:
-      course.state === "active" &&
-      structures.modules.every((module) =>
-        module.state === "cancelled" ||
-        Date.parse(module.endsAt) <= Date.parse(structures.currentInstant)),
-    groups: structures.groups.map(toGroupResponse),
-    modules: structures.modules.map((module) =>
-      toModuleResponse(module, structures.currentInstant),
-    ),
+    isArchivalAvailable: detail.isArchivalAvailable,
+    counts: detail.counts,
   };
 }
 

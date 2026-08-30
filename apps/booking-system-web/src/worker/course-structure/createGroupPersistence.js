@@ -1,5 +1,6 @@
 import { createGroupDeletionPersistence } from "./createGroupDeletionPersistence.js";
 import { createGroupLifecyclePersistence } from "./createGroupLifecyclePersistence.js";
+import { createGroupCollectionPersistence } from "./createGroupCollectionPersistence.js";
 
 /**
  * Create the narrow D1 capabilities owned by Course-wide Groups.
@@ -9,6 +10,7 @@ import { createGroupLifecyclePersistence } from "./createGroupLifecyclePersisten
  */
 export function createGroupPersistence(database) {
   return {
+    ...createGroupCollectionPersistence(database),
     ...createGroupDeletionPersistence(database),
     ...createGroupLifecyclePersistence(database),
     async createGroupForActiveAdmin({ adminUserId, group }) {

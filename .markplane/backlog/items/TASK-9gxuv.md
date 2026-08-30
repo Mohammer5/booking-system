@@ -1,7 +1,7 @@
 ---
 id: TASK-9gxuv
 title: Implement validated Admin collection query contracts
-status: draft
+status: done
 priority: high
 type: feature
 effort: large
@@ -12,7 +12,7 @@ depends_on:
 blocks:
 - TASK-3mi4s
 related: []
-assignee: null
+assignee: gerkules
 tags:
 - worker
 - persistence
@@ -39,21 +39,21 @@ proves a concrete index need.
 
 ## Acceptance Criteria
 
-- [ ] All seven collections accept only the specified page/pageSize/sort/search/
+- [x] All seven collections accept only the specified page/pageSize/sort/search/
       filter matrix and return resource arrays plus authoritative pagination.
-- [ ] Malformed API parameters return deliberate 400 outcomes; raw parameters
+- [x] Malformed API parameters return deliberate 400 outcomes; raw parameters
       never become SQL identifiers/fragments, and search literals escape `%`,
       `_`, and the escape character.
-- [ ] Counts apply filters, every sort has the specified stable-ID tie-breaker,
+- [x] Counts apply filters, every sort has the specified stable-ID tie-breaker,
       empty and beyond-last pages behave predictably, and Active Admin/Course
       scoping is freshly enforced.
-- [ ] Course detail returns retained participant/group/module counts and derives
+- [x] Course detail returns retained participant/group/module counts and derives
       archival availability without transferring complete Modules.
-- [ ] Group/Module GET item reads enforce same-Course ownership and do not
+- [x] Group/Module GET item reads enforce same-Course ownership and do not
       disclose cross-Course resources.
-- [ ] Participant options are bounded/server-searched and include global and
+- [x] Participant options are bounded/server-searched and include global and
       Course Assignment state or explicit absence without exposing hidden data.
-- [ ] Existing mutation contracts and Admin Invite secret non-disclosure remain
+- [x] Existing mutation contracts and Admin Invite secret non-disclosure remain
       unchanged.
 
 ## Testing Requirements
