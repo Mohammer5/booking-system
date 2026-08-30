@@ -15,21 +15,12 @@ JavaScript conventions, and ESLint-enforced dependency rules.
 
 ### Architecture Status
 - Path: `docs/architecture/_status.md`
-- Summary: Current implemented application/package foundation, Course
-  creation/editing, Group reversible lifecycle/permanent deletion and structure creation,
-  Participant-registration/profile/
-  lifecycle, Assignment-
-  lifecycle, and assigned Participant Course-access plus Module-Selection and
-  shared-Course-Invite management/Join and Admin-Invite-administration/
-  onboarding plus Admin-User-directory/name-editing/promotion/lifecycle and
-  administrative Course-participation inspection slices and terminal Course archival/
-  read-only history,
-  React browser routes and
-  responsive Admin/Participant experience, Google
-  sign-in, browser-private MUI theme and accessibility baseline,
-  functional-composition direction, Cloudflare/Vite/D1 runtime, NixOS
-  developer tooling, boundary enforcement, and still-deferred product and
-  release surfaces.
+- Summary: Current implementation baseline and accepted transition to an
+  Active-Admin resource sidebar, URL-owned server-paginated collections,
+  focused Course/Participant/Admin-User details, Course-owned Participant,
+  Group, and Module routes, linked Course counts, responsive tables/cards,
+  Google sign-in, the Cloudflare/Vite/D1 runtime, boundary enforcement, and
+  still-deferred product and release surfaces.
 - Read when: You need to distinguish decided architecture from current
   implementation or identify which application, browser, runtime, and
   persistence surfaces do not yet exist.
@@ -38,7 +29,9 @@ JavaScript conventions, and ESLint-enforced dependency rules.
 
 ### Architecture Decisions
 - Path: `docs/architecture/_decisions.md`
-- Summary: Rationale for the booking application/package boundaries, one
+- Summary: Rationale for Admin resource collections and focused details,
+  URL-owned server-side collection state, responsive tables/cards, the
+  booking application/package boundaries, one
   manifest per workspace, React, MUI, and browser-library responsibilities,
   functional composition, one same-origin Cloudflare Worker, D1 with SQLite
   semantics, signed Course Invite continuation, digest-only terminal Admin
@@ -67,32 +60,23 @@ JavaScript conventions, and ESLint-enforced dependency rules.
 
 ### Applications
 - Path: `docs/architecture/applications.md`
-- Summary: Defines application boundaries and the implemented
-  `apps/booking-system-web` workspace with responsive Participant/Admin
-  contexts, Participant onboarding/profile/lifecycle/assigned-Course access/
-  directory, Course Assignment creation/revocation/reactivation, Participant
-  Module Selection, shared Course Invite management/recognition/Join, Admin
-  Invite administration/onboarding, Admin User directory/name editing/promotion/lifecycle,
-  administrative Course participation overview/detail, guarded
-  Course editing, Course/Group/Module creation,
-  Module editing/rescheduling/cancellation/deletion, and Group editing/
-  archival/reactivation/deletion plus Course archival
-  as the current same-origin application.
+- Summary: Defines application boundaries and the same-origin
+  `apps/booking-system-web` workspace, including the Active-Admin resource
+  layout, paginated top-level and Course-owned collections, focused detail and
+  create routes, Participant and Assignment lifecycle, Course structure,
+  invitations, Module Selection, Course archival, and Participant-facing
+  access.
 - Read when: A task adds, removes, deploys, or changes an application boundary
   or application manifest ownership.
 - Tags: architecture, applications, deployment, composition, manifests
 
 ### Runtime And Hosting
 - Path: `docs/architecture/runtime-and-hosting.md`
-- Summary: Defines the implemented local `booking-system-web` Cloudflare Worker
-  and Vite composition, static assets, direct Participant, Admin, Participant
-  profile/directory/detail, assigned Participant Course, public/Admin Invite,
-  Admin User directory/detail/promotion/lifecycle,
-  and Admin Course SPA
-  routing including Archived read-only detail,
-  compatibility, separate browser/Worker graphs, NixOS host-tooling boundary,
-  public Invite plus private Participant/Admin SPA routing, and minimal
-  hosting footprint.
+- Summary: Defines the local `booking-system-web` Cloudflare Worker and Vite
+  composition, static assets, the Active-Admin resource and nested Course SPA
+  routes with legacy participation redirects, public Invite routes,
+  Participant routes, separate browser/Worker graphs, the NixOS host-tooling
+  boundary, and the minimal hosting footprint.
 - Read when: A task affects hosting, frontend/backend deployment shape, Worker
   runtime behavior, Vite delivery, runtime dependency inclusion, routes, or
   local developer tool provisioning, or infrastructure selection.
@@ -101,12 +85,14 @@ JavaScript conventions, and ESLint-enforced dependency rules.
 
 ### Persistence
 - Path: `docs/architecture/persistence.md`
-- Summary: Defines SQLite-compatible semantics, implemented local/test D1,
+- Summary: Defines SQLite-compatible semantics, strict allowlisted Admin
+  collection filtering/sorting/pagination and guarded counts, implemented
+  local/test D1,
   first-Admin, Course, Group/Module, Participant, Course Assignment, Module
   Selection, Course Invite, digest-only terminal Admin Invite, and historical-
   Admin-attribution migrations,
   assigned Participant Course reads, atomic Admin Invite claim, and guarded
-  Admin Course-participation reads, Admin User name updates,
+  focused Course-Participant reads, Admin User name updates,
   authority-only promotion, and guarded lifecycle,
   guarded Participant
   profile/lifecycle updates, retained Assignment lifecycle with atomic
@@ -153,8 +139,9 @@ JavaScript conventions, and ESLint-enforced dependency rules.
 
 ### Module Organization
 - Path: `docs/architecture/module-organization.md`
-- Summary: Defines the implemented responsibility modules, Course creation/
-  editing, Group lifecycle/deletion and structure,
+- Summary: Defines the implemented responsibility modules and the accepted
+  second-level browser/Worker collection helpers, Course creation/editing,
+  Group lifecycle/deletion and structure,
   Participant-registration/profile/lifecycle, Assignment-lifecycle, and
   assigned Active/Archived Participant Course plus shared-Course-Invite Join,
   Admin-Invite administration/onboarding, Admin-User directory/name editing/promotion/lifecycle,
@@ -178,7 +165,9 @@ JavaScript conventions, and ESLint-enforced dependency rules.
 
 ### Browser Conventions
 - Path: `docs/architecture/browser-conventions.md`
-- Summary: React-based browser ownership rules for React Router, TanStack Query,
+- Summary: React-based browser ownership rules for the Active-Admin resource
+  sidebar, nested resource routes, URL-owned paginated collection state,
+  semantic responsive tables/cards, breadcrumbs, React Router, TanStack Query,
   React Hook Form, Material UI, responsive shell/Course structure and
   editing with permanent timezone-lock, Module editing/rescheduling/
   cancellation/deletion, and Group
@@ -208,7 +197,8 @@ JavaScript conventions, and ESLint-enforced dependency rules.
 ### Dependency Boundaries
 - Path: `docs/architecture/boundaries.md`
 - Summary: Canonical human counterpart to the two implemented per-workspace
-  deny-by-default maps, including profile maintenance, Assignment lifecycle,
+  deny-by-default maps, including private second-level Admin collection
+  helpers that do not alter the first-level map, profile maintenance, Assignment lifecycle,
   Participant lifecycle, and shared Course Invite management/Join within existing
   `course-access`, the booking
   `module-participation` responsibility, Course editing within existing

@@ -22,7 +22,7 @@ tags:
 - participant
 - onboarding
 - security
-position: f20
+position: aK
 created: 2026-08-27
 updated: 2026-08-29
 ---

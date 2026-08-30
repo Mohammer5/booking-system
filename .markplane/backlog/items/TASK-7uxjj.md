@@ -21,7 +21,7 @@ tags:
 - onboarding
 - authentication
 - ui
-position: c30
+position: a5
 created: 2026-08-27
 updated: 2026-08-28
 ---

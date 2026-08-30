@@ -373,21 +373,39 @@ Participant independence, new-Invite return, desktop table and 360px detail,
 keyboard/Dialog cancellation and result/error focus, bounded stale/final-Super
 and self-protection, privacy, overflow, and axe.
 
-For administrative participation inspection, booking-domain Vitest owns the
-complete injected-time live/historical predicate, exact start/end phases,
-Disabled/Revoked/Archived/Cancelled transitions, valid in-progress return to
-live meaning, ownership mismatches, and retained Archived selected-Group
-identity/details. Worker/D1 Vitest owns normalized Course, Assignment/
-Participant, Module, Group, and Selection composition, deterministic ordering,
-Active and Archived Course reads, the lifecycle matrix, current and stale
-Active-Admin guards on every statement, exact route/method/no-store behavior,
-sanitized failure, production composition, and an unchanged narrow Participant
-response without peers, Assignments, counts, or Admin data. Playwright owns the
-real zero-participation Active/Archived Course journey, direct refresh,
-loading/empty/unavailable/technical focus, responsive desktop table and 360px
-list alternatives, stable Participant detail, future/in-progress/exact-ended/
-Cancelled/Disabled/Revoked/Archived presentation, retained Archived Group
-details, Participant privacy probes, keyboard focus, overflow, and axe.
+For Admin collections, Worker/D1 Vitest owns strict parsing of the exact
+resource allowlists, default state, every filter and sort direction, stable-ID
+tie-breaking, literal `%`/`_`/escape-character search, one-based pages and
+allowed page sizes, filtered/unfiltered counts, empty and beyond-last pages,
+invalid-query `400` responses, fresh Active-Admin authorization, and guarded
+Course parent privacy. Playwright owns all seven collection routes, URL updates
+and repair, bookmark/refresh/history restoration, search/filter/sort/page/page-
+size behavior, true-empty versus filtered-empty reset, explicit actions, and
+the same server page rendered as semantic desktop table or narrow named cards
+without overflow.
+
+For Course Participant detail, booking-domain Vitest owns the complete injected-
+time live/historical predicate, exact start/end phases, Disabled/Revoked/
+Archived/Cancelled transitions, valid in-progress return to live meaning,
+ownership mismatches, and retained Archived selected-Group identity/details.
+Worker/D1 Vitest owns one guarded Course/Participant/Assignment-or-absence and
+Module/Group/Selection composition, current and stale Active-Admin guards on
+every statement, bounded Participant-option search with Course Assignment
+state, exact route/method/no-store behavior, sanitized failure, production
+composition, and an unchanged narrow Participant response without peers,
+Assignments, counts, or Admin data. Playwright owns Active/Archived direct
+navigation, Assignment lifecycle, Admin-assisted Selection, beyond-first-page
+Participant picking, retained history, compatibility redirects, keyboard/focus,
+overflow, and axe.
+
+For focused Course detail and nested Group/Module resources, Worker/D1 Vitest
+owns retained lifecycle-inclusive counts, unfiltered-count equality, archival
+availability without transferring complete Modules, paginated child reads,
+same-Course item privacy, and unchanged mutation guards. Playwright owns linked
+counts and absence of embedded child collections, nested breadcrumbs,
+Group/Module collection/create/detail journeys, every existing edit/lifecycle/
+reference refusal and DST/time boundary on its new route, Archived read-only
+states, responsive rendering, focus, refresh, and axe.
 
 For Admin-assisted Module Selection, booking-domain Vitest owns Active actor
 and target eligibility, Assignment composition, stable identities, ordinary

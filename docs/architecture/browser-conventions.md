@@ -77,9 +77,14 @@ without changing their HTTP,
 authentication, or domain ownership. Native `datetime-local` fields collect
 local minutes; MUI radio groups expose server-resolved DST-overlap occurrences,
 so no MUI X or date/time dependency is present. The Participant and Admin
-routes share one responsive browser-owned shell with a banner, named list
-navigation, narrow modal Drawer, skip link, and one main landmark; route
-content remains slice-owned.
+routes share one responsive browser-owned shell with a banner, skip link, and
+one main landmark. After authoritative Active-Admin resolution, one
+authenticated Admin layout adds a named four-resource sidebar: persistent or
+sticky at desktop widths and exposed through one temporary modal Drawer at
+narrow widths. It never appears on authentication, bootstrap, Disabled/missing-
+Admin, technical-error, or public Admin Invite states, and the narrow
+composition must not create competing Drawers. Route content remains
+slice-owned.
 
 The local Playwright harness uses `@axe-core/playwright` 4.13.0 for automated
 scans of critical Admin/Course states and both application contexts at desktop
@@ -145,26 +150,47 @@ Route paths remain stable and language-independent rather than changing with
 locale. Direct navigation or refresh to frontend routes must work within the
 accepted same-origin Worker and static-assets deployment, while `/api/*`
 remains Worker/API-owned. [Runtime and hosting](runtime-and-hosting.md) owns the
-deployment and fallback behavior. The current independently navigable routes
-are the Participant entry at `/`, Participant profile at `/profile`,
-public Course Invite continuation and Join at `/invite`,
-administration entry at `/admin`, public Admin Invite onboarding at
-`/admin/invite`, Admin Invite administration at `/admin/invites`, current
-Admin User directory at `/admin/users`, stable Admin User detail/name editing
-at `/admin/users/:adminUserId`, global
-Participant directory at
-`/admin/participants`, stable Participant detail/edit at
-`/admin/participants/:participantId`, Course index at
-`/admin/courses`, creation at `/admin/courses/new`, and stable detail at
-`/admin/courses/:courseId`. Assigned Participant Course detail is independently
-navigable at `/courses/:courseId` beneath the Participant gate. Course
-membership and its owned actions remain on stable Admin Course detail because
-they are not independently navigable views; assigned Participant Module and
-Group structure remains on stable Participant Course detail. Admin Invite
-creation and revocation Dialogs remain incidental state on `/admin/invites`;
-the complete URL exists only in the successful creation Dialog's transient
-mutation result and is discarded on close or refresh rather than entering the
-query cache.
+deployment and fallback behavior.
+
+The independently navigable Participant routes are `/`, `/profile`,
+`/courses/:courseId`, and the public `/invite`. The public Admin Invite route
+`/admin/invite` remains outside the authenticated Admin layout. An Active Admin
+entering `/admin` is replace-redirected to `/admin/courses`; non-Active entry,
+bootstrap, and refusal states remain on `/admin`.
+
+The authenticated Admin route hierarchy is:
+
+```text
+/admin/courses
+/admin/courses/new
+/admin/courses/:courseId
+/admin/courses/:courseId/participants
+/admin/courses/:courseId/participants/:participantId
+/admin/courses/:courseId/groups
+/admin/courses/:courseId/groups/new
+/admin/courses/:courseId/groups/:groupId
+/admin/courses/:courseId/modules
+/admin/courses/:courseId/modules/new
+/admin/courses/:courseId/modules/:moduleId
+/admin/participants
+/admin/participants/:participantId
+/admin/users
+/admin/users/:adminUserId
+/admin/invites
+```
+
+The top-level Admin resource navigation contains only Courses, Participants,
+Admin Users, and Admin Invites. Every nested route selects its owning top-level
+resource using `aria-current` and MUI selected presentation. Nested Course
+views use semantic breadcrumbs with real router links. The old browser paths
+under `/admin/courses/:courseId/participation` replace-redirect to the
+corresponding `/participants` paths; accurate API terminology does not need to
+copy a changed browser label.
+
+Admin Invite creation and revocation Dialogs remain incidental state on
+`/admin/invites`; the complete URL exists only in the successful creation
+Dialog's transient mutation result and is discarded on close or refresh rather
+than entering the query cache.
 The public Admin Invite route keeps its raw fragment only in slice-owned
 session storage until initial recognition, removes it from the address bar,
 and then uses only the signed server continuation. Authentication, refresh,
@@ -172,27 +198,53 @@ local name validation, and abandonment consume nothing; current Active or
 Disabled Admin principals receive a common refusal, while a principal with no
 current Admin receives the explicit-name form and one focused terminal result.
 
-The Admin User directory consumes server-derived name, promotion, Disable,
-Re-enable, and delete affordances plus a safe lifecycle restriction rather
-than reimplementing the self/ordinary/Super matrices in browser code. Desktop
-uses a semantic table and narrow viewports
-use a named card list without horizontal overflow. Stable detail always shows
+The Admin User collection consumes server-derived detail affordances rather
+than reimplementing the self/ordinary/Super matrices in browser code or
+placing complete lifecycle controls in every row. Stable detail always shows
 explicit authority and state, mounts the name-only React Hook Form only when
 permitted, explains provider-data independence, and focuses validation,
 success, or stale refusal. Successful self-edit invalidates current-Admin
-state as well as directory/detail data. Eligible directory and detail targets
-share one incidental MUI promotion Dialog that identifies the target, explains
+state as well as collection/detail data. Eligible detail targets use an
+incidental MUI promotion Dialog that identifies the target, explains
 the permanent one-way change, initially focuses Cancel, restores its opener on
 cancellation, focuses a stale refusal in-place, and focuses the reconciled
 success after close. No demotion control exists.
-Eligible directory and detail targets also share one lifecycle control. Its
+Eligible detail targets also use one lifecycle control. Its
 German dialogs explain access loss, identity/authority preservation or
 permanent current-identity deletion, new-Invite return, and complete
 non-cascade behavior. Cancel initially receives focus and restores the exact
 opener; stale/invariant errors receive focus in-place. Disable/Re-enable keep a
-focused row/detail completion result, while deletion moves completion ownership
-above the removed row or into directory navigation state so success cannot be
-unmounted with the target.
+focused detail completion result, while deletion moves completion ownership to
+collection navigation state so success cannot be unmounted with the target.
+
+## Admin Collection State And Rendering
+
+The browser URL owns applied Admin collection state. The common parameters are
+one-based `page`, `pageSize` in `10|25|50`, `<field>.<asc|desc>` `sort`, and
+trimmed `q` where search is supported, plus statically allowlisted resource
+filters. Defaults are deterministic and may be omitted. Invalid owned values
+are repaired with replace navigation before requests are sent. Search, filter,
+sort, or page-size changes reset the page; page-only changes preserve all other
+state; reset clears search/resource filters while preserving sort and page
+size. Browser history, bookmarks, refresh, and direct navigation therefore
+restore the same collection.
+
+TanStack Query keys include the complete normalized state. Authoritative result
+arrays remain query data rather than React state, and browser storage or
+client-side slicing of a complete server collection is prohibited. An explicit
+search submission may keep transient input draft state without adding a
+history entry for every keystroke. Mutations invalidate resource collection
+prefixes whenever ordering, membership, or totals may change.
+
+Wide collection views use semantic MUI `Table`, accessible sort controls,
+`TablePagination`, and explicit row actions. Narrow views use a named card-list
+equivalent over the identical query result and URL state without page-level
+horizontal overflow. Every collection distinguishes initial loading,
+authorization refusal, technical failure, true empty, filtered empty with a
+reset action, populated results, and applicable mutation success. A focused
+`admin-collections` browser slice may own normalized parameters, collection
+layout, pagination, and responsive table/card switching; resource-specific
+columns, filters, actions, and copy remain with their conceptual slices.
 
 ## Browser Authentication
 
@@ -287,15 +339,19 @@ Course representation permits it; otherwise the browser presents accurate
 permanent-lock copy while continuing to permit descriptive edits. A conflict
 refreshes the detail so stale forms cannot keep presenting old editability.
 
-Module management follows the same stable-detail ownership without adding a
-Module route. Every retained Module card has one descriptive form that remains
-available for Scheduled or Cancelled Modules and one distinct schedule area.
+Module management follows stable nested collection/create/detail ownership.
+The collection owns discovery, sorting, filtering, pagination, and the create
+entry point; the create route owns future-Module and DST resolution input; and
+each retained Module detail has one descriptive form that remains available
+for Scheduled or Cancelled Modules plus one distinct schedule area.
 The schedule form appears only for the server-derived pre-start Scheduled
 capability; exact-start, elapsed, and Cancelled Modules instead receive
 explicit non-color-only lock copy. Course-local `datetime-local` fields and
 per-Module radio-group identities reuse server-resolved DST candidates.
-Successful mutations reconcile both Admin and Participant Course detail, while
-a schedule conflict refreshes authoritative editability and current instants.
+Successful mutations reconcile the Module item, every Module collection page,
+the Course count, and affected Participant/administrative participation reads,
+while a schedule conflict refreshes authoritative editability and current
+instants.
 
 The same Module card exposes a distinct destructive cancellation action only
 for the server-derived before-`endsAt` Scheduled capability. Its MUI Dialog
@@ -311,24 +367,26 @@ Permanent Module deletion is a separate destructive card action available for
 Scheduled or Cancelled Modules at every time position. Its MUI Dialog names
 the Module and permanence, focuses cancellation first, restores the invoking
 action on dismissal, and focuses privacy-safe retained-reference, stale, or
-technical failures. TanStack Query reconciles Admin and Participant detail;
-after success the card unmounts and a parent-owned Module-section status takes
-focus. Last-row deletion presents the truthful empty state while the Course
-timezone remains visibly and authoritatively locked.
+technical failures. TanStack Query reconciles the Module item, its owning
+collection, Course count, and Participant/administrative participation reads;
+after success navigation returns to a focused collection result. Last-row
+deletion presents the truthful empty state while the Course timezone remains
+visibly and authoritatively locked.
 
 Terminal Course archival is a body-free mutation on stable Admin Course
 detail. Its German MUI Dialog names permanence and read-only consequences,
 focuses cancellation first, disables confirmation for a known unfinished
 Scheduled Module, restores the invoking action on dismissal, and focuses
 stale/technical feedback or parent-owned success. The server remains
-authoritative if eligibility changes. Archived detail retains Course, Group,
-Module, membership, and Selection-history inspection while removing Course/
-Group/Module forms and lifecycle actions plus Assignment add/reactivation;
-only Active-Assignment revocation remains actionable. Admin and Participant
-Course list/detail caches are reconciled after success.
+authoritative if eligibility changes. Archived Course detail retains Course
+data and linked child counts, while nested Group, Module, and Course Participant
+collections/details retain read-only history. Course/Group/Module forms and
+lifecycle actions plus Assignment add/reactivation are absent; only Active-
+Assignment revocation remains actionable. Admin and Participant Course list/
+detail caches are reconciled after success.
 
-Course Assignment lifecycle uses the same ownership split. TanStack Query
-owns membership-list and assigned-Course invalidation after reactivation or
+Course Assignment lifecycle belongs to nested Course Participant detail.
+TanStack Query owns Assignment-collection and assigned-Course invalidation after reactivation or
 revocation, while a keyboard-accessible confirmation Dialog owns only the
 transient decision and restores focus on cancellation. Membership cards expose
 revocation for Active Assignments in Active or Archived Courses and
@@ -337,10 +395,12 @@ states that revocation removes only future Scheduled Selections and that
 reactivation does not restore them; server outcomes remain authoritative for
 stale, repeated, and technical results.
 
-Group lifecycle and deletion remain on stable Admin Course detail. TanStack Query
-invalidates the Admin and Participant Course detail caches after a complete
-field edit, archival, reactivation, or deletion. React Hook Form owns one complete
-name/details form per retained Active or Archived Group; an authoritative
+Group lifecycle and deletion belong to stable nested Group detail. TanStack
+Query invalidates the Group item, every Course Group collection page, the
+Course count, affected participation reads, and Participant Course detail after
+a complete field edit, archival, reactivation, or deletion. React Hook Form
+owns one complete name/details form for the retained Active or Archived Group;
+an authoritative
 Active-name conflict is associated with its name field. The current lifecycle
 action opens a keyboard-accessible MUI Dialog, focuses cancellation initially,
 restores the invoking action on cancel, and returns a reactivation name
@@ -351,7 +411,7 @@ selected Group's identity, details, and state in current/history summary.
 Permanent deletion uses a separate destructive Dialog naming the Group and
 permanence. It focuses cancellation first, restores the invoking action on
 cancel, keeps privacy-safe retained-reference failures in the Dialog, and
-announces success from the parent Group section after the deleted card unmounts.
+announces success after navigation back to the owning Group collection.
 
 Participant profile maintenance reuses this ownership split: TanStack Query
 owns current self/detail profile state and targeted invalidation, React Hook
@@ -366,7 +426,7 @@ Participant lifecycle stays on the same stable Admin detail. One current
 Disable or Re-enable action opens a keyboard-accessible confirmation Dialog;
 Disable copy explains global access loss and exact future-Selection removal,
 while Re-enable promises only currently eligible access and no restoration.
-TanStack Query invalidates Participant detail/directory, Course membership,
+TanStack Query invalidates Participant detail/collection, Course Assignment collections,
 current Participant, and assigned-Course caches after success. The existing
 Participant route gate presents the fresh Disabled state as a focusable
 unavailable alert with safe Better Auth sign-out instead of mounting normal

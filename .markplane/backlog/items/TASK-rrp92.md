@@ -21,7 +21,7 @@ tags:
 - onboarding
 - authentication
 - atomicity
-position: g20
+position: aM
 created: 2026-08-27
 updated: 2026-08-29
 ---

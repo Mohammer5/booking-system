@@ -14,7 +14,8 @@ development work is tracked and verified, and how releases are promoted.
 
 ### Process Status
 - Path: `docs/process/_status.md`
-- Summary: Current process rules, layered Admin/Course creation/editing and
+- Summary: Current process rules, the tracked Admin resource-collection
+  normalization, layered Admin/Course creation/editing and
   Group lifecycle/deletion and structure,
   Participant-registration/profile/lifecycle, Assignment-lifecycle, assigned
   Participant Course, Module Selection, shared Course Invite, Admin Invite
@@ -56,8 +57,10 @@ development work is tracked and verified, and how releases are promoted.
 ### Verification
 - Path: `docs/process/verification.md`
 - Summary: Defines the layered regression harness, canonical `pnpm check`
-  contract, NixOS local browser provisioning, pull-request CI, responsive
-  shell, Course creation/editing, Group lifecycle/deletion and structure,
+  contract, NixOS local browser provisioning, pull-request CI, Active-Admin
+  navigation, URL-owned server-paginated collections, focused details and
+  Course-owned Participant/Group/Module routes, responsive shell, Course
+  creation/editing, Group lifecycle/deletion and structure,
   Module editing/rescheduling/cancellation/deletion, Participant registration/
   profile/lifecycle/assigned-Course access, Assignment-lifecycle/Module-
   Selection, shared-Course-Invite management/recognition/Join, Admin-Invite

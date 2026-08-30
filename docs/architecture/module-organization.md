@@ -101,20 +101,20 @@ test-authentication implementation imports from entering `packages/booking`.
 The first slice uses `browser`, `worker`, and `authentication` as its initial
 first-level names, introduced together with real source and map declarations.
 
-The implemented Admin, Course-structure, Participant-registration/profile/
-lifecycle, Assignment-lifecycle, and assigned Participant Course-access slices
-preserve three application roles: browser sign-in/onboarding, Participant
-directory/Course membership and private Participant Course presentation, and
-Course editing plus Course/Group/Module presentation, Group lifecycle/deletion,
-Module descriptive/schedule editing, cancellation, and deletion, plus terminal
-Course archival/read-only presentation;
+The Admin, Course-structure, Participant-registration/profile/lifecycle,
+Assignment-lifecycle, and assigned Participant Course-access slices preserve
+three application roles: browser sign-in/onboarding, URL-owned Admin resource
+collections and focused details, Participant Course membership and private
+Participant Course presentation, and Course/Group/Module create/edit/lifecycle
+plus terminal Course archival/read-only presentation;
 Worker-side HTTP and D1 handling organized by the owning conceptual slice; and
 application-private authentication. The browser slices may use Better Auth's
 browser client for session initiation and termination while Google provider
 configuration stays in the authentication and Worker composition roles.
 Participant entry remains a second-level `participant-entry` browser slice and
 provides the shared current-context route gate. Participant profile/lifecycle,
-Assignment creation/lifecycle, and assigned-Course access use second-level
+global and Course Assignment collection/detail, Assignment creation/lifecycle,
+and assigned-Course access use second-level
 `course-access` slices inside both browser and Worker without creating a new
 first-level application module. Shared Course Invite domain operations, D1/
 HTTP adapters, signed continuation, Admin controls, public recognition, and
@@ -122,6 +122,15 @@ explicit Join likewise remain in those existing `course-access` slices. A thin
 composition entry may join only the roles required for its executable graph.
 The browser communicates with Worker behavior through same-origin HTTP rather
 than importing Worker implementation to share transport data.
+
+A focused second-level `admin-collections` browser slice may own normalized URL
+state, shared collection layout, pagination, and responsive table/card
+switching. A matching application-private Worker listing helper may own strict
+pagination/sort parsing and safe SQL-list mechanics. Neither becomes a generic
+`components`, `utils`, `api`, or `common` bucket: resource-specific filters,
+columns, response mapping, persistence joins, and actions stay in the owning
+`admin-access`, `course-access`, or `course-structure` slice. These additions
+change no first-level `browser`/`worker` boundary or workspace edge.
 
 ## Vertical Slices
 

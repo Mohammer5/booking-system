@@ -19,6 +19,11 @@ The repository has accepted an architecture and delivery direction:
   German-first i18next localization, accepted browser-private Material UI as
   the component and accessible visual foundation, and domain-oriented
   functional composition with selectively used Ramda;
+- an authenticated Admin resource layout with exactly Courses, Participants,
+  Admin Users, and Admin Invites at top level; URL-owned, server-paginated
+  collection state; Course-owned Participant/Assignment, Group, and Module
+  collections; and focused details with linked counts rather than embedded
+  child collections;
 - one conceptual domain package at `packages/booking`, with Admin access,
   Course structure, Course access, and Module participation as internal
   responsibility modules;
@@ -324,3 +329,9 @@ hardening. No co-located `*.docs.md` file exists.
 
 Further project-specific docs should be added only when accepted project truth
 gives them a concrete responsibility.
+
+`EPIC-ruijc` tracks implementation of the accepted Admin collection/detail
+normalization. Until its dependent tasks land, the current implementation
+inventory above accurately records the older embedded Course-detail and broad
+participation surfaces; those surfaces are transitional code, not competing
+canonical direction.

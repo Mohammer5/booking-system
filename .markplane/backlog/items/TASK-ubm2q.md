@@ -20,7 +20,7 @@ tags:
 - course
 - admin
 - ui
-position: c10
+position: a3
 created: 2026-08-27
 updated: 2026-08-28
 ---

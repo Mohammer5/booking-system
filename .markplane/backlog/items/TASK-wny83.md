@@ -19,7 +19,7 @@ tags:
 - admin-invite
 - security
 - ui
-position: g10
+position: aL
 created: 2026-08-27
 updated: 2026-08-29
 ---

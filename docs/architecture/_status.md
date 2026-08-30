@@ -30,6 +30,12 @@
   incidental UI state into routes. Frontend routes support direct navigation
   and refresh through the same-origin deployment; `/api/*` remains Worker/API
   owned.
+- Authenticated Admin information architecture uses exactly four top-level
+  resource collections—Courses, Participants, Admin Users, and Admin Invites—
+  with Course Participant/Assignment, Group, and Module collections nested
+  beneath Course. Collection state is URL-owned and Worker-paginated; details
+  own one resource and compact relationship summaries rather than complete
+  child collections.
 - German is the initial frontend language. Stable semantic translation keys,
   language-independent route paths, and language-neutral domain outcomes allow
   later languages without changing the architecture.
@@ -330,3 +336,9 @@ configuration, production deployment, remote Cloudflare environments and D1
 databases, deployment credentials, and release infrastructure remain absent.
 Release hardening and real staging verification remain mandatory before the
 first production release.
+
+The accepted Admin collection/detail normalization is tracked by
+`EPIC-ruijc`. The current implementation inventory above still describes the
+pre-normalization embedded Course detail and broad participation overview until
+the dependent implementation tasks replace those surfaces; this is active
+planned work rather than an alternative accepted convention.

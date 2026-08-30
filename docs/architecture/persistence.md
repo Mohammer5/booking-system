@@ -79,10 +79,11 @@ These capabilities do not justify a generic repository,
 `DatabaseService`, unit of work, generic CRUD/data-access package, or shared
 infrastructure package. The initial booking schema is limited to the Admin User
 state, permanent bootstrap history, and integrity constraints required by this
-slice. The implemented Course slice separately owns narrow list, stable-detail,
-and guarded-create capabilities over `courses`, `groups`, and `modules`. The
-implemented `course-access` slices own narrow Participant fresh-resolution,
-directory/detail, constraint-backed registration, guarded self/Admin
+slice. The Course slice separately owns validated paginated collection,
+focused stable-detail/count, guarded Group/Module item reads, and guarded-create
+capabilities over `courses`, `groups`, and `modules`. The `course-access` slices
+own narrow Participant fresh-resolution, paginated administration collection/
+detail, constraint-backed registration, guarded self/Admin
 profile-only updates, guarded Participant lifecycle, guarded direct-Assignment,
 and assigned Active/Archived-Course list/detail capabilities over `participants`,
 `course_assignments`, `courses`, `groups`, and `modules`. The Participant
@@ -99,16 +100,34 @@ guarded `insert ... select` over `course_assignments`, `participants`,
 non-secret ordered listing and digest recognition, terminal revocation, and
 atomic ordinary-Admin claim over `admin_invites` and `admin_users`.
 
-The Admin-only Course participation read is a separate normalized
-`course-access` persistence capability. One D1 batch reads the requested Active
-or Archived Course, all same-Course Assignments with their Participants, all
-Modules, all Groups, and all retained Selections with selected-Group data.
-Every statement independently requires the same current Active Admin ID and
-scopes every identifier through the requested Course, so an actor disabled
-after initial context resolution receives no data. Selection meaning is not a
-column or trusted row field; the Worker applies the booking-domain derivation
-to these authoritative rows using one captured instant.
-It also owns current Admin User lookup/listing, a name-only update, one-way
+Admin collection persistence accepts only normalized list inputs. Resource
+queries use bound search/filter/page values, static allowlisted order fragments,
+case-insensitive literal-contains matching with escaped SQLite wildcard and
+escape characters, and an ID tie-breaker. A count after filters and the page
+read form one authoritative response. The same rules cover Courses, global
+Participants, Admin Users, Admin Invites, retained Course Assignments joined to
+Participants, Course Groups, and Course Modules; no browser list fetches every
+row for client-side slicing.
+
+Course detail counts retained Assignments, Groups, and Modules without loading
+complete child collections and derives archival availability through an
+existence query over unfinished Scheduled Modules. Course-owned collection and
+item reads guard the Active/Archived parent Course and current Active Admin,
+including cross-Course Group/Module privacy. The bounded participant-options
+read joins global Participant state with the target Course's Assignment state
+or explicit absence.
+
+The Admin-only Course Participant detail remains a separate normalized
+`course-access` persistence capability. Its D1 batch reads the requested Active
+or Archived Course, one target Participant and Assignment or absence, and only
+the Modules, Groups, and retained Selections needed for that target's assisted
+Selection/history surface. Every statement independently requires the same
+current Active Admin ID and Course/target scope, so an actor disabled after
+initial context resolution receives no data. Selection meaning is not a column
+or trusted row field; the Worker applies the booking-domain derivation to these
+authoritative rows using one captured instant.
+
+Admin access also owns current Admin User lookup/listing, a name-only update, one-way
 promotion, and guarded Disable/Re-enable/delete over `admin_users`. Listing
 rechecks the actor remains Active. The single guarded name update accepts self,
 ordinary-target,

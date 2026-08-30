@@ -57,12 +57,13 @@ The default routing model is same-origin:
 /invite       -> public Course Invite continuation and Join through SPA fallback
 /profile      -> Participant profile view through SPA fallback
 /courses/*    -> assigned Participant Course views through SPA fallback
-/admin        -> administration frontend entry through SPA fallback
+/admin        -> administration entry/Active-Admin Courses redirect through SPA fallback
 /admin/invite -> public invited-Admin continuation through SPA fallback
 /admin/invites -> Admin Invite administration through SPA fallback
 /admin/users/* -> Admin User directory, name, promotion, and lifecycle UI through SPA fallback
 /admin/participants/* -> Participant administration through SPA fallback
-/admin/courses/* -> Course administration views through SPA fallback
+/admin/courses/* -> Course and nested Participant/Group/Module collection,
+                     create, and detail administration through SPA fallback
 /assets/*     -> frontend static assets
 /api/*        -> backend/API handling
 ```

@@ -44,24 +44,20 @@ workspaces, and their two audiences do not by themselves justify permanent
 audience-first source buckets. See [browser conventions](browser-conventions.md)
 for the accepted browser libraries and their responsibilities.
 
-The implemented browser exposes Participant Google entry, onboarding, and
+The browser exposes Participant Google entry, onboarding, and
 assigned-Course home at `/`, public Course Invite recognition at `/invite`,
 self-profile maintenance at `/profile`, private
 Participant Course detail at `/courses/:courseId`, the administration entry at
 `/admin`, public invited-Admin onboarding at `/admin/invite`, Admin Invite
-administration at `/admin/invites`, current Admin User directory at
-`/admin/users`, stable Admin User detail/name editing at
-`/admin/users/:adminUserId`, the Participant
-directory at `/admin/participants`, stable
-Participant detail/edit/lifecycle at `/admin/participants/:participantId`, and
-nested Course index/create/detail routes through one responsive MUI shell.
-Stable Admin Course detail contains complete Course editing with its permanent
-timezone lock, shared Course Invite management, Course membership creation,
-revocation, and reactivation plus
-the owned Group list, creation and complete field forms, current lifecycle
-actions, and Module list/creation plus separate descriptive and pre-start
-schedule forms, terminal cancellation, and permanent deletion rather than
-adding incidental routes.
+onboarding at `/admin/invite`, and an authenticated Active-Admin layout whose
+top-level resource collections are `/admin/courses`, `/admin/participants`,
+`/admin/users`, and `/admin/invites`. Admin User and global Participant details
+remain stable beneath their collections. Course detail owns Course fields,
+timezone lock, lifecycle, current Invite, and linked retained counts; Course
+Participant, Group, and Module collections plus create/detail routes are nested
+beneath their owning Course. Active `/admin` redirects to Courses while all
+non-Active administration entry states remain on `/admin`.
+
 Navigation
 preserves the same browser cookie and Better Auth principal; Participant
 context resolves its own
@@ -69,6 +65,22 @@ current domain identity without selecting a role or revealing Course data
 before current Active Participant/Assignment/Course access authorizes it.
 Every route is direct-navigation and refresh-safe through the
 application-owned SPA fallback.
+
+### Authenticated Admin Collection Contract
+
+The seven Admin collections—Courses, global Participants, Admin Users, Admin
+Invites, Course Assignments presented as Course Participants, Course Groups,
+and Course Modules—accept validated one-based `page`, `pageSize`, sort, search,
+and resource-filter parameters. Each response returns the resource-specific
+array plus `pagination` with `page`, `pageSize`, `totalItems`, and `totalPages`;
+Course-owned collections also return minimum guarded Course context.
+
+Every list request authenticates and freshly resolves an Active Admin. Invalid
+parameters return a deliberate `400 invalid-list-query`; filters use bound
+values, search treats wildcard characters literally, sorting uses only static
+allowlisted SQL with an identity tie-breaker, and counts reflect the applied
+filters. Browser URLs and TanStack Query keys carry the complete normalized
+state. Wide semantic tables and narrow card lists render the same server page.
 
 Better Auth remains private to this application and resolves a request to one
 stable external principal. The application then uses participant or
@@ -213,7 +225,7 @@ creates no partial side effect; overlapping Modules remain independent.
 
 ### Course Administration HTTP Surface
 
-The implemented `course-structure` slices use fifteen concrete
+The `course-structure` slices use nineteen concrete
 same-origin operations:
 
 ```text
@@ -222,12 +234,16 @@ POST /api/admin/courses
 GET  /api/admin/courses/:courseId
 PUT  /api/admin/courses/:courseId
 POST /api/admin/courses/:courseId/archival
+GET  /api/admin/courses/:courseId/groups
 POST /api/admin/courses/:courseId/groups
+GET  /api/admin/courses/:courseId/groups/:groupId
 PUT  /api/admin/courses/:courseId/groups/:groupId
 DELETE /api/admin/courses/:courseId/groups/:groupId
 POST /api/admin/courses/:courseId/groups/:groupId/archival
 POST /api/admin/courses/:courseId/groups/:groupId/reactivation
+GET  /api/admin/courses/:courseId/modules
 POST /api/admin/courses/:courseId/modules
+GET  /api/admin/courses/:courseId/modules/:moduleId
 PUT  /api/admin/courses/:courseId/modules/:moduleId
 DELETE /api/admin/courses/:courseId/modules/:moduleId
 PUT  /api/admin/courses/:courseId/modules/:moduleId/schedule
@@ -236,17 +252,21 @@ POST /api/admin/courses/:courseId/modules/:moduleId/cancellation
 
 | Operation | Authentication and current state | Results |
 | --- | --- | --- |
-| Course index | Normal session resolving a current Active Admin | `200 { courses }`; `401 unauthenticated`; exact `403` missing/Disabled Admin |
+| Course collection | Normal session resolving a current Active Admin plus validated list state | `200 { courses, pagination }`; `400 invalid-list-query`; `401 unauthenticated`; exact `403` missing/Disabled Admin |
 | Course creation | Same plus guarded Active-Admin write acceptance | `201` narrow Course; `401`; exact `403`; `422` field outcome |
-| Course detail | Normal session resolving a current Active Admin | `200` Course with ordered `groups` and `modules`; `401`; exact `403`; `404 course-not-found` |
+| Course detail | Normal session resolving a current Active Admin | `200` Course with retained `counts` and derived archival/timezone capabilities but no child arrays; `401`; exact `403`; `404 course-not-found` |
 | Course update | Same plus guarded current Active Admin and Active Course acceptance, complete `{ name, description, timezone }`, and permanent timezone history | `200` updated Course; `401`; exact `403`; `404 course-not-found`; `409` stale Course or locked/stale timezone; `422` field outcome; sanitized `500 technical-error` |
 | Course archival | Same plus guarded current Active Admin, current Active Course, and no Scheduled Module with server-captured `now < endsAt`; no request body | `200 { outcome: "archived", course }`; `401`; exact `403`; `404 course-not-found`; `409 course-archival-blocked` or terminal/stale actor/Course state; sanitized `500 technical-error` |
+| Group collection | Same plus validated list state and guarded Active/Archived parent Course | `200 { course, groups, pagination }`; `400`; `401`; exact `403`; `404 course-not-found` |
 | Group creation | Same plus guarded current Active Admin and Active Course acceptance | `201` narrow Active Group; `401`; exact `403`; `404`; `409` stale Course/name conflict; `422` field outcome |
+| Group detail | Same plus one same-Course Group and guarded parent context | `200 { course, group }`; `401`; exact `403`; `404 group-not-found` without cross-Course disclosure |
 | Group update | Same plus one same-Course Active/Archived Group and complete `{ name, details }` | `200` narrow updated Group; `401`; exact `403`; `404` Course/Group; `409` stale state or Active-name conflict; `422` field outcome; sanitized `500 technical-error` |
 | Group deletion | Same plus one same-Course Active/Archived Group with no currently retained Selection | `200 { outcome: "deleted", group }`; `401`; exact `403`; `404`; `409 group-deletion-blocked` or stale state; sanitized `500 technical-error` |
 | Group archival | Same plus current Active Group and no retained Selection for a Scheduled Module with `now < startsAt` | `200 { outcome: "archived", group }`; `401`; exact `403`; `404`; `409` exact blocker or stale Group/Course state; sanitized `500 technical-error` |
 | Group reactivation | Same plus current Archived Group and authoritative Active-name uniqueness | `200 { outcome: "reactivated", group }`; `401`; exact `403`; `404`; `409` name or stale state; sanitized `500 technical-error` |
+| Module collection | Same plus validated list state and guarded Active/Archived parent Course | `200 { course, modules, pagination }`; `400`; `401`; exact `403`; `404 course-not-found` |
 | Module creation | Same plus guarded current Active Admin and Active Course acceptance | `201` narrow Scheduled Module with definite instants; `401`; exact `403`; `404`; `409` stale Course; `422` field/time/overlap outcome |
+| Module detail | Same plus one same-Course Module and guarded parent context | `200 { course, module }`; `401`; exact `403`; `404 module-not-found` without cross-Course disclosure |
 | Module descriptive update | Same plus one same-Course Scheduled/Cancelled Module and complete `{ title, description, instructions }` | `200` narrow updated Module; `401`; exact `403`; `404` Course/Module; `409` stale actor/Course/Module state; `422` field outcome; sanitized `500 technical-error` |
 | Module reschedule | Same plus one same-Course Scheduled Module before its current start, local start/end fields, and optional explicit overlap occurrences | `200` narrow rescheduled Module; `401`; exact `403`; `404` Course/Module; `409` locked or stale actor/Course/timezone/state/schedule; `422` field/DST/interval outcome; sanitized `500 technical-error` |
 | Module cancellation | Same plus one same-Course Scheduled Module with server-captured `now < endsAt`; no request body | `200 { outcome: "cancelled", module }`; `401`; exact `403`; `404` Course/Module; `409` deadline, terminal, or stale actor/Course/state; sanitized `500 technical-error` |
@@ -254,8 +274,9 @@ POST /api/admin/courses/:courseId/modules/:moduleId/cancellation
 
 Course representations contain only `id`, `name`, `description`, `timezone`,
 `state`, and derived `isTimezoneEditable`; detail adds derived
-`isArchivalAvailable` plus only its Course-owned Group and Module
-representations. The server creates identities and lifecycle state, derives
+`isArchivalAvailable` plus `counts.participants`, `counts.groups`, and
+`counts.modules`. Counts include all retained Assignment, Group, and Module
+lifecycle states. The server creates identities and lifecycle state, derives
 the Course and definite instants, ignores browser trust fields, freshly
 resolves Admin context for every request, and uses guarded writes so an actor
 Disabled or Course Archived after page load creates nothing and an edit changes
@@ -295,13 +316,14 @@ the row and never update a Selection. Deletion removes only an Active or
 Archived Group with no retained Selection and consults no past-reference
 audit. Local Module input, DST gap rejection, and overlap choices remain request
 mechanics interpreted through the persisted Course timezone. The browser nests
-`/admin/courses`, `/admin/courses/new`, and
-`/admin/courses/:courseId` behind its current-Admin gate, while Worker
-authorization remains authoritative for every operation.
+Course Participant, Group, and Module collection/create/detail routes beneath
+`/admin/courses/:courseId`; Course detail links their counts rather than
+embedding their collections. Worker authorization remains authoritative for
+every operation.
 
 ### Participant Administration And Course Assignment HTTP Surface
 
-The implemented `course-access` administration slice adds eight concrete
+The `course-access` administration slice adds nine concrete
 same-origin operations:
 
 ```text
@@ -313,18 +335,20 @@ POST /api/admin/participants/:participantId/reenablement
 GET  /api/admin/courses/:courseId/assignments
 POST /api/admin/courses/:courseId/assignments
 POST /api/admin/courses/:courseId/assignments/:assignmentId/revocation
+GET  /api/admin/courses/:courseId/participant-options
 ```
 
 | Operation | Authentication and current state | Results |
 | --- | --- | --- |
-| Participant directory | Normal session resolving a current Active Admin | `200 { participants }`; `401 unauthenticated`; exact `403` missing/Disabled Admin |
+| Participant collection | Normal session resolving a current Active Admin plus validated list state | `200 { participants, pagination }`; `400 invalid-list-query`; `401 unauthenticated`; exact `403` missing/Disabled Admin |
 | Participant detail | Same plus an existing registered Active or Disabled Participant | `200` narrow Participant; `401`; exact `403`; `404 participant-not-found`; sanitized `500 technical-error` |
 | Admin profile update | Same plus explicit complete `{ name, email }` profile and guarded current Active-Admin/current-target acceptance | `200` narrow updated Participant; `401`; exact `403`; `404 participant-not-found`; `422 invalid-name`/`invalid-email`; `409 email-already-exists`/`profile-not-updated`; sanitized `500 technical-error` |
 | Participant Disable | Same plus a current Active Participant and guarded exact current instant | `200 { outcome: "disabled", participant, removedSelectionCount }`; `401`; exact `403`; `404 participant-not-found`; `409 participant-not-active`; sanitized `500 technical-error` |
 | Participant Re-enable | Same plus a current Disabled Participant | `200 { outcome: "re-enabled", participant }`; `401`; exact `403`; `404 participant-not-found`; `409 participant-not-disabled`; sanitized `500 technical-error` |
-| Course membership | Same plus an existing Active or Archived Course | `200 { assignments }`; `401`; exact `403`; `404 course-not-found` |
+| Course Participant/Assignment collection | Same plus validated list state and an Active or Archived Course | `200 { course, assignments, pagination }`; `400`; `401`; exact `403`; `404 course-not-found` |
 | Direct Assignment or reactivation | Same plus guarded current Active Admin, Active Course, and fully registered Active/Disabled Participant acceptance | `201 { outcome: "created", assignment }`; `200` `already-active` no-op or retained-row `reactivated`; `401`; exact `403`; `404` Course/Participant; `409` stale Course/target; `422 invalid-participant-id` |
 | Assignment revocation | Same plus the requested retained Assignment in an Active or Archived Course | `200` `revoked` or `already-revoked` with the retained Assignment and exact future-Selection removal count; `401`; exact `403`; private `404 assignment-not-found`; `409` stale Course/Assignment; sanitized `500 technical-error` |
+| Participant options | Same plus bounded literal search and an Active or Archived Course | `200 { course, participants }` with global state and Assignment state or absence; `400`; `401`; exact `403`; `404 course-not-found` |
 
 Participant list and detail items expose only `id`, `name`, `email`, and global
 `state`. Profile writes change only name/email and preserve Participant
@@ -347,46 +371,32 @@ instant. Exact-start or begun Scheduled history, all Cancelled history, and
 other-Course membership and Selections remain unchanged; repeating revocation
 is a successful no-op. Reactivation restores current assigned-Course access
 when all current predicates permit it but never restores removed Selections.
-`/admin/participants`
-remains independent of membership so zero-Assignment Participants stay
-discoverable, `/admin/participants/:participantId` owns stable profile and
-lifecycle maintenance, and Course membership stays on the stable Course detail
-route.
+`/admin/participants` remains independent of membership so zero-Assignment
+Participants stay discoverable, and `/admin/participants/:participantId` owns
+stable global profile and lifecycle maintenance. The Course-specific retained
+Assignment collection is presented as Participants at
+`/admin/courses/:courseId/participants`; its target detail owns Assignment
+lifecycle and Admin-assisted Selection. Direct Assignment and assisted-target
+Dialogs use the bounded Course participant-options read rather than treating a
+paginated global collection as a complete Participant universe.
 
-### Administrative Participation HTTP Surface
+### Administrative Course Participant Detail HTTP Surface
 
-The read-only `course-access` administration slice adds one concrete
-same-origin operation:
+The Course-scoped Participant detail read authenticates and freshly resolves
+one Active Admin, verifies the Active or Archived Course and target Participant,
+and returns only the target's Assignment or explicit absence plus the Groups,
+Modules, and retained Selections needed for Admin-assisted Selection and
+historical presentation. Each guarded statement uses the same actor, Course,
+and target scope. Selection `meaning`/`phase` is derived from one captured
+instant rather than stored, and a retained selected Group includes its identity,
+details, and state even when Archived.
 
-```text
-GET /api/admin/courses/:courseId/participation
-```
-
-The operation normally authenticates and freshly resolves one Active Admin,
-then passes that Admin identity into a guarded Course-scoped D1 batch. Success
-returns `200 { course, groups, modules, participations }`; unauthenticated and
-missing/Disabled Admin contexts return the existing exact `401`/`403`
-outcomes; a missing Course or Admin disabled between context resolution and
-the read returns `404 participation-unavailable`; unexpected failure returns a
-sanitized `500 technical-error`. Every response is `no-store`.
-
-The representation is normalized. `course` carries only its administration
-fields; `groups` includes Active and Archived Group identity/details/state;
-`modules` includes Scheduled and Cancelled content and exact instants; and each
-ordered participation carries the minimum Participant profile, retained
-Assignment identity/state, and retained Selections. Selection responses omit
-stored status and instead contain Worker-composed booking-domain
-`meaning`/`phase` derived from one captured instant and the matching current
-Participant, Assignment, Course, and Module. The selected Group remains
-embedded with identity/details/state when Archived.
-
-The browser exposes `/admin/courses/:courseId/participation` as a responsive
-semantic table/card overview with complete Module and Group lists, and
-`/admin/courses/:courseId/participation/:participantId` as a refresh-safe
-Participant/Module detail. Both are read-only German MUI views behind the
-current-Admin gate. The separate Participant persistence, handler, contract,
-routes, and representations remain unchanged and contain no roster, peer,
-Assignment, count, or Admin data.
+The broad overview that transferred every Assignment, Participant, Group,
+Module, and Selection together is not a collection contract. The paginated
+Assignment collection owns Course Participant discovery, while the target
+detail owns one Participant's Assignment lifecycle and Module Selection
+interactions. The separate Participant-facing persistence, routes, and
+representations remain roster- and peer-private.
 
 ### Shared Course Invite HTTP Surface
 
@@ -445,15 +455,18 @@ POST /api/admin/invites/:inviteId/revocation
 Every operation requires a normal session resolving a current Active Admin.
 Creation returns `201` with stable Invite metadata and the complete
 `/admin/invite#<token>` URL exactly once; the URL and raw token are absent from
-D1, later list reads, logs, and every persistence-facing representation. The
-list returns only ordered `id`, `createdAt`, and explicit Active, Claimed, or
-Revoked state. Revocation returns the updated terminal representation for an
+D1, later collection reads, logs, and every persistence-facing representation.
+The collection returns paginated `id`, `createdAt`, and explicit Active,
+Claimed, or Revoked state under the common validated state contract. Revocation
+returns the updated terminal representation for an
 Active Invite and may be performed by any Active Admin regardless of creator.
 Claimed, Revoked, missing, stale-actor, concurrent-loser, and technical outcomes
 change no row or secret. Every response is `no-store`.
 
-The directly navigable `/admin/invites` view owns German-first empty, loading,
-error, list, one-time creation-result, and destructive revocation states. The
+The directly navigable `/admin/invites` view owns German-first empty, filtered-
+empty, loading, error, collection, one-time creation-result, and destructive
+revocation states. Create and Revoke invalidate every Invite collection page
+rather than inserting a result into an arbitrary filtered page. The
 raw creation URL remains transient mutation state rather than query-cache data,
 so closing the result or refreshing cannot recover it.
 
@@ -485,7 +498,7 @@ refresh and fixed Google return without consuming, requires an explicit name,
 and exposes common unavailable, existing-principal, stale/concurrent, and
 success states. It creates no Participant and reveals no administration data.
 
-### Admin User Directory, Name, Promotion, And Lifecycle HTTP Surface
+### Admin User Collection, Name, Promotion, And Lifecycle HTTP Surface
 
 Current Admin User administration uses seven same-origin operations:
 
@@ -500,26 +513,28 @@ DELETE /api/admin/users/:adminUserId
 ```
 
 Every operation authenticates normally and freshly resolves an Active current
-Admin User. The collection returns every current Admin User in deterministic
-name/identity order. Collection and detail representations contain only `id`,
-required booking-system `name`, Active/Disabled `state`, ordinary/Super
-`authority`, server-derived name/promotion/lifecycle affordances, and a safe
-self/Super-target lifecycle restriction; external principals, provider data,
-Participant data, and relationships never cross this HTTP surface.
+Admin User. The collection returns one validated filtered/sorted page with an
+authoritative total. Collection items contain only `id`, required booking-
+system `name`, Active/Disabled `state`, ordinary/Super `authority`, and the
+detail affordance. Detail adds server-derived name/promotion/lifecycle
+affordances and a safe self/Super-target lifecycle restriction; external
+principals, provider data, Participant data, and relationships never cross
+this HTTP surface.
 
 The `PUT` accepts `{ name }` only. One guarded D1 statement changes only the
 target name while rechecking actor Active state, target existence, self access,
 and ordinary-versus-Super authority. Invalid input returns `422`; a missing
 target returns `404`; a stale actor or no-longer-authorized target is refused
-without partial mutation. The directly navigable German `/admin/users` and
-`/admin/users/:adminUserId` views use responsive table/card alternatives,
-explicit state/authority labels, and mount the accessible name form only when
-the server representation permits it. The body-free promotion `POST` accepts
+without partial mutation. The directly navigable German `/admin/users`
+collection uses responsive table/card alternatives and explicit detail
+actions; `/admin/users/:adminUserId` owns complete state/authority presentation
+and mounts the accessible name form only when the server representation permits
+it. The body-free promotion `POST` accepts
 no generic authority value. One guarded D1 update changes only an eligible
 Active ordinary target's authority after rechecking a different Active Super
 Admin actor; concurrent/already-Super, Disabled, self, ordinary-actor, and
-missing-target attempts make no partial change. The same directory/detail
-views expose the server-derived action through a German permanent one-way
+missing-target attempts make no partial change. The detail view exposes the
+server-derived action through a German permanent one-way
 confirmation and reconcile the promoted representation immediately.
 
 The lifecycle command requests accept no browser-supplied state or authority.
@@ -530,10 +545,11 @@ Active Super Admin remain after Disable/delete. Concurrent cross-Super requests
 therefore produce one valid winner and one refusal. Re-enable preserves the
 same identity and authority. Delete returns only the removed Admin User ID;
 the next request from its still-existing authentication session resolves no
-current Admin User. The responsive directory/detail controls show only
-server-permitted commands, explain access and non-cascade effects in German,
-remove a deleted row, and keep cancellation, refusal, and completion focus
-predictable.
+current Admin User. Detail controls show only server-permitted commands,
+explain access and non-cascade effects in German, navigate a deletion result
+back to the collection, and keep cancellation, refusal, and completion focus
+predictable. Every mutation invalidates all Admin User collection pages and the
+affected detail/current-Admin reads rather than patching an arbitrary page.
 
 ### No Separate API Application
 

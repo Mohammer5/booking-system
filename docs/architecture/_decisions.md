@@ -89,6 +89,42 @@ navigation or bespoke primitives. This direction does not create a competing
 design-system package or justify wrappers around every MUI component. Shared
 presentation abstractions require repeated concrete use and one clear owner.
 
+## Normalize Admin Around Resource Collections And Focused Details
+
+Authenticated administration uses a conventional resource-oriented information
+architecture. Its top-level resource navigation contains exactly Courses,
+Participants, Admin Users, and Admin Invites. Groups and Modules remain
+Course-owned and therefore appear as nested Course collections rather than as
+top-level destinations. Create, detail, and edit views do not become additional
+navigation items, and `/admin` redirects an Active Admin to Courses rather than
+introducing a dashboard with no independent product responsibility.
+
+Collection views own discovery: URL-restorable search and filters, statically
+allowlisted sorting, server-side pagination and totals, and creation entry
+points where the product permits creation. Detail views own one resource's
+complete fields, editing, lifecycle actions, and compact relationship
+summaries. A parent detail does not transfer or render complete child
+collections merely because their actions are related in workflow. Course
+detail therefore links retained Participant/Assignment, Group, and Module
+counts to their independently useful nested collections.
+
+Admin collection state belongs to stable language-independent URLs so refresh,
+bookmarking, history navigation, and direct entry have one meaning. Worker/D1
+reads validate every list parameter, construct SQL ordering only from static
+allowlists, bind user-controlled values, and count after filtering. Wide
+browser presentation uses semantic MUI Core tables and narrow presentation
+uses named card lists over the same server page and URL state; MUI X is not
+required. Dialog state remains local only for incidental interactions such as
+confirmation, one-time Invite creation results, and bounded Participant
+pickers.
+
+The browser label “Course Participants” does not create another domain
+identity. A Participant remains global, while the Course-owned collection is
+the set of retained Course Assignments joined with their Participants. Keeping
+those concepts distinct preserves global Participant lifecycle and
+Course-specific Assignment lifecycle even when the browser presents them
+together.
+
 MUI X Community components may be introduced only for a concrete browser need
 that MUI Core does not meet, such as accessible date/time entry. Pro, Premium,
 or other commercially licensed components are not accepted for the v1 local

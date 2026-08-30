@@ -20,7 +20,7 @@ tags:
 - course-invite
 - security
 - ui
-position: f10
+position: aJ
 created: 2026-08-27
 updated: 2026-08-29
 ---

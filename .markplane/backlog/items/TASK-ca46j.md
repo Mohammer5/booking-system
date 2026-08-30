@@ -18,7 +18,7 @@ tags:
 - participant
 - profile
 - ui
-position: d10
+position: a9
 created: 2026-08-27
 updated: 2026-08-28
 ---

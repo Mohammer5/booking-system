@@ -172,13 +172,16 @@ capability through the existing browser `course-access` slice. This adds the
 booking first-level module and root-composition permission but changes no
 first-level application edge or third-party permission.
 
-Administrative participation inspection remains inside the existing
-application `worker/course-access` and `browser/course-access` slices. Worker
-composition consumes the already public booking-package
-`deriveModuleSelectionPresentation` interface; the browser reaches the new
-read model only through same-origin HTTP. No workspace dependency,
-first-level responsibility, third-party permission, composition-file
-permission, or boundary-map entry changes.
+Admin collection normalization remains inside the existing first-level
+`browser` and `worker` responsibilities. The focused second-level
+`admin-collections` browser concept uses only already permitted React Router,
+TanStack Query, and MUI imports; the application-private Worker listing helper
+uses no new third-party or workspace dependency. Course Participant reads and
+Admin-assisted Selection remain in `course-access`, while Course, Group, and
+Module collection/detail reads remain in `course-structure`; browser-to-Worker
+communication stays same-origin HTTP. No workspace dependency, first-level
+responsibility, third-party permission, composition-file permission, or
+boundary-map entry changes.
 
 ## Map Shape
 

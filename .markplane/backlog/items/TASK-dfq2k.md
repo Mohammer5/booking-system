@@ -21,7 +21,7 @@ tags:
 - navigation
 - responsive
 - accessibility
-position: b10
+position: a1
 created: 2026-08-27
 updated: 2026-08-28
 ---

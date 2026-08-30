@@ -21,7 +21,7 @@ tags:
 - membership
 - lifecycle
 - authorization
-position: d20
+position: aA
 created: 2026-08-27
 updated: 2026-08-28
 ---

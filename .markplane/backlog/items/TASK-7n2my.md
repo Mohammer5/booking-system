@@ -18,7 +18,7 @@ tags:
 - course
 - timezone
 - lifecycle
-position: e10
+position: aC
 created: 2026-08-27
 updated: 2026-08-28
 ---

@@ -20,7 +20,7 @@ tags:
 - assignment
 - membership
 - ui
-position: c40
+position: a6
 created: 2026-08-27
 updated: 2026-08-28
 ---

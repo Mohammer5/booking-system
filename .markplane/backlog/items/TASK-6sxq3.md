@@ -19,9 +19,9 @@ tags:
 - documentation
 - verification
 - release-gate
-position: i30
+position: a4
 created: 2026-08-27
-updated: 2026-08-27
+updated: 2026-08-30
 ---
 
 # Accept and document the locally complete v1

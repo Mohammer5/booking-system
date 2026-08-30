@@ -19,7 +19,7 @@ tags:
 - selection
 - assignment
 - atomicity
-position: h20
+position: aR
 created: 2026-08-27
 updated: 2026-08-29
 ---

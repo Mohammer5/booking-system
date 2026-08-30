@@ -14,8 +14,11 @@ This repository uses an indexed global documentation system.
 
 ### Docs Status
 - Path: `docs/_status.md`
-- Summary: Present accepted product and technical direction, the implemented
-  local application, Course creation/editing with permanent timezone locking,
+- Summary: Present accepted product and technical direction, including the
+  transition to Active-Admin resource navigation, URL-owned server-paginated
+  collections, focused details, linked Course counts, and Course-owned
+  Participant/Group/Module routes, plus the implemented local application,
+  Course creation/editing with permanent timezone locking,
   Group creation/editing/archival/reactivation/deletion, Module creation/
   descriptive editing/pre-start rescheduling/terminal cancellation/deletion,
   terminal Course archival and private read-only history,
@@ -56,7 +59,8 @@ This repository uses an indexed global documentation system.
 ### Process
 - Path: `docs/process/_index.md`
 - Summary: Documentation workflow, Markplane tracking, verification including
-  local-tool provisioning, Course creation/editing and structure,
+  Active-Admin resource navigation and collection/detail evidence, local-tool
+  provisioning, Course creation/editing and structure,
   Participant-registration/profile/
   lifecycle, and Assignment-lifecycle/assigned-Participant-Course/Module-
   Selection/shared-Course-Invite-management/Join/Admin-Invite-administration/
@@ -71,7 +75,9 @@ This repository uses an indexed global documentation system.
 - Path: `docs/architecture/_index.md`
 - Summary: Conceptual-domain-first source organization, JavaScript functional
   composition and MUI-based browser conventions including the responsive
-  Admin/Participant shell, Participant onboarding/profile/directory, Course
+  Admin/Participant shell, Active-Admin resource navigation, URL-owned
+  server-paginated collections, focused details and Course-owned nested
+  routes, Participant onboarding/profile/directory, Course
   Assignment creation/revocation/reactivation, Participant lifecycle, assigned
   Participant Course access, shared Course Invite management/recognition/Join,
   Admin Invite administration/onboarding and Admin User directory/name editing/

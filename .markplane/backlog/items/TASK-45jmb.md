@@ -19,7 +19,7 @@ tags:
 - profile
 - authorization
 - ui
-position: g30
+position: aN
 created: 2026-08-27
 updated: 2026-08-29
 ---

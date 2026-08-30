@@ -15,6 +15,9 @@ Current reality:
   are created manually rather than automatically.
 - Repository-local Markplane tracking is active for development work and is
   separate from canonical repository truth and product runtime data.
+- `EPIC-ruijc` and its dependency-ordered tasks/plans track the active Admin
+  collection/detail normalization; only dependency-ready work is activated and
+  every completed conceptual task receives its own task-ID commit.
 - GitHub Actions runs the current canonical `pnpm check` gate for pull requests
   targeting `main` and pushes to `main` through the stable `verify` job.
 - Layered local application verification is implemented through domain Vitest,
