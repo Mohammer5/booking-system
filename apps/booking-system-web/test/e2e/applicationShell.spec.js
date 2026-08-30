@@ -58,6 +58,9 @@ for (const [viewportName, viewport] of Object.entries({
     await page.setViewportSize(viewport);
     await page.goto("/admin");
     await expectAdminEntry(page);
+    await expect(
+      page.getByRole("navigation", { name: "Administrationsressourcen" }),
+    ).toHaveCount(0);
 
     if (viewportName === "desktop") {
       await expectCurrentNavigation(page, "Administration");
@@ -99,8 +102,9 @@ test("reuses one session across contexts and restores focus around sign-out", as
   expect([201, 409]).toContain(participantResponse.status());
 
   await page.goto("/admin");
+  await expect(page).toHaveURL("/admin/courses");
   await expect(
-    page.getByRole("heading", { name: "Administrationsbereich" }),
+    page.getByRole("heading", { name: "Kurse" }),
   ).toBeVisible();
   await page.getByRole("link", { name: "Teilnahme" }).click();
   await expect(page).toHaveURL("/");
@@ -116,16 +120,14 @@ test("reuses one session across contexts and restores focus around sign-out", as
   await page
     .getByRole("link", { name: "Administration", exact: true })
     .click();
-  await expect(page).toHaveURL("/admin");
+  await expect(page).toHaveURL("/admin/courses");
   await expect(
-    page.getByRole("heading", { name: "Administrationsbereich" }),
+    page.getByRole("heading", { name: "Kurse" }),
   ).toBeVisible();
 
   const signOutButton = page.getByRole("button", { name: "Abmelden" });
 
-  await page.getByRole("main").focus();
-  await page.keyboard.press("Tab");
-  await expectVisibleKeyboardFocus(signOutButton);
+  await focusWithKeyboard(page, signOutButton);
   await page.keyboard.press("Enter");
 
   const dialog = page.getByRole("dialog", { name: "Abmeldung bestätigen" });
@@ -159,6 +161,107 @@ test("reuses one session across contexts and restores focus around sign-out", as
   const currentAdminResponse = await page.request.get("/api/admin/me");
 
   expect(currentAdminResponse.status()).toBe(401);
+  await expectAccessibleLayout(page);
+});
+
+test("mounts the four-resource Admin layout only for an Active Admin", async ({
+  page,
+}) => {
+  await page.setViewportSize(desktopViewport);
+  await stubActiveAdmin(page);
+  await page.goto("/admin");
+
+  await expect(page).toHaveURL("/admin/courses");
+  const navigation = page.getByRole("navigation", {
+    name: "Administrationsressourcen",
+  });
+
+  await expect(navigation).toBeVisible();
+  await expect(navigation.getByRole("link")).toHaveCount(4);
+  await expect(
+    navigation.getByRole("link", { name: "Kurse verwalten" }),
+  ).toHaveAttribute("aria-current", "page");
+  await expect(
+    navigation.getByRole("link", { name: "Teilnehmende verwalten" }),
+  ).toBeVisible();
+  await expect(
+    navigation.getByRole("link", { name: "Administrationskonten verwalten" }),
+  ).toBeVisible();
+  await expect(
+    navigation.getByRole("link", { name: "Admin-Einladungen verwalten" }),
+  ).toBeVisible();
+  await expectResourceSelection(
+    page,
+    "/admin/courses/course-id/participation/participant-id",
+    "Kurse verwalten",
+  );
+  await expectResourceSelection(
+    page,
+    "/admin/participants/participant-id",
+    "Teilnehmende verwalten",
+  );
+  await expectResourceSelection(
+    page,
+    "/admin/users/admin-active",
+    "Administrationskonten verwalten",
+  );
+  await expectResourceSelection(
+    page,
+    "/admin/invites",
+    "Admin-Einladungen verwalten",
+  );
+  await expect(page.getByRole("main")).toHaveCount(1);
+  await expectAccessibleLayout(page);
+});
+
+test("uses the one shell Drawer for narrow Active-Admin navigation", async ({
+  page,
+}) => {
+  await page.setViewportSize(narrowViewport);
+  await stubActiveAdmin(page);
+  await page.goto("/admin");
+  const menuButton = page.getByRole("button", { name: "Menü öffnen" });
+
+  await menuButton.focus();
+  await page.keyboard.press("Enter");
+  await expect(
+    page.getByRole("button", { name: "Menü schließen" }),
+  ).toBeFocused();
+  const navigation = page.getByRole("navigation", {
+    name: "Administrationsressourcen",
+  });
+
+  await expect(navigation).toBeVisible();
+  await expect(navigation.getByRole("link")).toHaveCount(4);
+  await page.keyboard.press("Shift+Tab");
+  await expect(
+    page.getByRole("link", { name: "Eigenes Administrationskonto" }),
+  ).toBeFocused();
+  await page.keyboard.press("Tab");
+  await expect(
+    page.getByRole("button", { name: "Menü schließen" }),
+  ).toBeFocused();
+  await page.keyboard.press("Escape");
+  await expect(navigation).toBeHidden();
+  await expectVisibleKeyboardFocus(menuButton);
+  await expectAccessibleLayout(page);
+});
+
+test("keeps public Admin Invite onboarding outside the resource layout", async ({
+  page,
+}) => {
+  await page.route("**/api/admin-invite/continuation", (route) =>
+    fulfillJson(route, 404, { outcome: "invite-unavailable" }),
+  );
+  await page.goto("/admin/invite");
+
+  await expect(
+    page.getByRole("heading", { name: "Admin-Einladung" }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("navigation", { name: "Administrationsressourcen" }),
+  ).toHaveCount(0);
+  await expect(page.getByRole("main")).toHaveCount(1);
   await expectAccessibleLayout(page);
 });
 
@@ -257,6 +360,34 @@ async function fulfillJson(route, status, body) {
   });
 }
 
+/** Stub one stable authorized Admin and an empty current Course index. */
+async function stubActiveAdmin(page) {
+  await page.route("**/api/admin/entry", (route) =>
+    fulfillJson(route, 200, { mode: "login" }),
+  );
+  await page.route("**/api/admin/me", (route) =>
+    fulfillJson(route, 200, {
+      id: "admin-active",
+      name: "Ada Admin",
+      state: "active",
+      authority: "super-admin",
+    }),
+  );
+  await page.route("**/api/admin/courses", (route) =>
+    fulfillJson(route, 200, { courses: [] }),
+  );
+}
+
+/** Assert a nested route keeps its owning top-level resource selected. */
+async function expectResourceSelection(page, path, linkName) {
+  await page.goto(path);
+  await expect(
+    page
+      .getByRole("navigation", { name: "Administrationsressourcen" })
+      .getByRole("link", { name: linkName }),
+  ).toHaveAttribute("aria-current", "page");
+}
+
 /**
  * Assert the current route has no axe violations or horizontal overflow.
  *
@@ -284,4 +415,12 @@ async function expectAccessibleLayout(page) {
 async function expectVisibleKeyboardFocus(control) {
   await expect(control).toBeFocused();
   await expect(control).toHaveCSS("outline-style", "solid");
+}
+
+/** Move through the keyboard focus ring after selecting a known control. */
+async function focusWithKeyboard(page, control) {
+  await control.focus();
+  await page.keyboard.press("Shift+Tab");
+  await page.keyboard.press("Tab");
+  await expectVisibleKeyboardFocus(control);
 }

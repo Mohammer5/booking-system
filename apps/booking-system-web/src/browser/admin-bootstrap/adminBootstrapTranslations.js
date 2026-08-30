@@ -47,6 +47,15 @@ export const adminBootstrapTranslations = {
       admin: "Admin",
       courses: "Kurse verwalten",
     },
+    navigation: {
+      label: "Administrationsressourcen",
+      title: "Verwaltung",
+      courses: "Kurse verwalten",
+      participants: "Teilnehmende verwalten",
+      adminUsers: "Administrationskonten verwalten",
+      adminInvites: "Admin-Einladungen verwalten",
+      ownAccount: "Eigenes Administrationskonto",
+    },
     status: {
       loading: "Administrationsstatus wird geladen …",
       technicalError:

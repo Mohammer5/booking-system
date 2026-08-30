@@ -1,7 +1,7 @@
 ---
 id: PLAN-p287x
 title: Implementation plan for Add the authenticated Admin navigation layout
-status: draft
+status: done
 implements:
 - TASK-qwe92
 related: []
@@ -49,17 +49,17 @@ Collection rendering and child route pages remain dependent tasks.
 
 ### Phase 1: Composition
 
-- [ ] Add the authenticated layout and four-link navigation.
-- [ ] Move identity/self/sign-out outside the resource list.
-- [ ] Replace the index page with an Active-only redirect while preserving success focus.
+- [x] Add the authenticated layout and four-link navigation.
+- [x] Move identity/self/sign-out outside the resource list.
+- [x] Replace the index page with an Active-only redirect while preserving success focus.
 
 **Checkpoint**: the layout is mounted only for a resolved Active Admin.
 
 ### Phase 2: Responsive and accessibility verification
 
-- [ ] Integrate desktop sidebar and narrow Drawer with the shared shell.
-- [ ] Verify selected nested resources, one main, skip link, focus trap/return.
-- [ ] Add German translations and focused Playwright/axe evidence.
+- [x] Integrate desktop sidebar and narrow Drawer with the shared shell.
+- [x] Verify selected nested resources, one main, skip link, focus trap/return.
+- [x] Add German translations and focused Playwright/axe evidence.
 
 **Checkpoint**: desktop and narrow navigation satisfy focus and landmark rules.
 

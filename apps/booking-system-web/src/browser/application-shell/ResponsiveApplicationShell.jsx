@@ -3,6 +3,7 @@ import {
   Box,
   Button,
   Container,
+  Divider,
   Drawer,
   List,
   ListItem,
@@ -10,7 +11,9 @@ import {
   ListItemText,
   Toolbar,
   Typography,
+  useMediaQuery,
 } from "@mui/material";
+import { useTheme } from "@mui/material/styles";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link as RouterLink, useLocation } from "react-router";
@@ -45,11 +48,19 @@ const navigationItems = [
  * @param {object} props Component properties.
  * @param {import("react").ReactNode} props.children Route-owned content.
  * @param {"participant" | "admin"} props.context Current application context.
+ * @param {((onNavigate?: () => void) => import("react").ReactNode) | undefined}
+ * props.renderAuthenticatedNavigation Active-context navigation renderer.
  * @returns {import("react").ReactElement} The application frame.
  */
-export function ResponsiveApplicationShell({ children, context }) {
+export function ResponsiveApplicationShell({
+  children,
+  context,
+  renderAuthenticatedNavigation,
+}) {
   const { t } = useTranslation();
   const contextConfiguration = contexts[context];
+  const theme = useTheme();
+  const isWideScreen = useMediaQuery(theme.breakpoints.up("md"));
 
   useEffect(() => {
     document.title = t(contextConfiguration.documentTitleKey);
@@ -66,17 +77,65 @@ export function ResponsiveApplicationShell({ children, context }) {
       </Box>
       <ApplicationHeader
         contextTitle={t(contextConfiguration.titleKey)}
+        renderAuthenticatedNavigation={renderAuthenticatedNavigation}
         translate={t}
       />
-      <Container
-        component="main"
-        id="main-content"
-        maxWidth="lg"
-        tabIndex={-1}
-        sx={{ px: { xs: 2, sm: 3 }, py: { xs: 3, sm: 5 } }}
+      <ApplicationContent
+        isWideScreen={isWideScreen}
+        renderAuthenticatedNavigation={renderAuthenticatedNavigation}
       >
         {children}
-      </Container>
+      </ApplicationContent>
+    </Box>
+  );
+}
+
+/** @returns {import("react").ReactElement} The shell's sole main landmark. */
+function ApplicationContent({
+  children,
+  isWideScreen,
+  renderAuthenticatedNavigation,
+}) {
+  const hasAuthenticatedNavigation = Boolean(renderAuthenticatedNavigation);
+
+  return (
+    <Container
+      component="main"
+      id="main-content"
+      maxWidth={hasAuthenticatedNavigation ? false : "lg"}
+      tabIndex={-1}
+      sx={{
+        maxWidth: hasAuthenticatedNavigation ? "96rem" : undefined,
+        px: { xs: 2, sm: 3 },
+        py: { xs: 3, sm: 5 },
+      }}
+    >
+      {hasAuthenticatedNavigation ? (
+        <AuthenticatedContentLayout
+          isWideScreen={isWideScreen}
+          renderNavigation={renderAuthenticatedNavigation}
+        >
+          {children}
+        </AuthenticatedContentLayout>
+      ) : children}
+    </Container>
+  );
+}
+
+/** @returns {import("react").ReactElement} Wide Admin sidebar and content. */
+function AuthenticatedContentLayout({
+  children,
+  isWideScreen,
+  renderNavigation,
+}) {
+  return (
+    <Box sx={authenticatedContentStyles}>
+      {isWideScreen ? (
+        <Box component="aside" sx={authenticatedSidebarStyles}>
+          {renderNavigation()}
+        </Box>
+      ) : null}
+      <Box sx={{ minWidth: 0 }}>{children}</Box>
     </Box>
   );
 }
@@ -87,7 +146,11 @@ export function ResponsiveApplicationShell({ children, context }) {
  * @param {object} props Presentation properties.
  * @returns {import("react").ReactElement} The application banner.
  */
-function ApplicationHeader({ contextTitle, translate }) {
+function ApplicationHeader({
+  contextTitle,
+  renderAuthenticatedNavigation,
+  translate,
+}) {
   const [isNavigationOpen, setIsNavigationOpen] = useState(false);
   const closeNavigation = () => setIsNavigationOpen(false);
 
@@ -116,29 +179,43 @@ function ApplicationHeader({ contextTitle, translate }) {
           {translate("applicationShell.navigation.open")}
         </Button>
       </Toolbar>
-      <Drawer
-        anchor="right"
-        open={isNavigationOpen}
-        onClose={closeNavigation}
-      >
-        <Box sx={{ p: 2, width: "min(82vw, 20rem)" }}>
-          <Button
-            ref={focusCloseNavigationControl}
-            onClick={closeNavigation}
-            variant="outlined"
-          >
-            {translate("applicationShell.navigation.close")}
-          </Button>
-          <Typography component="h2" sx={{ mt: 3 }} variant="h2">
-            {translate("applicationShell.navigation.title")}
-          </Typography>
-          <ApplicationNavigation
-            onNavigate={closeNavigation}
-            translate={translate}
-          />
-        </Box>
-      </Drawer>
+      <MobileNavigationDrawer
+        closeNavigation={closeNavigation}
+        isNavigationOpen={isNavigationOpen}
+        renderAuthenticatedNavigation={renderAuthenticatedNavigation}
+        translate={translate}
+      />
     </AppBar>
+  );
+}
+
+/** @returns {import("react").ReactElement} The sole narrow navigation Drawer. */
+function MobileNavigationDrawer(props) {
+  return (
+    <Drawer anchor="right" open={props.isNavigationOpen} onClose={props.closeNavigation}>
+      <Box sx={{ p: 2, width: "min(82vw, 20rem)" }}>
+        <Button
+          ref={focusCloseNavigationControl}
+          onClick={props.closeNavigation}
+          variant="outlined"
+        >
+          {props.translate("applicationShell.navigation.close")}
+        </Button>
+        <Typography component="h2" sx={{ mt: 3 }} variant="h2">
+          {props.translate("applicationShell.navigation.title")}
+        </Typography>
+        <ApplicationNavigation
+          onNavigate={props.closeNavigation}
+          translate={props.translate}
+        />
+        {props.isNavigationOpen && props.renderAuthenticatedNavigation ? (
+          <>
+            <Divider sx={{ my: 3 }} />
+            {props.renderAuthenticatedNavigation(props.closeNavigation)}
+          </>
+        ) : null}
+      </Box>
+    </Drawer>
   );
 }
 
@@ -214,4 +291,19 @@ const skipLinkStyles = {
   "&:focus": {
     transform: "translateY(0)",
   },
+};
+
+const authenticatedContentStyles = {
+  display: { md: "grid" },
+  gap: { md: 4 },
+  gridTemplateColumns: { md: "16rem minmax(0, 1fr)" },
+};
+
+const authenticatedSidebarStyles = {
+  alignSelf: "start",
+  display: { xs: "none", md: "block" },
+  maxHeight: "calc(100vh - 3rem)",
+  overflowY: "auto",
+  position: "sticky",
+  top: 24,
 };

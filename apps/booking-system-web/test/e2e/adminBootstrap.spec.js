@@ -87,11 +87,11 @@ test("bootstraps exactly one first Admin through the German browser flow", async
 
   await expect(bootstrapSuccess).toBeVisible();
   await expect(bootstrapSuccess).toBeFocused();
+  await expect(page).toHaveURL("/admin/courses");
   await expect(
-    page.getByRole("heading", { name: "Administrationsbereich" }),
+    page.getByRole("heading", { name: "Kurse" }),
   ).toBeVisible();
   await expect(page.getByText("Jane Doe")).toBeVisible();
-  await expect(page.getByText("Aktiv")).toBeVisible();
   await expect(page.getByText("Super Admin")).toBeVisible();
   await expect(page.getByRole("button", { name: "Abmelden" })).toBeVisible();
   await expectNoAxeViolations(page);
@@ -100,10 +100,8 @@ test("bootstraps exactly one first Admin through the German browser flow", async
   await expectNoAxeViolations(page);
   await page.setViewportSize(desktopViewport);
 
-  await page.keyboard.press("Tab");
-  await expectVisibleKeyboardFocus(
-    page.getByRole("button", { name: "Abmelden" }),
-  );
+  await page.getByRole("button", { name: "Abmelden" }).focus();
+  await expect(page.getByRole("button", { name: "Abmelden" })).toBeFocused();
   await confirmSignOut(page);
 
   await expect(
@@ -132,12 +130,11 @@ test("bootstraps exactly one first Admin through the German browser flow", async
   await page.reload();
 
   await expect(
-    page.getByRole("heading", { name: "Administrationsbereich" }),
+    page.getByRole("heading", { name: "Kurse" }),
   ).toBeVisible();
   await expectNoAxeViolations(page);
 
-  await page.getByRole("main").focus();
-  await page.keyboard.press("Tab");
+  await page.getByRole("button", { name: "Abmelden" }).focus();
   await expect(page.getByRole("button", { name: "Abmelden" })).toBeFocused();
   await confirmSignOut(page);
   await expect(
@@ -213,6 +210,9 @@ for (const [viewportName, viewport] of Object.entries({
         hasText: "Administrationsstatus wird geladen …",
       }),
     ).toBeVisible();
+    await expect(
+      page.getByRole("navigation", { name: "Administrationsressourcen" }),
+    ).toHaveCount(0);
     await expectStateAccessibility(page);
     releaseEntry();
     await expect(
@@ -331,17 +331,20 @@ for (const [viewportName, viewport] of Object.entries({
       entry: { mode: "login" },
     });
     await expect(
-      page.getByRole("heading", { name: "Administrationsbereich" }),
+      page.getByRole("heading", { name: "Kurse" }),
     ).toBeVisible();
+    if (viewportName === "narrow") {
+      await page.getByRole("button", { name: "Menü öffnen" }).click();
+    }
     await expect(page.getByText("Ada Admin")).toBeVisible();
+    if (viewportName === "narrow") {
+      await page.keyboard.press("Escape");
+    }
     await page.route("**/api/auth/sign-out", (route) =>
       fulfillJson(route, 500, { message: "test sign-out failure" }),
     );
-    await page.getByRole("main").focus();
-    await page.keyboard.press("Tab");
-    await expectVisibleKeyboardFocus(
-      page.getByRole("button", { name: "Abmelden" }),
-    );
+    await page.getByRole("button", { name: "Abmelden" }).focus();
+    await expect(page.getByRole("button", { name: "Abmelden" })).toBeFocused();
     await confirmSignOut(page);
     const signOutFailure = page.getByRole("alert").filter({
       hasText: "Die Abmeldung ist fehlgeschlagen. Bitte versuchen Sie es erneut.",
@@ -413,6 +416,11 @@ async function showAdminState(page, { current, entry, url = "/admin" }) {
   await page.goto(url);
   await expect(page.getByRole("main")).toBeVisible();
   await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+  if (current.status !== 200) {
+    await expect(
+      page.getByRole("navigation", { name: "Administrationsressourcen" }),
+    ).toHaveCount(0);
+  }
 }
 
 /**

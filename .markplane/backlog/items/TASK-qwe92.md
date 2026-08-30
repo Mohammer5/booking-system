@@ -1,7 +1,7 @@
 ---
 id: TASK-qwe92
 title: Add the authenticated Admin navigation layout
-status: draft
+status: done
 priority: high
 type: feature
 effort: large
@@ -12,7 +12,7 @@ depends_on:
 blocks:
 - TASK-9gxuv
 related: []
-assignee: null
+assignee: gerkules
 tags:
 - browser
 - admin
@@ -38,19 +38,19 @@ coverage.
 
 ## Acceptance Criteria
 
-- [ ] Active Admin `/admin` navigation redirects with replace semantics to
+- [x] Active Admin `/admin` navigation redirects with replace semantics to
       `/admin/courses`; every non-Active Admin entry/refusal state stays intact.
-- [ ] The named Admin resource navigation contains exactly Courses,
+- [x] The named Admin resource navigation contains exactly Courses,
       Participants, Admin Users, and Admin Invites and selects the owning item
       for nested routes with `aria-current` and MUI selected styling.
-- [ ] Desktop navigation is persistent/sticky; narrow navigation uses one
+- [x] Desktop navigation is persistent/sticky; narrow navigation uses one
       keyboard-operable Drawer with correct trap, dismissal, and focus return.
-- [ ] Login, bootstrap, no-Admin, Disabled-Admin, technical-error, and public
+- [x] Login, bootstrap, no-Admin, Disabled-Admin, technical-error, and public
       Admin Invite pages never render or flash the Admin resource navigation.
-- [ ] Admin identity, authority, self-detail, sign-out, bootstrap-success, and
+- [x] Admin identity, authority, self-detail, sign-out, bootstrap-success, and
       sign-out-success semantics remain available without becoming resource
       links.
-- [ ] One page-level main landmark, skip-link behavior, and non-overflowing wide
+- [x] One page-level main landmark, skip-link behavior, and non-overflowing wide
       content remain verified.
 
 ## Testing Requirements

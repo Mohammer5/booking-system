@@ -10,6 +10,8 @@ import { useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { Outlet, useSearchParams } from "react-router";
 
+import { ResponsiveApplicationShell } from "../application-shell/index.js";
+import { AdminApplicationNavigation } from "./AdminApplicationNavigation.jsx";
 import { AdminRegistrationForm } from "./AdminRegistrationForm.jsx";
 import { AdminSignOutButton } from "./AdminSignOutButton.jsx";
 import { GoogleSignInButton } from "./GoogleSignInButton.jsx";
@@ -40,8 +42,20 @@ export function AdminBootstrapPage() {
     }
   }, [isAuthenticationFailure, isLoading]);
 
+  const renderAuthenticatedNavigation = isActiveAdmin
+    ? (onNavigate) => (
+        <AdminApplicationNavigation
+          admin={adminFlow.currentAdminQuery.data}
+          onNavigate={onNavigate}
+        />
+      )
+    : undefined;
+
   return (
-    <>
+    <ResponsiveApplicationShell
+      context="admin"
+      renderAuthenticatedNavigation={renderAuthenticatedNavigation}
+    >
       {isActiveAdmin ? (
         <ActiveAdminOutlet adminFlow={adminFlow} />
       ) : (
@@ -54,7 +68,7 @@ export function AdminBootstrapPage() {
         />
       )}
       <SignOutNotification adminFlow={adminFlow} translate={t} />
-    </>
+    </ResponsiveApplicationShell>
   );
 }
 
@@ -65,14 +79,39 @@ export function AdminBootstrapPage() {
  * @returns {import("react").ReactElement} The nested Admin route outlet.
  */
 function ActiveAdminOutlet({ adminFlow }) {
+  const { t } = useTranslation();
+  const successRef = useRef(null);
+  const hasJustBootstrapped = adminFlow.bootstrapMutation.isSuccess;
+
+  useEffect(() => {
+    if (hasJustBootstrapped) {
+      successRef.current?.focus();
+    }
+  }, [hasJustBootstrapped]);
+
   return (
-    <Outlet
-      context={{
-        admin: adminFlow.currentAdminQuery.data,
-        hasJustBootstrapped: adminFlow.bootstrapMutation.isSuccess,
-        signOutMutation: adminFlow.signOutMutation,
-      }}
-    />
+    <Stack spacing={3} sx={{ minWidth: 0 }}>
+      <Stack direction="row" sx={{ justifyContent: "flex-end" }}>
+        <AdminSignOutButton signOutMutation={adminFlow.signOutMutation} />
+      </Stack>
+      {hasJustBootstrapped ? (
+        <Alert
+          ref={successRef}
+          role="status"
+          severity="success"
+          tabIndex={-1}
+        >
+          {t("adminAccess.bootstrap.success")}
+        </Alert>
+      ) : null}
+      <Outlet
+        context={{
+          admin: adminFlow.currentAdminQuery.data,
+          hasJustBootstrapped,
+          signOutMutation: adminFlow.signOutMutation,
+        }}
+      />
+    </Stack>
   );
 }
 

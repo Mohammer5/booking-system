@@ -8,7 +8,7 @@ import {
   DialogTitle,
   Stack,
 } from "@mui/material";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 /**
@@ -22,12 +22,6 @@ export function AdminSignOutButton({ signOutMutation }) {
   const { t } = useTranslation();
   const errorRef = useRef(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-
-  useEffect(() => {
-    if (signOutMutation.isError) {
-      errorRef.current?.focus();
-    }
-  }, [signOutMutation.isError]);
 
   const closeDialog = () => {
     if (!signOutMutation.isPending) {
@@ -61,6 +55,9 @@ export function AdminSignOutButton({ signOutMutation }) {
         isOpen={isDialogOpen}
         onCancel={closeDialog}
         onConfirm={confirmSignOut}
+        onExited={() => {
+          if (signOutMutation.isError) errorRef.current?.focus();
+        }}
         signOutMutation={signOutMutation}
         translate={t}
       />
@@ -78,6 +75,7 @@ function AdminSignOutDialog({
   isOpen,
   onCancel,
   onConfirm,
+  onExited,
   signOutMutation,
   translate,
 }) {
@@ -85,8 +83,10 @@ function AdminSignOutDialog({
     <Dialog
       aria-describedby="admin-sign-out-description"
       aria-labelledby="admin-sign-out-title"
+      disableRestoreFocus={signOutMutation.isError}
       onClose={onCancel}
       open={isOpen}
+      slotProps={{ transition: { onExited } }}
     >
       <DialogTitle id="admin-sign-out-title">
         {translate("adminAccess.authentication.confirmTitle")}

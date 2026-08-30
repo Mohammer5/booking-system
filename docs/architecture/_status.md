@@ -141,8 +141,14 @@
   `/admin/courses`, `/admin/courses/new`, `/admin/courses/:courseId`,
   `/admin/courses/:courseId/participation`, and stable Course-scoped
   participation Participant-detail views.
-  They use one responsive browser-owned MUI shell with desktop list navigation,
-  a narrow modal Drawer, a skip link, and stable route titles. The Participant
+  An authoritatively resolved Active Admin now receives a replace redirect from
+  `/admin` to `/admin/courses` and an authenticated layout whose named sticky
+  desktop navigation contains exactly Courses, Participants, Admin Users, and
+  Admin Invites. The same resources share the shell's one narrow modal Drawer
+  with the Participant/Admin context switch; all non-Active and public Admin
+  Invite states remain outside that resource layout. Identity, authority,
+  self-detail, and sign-out stay outside the resource list, with one page-level
+  main landmark, the existing skip link, and stable route titles. The Participant
   route resolves current state, offers fixed-destination Google entry, requires
   explicit name/email onboarding when missing, and returns an Active
   Participant to a query-driven zero/one/multiple assigned-Course home without

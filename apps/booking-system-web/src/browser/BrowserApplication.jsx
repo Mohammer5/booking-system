@@ -6,10 +6,7 @@ import {
   AdminUserDetailPage,
   AdminUserDirectoryPage,
 } from "./admin-access/index.js";
-import {
-  AdminBootstrapPage,
-  AdministrationContextRoute,
-} from "./admin-bootstrap/index.js";
+import { AdminBootstrapPage } from "./admin-bootstrap/index.js";
 import { ResponsiveApplicationShell } from "./application-shell/index.js";
 import {
   AdminCourseParticipationDetailPage,
@@ -80,13 +77,9 @@ function administrationRoute() {
   return (
     <Route
       path="/admin"
-      element={
-        <ResponsiveApplicationShell context="admin">
-          <AdminBootstrapPage />
-        </ResponsiveApplicationShell>
-      }
+      element={<AdminBootstrapPage />}
     >
-      <Route index element={<AdministrationContextRoute />} />
+      <Route index element={<Navigate to="courses" replace />} />
       <Route path="invites" element={<AdminInvitePage />} />
       <Route path="users" element={<AdminUserDirectoryPage />} />
       <Route path="users/:adminUserId" element={<AdminUserDetailPage />} />

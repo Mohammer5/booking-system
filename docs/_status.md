@@ -68,6 +68,10 @@ lifecycle, administrative Course participation inspection, and
 Participant Module Selection slices are now
 implemented:
 
+- the Active-Admin gate now redirects `/admin` to `/admin/courses` and alone
+  mounts the four-resource sticky desktop/sidebar layout; narrow screens reuse
+  the shell's single focus-trapped Drawer, while non-Active and public Invite
+  states expose no resource navigation;
 - `@booking-system/booking` at `packages/booking` owns the implemented
   `admin-access` first-bootstrap and Admin Invite create/list/revoke/
   recognition/claim plus current Admin User list/name-edit/promotion/lifecycle behavior
