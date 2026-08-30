@@ -16,11 +16,23 @@ export const courseStructureTranslations = {
     },
     index: {
       title: "Kurse",
+      description: "Durchsuchen und öffnen Sie die verwalteten Kurse.",
       create: "Kurs anlegen",
       loading: "Kurse werden geladen …",
       empty: "Es wurden noch keine Kurse angelegt.",
+      search: "Kurse durchsuchen",
+      tableLabel: "Kurssammlung",
       listLabel: "Kursliste",
       open: "Kurs öffnen",
+      fields: {
+        name: "Name",
+        state: "Status",
+        timezone: "Zeitzone",
+        action: "Aktion",
+      },
+      filters: {
+        state: "Kursstatus",
+      },
     },
     create: {
       title: "Kurs anlegen",

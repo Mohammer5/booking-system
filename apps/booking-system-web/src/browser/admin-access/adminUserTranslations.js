@@ -21,9 +21,14 @@ export const adminUserTranslations = {
         "Alle aktuellen Administrationskonten mit Berechtigung und Status.",
       tableLabel: "Verzeichnis der Administrationskonten",
       listLabel: "Liste der Administrationskonten",
+      search: "Administrationskonten nach Name durchsuchen",
       actionColumn: "Aktion",
       editAction: "Namen bearbeiten",
       detailAction: "Details anzeigen",
+      filters: {
+        state: "Kontostatus",
+        authority: "Berechtigung",
+      },
     },
     detail: {
       title: "Administrationskonto",

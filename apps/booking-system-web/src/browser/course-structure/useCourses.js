@@ -1,5 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
+import { toAdminCollectionRequestSearch } from "../admin-collections/index.js";
+
 const courseIndexQueryKey = ["course-structure", "courses"];
 
 /**
@@ -7,10 +9,13 @@ const courseIndexQueryKey = ["course-structure", "courses"];
  *
  * @returns {object} TanStack Course-index query state.
  */
-export function useCourseIndex() {
+export function useCourseIndex(collectionState) {
   return useQuery({
-    queryKey: courseIndexQueryKey,
-    queryFn: () => requestJson("/api/admin/courses"),
+    queryKey: [...courseIndexQueryKey, collectionState],
+    queryFn: () => requestJson(
+      `/api/admin/courses?${toAdminCollectionRequestSearch(collectionState)}`,
+    ),
+    placeholderData: (previousData) => previousData,
     retry: false,
   });
 }
@@ -42,7 +47,7 @@ export function useCreateCourse() {
     async onSuccess(course) {
       queryClient.setQueryData(
         ["course-structure", "course", course.id],
-        { ...course, groups: [], modules: [] },
+        course,
       );
       await queryClient.invalidateQueries({ queryKey: courseIndexQueryKey });
     },

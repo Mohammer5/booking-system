@@ -1,5 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
+import { toAdminCollectionRequestSearch } from "../admin-collections/index.js";
+
 const participantDirectoryQueryKey = ["course-access", "participants"];
 
 /** @returns {object} One freshly authorized Admin Course-participation query. */
@@ -107,13 +109,25 @@ function administrativeParticipantParticipationKey(courseId, participantId) {
  *
  * @returns {object} TanStack Participant-directory query state.
  */
-export function useParticipantDirectory() {
+export function useParticipantDirectory(collectionState = defaultParticipantState) {
   return useQuery({
-    queryKey: participantDirectoryQueryKey,
-    queryFn: () => requestJson("/api/admin/participants"),
+    queryKey: [...participantDirectoryQueryKey, collectionState],
+    queryFn: () => requestJson(
+      `/api/admin/participants?${toAdminCollectionRequestSearch(collectionState)}`,
+    ),
+    placeholderData: (previousData) => previousData,
     retry: false,
   });
 }
+
+const defaultParticipantState = Object.freeze({
+  page: 1,
+  pageSize: 25,
+  sortField: "name",
+  sortDirection: "asc",
+  q: undefined,
+  filters: Object.freeze({ state: undefined }),
+});
 
 /** @returns {object} One freshly authorized Admin Participant detail query. */
 export function useParticipantDetail(participantId) {

@@ -373,8 +373,11 @@ async function stubActiveAdmin(page) {
       authority: "super-admin",
     }),
   );
-  await page.route("**/api/admin/courses", (route) =>
-    fulfillJson(route, 200, { courses: [] }),
+  await page.route(/\/api\/admin\/courses(?:\?.*)?$/, (route) =>
+    fulfillJson(route, 200, {
+      courses: [],
+      pagination: { page: 1, pageSize: 25, totalItems: 0, totalPages: 0 },
+    }),
   );
 }
 

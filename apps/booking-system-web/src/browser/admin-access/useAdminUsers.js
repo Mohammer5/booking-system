@@ -1,13 +1,18 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-const directoryQueryKey = ["admin-access", "admin-users"];
+import { toAdminCollectionRequestSearch } from "../admin-collections/index.js";
+
+const directoryQueryKeyPrefix = ["admin-access", "admin-users"];
 const currentAdminQueryKey = ["admin-access", "current-admin"];
 
 /** @returns {object} Current freshly authorized Admin User directory query. */
-export function useAdminUsers() {
+export function useAdminUsers(collectionState) {
   return useQuery({
-    queryKey: directoryQueryKey,
-    queryFn: () => requestJson("/api/admin/users"),
+    queryKey: [...directoryQueryKeyPrefix, collectionState],
+    queryFn: () => requestJson(
+      `/api/admin/users?${toAdminCollectionRequestSearch(collectionState)}`,
+    ),
+    placeholderData: (previousData) => previousData,
     retry: false,
   });
 }
@@ -32,8 +37,11 @@ export function useUpdateAdminUserName(adminUserId) {
       body: JSON.stringify({ name }),
     }),
     async onSuccess(adminUser) {
-      reconcileAdminUser(queryClient, adminUserId, adminUser);
-      await queryClient.invalidateQueries({ queryKey: currentAdminQueryKey });
+      setAdminUserDetail(queryClient, adminUserId, adminUser);
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: directoryQueryKeyPrefix }),
+        queryClient.invalidateQueries({ queryKey: currentAdminQueryKey }),
+      ]);
     },
     async onError(error) {
       if (!isStaleAdminUserError(error)) return;
@@ -51,8 +59,9 @@ export function usePromoteAdminUser(adminUserId) {
       `/api/admin/users/${adminUserId}/promotion`,
       { method: "POST" },
     ),
-    onSuccess(adminUser) {
-      reconcileAdminUser(queryClient, adminUserId, adminUser);
+    async onSuccess(adminUser) {
+      setAdminUserDetail(queryClient, adminUserId, adminUser);
+      await queryClient.invalidateQueries({ queryKey: directoryQueryKeyPrefix });
     },
     async onError(error) {
       if (!isStaleAdminUserError(error)) return;
@@ -78,19 +87,18 @@ export function useChangeAdminUserLifecycle(adminUserId) {
     },
     async onSuccess(result, { action }) {
       if (action === "delete") {
-        queryClient.setQueryData(directoryQueryKey, (current) => ({
-          adminUsers: (current?.adminUsers ?? []).filter(
-            ({ id }) => id !== result.adminUserId,
-          ),
-        }));
         queryClient.removeQueries({
           queryKey: ["admin-access", "admin-user", adminUserId],
         });
+        await queryClient.invalidateQueries({ queryKey: directoryQueryKeyPrefix });
         return;
       }
 
-      reconcileAdminUser(queryClient, adminUserId, result);
-      await queryClient.invalidateQueries({ queryKey: currentAdminQueryKey });
+      setAdminUserDetail(queryClient, adminUserId, result);
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: directoryQueryKeyPrefix }),
+        queryClient.invalidateQueries({ queryKey: currentAdminQueryKey }),
+      ]);
     },
     async onError(error) {
       if (!isStaleAdminUserError(error)) return;
@@ -99,22 +107,18 @@ export function useChangeAdminUserLifecycle(adminUserId) {
   });
 }
 
-/** @returns {void} Replace one authoritative Admin in detail and directory. */
-function reconcileAdminUser(queryClient, adminUserId, adminUser) {
+/** @returns {void} Replace one authoritative Admin detail. */
+function setAdminUserDetail(queryClient, adminUserId, adminUser) {
   queryClient.setQueryData(
     ["admin-access", "admin-user", adminUserId],
     adminUser,
   );
-  queryClient.setQueryData(directoryQueryKey, (current) => ({
-    adminUsers: (current?.adminUsers ?? []).map((candidate) =>
-      candidate.id === adminUser.id ? adminUser : candidate),
-  }));
 }
 
 /** @returns {Promise<void>} Refresh stale Admin action and actor state. */
 async function invalidateAdminUserQueries(queryClient, adminUserId) {
   await Promise.all([
-    queryClient.invalidateQueries({ queryKey: directoryQueryKey }),
+    queryClient.invalidateQueries({ queryKey: directoryQueryKeyPrefix }),
     queryClient.invalidateQueries({
       queryKey: ["admin-access", "admin-user", adminUserId],
     }),

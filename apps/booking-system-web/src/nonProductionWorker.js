@@ -1,5 +1,6 @@
 import { createAuthentication } from "./authentication/index.js";
 import { createFixtureSessionEstablishment } from "./authentication/fixture-session/index.js";
+import { createAdminCollectionFixture } from "./worker/e2e-fixtures/index.js";
 import {
   createAdminPersistence,
   createAdminInvitePersistence,
@@ -32,12 +33,11 @@ export default {
       googleClientId: environment.GOOGLE_CLIENT_ID,
       googleClientSecret: environment.GOOGLE_CLIENT_SECRET,
     });
-    const establishFixtureSession = createFixtureSessionEstablishment({
-      database: environment.DB,
+    const fixtureResponse = await handleNonProductionFixture(
+      request,
+      environment,
       baseURL,
-      secret: environment.BETTER_AUTH_SECRET,
-    });
-    const fixtureResponse = await establishFixtureSession(request);
+    );
 
     if (fixtureResponse !== null) {
       return fixtureResponse;
@@ -87,3 +87,18 @@ export default {
     return handleWorkerRequest(request);
   },
 };
+
+/** @returns {Promise<Response | null>} Handle fixed non-production routes. */
+async function handleNonProductionFixture(request, environment, baseURL) {
+  const seedAdminCollections = createAdminCollectionFixture(environment.DB);
+  const collectionResponse = await seedAdminCollections(request);
+
+  if (collectionResponse !== null) return collectionResponse;
+  const establishFixtureSession = createFixtureSessionEstablishment({
+    database: environment.DB,
+    baseURL,
+    secret: environment.BETTER_AUTH_SECRET,
+  });
+
+  return establishFixtureSession(request);
+}

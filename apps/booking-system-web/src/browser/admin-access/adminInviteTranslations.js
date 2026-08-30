@@ -4,10 +4,19 @@ export const adminInviteTranslations = {
     description:
       "Erstellen und widerrufen Sie einmalig verwendbare Einladungen für neue Administrationskonten.",
     listLabel: "Liste der Admin-Einladungen",
+    tableLabel: "Sammlung der Admin-Einladungen",
     itemLabel: "Admin-Einladung {{id}}",
     itemTitle: "Admin-Einladung",
     createdAt: "Erstellt: {{value}}",
     navigation: "Admin-Einladungen verwalten",
+    fields: {
+      createdAt: "Erstellt",
+      state: "Status",
+      action: "Aktion",
+    },
+    filters: {
+      state: "Einladungsstatus",
+    },
     state: {
       active: "Status: Aktiv",
       claimed: "Status: Eingelöst",

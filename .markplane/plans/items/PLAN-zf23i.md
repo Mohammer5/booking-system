@@ -1,7 +1,7 @@
 ---
 id: PLAN-zf23i
 title: Implementation plan for Normalize top-level Admin collection views
-status: draft
+status: done
 implements:
 - TASK-3mi4s
 related: []
@@ -49,18 +49,18 @@ wrappers.
 
 ### Phase 1: Shared collection browser concept
 
-- [ ] Add normalized URL parsing/serialization and repair tests.
-- [ ] Add filter/search/sort controls and pagination/table-card composition.
-- [ ] Preserve focus and distinct loading/error/empty/filtered-empty states.
+- [x] Add normalized URL parsing/serialization and repair tests.
+- [x] Add filter/search/sort controls and pagination/table-card composition.
+- [x] Preserve focus and distinct loading/error/empty/filtered-empty states.
 
 **Checkpoint**: shared URL and rendering behavior has focused unit coverage.
 
 ### Phase 2: Four resource owners
 
-- [ ] Convert Course and Participant pages/hooks.
-- [ ] Move Admin User row mutations to detail and convert list state.
-- [ ] Convert Invite list while retaining transient creation URL/dialog.
-- [ ] Add route-state, responsive, keyboard, focus, and axe E2E coverage.
+- [x] Convert Course and Participant pages/hooks.
+- [x] Move Admin User row mutations to detail and convert list state.
+- [x] Convert Invite list while retaining transient creation URL/dialog.
+- [x] Add route-state, responsive, keyboard, focus, and axe E2E coverage.
 
 **Checkpoint**: all four collections satisfy the common contract and E2E checks.
 

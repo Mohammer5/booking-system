@@ -19,8 +19,9 @@ Current reality:
   collection/detail normalization; only dependency-ready work is activated and
   every completed conceptual task receives its own task-ID commit. The
   canonical convention, authenticated Admin navigation layout, and Worker
-  collection-contract tasks are complete; normalized top-level browser
-  collections are next in the dependency chain.
+  collection-contract and normalized top-level browser-collection tasks are
+  complete; Course Participant collection/detail navigation is next in the
+  dependency chain.
 - GitHub Actions runs the current canonical `pnpm check` gate for pull requests
   targeting `main` and pushes to `main` through the stable `verify` job.
 - Layered local application verification is implemented through domain Vitest,

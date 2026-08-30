@@ -4,7 +4,6 @@ import {
   Card,
   CardContent,
   Chip,
-  CircularProgress,
   List,
   ListItem,
   Paper,
@@ -21,204 +20,182 @@ import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link as RouterLink, useLocation, useNavigate } from "react-router";
 
-import { AdminUserLifecycleControls } from "./AdminUserLifecycleControls.jsx";
-import { AdminUserPromotionControl } from "./AdminUserPromotionControl.jsx";
+import {
+  AdminCollectionResults,
+  AdminCollectionSortLabel,
+  AdminCollectionToolbar,
+  createAdminCollectionConfiguration,
+  useAdminCollectionState,
+} from "../admin-collections/index.js";
 import { useAdminUsers } from "./useAdminUsers.js";
 
-/** @returns {import("react").ReactElement} Current Admin User directory route. */
+const adminUserCollection = createAdminCollectionConfiguration({
+  searchable: true,
+  filters: {
+    state: ["active", "disabled"],
+    authority: ["admin", "super-admin"],
+  },
+  sortFields: ["name", "state", "authority"],
+  defaultSort: "name.asc",
+});
+
+/** @returns {import("react").ReactElement} Current Admin User collection route. */
 export function AdminUserDirectoryPage() {
-  const { t: translate } = useTranslation();
-  const location = useLocation();
-  const navigate = useNavigate();
-  const query = useAdminUsers();
-  const errorRef = useRef(null);
-  const successRef = useRef(null);
-  const [lifecycleSuccess, setLifecycleSuccess] = useState(
-    location.state?.adminUserLifecycleSuccess ?? null,
-  );
-
-  useEffect(() => {
-    if (query.isError) errorRef.current?.focus();
-  }, [query.isError]);
-
-  useEffect(() => {
-    if (lifecycleSuccess !== null) successRef.current?.focus();
-  }, [lifecycleSuccess]);
-
-  useEffect(() => {
-    if (location.state?.adminUserLifecycleSuccess === undefined) return;
-    navigate(location.pathname, { replace: true, state: null });
-  }, [location.pathname, location.state, navigate]);
+  const model = useAdminUserDirectoryModel();
+  const adminUsers = model.query.data?.adminUsers ?? [];
 
   return (
-    <Paper elevation={2} sx={{ mx: "auto", p: { xs: 3, sm: 5 } }}>
-      <Stack component="section" spacing={3} sx={{ overflowWrap: "anywhere" }}>
-        <Typography component="h1" variant="h1">
-          {translate("adminUsers.directory.title")}
-        </Typography>
-        <Typography>{translate("adminUsers.directory.description")}</Typography>
-        {lifecycleSuccess !== null ? (
-          <Alert ref={successRef} role="status" severity="success" tabIndex={-1}>
-            {translate(
-              `adminUsers.lifecycle.success.${lifecycleSuccess.action}`,
-              { name: lifecycleSuccess.name },
-            )}
-          </Alert>
-        ) : null}
-        <Button component={RouterLink} sx={{ alignSelf: "flex-start" }} to="/admin">
-          {translate("adminUsers.toAdministration")}
-        </Button>
-        <AdminUserDirectoryState
-          errorRef={errorRef}
-          onDeleted={(adminUser) => setLifecycleSuccess({
-            action: "delete",
-            name: adminUser.name,
-          })}
-          query={query}
-          translate={translate}
+    <Paper elevation={2} sx={{ mx: "auto", overflowWrap: "anywhere", p: { xs: 3, sm: 5 } }}>
+      <Stack component="section" spacing={3}>
+        <Stack spacing={1}>
+          <Typography component="h1" variant="h1">
+            {model.translate("adminUsers.directory.title")}
+          </Typography>
+          <Typography>{model.translate("adminUsers.directory.description")}</Typography>
+        </Stack>
+        <LifecycleSuccess model={model} />
+        <AdminCollectionToolbar
+          filters={adminUserFilters(model.translate)}
+          hasFilters={model.collection.hasFilters}
+          labels={collectionLabels(model.translate)}
+          onFilter={model.collection.setFilter}
+          onReset={model.collection.resetFilters}
+          onSearch={model.collection.setSearch}
+          onSort={model.collection.setSort}
+          searchLabel={model.translate("adminUsers.directory.search")}
+          sorts={adminUserSorts(model.translate)}
+          state={model.collection.state}
+        />
+        <AdminCollectionResults
+          errorMessage={(error) => adminUserErrorMessage(error, model.translate)}
+          hasFilters={model.collection.hasFilters}
+          items={adminUsers}
+          messages={resultMessages(model.translate)}
+          onPage={model.collection.setPage}
+          onPageSize={model.collection.setPageSize}
+          onReset={model.collection.resetFilters}
+          query={model.query}
+          renderDesktop={() => (
+            <AdminUserTable
+              adminUsers={adminUsers}
+              collection={model.collection}
+              translate={model.translate}
+            />
+          )}
+          renderMobile={() => (
+            <AdminUserCards adminUsers={adminUsers} translate={model.translate} />
+          )}
+          state={model.collection.state}
         />
       </Stack>
     </Paper>
   );
 }
 
-/** @returns {import("react").ReactElement} Current directory state. */
-function AdminUserDirectoryState({ errorRef, onDeleted, query, translate }) {
-  if (query.isPending) {
-    return (
-      <Stack aria-live="polite" role="status" spacing={2} sx={{ alignItems: "center" }}>
-        <CircularProgress aria-hidden="true" size={36} />
-        <Typography>{translate("adminUsers.status.loading")}</Typography>
-      </Stack>
-    );
-  }
+/** @returns {object} URL/query state and returned deletion feedback. */
+function useAdminUserDirectoryModel() {
+  const { t: translate } = useTranslation();
+  const location = useLocation();
+  const navigate = useNavigate();
+  const collection = useAdminCollectionState(adminUserCollection);
+  const query = useAdminUsers(collection.state);
+  const successRef = useRef(null);
+  const [lifecycleSuccess] = useState(
+    location.state?.adminUserLifecycleSuccess ?? null,
+  );
 
-  if (query.isError) {
-    return (
-      <Alert ref={errorRef} severity="error" tabIndex={-1}>
-        {adminUserErrorMessage(query.error, translate)}
-      </Alert>
-    );
-  }
+  useEffect(() => {
+    if (lifecycleSuccess !== null) successRef.current?.focus();
+  }, [lifecycleSuccess]);
+  useEffect(() => {
+    if (location.state?.adminUserLifecycleSuccess === undefined) return;
+    navigate(`${location.pathname}${location.search}`, { replace: true, state: null });
+  }, [location.pathname, location.search, location.state, navigate]);
 
-  if (query.data.adminUsers.length === 0) {
-    return <Alert severity="info">{translate("adminUsers.status.empty")}</Alert>;
-  }
+  return { collection, lifecycleSuccess, query, successRef, translate };
+}
 
-  return (
-    <AdminUserDirectory
-      adminUsers={query.data.adminUsers}
-      onDeleted={onDeleted}
-      translate={translate}
-    />
+/** @returns {import("react").ReactElement | null} Returned detail success. */
+function LifecycleSuccess({ model }) {
+  return model.lifecycleSuccess === null ? null : (
+    <Alert ref={model.successRef} role="status" severity="success" tabIndex={-1}>
+      {model.translate(
+        `adminUsers.lifecycle.success.${model.lifecycleSuccess.action}`,
+        { name: model.lifecycleSuccess.name },
+      )}
+    </Alert>
   );
 }
 
-/** @returns {import("react").ReactElement} Responsive table and card alternatives. */
-function AdminUserDirectory({ adminUsers, onDeleted, translate }) {
+/** @returns {import("react").ReactElement} Wide semantic Admin User table. */
+function AdminUserTable({ adminUsers, collection, translate }) {
+  const heading = (field) => (
+    <AdminCollectionSortLabel
+      field={field}
+      onSort={collection.toggleSort}
+      state={collection.state}
+    >
+      {translate(`adminUsers.fields.${field}`)}
+    </AdminCollectionSortLabel>
+  );
+
   return (
-    <>
-      <TableContainer sx={{ display: { xs: "none", md: "block" } }}>
-        <Table aria-label={translate("adminUsers.directory.tableLabel")}>
-          <TableHead>
-            <TableRow>
-              <TableCell>{translate("adminUsers.fields.name")}</TableCell>
-              <TableCell>{translate("adminUsers.fields.authority")}</TableCell>
-              <TableCell>{translate("adminUsers.fields.state")}</TableCell>
-              <TableCell>{translate("adminUsers.directory.actionColumn")}</TableCell>
+    <TableContainer>
+      <Table aria-label={translate("adminUsers.directory.tableLabel")}>
+        <TableHead>
+          <TableRow>
+            <TableCell sortDirection={sortDirection(collection, "name")}>{heading("name")}</TableCell>
+            <TableCell sortDirection={sortDirection(collection, "authority")}>{heading("authority")}</TableCell>
+            <TableCell sortDirection={sortDirection(collection, "state")}>{heading("state")}</TableCell>
+            <TableCell>{translate("adminUsers.directory.actionColumn")}</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {adminUsers.map((adminUser) => (
+            <TableRow key={adminUser.id}>
+              <TableCell component="th" scope="row">{adminUser.name}</TableCell>
+              <TableCell><AdminAuthorityChip adminUser={adminUser} translate={translate} /></TableCell>
+              <TableCell><AdminStateChip adminUser={adminUser} translate={translate} /></TableCell>
+              <TableCell><AdminUserDetailLink adminUser={adminUser} translate={translate} /></TableCell>
             </TableRow>
-          </TableHead>
-          <TableBody>
-            {adminUsers.map((adminUser) => (
-              <AdminUserTableRow
-                adminUser={adminUser}
-                key={adminUser.id}
-                onDeleted={onDeleted}
-                translate={translate}
-              />
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-      <List
-        aria-label={translate("adminUsers.directory.listLabel")}
-        disablePadding
-        sx={{ display: { xs: "block", md: "none" } }}
-      >
-        {adminUsers.map((adminUser) => (
-          <ListItem disablePadding key={adminUser.id} sx={{ mb: 2 }}>
-            <AdminUserCard
-              adminUser={adminUser}
-              onDeleted={onDeleted}
-              translate={translate}
-            />
-          </ListItem>
-        ))}
-      </List>
-    </>
+          ))}
+        </TableBody>
+      </Table>
+    </TableContainer>
   );
 }
 
-/** @returns {import("react").ReactElement} One desktop Admin User row. */
-function AdminUserTableRow({ adminUser, onDeleted, translate }) {
+/** @returns {import("react").ReactElement} Narrow Admin User card list. */
+function AdminUserCards({ adminUsers, translate }) {
   return (
-    <TableRow>
-      <TableCell component="th" scope="row">{adminUser.name}</TableCell>
-      <TableCell><AdminAuthorityChip adminUser={adminUser} translate={translate} /></TableCell>
-      <TableCell><AdminStateChip adminUser={adminUser} translate={translate} /></TableCell>
-      <TableCell>
-        <Stack spacing={1.5}>
-          <AdminUserDetailLink adminUser={adminUser} translate={translate} />
-          <AdminUserPromotionControl
-            adminUser={adminUser}
-            translate={translate}
-          />
-          <AdminUserLifecycleControls
-            adminUser={adminUser}
-            onDeleted={onDeleted}
-            translate={translate}
-          />
-        </Stack>
-      </TableCell>
-    </TableRow>
+    <List aria-label={translate("adminUsers.directory.listLabel")} disablePadding>
+      {adminUsers.map((adminUser) => (
+        <ListItem disablePadding key={adminUser.id} sx={{ mb: 2 }}>
+          <Card sx={{ width: "100%" }} variant="outlined">
+            <CardContent>
+              <Stack spacing={1.5}>
+                <Typography component="h2" variant="h2">{adminUser.name}</Typography>
+                <Stack direction="row" spacing={1} sx={{ flexWrap: "wrap", gap: 1 }}>
+                  <AdminAuthorityChip adminUser={adminUser} translate={translate} />
+                  <AdminStateChip adminUser={adminUser} translate={translate} />
+                </Stack>
+                <AdminUserDetailLink adminUser={adminUser} translate={translate} />
+              </Stack>
+            </CardContent>
+          </Card>
+        </ListItem>
+      ))}
+    </List>
   );
 }
 
-/** @returns {import("react").ReactElement} One narrow Admin User card. */
-function AdminUserCard({ adminUser, onDeleted, translate }) {
-  return (
-    <Card sx={{ width: "100%" }} variant="outlined">
-      <CardContent>
-        <Stack spacing={1.5}>
-          <Typography component="h2" variant="h2">{adminUser.name}</Typography>
-          <Stack direction="row" spacing={1} sx={{ flexWrap: "wrap", gap: 1 }}>
-            <AdminAuthorityChip adminUser={adminUser} translate={translate} />
-            <AdminStateChip adminUser={adminUser} translate={translate} />
-          </Stack>
-          <AdminUserDetailLink adminUser={adminUser} translate={translate} />
-          <AdminUserPromotionControl
-            adminUser={adminUser}
-            translate={translate}
-          />
-          <AdminUserLifecycleControls
-            adminUser={adminUser}
-            onDeleted={onDeleted}
-            translate={translate}
-          />
-        </Stack>
-      </CardContent>
-    </Card>
-  );
-}
-
-/** @returns {import("react").ReactElement} Stable detail navigation. */
+/** @returns {import("react").ReactElement} Stable detail navigation only. */
 function AdminUserDetailLink({ adminUser, translate }) {
   return (
     <Button
       component={RouterLink}
-      sx={{ alignSelf: "flex-start" }}
       to={`/admin/users/${adminUser.id}`}
-      variant={adminUser.isNameEditable ? "outlined" : "text"}
+      variant="outlined"
     >
       {translate(adminUser.isNameEditable
         ? "adminUsers.directory.editAction"
@@ -251,7 +228,70 @@ export function AdminStateChip({ adminUser, translate }) {
   );
 }
 
-/** @returns {string} Localized directory failure. */
+/** @returns {Array<object>} Localized Admin User filters. */
+function adminUserFilters(translate) {
+  return [
+    {
+      name: "state",
+      label: translate("adminUsers.directory.filters.state"),
+      options: [
+        { value: "", label: translate("adminCollections.all") },
+        { value: "active", label: translate("adminUsers.state.active") },
+        { value: "disabled", label: translate("adminUsers.state.disabled") },
+      ],
+    },
+    {
+      name: "authority",
+      label: translate("adminUsers.directory.filters.authority"),
+      options: [
+        { value: "", label: translate("adminCollections.all") },
+        { value: "admin", label: translate("adminUsers.authority.admin") },
+        { value: "super-admin", label: translate("adminUsers.authority.super-admin") },
+      ],
+    },
+  ];
+}
+
+/** @returns {Array<object>} Localized Admin User sort choices. */
+function adminUserSorts(translate) {
+  return ["name", "authority", "state"].map((field) => ({
+    field,
+    ascendingLabel: translate("adminCollections.ascending", {
+      field: translate(`adminUsers.fields.${field}`),
+    }),
+    descendingLabel: translate("adminCollections.descending", {
+      field: translate(`adminUsers.fields.${field}`),
+    }),
+  }));
+}
+
+/** @returns {object} Shared localized control labels. */
+function collectionLabels(translate) {
+  return {
+    searchAction: translate("adminCollections.searchAction"),
+    resetAction: translate("adminCollections.resetAction"),
+    sortLabel: translate("adminCollections.sortLabel"),
+  };
+}
+
+/** @returns {object} Localized Admin User result messages. */
+function resultMessages(translate) {
+  return {
+    loading: translate("adminUsers.status.loading"),
+    empty: translate("adminUsers.status.empty"),
+    filteredEmpty: translate("adminCollections.filteredEmpty"),
+    pageEmpty: translate("adminCollections.pageEmpty"),
+    reset: translate("adminCollections.resetAction"),
+    rowsPerPage: translate("adminCollections.pagination.rowsPerPage"),
+    of: translate("adminCollections.pagination.of"),
+    first: translate("adminCollections.pagination.first"),
+    last: translate("adminCollections.pagination.last"),
+    next: translate("adminCollections.pagination.next"),
+    previous: translate("adminCollections.pagination.previous"),
+  };
+}
+
+/** @returns {string} Localized Admin User collection failure. */
 function adminUserErrorMessage(error, translate) {
   const unavailable = new Set([
     "admin-not-active",
@@ -263,4 +303,11 @@ function adminUserErrorMessage(error, translate) {
   return translate(unavailable.has(error?.outcome)
     ? "adminUsers.status.unavailable"
     : "adminUsers.status.technicalError");
+}
+
+/** @returns {"asc" | "desc" | false} Accessible active sort direction. */
+function sortDirection(collection, field) {
+  return collection.state.sortField === field
+    ? collection.state.sortDirection
+    : false;
 }

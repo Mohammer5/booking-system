@@ -1,12 +1,17 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-const queryKey = ["admin-access", "admin-invites"];
+import { toAdminCollectionRequestSearch } from "../admin-collections/index.js";
+
+const queryKeyPrefix = ["admin-access", "admin-invites"];
 
 /** @returns {object} Current non-secret Admin Invite list query. */
-export function useAdminInvites() {
+export function useAdminInvites(collectionState) {
   return useQuery({
-    queryKey,
-    queryFn: () => requestJson("/api/admin/invites"),
+    queryKey: [...queryKeyPrefix, collectionState],
+    queryFn: () => requestJson(
+      `/api/admin/invites?${toAdminCollectionRequestSearch(collectionState)}`,
+    ),
+    placeholderData: (previousData) => previousData,
     retry: false,
   });
 }
@@ -17,10 +22,8 @@ export function useCreateAdminInvite() {
 
   return useMutation({
     mutationFn: () => requestJson("/api/admin/invites", { method: "POST" }),
-    onSuccess(result) {
-      queryClient.setQueryData(queryKey, (current) => ({
-        invites: [toListedInvite(result.invite), ...(current?.invites ?? [])],
-      }));
+    async onSuccess() {
+      await queryClient.invalidateQueries({ queryKey: queryKeyPrefix });
     },
   });
 }
@@ -34,23 +37,10 @@ export function useRevokeAdminInvite() {
       `/api/admin/invites/${invite.id}/revocation`,
       { method: "POST" },
     ),
-    onSuccess(result) {
-      queryClient.setQueryData(queryKey, (current) => ({
-        invites: (current?.invites ?? []).map((invite) =>
-          invite.id === result.invite.id ? result.invite : invite,
-        ),
-      }));
+    async onSuccess() {
+      await queryClient.invalidateQueries({ queryKey: queryKeyPrefix });
     },
   });
-}
-
-/** @returns {object} Remove the one-time URL from cached list state. */
-function toListedInvite(invite) {
-  return {
-    id: invite.id,
-    createdAt: invite.createdAt,
-    state: invite.state,
-  };
 }
 
 /** @returns {Promise<object>} Successful JSON or outcome-carrying failure. */

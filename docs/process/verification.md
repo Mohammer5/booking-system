@@ -378,11 +378,13 @@ resource allowlists, default state, every filter and sort direction, stable-ID
 tie-breaking, literal `%`/`_`/escape-character search, one-based pages and
 allowed page sizes, filtered/unfiltered counts, empty and beyond-last pages,
 invalid-query `400` responses, fresh Active-Admin authorization, and guarded
-Course parent privacy. Playwright owns all seven collection routes, URL updates
-and repair, bookmark/refresh/history restoration, search/filter/sort/page/page-
-size behavior, true-empty versus filtered-empty reset, explicit actions, and
-the same server page rendered as semantic desktop table or narrow named cards
-without overflow.
+Course parent privacy. Browser-state Vitest owns pure normalized parsing,
+canonical serialization and URL-repair decisions, page-reset transitions,
+reset-filter semantics, and Worker-query serialization. Playwright owns all
+seven collection routes, URL updates and repair, bookmark/refresh/history
+restoration, search/filter/sort/page/page-size behavior, true-empty versus
+filtered-empty reset, explicit actions, and the same server page rendered as
+semantic desktop table or narrow named cards without overflow.
 
 For Course Participant detail, booking-domain Vitest owns the complete injected-
 time live/historical predicate, exact start/end phases, Disabled/Revoked/

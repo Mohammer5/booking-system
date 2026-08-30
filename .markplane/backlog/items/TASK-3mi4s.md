@@ -1,7 +1,7 @@
 ---
 id: TASK-3mi4s
 title: Normalize top-level Admin collection views
-status: draft
+status: done
 priority: high
 type: feature
 effort: large
@@ -12,7 +12,7 @@ depends_on:
 blocks:
 - TASK-5uzbb
 related: []
-assignee: null
+assignee: gerkules
 tags:
 - browser
 - admin
@@ -38,18 +38,18 @@ focused browser tests.
 
 ## Acceptance Criteria
 
-- [ ] Each top-level collection implements its exact search/filter/sort matrix,
+- [x] Each top-level collection implements its exact search/filter/sort matrix,
       one-based pagination, allowed page sizes, deterministic defaults, URL
       repair, reset semantics, bookmark/refresh, and back/forward restoration.
-- [ ] Wide semantic tables expose accessible sortable headings and explicit row
+- [x] Wide semantic tables expose accessible sortable headings and explicit row
       actions; narrow named card lists retain filters, sort, pagination, actions,
       and meaning without page overflow.
-- [ ] Initial loading, authorization refusal, technical failure, true empty,
+- [x] Initial loading, authorization refusal, technical failure, true empty,
       filtered empty with reset, populated, and applicable mutation-success
       states are distinct.
-- [ ] Admin User lifecycle/authority controls live only on detail; Invite create
+- [x] Admin User lifecycle/authority controls live only on detail; Invite create
       and revoke invalidate list prefixes and never cache the one-time URL.
-- [ ] Course creation, Participant no-creation, and Admin Invite/Admin User
+- [x] Course creation, Participant no-creation, and Admin Invite/Admin User
       creation rules remain unchanged.
 
 ## Testing Requirements

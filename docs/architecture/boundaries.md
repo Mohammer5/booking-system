@@ -179,9 +179,12 @@ TanStack Query, and MUI imports; the application-private Worker listing helper
 uses no new third-party or workspace dependency. Course Participant reads and
 Admin-assisted Selection remain in `course-access`, while Course, Group, and
 Module collection/detail reads remain in `course-structure`; browser-to-Worker
-communication stays same-origin HTTP. No workspace dependency, first-level
-responsibility, third-party permission, composition-file permission, or
-boundary-map entry changes.
+communication stays same-origin HTTP. The non-production Worker composition
+alone may import the exact `worker/e2e-fixtures/index.js` interface to seed
+more than one deterministic collection page; production composition has no
+such edge or route. This adds one explicit non-production composition-file
+interface and no workspace dependency, first-level responsibility, or third-
+party permission.
 
 ## Map Shape
 

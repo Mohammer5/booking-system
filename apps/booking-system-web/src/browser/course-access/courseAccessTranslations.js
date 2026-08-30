@@ -120,7 +120,18 @@ export const courseAccessTranslations = {
         "Alle vollständig registrierten Teilnahmeprofile, unabhängig von bestehenden Kurszuordnungen.",
       loading: "Teilnehmende werden geladen …",
       empty: "Es wurden noch keine Teilnahmeprofile registriert.",
+      search: "Teilnehmende nach Name oder E-Mail durchsuchen",
+      tableLabel: "Globale Teilnehmendensammlung",
       listLabel: "Verzeichnis der Teilnehmenden",
+      fields: {
+        name: "Name",
+        email: "E-Mail-Adresse",
+        state: "Status",
+        action: "Aktion",
+      },
+      filters: {
+        state: "Teilnahmestatus",
+      },
     },
     profile: {
       selfNavigation: "Teilnahmeprofil bearbeiten",

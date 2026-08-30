@@ -10,8 +10,11 @@ test("creates and revisits a Course through the German Admin journey", async ({
   await page.setViewportSize(desktopViewport);
   await ensureActiveAdmin(page);
   await page.route(
-    "**/api/admin/courses",
-    (route) => fulfillJson(route, 200, { courses: [] }),
+    /\/api\/admin\/courses(?:\?.*)?$/,
+    (route) => fulfillJson(route, 200, {
+      courses: [],
+      pagination: { page: 1, pageSize: 25, totalItems: 0, totalPages: 0 },
+    }),
     { times: 1 },
   );
   await page.goto("/admin");
@@ -281,9 +284,12 @@ for (const [viewportName, viewport] of Object.entries({
       releaseCourses = resolve;
     });
 
-    await page.route("**/api/admin/courses", async (route) => {
+    await page.route(/\/api\/admin\/courses(?:\?.*)?$/, async (route) => {
       await courseGate;
-      await fulfillJson(route, 200, { courses: [] });
+      await fulfillJson(route, 200, {
+        courses: [],
+        pagination: { page: 1, pageSize: 25, totalItems: 0, totalPages: 0 },
+      });
     });
     await page.goto("/admin/courses");
     await expect(

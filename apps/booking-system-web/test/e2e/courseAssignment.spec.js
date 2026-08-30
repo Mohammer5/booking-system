@@ -149,8 +149,11 @@ test("presents Disabled assignment plus stale and technical refusals predictably
   let assignments = [];
   let assignmentMode = "created";
 
-  await page.route("**/api/admin/participants", (route) =>
-    fulfillJson(route, 200, { participants: [disabledParticipant] }),
+  await page.route(/\/api\/admin\/participants(?:\?.*)?$/, (route) =>
+    fulfillJson(route, 200, {
+      participants: [disabledParticipant],
+      pagination: { page: 1, pageSize: 25, totalItems: 1, totalPages: 1 },
+    }),
   );
   await page.route(
     `**/api/admin/courses/${course.id}/assignments`,
@@ -260,9 +263,12 @@ for (const [viewportName, viewport] of Object.entries({
       releaseDirectory = resolve;
     });
 
-    await page.route("**/api/admin/participants", async (route) => {
+    await page.route(/\/api\/admin\/participants(?:\?.*)?$/, async (route) => {
       await directoryGate;
-      await fulfillJson(route, 200, { participants: [] });
+      await fulfillJson(route, 200, {
+        participants: [],
+        pagination: { page: 1, pageSize: 25, totalItems: 0, totalPages: 0 },
+      });
     });
     await page.goto("/admin/participants");
     await expect(

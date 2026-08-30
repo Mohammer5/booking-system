@@ -1,179 +1,156 @@
 import {
-  Alert,
   Button,
   Card,
   CardContent,
   Chip,
-  CircularProgress,
   List,
   ListItem,
   Paper,
   Stack,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
   Typography,
 } from "@mui/material";
-import { useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { Link as RouterLink } from "react-router";
 
+import {
+  AdminCollectionResults,
+  AdminCollectionSortLabel,
+  AdminCollectionToolbar,
+  createAdminCollectionConfiguration,
+  useAdminCollectionState,
+} from "../admin-collections/index.js";
 import { useParticipantDirectory } from "./useCourseAccess.js";
 
-/**
- * Present the directly navigable global Participant administration directory.
- *
- * @returns {import("react").ReactElement} Participant directory route.
- */
+const participantCollection = createAdminCollectionConfiguration({
+  searchable: true,
+  filters: { state: ["active", "disabled"] },
+  sortFields: ["name", "email", "state"],
+  defaultSort: "name.asc",
+});
+
+/** @returns {import("react").ReactElement} Global Participant collection route. */
 export function ParticipantDirectoryPage() {
   const { t } = useTranslation();
-  const participantQuery = useParticipantDirectory();
-  const errorRef = useRef(null);
-
-  useEffect(() => {
-    if (participantQuery.isError) {
-      errorRef.current?.focus();
-    }
-  }, [participantQuery.isError]);
+  const collection = useAdminCollectionState(participantCollection);
+  const query = useParticipantDirectory(collection.state);
+  const participants = query.data?.participants ?? [];
 
   return (
-    <Paper
-      elevation={2}
-      sx={{ mx: "auto", overflowWrap: "anywhere", p: { xs: 3, sm: 5 } }}
-    >
+    <Paper elevation={2} sx={{ mx: "auto", overflowWrap: "anywhere", p: { xs: 3, sm: 5 } }}>
       <Stack component="section" spacing={3}>
-        <Typography component="h1" variant="h1">
-          {t("courseAccess.directory.title")}
-        </Typography>
-        <Typography>{t("courseAccess.directory.description")}</Typography>
-        <Button
-          component={RouterLink}
-          sx={{ alignSelf: "flex-start" }}
-          to="/admin"
-        >
-          {t("courseAccess.navigation.toAdministration")}
-        </Button>
-        <ParticipantDirectoryState
-          errorRef={errorRef}
-          participantQuery={participantQuery}
-          translate={t}
+        <Stack spacing={1}>
+          <Typography component="h1" variant="h1">
+            {t("courseAccess.directory.title")}
+          </Typography>
+          <Typography>{t("courseAccess.directory.description")}</Typography>
+        </Stack>
+        <AdminCollectionToolbar
+          filters={participantFilters(t)}
+          hasFilters={collection.hasFilters}
+          labels={collectionLabels(t)}
+          onFilter={collection.setFilter}
+          onReset={collection.resetFilters}
+          onSearch={collection.setSearch}
+          onSort={collection.setSort}
+          searchLabel={t("courseAccess.directory.search")}
+          sorts={participantSorts(t)}
+          state={collection.state}
+        />
+        <AdminCollectionResults
+          errorMessage={(error) => courseAccessErrorMessage(error, t)}
+          hasFilters={collection.hasFilters}
+          items={participants}
+          messages={resultMessages(t)}
+          onPage={collection.setPage}
+          onPageSize={collection.setPageSize}
+          onReset={collection.resetFilters}
+          query={query}
+          renderDesktop={() => (
+            <ParticipantTable
+              collection={collection}
+              participants={participants}
+              translate={t}
+            />
+          )}
+          renderMobile={() => (
+            <ParticipantCards participants={participants} translate={t} />
+          )}
+          state={collection.state}
         />
       </Stack>
     </Paper>
   );
 }
 
-/**
- * Present loading, unavailable, empty, or populated directory state.
- *
- * @param {object} props Directory state properties.
- * @returns {import("react").ReactElement} Current Participant directory state.
- */
-function ParticipantDirectoryState({ errorRef, participantQuery, translate }) {
-  if (participantQuery.isPending) {
-    return (
-      <Stack
-        aria-live="polite"
-        role="status"
-        spacing={2}
-        sx={{ alignItems: "center" }}
-      >
-        <CircularProgress aria-hidden="true" size={36} />
-        <Typography>{translate("courseAccess.directory.loading")}</Typography>
-      </Stack>
-    );
-  }
-
-  if (participantQuery.isError) {
-    return (
-      <Alert ref={errorRef} severity="error" tabIndex={-1}>
-        {courseAccessErrorMessage(participantQuery.error, translate)}
-      </Alert>
-    );
-  }
-
-  if (participantQuery.data.participants.length === 0) {
-    return (
-      <Alert role="status" severity="info">
-        {translate("courseAccess.directory.empty")}
-      </Alert>
-    );
-  }
+/** @returns {import("react").ReactElement} Wide semantic Participant table. */
+function ParticipantTable({ collection, participants, translate }) {
+  const heading = (field) => (
+    <AdminCollectionSortLabel
+      field={field}
+      onSort={collection.toggleSort}
+      state={collection.state}
+    >
+      {translate(`courseAccess.directory.fields.${field}`)}
+    </AdminCollectionSortLabel>
+  );
 
   return (
-    <ParticipantList
-      participants={participantQuery.data.participants}
-      translate={translate}
-    />
+    <TableContainer>
+      <Table aria-label={translate("courseAccess.directory.tableLabel")}>
+        <TableHead>
+          <TableRow>
+            <TableCell sortDirection={sortDirection(collection, "name")}>{heading("name")}</TableCell>
+            <TableCell sortDirection={sortDirection(collection, "email")}>{heading("email")}</TableCell>
+            <TableCell sortDirection={sortDirection(collection, "state")}>{heading("state")}</TableCell>
+            <TableCell>{translate("courseAccess.directory.fields.action")}</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {participants.map((participant) => (
+            <TableRow key={participant.id}>
+              <TableCell component="th" scope="row">{participant.name}</TableCell>
+              <TableCell>{participant.email}</TableCell>
+              <TableCell>
+                <ParticipantStateChip participant={participant} translate={translate} />
+              </TableCell>
+              <TableCell><ParticipantLink participant={participant} translate={translate} /></TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </TableContainer>
   );
 }
 
-/**
- * Present every fully registered Participant in deterministic order.
- *
- * @param {object} props Participant list properties.
- * @returns {import("react").ReactElement} Semantic Participant list.
- */
-function ParticipantList({ participants, translate }) {
+/** @returns {import("react").ReactElement} Narrow named Participant card list. */
+function ParticipantCards({ participants, translate }) {
   return (
-    <List
-      aria-label={translate("courseAccess.directory.listLabel")}
-      disablePadding
-    >
+    <List aria-label={translate("courseAccess.directory.listLabel")} disablePadding>
       {participants.map((participant) => (
         <ListItem disablePadding key={participant.id} sx={{ mb: 2 }}>
-          <ParticipantCard participant={participant} translate={translate} />
+          <Card sx={{ width: "100%" }} variant="outlined">
+            <CardContent>
+              <Stack spacing={1.5}>
+                <Typography component="h2" variant="h2">{participant.name}</Typography>
+                <Typography>{participant.email}</Typography>
+                <ParticipantStateChip participant={participant} translate={translate} />
+                <ParticipantLink participant={participant} translate={translate} />
+              </Stack>
+            </CardContent>
+          </Card>
         </ListItem>
       ))}
     </List>
   );
 }
 
-/**
- * Present minimum Participant administration data with textual state.
- *
- * @param {object} props Participant card properties.
- * @returns {import("react").ReactElement} One Participant card.
- */
-function ParticipantCard({ participant, translate }) {
-  return (
-    <Card sx={{ width: "100%" }} variant="outlined">
-      <CardContent>
-        <Stack spacing={1.5}>
-          <Stack
-            direction={{ xs: "column", sm: "row" }}
-            spacing={1.5}
-            sx={{
-              alignItems: { sm: "center" },
-              justifyContent: "space-between",
-            }}
-          >
-            <Typography component="h2" variant="h2">
-              {participant.name}
-            </Typography>
-            <ParticipantStateChip
-              participant={participant}
-              translate={translate}
-            />
-          </Stack>
-          <Typography>{participant.email}</Typography>
-          <Button
-            component={RouterLink}
-            sx={{ alignSelf: "flex-start" }}
-            to={`/admin/participants/${participant.id}`}
-            variant="outlined"
-          >
-            {translate("courseAccess.profile.adminNavigation")}
-          </Button>
-        </Stack>
-      </CardContent>
-    </Card>
-  );
-}
-
-/**
- * Present global Participant state with text and supporting color.
- *
- * @param {object} props Participant state properties.
- * @returns {import("react").ReactElement} Participant state chip.
- */
+/** @returns {import("react").ReactElement} Textual global Participant state. */
 function ParticipantStateChip({ participant, translate }) {
   const isActive = participant.state === "active";
 
@@ -181,27 +158,94 @@ function ParticipantStateChip({ participant, translate }) {
     <Chip
       color={isActive ? "success" : "default"}
       label={translate(`courseAccess.participantState.${participant.state}`)}
+      sx={{ alignSelf: "flex-start" }}
       variant={isActive ? "filled" : "outlined"}
     />
   );
 }
 
-/**
- * Map one Course-access failure to localized administration presentation.
- *
- * @param {Error} error Language-neutral request failure.
- * @param {(key: string) => string} translate Translation function.
- * @returns {string} Localized error copy.
- */
+/** @returns {import("react").ReactElement} Explicit Participant detail action. */
+function ParticipantLink({ participant, translate }) {
+  return (
+    <Button
+      component={RouterLink}
+      to={`/admin/participants/${participant.id}`}
+      variant="outlined"
+    >
+      {translate("courseAccess.profile.adminNavigation")}
+    </Button>
+  );
+}
+
+/** @returns {Array<object>} Localized Participant filters. */
+function participantFilters(translate) {
+  return [{
+    name: "state",
+    label: translate("courseAccess.directory.filters.state"),
+    options: [
+      { value: "", label: translate("adminCollections.all") },
+      { value: "active", label: translate("courseAccess.participantState.active") },
+      { value: "disabled", label: translate("courseAccess.participantState.disabled") },
+    ],
+  }];
+}
+
+/** @returns {Array<object>} Localized Participant sort choices. */
+function participantSorts(translate) {
+  return ["name", "email", "state"].map((field) => ({
+    field,
+    ascendingLabel: translate("adminCollections.ascending", {
+      field: translate(`courseAccess.directory.fields.${field}`),
+    }),
+    descendingLabel: translate("adminCollections.descending", {
+      field: translate(`courseAccess.directory.fields.${field}`),
+    }),
+  }));
+}
+
+/** @returns {object} Shared localized control labels. */
+function collectionLabels(translate) {
+  return {
+    searchAction: translate("adminCollections.searchAction"),
+    resetAction: translate("adminCollections.resetAction"),
+    sortLabel: translate("adminCollections.sortLabel"),
+  };
+}
+
+/** @returns {object} Localized Participant result messages. */
+function resultMessages(translate) {
+  return {
+    loading: translate("courseAccess.directory.loading"),
+    empty: translate("courseAccess.directory.empty"),
+    filteredEmpty: translate("adminCollections.filteredEmpty"),
+    pageEmpty: translate("adminCollections.pageEmpty"),
+    reset: translate("adminCollections.resetAction"),
+    rowsPerPage: translate("adminCollections.pagination.rowsPerPage"),
+    of: translate("adminCollections.pagination.of"),
+    first: translate("adminCollections.pagination.first"),
+    last: translate("adminCollections.pagination.last"),
+    next: translate("adminCollections.pagination.next"),
+    previous: translate("adminCollections.pagination.previous"),
+  };
+}
+
+/** @returns {string} Localized Participant collection failure. */
 function courseAccessErrorMessage(error, translate) {
-  const unavailableOutcomes = new Set([
+  const unavailable = new Set([
     "unauthenticated",
     "no-admin-user",
     "disabled-admin",
     "admin-not-active",
   ]);
 
-  return unavailableOutcomes.has(error?.outcome)
+  return unavailable.has(error?.outcome)
     ? translate("courseAccess.status.unavailable")
     : translate("courseAccess.status.technicalError");
+}
+
+/** @returns {"asc" | "desc" | false} Accessible active sort direction. */
+function sortDirection(collection, field) {
+  return collection.state.sortField === field
+    ? collection.state.sortDirection
+    : false;
 }

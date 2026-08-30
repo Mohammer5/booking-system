@@ -3,6 +3,7 @@ import { expect, test } from "@playwright/test";
 
 const desktopViewport = { width: 1280, height: 900 };
 const narrowViewport = { width: 360, height: 800 };
+const adminUserCollectionURL = /\/api\/admin\/users(?:\?.*)?$/;
 
 test("lists and edits real fixed Super and ordinary Admin identities", async ({
   page,
@@ -81,10 +82,12 @@ test("lists and edits real fixed Super and ordinary Admin identities", async ({
 
   await expect(list).toBeVisible();
   await expect(list.getByText("Ordentliche Admina Selbst")).toBeVisible();
-  await page.getByRole("main").focus();
+  const search = page.getByLabel("Administrationskonten nach Name durchsuchen");
+
+  await search.focus();
+  await page.keyboard.press("Shift+Tab");
   await page.keyboard.press("Tab");
-  await expect(page.getByRole("link", { name: "Zur Administration" }))
-    .toBeFocused();
+  await expect(search).toBeFocused();
   await expectAccessibleLayout(page);
 });
 
@@ -173,9 +176,12 @@ test("focuses loading, empty, error, and unavailable directory states", async ({
     releaseDirectory = resolve;
   });
 
-  await page.route("**/api/admin/users", async (route) => {
+  await page.route(adminUserCollectionURL, async (route) => {
     await directoryGate;
-    await fulfillJson(route, 200, { adminUsers: [] });
+    await fulfillJson(route, 200, {
+      adminUsers: [],
+      pagination: { page: 1, pageSize: 25, totalItems: 0, totalPages: 0 },
+    });
   });
   await page.goto("/admin/users");
   await expect(page.getByRole("status").filter({
@@ -184,13 +190,13 @@ test("focuses loading, empty, error, and unavailable directory states", async ({
   releaseDirectory();
   await expect(page.getByText("Es sind keine aktuellen Administrationskonten"))
     .toBeVisible();
-  await page.unroute("**/api/admin/users");
+  await page.unroute(adminUserCollectionURL);
 
-  await page.route("**/api/admin/users", (route) =>
+  await page.route(adminUserCollectionURL, (route) =>
     fulfillJson(route, 500, { outcome: "technical-error" }));
   await page.reload();
   await expect(page.getByRole("alert")).toBeFocused();
-  await page.unroute("**/api/admin/users");
+  await page.unroute(adminUserCollectionURL);
   await page.route("**/api/admin/users/missing", (route) =>
     fulfillJson(route, 404, { outcome: "admin-user-not-found" }));
   await page.goto("/admin/users/missing");

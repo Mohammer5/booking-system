@@ -3,6 +3,7 @@ import { expect, test } from "@playwright/test";
 
 const desktopViewport = { width: 1280, height: 900 };
 const narrowViewport = { width: 360, height: 800 };
+const adminInviteCollectionURL = /\/api\/admin\/invites(?:\?.*)?$/;
 
 test("creates a one-time Admin Invite, loses its URL, and revokes it", async ({
   context,
@@ -121,7 +122,7 @@ test("presents terminal, loading, stale, and technical states safely", async ({
     releaseList = resolve;
   });
 
-  await page.route("**/api/admin/invites", async (route) => {
+  await page.route(adminInviteCollectionURL, async (route) => {
     if (route.request().method() === "GET") {
       await listGate;
       await fulfillJson(route, 200, {
@@ -129,6 +130,7 @@ test("presents terminal, loading, stale, and technical states safely", async ({
           { id: "claimed", createdAt: 1_800_000_000, state: "claimed" },
           { id: "revoked", createdAt: 1_700_000_000, state: "revoked" },
         ],
+        pagination: { page: 1, pageSize: 25, totalItems: 2, totalPages: 1 },
       });
       return;
     }
@@ -153,11 +155,12 @@ test("presents terminal, loading, stale, and technical states safely", async ({
     hasText: "konnten nicht geladen oder gespeichert werden",
   })).toBeFocused();
   await expect(page.getByText("private-admin-invite-token")).toHaveCount(0);
-  await page.unroute("**/api/admin/invites");
+  await page.unroute(adminInviteCollectionURL);
 
-  await page.route("**/api/admin/invites", (route) =>
+  await page.route(adminInviteCollectionURL, (route) =>
     fulfillJson(route, 200, {
       invites: [{ id: "active", createdAt: 1_800_000_000, state: "active" }],
+      pagination: { page: 1, pageSize: 25, totalItems: 1, totalPages: 1 },
     }),
   );
   await page.route("**/api/admin/invites/active/revocation", (route) =>

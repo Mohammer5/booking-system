@@ -112,6 +112,12 @@ implemented:
   overview/Participant-detail routes, Worker/API
   handling, Better Auth composition, D1
   persistence, Vite/Workers Static Assets integration, and local runtime;
+- its four top-level Admin collections now use one URL-owned normalized browser
+  contract with resource-specific search/filter/sort allowlists, Worker totals
+  and pages, semantic sortable desktop tables, narrow named-card equivalents,
+  explicit actions, repaired bookmarkable state, and distinct loading/error/
+  empty/filtered-empty results. Admin User lifecycle remains detail-owned and
+  Admin Invite one-time URLs remain transient mutation results;
 - its Worker/API now validates and serves authoritative server-paginated pages
   for all seven accepted Admin collections, including filtered totals, stable
   sorting, literal search, Course parent context, same-Course Group/Module item
@@ -343,7 +349,8 @@ gives them a concrete responsibility.
 
 `EPIC-ruijc` tracks implementation of the accepted Admin collection/detail
 normalization. The convention, Admin navigation layout, and Worker collection
-contracts have landed. Until the remaining dependent browser tasks land, the
-current implementation inventory above accurately records the older embedded
-Course-detail and broad participation surfaces; those surfaces are
-transitional code, not competing canonical direction.
+contracts plus four top-level browser collections have landed. Until the
+remaining dependent browser tasks land, the current implementation inventory
+above accurately records the older embedded Course-detail and broad
+participation surfaces; those surfaces are transitional code, not competing
+canonical direction.

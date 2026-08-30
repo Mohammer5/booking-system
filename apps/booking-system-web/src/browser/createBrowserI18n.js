@@ -5,6 +5,7 @@ import {
   adminInviteTranslations,
   adminUserTranslations,
 } from "./admin-access/index.js";
+import { adminCollectionTranslations } from "./admin-collections/index.js";
 import { adminBootstrapTranslations } from "./admin-bootstrap/adminBootstrapTranslations.js";
 import { applicationShellTranslations } from "./application-shell/index.js";
 import { courseAccessTranslations } from "./course-access/index.js";
@@ -25,6 +26,7 @@ export async function createBrowserI18n() {
     resources: {
       de: {
         translation: {
+          ...adminCollectionTranslations,
           ...adminInviteTranslations,
           ...adminUserTranslations,
           ...adminBootstrapTranslations,

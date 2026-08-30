@@ -1,217 +1,249 @@
 import {
-  Alert,
   Button,
   Card,
   CardContent,
   Chip,
-  CircularProgress,
   List,
   ListItem,
   Paper,
   Stack,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
   Typography,
 } from "@mui/material";
-import { useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { Link as RouterLink } from "react-router";
 
+import {
+  AdminCollectionResults,
+  AdminCollectionSortLabel,
+  AdminCollectionToolbar,
+  createAdminCollectionConfiguration,
+  useAdminCollectionState,
+} from "../admin-collections/index.js";
 import { useCourseIndex } from "./useCourses.js";
 
-/**
- * Present the directly navigable Course index and truthful empty state.
- *
- * @returns {import("react").ReactElement} The Course index route.
- */
+const courseCollection = createAdminCollectionConfiguration({
+  searchable: true,
+  filters: { state: ["active", "archived"] },
+  sortFields: ["name", "state", "timezone"],
+  defaultSort: "name.asc",
+});
+
+/** @returns {import("react").ReactElement} URL-owned Course collection route. */
 export function CourseIndexPage() {
   const { t } = useTranslation();
-  const courseQuery = useCourseIndex();
-  const errorRef = useRef(null);
-
-  useEffect(() => {
-    if (courseQuery.isError) {
-      errorRef.current?.focus();
-    }
-  }, [courseQuery.isError]);
+  const collection = useAdminCollectionState(courseCollection);
+  const query = useCourseIndex(collection.state);
+  const courses = query.data?.courses ?? [];
 
   return (
-    <Paper
-      elevation={2}
-      sx={{ mx: "auto", overflowWrap: "anywhere", p: { xs: 3, sm: 5 } }}
-    >
+    <Paper elevation={2} sx={{ mx: "auto", overflowWrap: "anywhere", p: { xs: 3, sm: 5 } }}>
       <Stack component="section" spacing={3}>
-        <IndexHeading translate={t} />
-        <Button
-          component={RouterLink}
-          sx={{ alignSelf: "flex-start" }}
-          to="/admin"
-        >
-          {t("courseStructure.navigation.toAdministration")}
-        </Button>
-        <CourseIndexState
-          courseQuery={courseQuery}
-          errorRef={errorRef}
-          translate={t}
+        <CourseHeading translate={t} />
+        <AdminCollectionToolbar
+          filters={courseFilters(t)}
+          hasFilters={collection.hasFilters}
+          labels={collectionLabels(t)}
+          onFilter={collection.setFilter}
+          onReset={collection.resetFilters}
+          onSearch={collection.setSearch}
+          onSort={collection.setSort}
+          searchLabel={t("courseStructure.index.search")}
+          sorts={courseSorts(t)}
+          state={collection.state}
+        />
+        <AdminCollectionResults
+          errorMessage={(error) => courseErrorMessage(error, t)}
+          hasFilters={collection.hasFilters}
+          items={courses}
+          messages={resultMessages(t)}
+          onPage={collection.setPage}
+          onPageSize={collection.setPageSize}
+          onReset={collection.resetFilters}
+          query={query}
+          renderDesktop={() => (
+            <CourseTable collection={collection} courses={courses} translate={t} />
+          )}
+          renderMobile={() => <CourseCards courses={courses} translate={t} />}
+          state={collection.state}
         />
       </Stack>
     </Paper>
   );
 }
 
-/**
- * Present the Course-index heading and primary action responsively.
- *
- * @param {object} props Presentation properties.
- * @returns {import("react").ReactElement} The index heading row.
- */
-function IndexHeading({ translate }) {
+/** @returns {import("react").ReactElement} Heading and Course creation action. */
+function CourseHeading({ translate }) {
   return (
-    <Stack
-      direction={{ xs: "column", sm: "row" }}
-      spacing={2}
-      sx={{
-        alignItems: { sm: "center" },
-        justifyContent: "space-between",
-      }}
-    >
-      <Typography component="h1" variant="h1">
-        {translate("courseStructure.index.title")}
-      </Typography>
-      <Button
-        component={RouterLink}
-        to="/admin/courses/new"
-        variant="contained"
-      >
+    <Stack direction={{ xs: "column", sm: "row" }} spacing={2} sx={{ alignItems: { sm: "center" }, justifyContent: "space-between" }}>
+      <Stack spacing={1}>
+        <Typography component="h1" variant="h1">
+          {translate("courseStructure.index.title")}
+        </Typography>
+        <Typography>{translate("courseStructure.index.description")}</Typography>
+      </Stack>
+      <Button component={RouterLink} to="/admin/courses/new" variant="contained">
         {translate("courseStructure.index.create")}
       </Button>
     </Stack>
   );
 }
 
-/**
- * Present loading, error, empty, or populated Course-index state.
- *
- * @param {object} props Index state properties.
- * @returns {import("react").ReactElement} The current index state.
- */
-function CourseIndexState({ courseQuery, translate, errorRef }) {
-  if (courseQuery.isPending) {
-    return (
-      <Stack
-        aria-live="polite"
-        role="status"
-        spacing={2}
-        sx={{ alignItems: "center" }}
-      >
-        <CircularProgress aria-hidden="true" size={36} />
-        <Typography>{translate("courseStructure.index.loading")}</Typography>
-      </Stack>
-    );
-  }
-
-  if (courseQuery.isError) {
-    return (
-      <Alert ref={errorRef} severity="error" tabIndex={-1}>
-        {courseErrorMessage(courseQuery.error, translate)}
-      </Alert>
-    );
-  }
-
-  if (courseQuery.data.courses.length === 0) {
-    return (
-      <Alert role="status" severity="info">
-        {translate("courseStructure.index.empty")}
-      </Alert>
-    );
-  }
+/** @returns {import("react").ReactElement} Wide semantic Course table. */
+function CourseTable({ collection, courses, translate }) {
+  const heading = (field, key) => (
+    <AdminCollectionSortLabel
+      field={field}
+      onSort={collection.toggleSort}
+      state={collection.state}
+    >
+      {translate(key)}
+    </AdminCollectionSortLabel>
+  );
 
   return (
-    <CourseList
-      courses={courseQuery.data.courses}
-      translate={translate}
-    />
+    <TableContainer>
+      <Table aria-label={translate("courseStructure.index.tableLabel")}>
+        <TableHead>
+          <TableRow>
+            <TableCell sortDirection={sortDirection(collection, "name")}>{heading("name", "courseStructure.index.fields.name")}</TableCell>
+            <TableCell sortDirection={sortDirection(collection, "state")}>{heading("state", "courseStructure.index.fields.state")}</TableCell>
+            <TableCell sortDirection={sortDirection(collection, "timezone")}>{heading("timezone", "courseStructure.index.fields.timezone")}</TableCell>
+            <TableCell>{translate("courseStructure.index.fields.action")}</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {courses.map((course) => (
+            <TableRow key={course.id}>
+              <TableCell component="th" scope="row">{course.name}</TableCell>
+              <TableCell><CourseStateChip course={course} translate={translate} /></TableCell>
+              <TableCell>{course.timezone}</TableCell>
+              <TableCell><CourseLink course={course} translate={translate} /></TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </TableContainer>
   );
 }
 
-/**
- * Present the semantic list of current Courses.
- *
- * @param {object} props Course-list properties.
- * @returns {import("react").ReactElement} The populated Course list.
- */
-function CourseList({ courses, translate }) {
+/** @returns {import("react").ReactElement} Narrow named Course card list. */
+function CourseCards({ courses, translate }) {
   return (
-    <List
-      aria-label={translate("courseStructure.index.listLabel")}
-      disablePadding
-    >
+    <List aria-label={translate("courseStructure.index.listLabel")} disablePadding>
       {courses.map((course) => (
         <ListItem disablePadding key={course.id} sx={{ mb: 2 }}>
-          <CourseListCard course={course} translate={translate} />
+          <Card sx={{ width: "100%" }} variant="outlined">
+            <CardContent>
+              <Stack spacing={1.5}>
+                <Typography component="h2" variant="h2">{course.name}</Typography>
+                <CourseStateChip course={course} translate={translate} />
+                <Typography>{course.timezone}</Typography>
+                <CourseLink course={course} translate={translate} />
+              </Stack>
+            </CardContent>
+          </Card>
         </ListItem>
       ))}
     </List>
   );
 }
 
-/**
- * Present one Course index entry with text lifecycle status.
- *
- * @param {object} props Course-card properties.
- * @returns {import("react").ReactElement} One Course list card.
- */
-function CourseListCard({ course, translate }) {
+/** @returns {import("react").ReactElement} Textual Course lifecycle state. */
+function CourseStateChip({ course, translate }) {
   return (
-    <Card sx={{ width: "100%" }} variant="outlined">
-      <CardContent>
-        <Stack spacing={2}>
-          <Stack
-            direction={{ xs: "column", sm: "row" }}
-            spacing={1.5}
-            sx={{
-              alignItems: { sm: "center" },
-              justifyContent: "space-between",
-            }}
-          >
-            <Typography component="h2" variant="h2">
-              {course.name}
-            </Typography>
-            <Chip
-              color={course.state === "active" ? "success" : "default"}
-              label={translate(`courseStructure.state.${course.state}`)}
-              variant={course.state === "active" ? "filled" : "outlined"}
-            />
-          </Stack>
-          <Typography>{course.timezone}</Typography>
-          <Button
-            component={RouterLink}
-            sx={{ alignSelf: "flex-start" }}
-            to={`/admin/courses/${course.id}`}
-            variant="outlined"
-          >
-            {translate("courseStructure.index.open")}
-          </Button>
-        </Stack>
-      </CardContent>
-    </Card>
+    <Chip
+      color={course.state === "active" ? "success" : "default"}
+      label={translate(`courseStructure.state.${course.state}`)}
+      sx={{ alignSelf: "flex-start" }}
+      variant={course.state === "active" ? "filled" : "outlined"}
+    />
   );
 }
 
-/**
- * Map a Course request outcome to localized presentation.
- *
- * @param {Error} error The language-neutral remote failure.
- * @param {(key: string) => string} translate Translation function.
- * @returns {string} Localized error copy.
- */
+/** @returns {import("react").ReactElement} Explicit Course detail action. */
+function CourseLink({ course, translate }) {
+  return (
+    <Button component={RouterLink} to={`/admin/courses/${course.id}`} variant="outlined">
+      {translate("courseStructure.index.open")}
+    </Button>
+  );
+}
+
+/** @returns {Array<object>} Localized Course filters. */
+function courseFilters(translate) {
+  return [{
+    name: "state",
+    label: translate("courseStructure.index.filters.state"),
+    options: [
+      { value: "", label: translate("adminCollections.all") },
+      { value: "active", label: translate("courseStructure.state.active") },
+      { value: "archived", label: translate("courseStructure.state.archived") },
+    ],
+  }];
+}
+
+/** @returns {Array<object>} Localized Course sort choices. */
+function courseSorts(translate) {
+  return ["name", "state", "timezone"].map((field) => ({
+    field,
+    ascendingLabel: translate("adminCollections.ascending", {
+      field: translate(`courseStructure.index.fields.${field}`),
+    }),
+    descendingLabel: translate("adminCollections.descending", {
+      field: translate(`courseStructure.index.fields.${field}`),
+    }),
+  }));
+}
+
+/** @returns {object} Shared localized control labels. */
+function collectionLabels(translate) {
+  return {
+    searchAction: translate("adminCollections.searchAction"),
+    resetAction: translate("adminCollections.resetAction"),
+    sortLabel: translate("adminCollections.sortLabel"),
+  };
+}
+
+/** @returns {object} Localized Course result messages. */
+function resultMessages(translate) {
+  return {
+    loading: translate("courseStructure.index.loading"),
+    empty: translate("courseStructure.index.empty"),
+    filteredEmpty: translate("adminCollections.filteredEmpty"),
+    pageEmpty: translate("adminCollections.pageEmpty"),
+    reset: translate("adminCollections.resetAction"),
+    rowsPerPage: translate("adminCollections.pagination.rowsPerPage"),
+    of: translate("adminCollections.pagination.of"),
+    first: translate("adminCollections.pagination.first"),
+    last: translate("adminCollections.pagination.last"),
+    next: translate("adminCollections.pagination.next"),
+    previous: translate("adminCollections.pagination.previous"),
+  };
+}
+
+/** @returns {string} Localized Course query failure. */
 function courseErrorMessage(error, translate) {
-  const unavailableOutcomes = new Set([
+  const unavailable = new Set([
     "unauthenticated",
     "no-admin-user",
     "disabled-admin",
     "admin-not-active",
   ]);
 
-  return unavailableOutcomes.has(error.outcome)
+  return unavailable.has(error?.outcome)
     ? translate("courseStructure.status.unavailable")
     : translate("courseStructure.status.technicalError");
+}
+
+/** @returns {"asc" | "desc" | false} Accessible active sort direction. */
+function sortDirection(collection, field) {
+  return collection.state.sortField === field
+    ? collection.state.sortDirection
+    : false;
 }

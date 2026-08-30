@@ -160,8 +160,15 @@
   with the Participant/Admin context switch; all non-Active and public Admin
   Invite states remain outside that resource layout. Identity, authority,
   self-detail, and sign-out stay outside the resource list, with one page-level
-  main landmark, the existing skip link, and stable route titles. The Participant
-  route resolves current state, offers fixed-destination Google entry, requires
+  main landmark, the existing skip link, and stable route titles. Courses,
+  global Participants, Admin Users, and Admin Invites now share one
+  browser-private normalized collection-state concept: applied state is URL-
+  owned, queries carry the complete state, wide views use semantic sortable
+  tables, and narrow views render named cards for the same Worker page. Each
+  resource retains its own allowlisted filters, sorts, fields, and actions;
+  Admin User lifecycle controls remain detail-owned and one-time Admin Invite
+  URLs remain mutation-local. The Participant route resolves current state,
+  offers fixed-destination Google entry, requires
   explicit name/email onboarding when missing, and returns an Active
   Participant to a query-driven zero/one/multiple assigned-Course home without
   public discovery. Its stable detail exposes relevant Course, Module, Active-
@@ -357,8 +364,8 @@ first production release.
 
 The accepted Admin collection/detail normalization is tracked by
 `EPIC-ruijc`. Its canonical convention, authenticated Admin navigation layout,
-and Worker collection contracts are implemented. The current browser inventory
-above still describes the pre-normalization embedded Course detail and broad
-participation overview until the dependent browser tasks replace those
-surfaces; this is active planned work rather than an alternative accepted
-convention.
+Worker collection contracts, and four top-level browser collections are
+implemented. The current browser inventory above still describes the pre-
+normalization embedded Course detail and broad participation overview until
+the dependent browser tasks replace those surfaces; this is active planned
+work rather than an alternative accepted convention.

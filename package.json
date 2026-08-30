@@ -10,7 +10,8 @@
   "scripts": {
     "lint": "eslint . --max-warnings=0",
     "lint:fix": "eslint . --fix",
-    "test": "corepack pnpm run test:eslint-local-rules && corepack pnpm run test:eslint-boundaries && corepack pnpm run test:domain && corepack pnpm run test:worker",
+    "test": "corepack pnpm run test:eslint-local-rules && corepack pnpm run test:eslint-boundaries && corepack pnpm run test:domain && corepack pnpm run test:browser-state && corepack pnpm run test:worker",
+    "test:browser-state": "corepack pnpm --filter @booking-system/booking-system-web test:browser-state",
     "test:domain": "corepack pnpm --filter @booking-system/booking test",
     "test:worker": "corepack pnpm --filter @booking-system/booking-system-web test:worker",
     "test:eslint-boundaries": "node --test eslint-boundaries.test.js",

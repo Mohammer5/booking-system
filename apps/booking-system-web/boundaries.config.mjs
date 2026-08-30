@@ -55,6 +55,10 @@ export const bookingSystemWebBoundaryMap = {
           module: "authentication",
           fileInternalPath: "fixture-session/index.js",
         },
+        {
+          module: "worker",
+          fileInternalPath: "e2e-fixtures/index.js",
+        },
       ],
       thirdPartyDependencies: [],
       workspaceDependencies: [],
