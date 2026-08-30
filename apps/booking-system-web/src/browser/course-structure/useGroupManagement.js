@@ -5,7 +5,7 @@ import {
   useArchiveGroup,
   useReactivateGroup,
   useUpdateGroup,
-} from "./useCourses.js";
+} from "./useGroups.js";
 
 /** @returns {object} Group form, lifecycle mutations, Dialog, and focus state. */
 export function useGroupManagement(courseId, group, translate) {

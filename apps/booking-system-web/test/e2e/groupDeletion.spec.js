@@ -10,7 +10,7 @@ test("deletes a Group after its Selection was removed", async ({ page }) => {
   await ensureActiveAdmin(page);
   const course = await createCourse(page, "Löschbarer Gruppenkurs");
   const target = await createGroup(page, course.id, "Gruppe Entfernen");
-  const other = await createGroup(page, course.id, "Gruppe Behalten");
+  await createGroup(page, course.id, "Gruppe Behalten");
   const module = await createFutureModule(page, course.id, "Auswahl entfernen");
 
   await assignParticipant(page, course.id, participant.id);
@@ -25,7 +25,7 @@ test("deletes a Group after its Selection was removed", async ({ page }) => {
   expect(removed.status()).toBe(200);
 
   await ensureActiveAdmin(page);
-  await page.goto(`/admin/courses/${course.id}`);
+  await page.goto(`/admin/courses/${course.id}/groups/${target.id}`);
   let targetCard = groupCard(page, target.id);
   const deleteAction = targetCard.getByRole("button", {
     name: "Gruppe löschen",
@@ -55,15 +55,21 @@ test("deletes a Group after its Selection was removed", async ({ page }) => {
 
   await expect(success).toBeFocused();
   await expect(targetCard).toBeHidden();
-  await expect(groupCard(page, other.id)).toContainText("Gruppe Behalten");
-  await expect(page.getByRole("heading", { name: "Auswahl entfernen" })).toBeVisible();
+  const collectionTable = page.getByRole("table", {
+    name: "Gruppensammlung dieses Kurses",
+  });
+
+  await expect(collectionTable).toContainText("Gruppe Behalten");
+  await expect(collectionTable).not.toContainText("Gruppe Entfernen");
   await expectAccessibleLayout(page);
 
   await page.reload();
   targetCard = groupCard(page, target.id);
   await expect(targetCard).toHaveCount(0);
-  await expect(groupCard(page, other.id)).toBeVisible();
+  await expect(collectionTable).toContainText("Gruppe Behalten");
   await page.setViewportSize(narrowViewport);
+  await expect(page.getByRole("list", { name: "Gruppen des Kurses" }))
+    .toContainText("Gruppe Behalten");
   await expectAccessibleLayout(page);
 });
 
@@ -94,8 +100,8 @@ test("explains retained historical and Cancelled reference blockers privately", 
     });
   }
 
-  await page.goto(`/admin/courses/${course.id}`);
   for (const group of [historical, cancelled]) {
+    await page.goto(`/admin/courses/${course.id}/groups/${group.id}`);
     const card = groupCard(page, group.id);
     const deleteAction = card.getByRole("button", { name: "Gruppe löschen" });
 

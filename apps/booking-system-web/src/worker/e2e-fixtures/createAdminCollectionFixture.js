@@ -25,6 +25,8 @@ export function createAdminCollectionFixture(database) {
       ...Array.from({ length: fixtureCount }, (_, index) =>
         assignmentStatement(database, index)),
       ...Array.from({ length: fixtureCount }, (_, index) =>
+        groupStatement(database, index)),
+      ...Array.from({ length: fixtureCount }, (_, index) =>
         adminUserStatement(database, index)),
       ...Array.from({ length: fixtureCount }, (_, index) =>
         inviteStatement(database, index)),
@@ -32,6 +34,26 @@ export function createAdminCollectionFixture(database) {
 
     return new Response(null, { status: 204 });
   };
+}
+
+/** @returns {object} One Group on the first seeded Course. */
+function groupStatement(database, index) {
+  const suffix = fixtureSuffix(index);
+  const name = `Collection Group ${suffix}`;
+
+  return database.prepare(
+    `insert into groups
+       (id, course_id, name, normalized_name, details, state)
+     values (?, 'collection-course-00', ?, ?, ?, ?)`,
+  ).bind(
+    `collection-group-${suffix}`,
+    name,
+    name.toLowerCase(),
+    index === 11
+      ? "Literal collection group details with enough text for bounded presentation"
+      : null,
+    index === 11 ? "archived" : "active",
+  );
 }
 
 /** @returns {object} One retained Assignment on the first seeded Course. */

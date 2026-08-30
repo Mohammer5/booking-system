@@ -22,7 +22,6 @@ import { CourseInviteSection } from "../course-access/index.js";
 import { CourseArchivalControl } from "./CourseArchivalControl.jsx";
 import { CourseEditSection } from "./CourseEditSection.jsx";
 import { useCourseDetail } from "./useCourses.js";
-import { GroupCreationSection } from "./GroupCreationSection.jsx";
 import { ModuleCreationSection } from "./ModuleCreationSection.jsx";
 
 /**
@@ -199,16 +198,7 @@ function CourseDetails(props) {
         translate={translate}
       />
       <CourseDescriptionList course={course} translate={translate} />
-      <Button
-        component={RouterLink}
-        sx={{ alignSelf: "flex-start" }}
-        to={`/admin/courses/${course.id}/participants`}
-        variant="outlined"
-      >
-        {translate("courseAccess.courseParticipants.summary", {
-          count: course.counts.participants,
-        })}
-      </Button>
+      <CourseRelationshipLinks course={course} translate={translate} />
       {props.archivalResult?.course.id === course.id ? (
         <Alert
           ref={props.archivalSuccessRef}
@@ -234,8 +224,35 @@ function CourseDetails(props) {
           {translate("courseStructure.archival.readOnly")}
         </Alert>
       )}
-      <GroupCreationSection course={course} />
       <ModuleCreationSection course={course} />
+    </Stack>
+  );
+}
+
+/** @returns {import("react").ReactElement} Linked child-resource counts. */
+function CourseRelationshipLinks({ course, translate }) {
+  return (
+    <Stack direction={{ xs: "column", sm: "row" }} spacing={1.5}>
+      <Button
+        component={RouterLink}
+        sx={{ alignSelf: "flex-start" }}
+        to={`/admin/courses/${course.id}/participants`}
+        variant="outlined"
+      >
+        {translate("courseAccess.courseParticipants.summary", {
+          count: course.counts.participants,
+        })}
+      </Button>
+      <Button
+        component={RouterLink}
+        sx={{ alignSelf: "flex-start" }}
+        to={`/admin/courses/${course.id}/groups`}
+        variant="outlined"
+      >
+        {translate("courseStructure.group.summary", {
+          count: course.counts.groups,
+        })}
+      </Button>
     </Stack>
   );
 }

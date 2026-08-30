@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 
-import { useDeleteGroup } from "./useCourses.js";
+import { useDeleteGroup } from "./useGroups.js";
 
 /** @returns {object} Group deletion mutation, Dialog, and focus state. */
 export function useGroupDeletion(courseId, group, onDeleted) {

@@ -76,6 +76,40 @@ describe("Course Group collection persistence", () => {
       query("groups"),
     )).resolves.toEqual({ outcome: "parent-not-found" });
   });
+
+  it("guards one same-Course Group item with fresh Admin and parent state", async () => {
+    await insertGroupFixtures();
+    const persistence = createGroupPersistence(env.DB);
+
+    await expect(persistence.findGroupForAdmin(
+      "admin-a",
+      "course-a",
+      "group-00",
+    )).resolves.toMatchObject({
+      outcome: "found",
+      context: { id: "course-a" },
+      item: { id: "group-00", courseId: "course-a" },
+    });
+    await expect(persistence.findGroupForAdmin(
+      "admin-a",
+      "course-a",
+      "group-other",
+    )).resolves.toEqual({ outcome: "item-not-found" });
+    await expect(persistence.findGroupForAdmin(
+      "admin-a",
+      "missing",
+      "group-00",
+    )).resolves.toEqual({ outcome: "parent-not-found" });
+
+    await env.DB.prepare(
+      "update admin_users set state = 'disabled' where id = 'admin-a'",
+    ).run();
+    await expect(persistence.findGroupForAdmin(
+      "admin-a",
+      "course-a",
+      "group-00",
+    )).resolves.toEqual({ outcome: "admin-not-active" });
+  });
 });
 
 describe("Course Module collection persistence", () => {

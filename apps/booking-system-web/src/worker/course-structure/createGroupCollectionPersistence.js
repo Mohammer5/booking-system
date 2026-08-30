@@ -7,8 +7,34 @@ import {
 /** @returns {object} Guarded Course Group collection persistence. */
 export function createGroupCollectionPersistence(database) {
   return {
+    findGroupForAdmin: (adminUserId, courseId, groupId) =>
+      findGroupForAdmin(database, { adminUserId, courseId, groupId }),
     listGroupPage: (adminUserId, courseId, query) =>
       listGroupPage(database, { adminUserId, courseId, query }),
+  };
+}
+
+/** @returns {Promise<object>} One atomic guarded parent and Group item read. */
+async function findGroupForAdmin(database, context) {
+  const [adminResult, courseResult, groupResult] = await database.batch([
+    database.prepare(
+      "select id from admin_users where id = ? and state = 'active'",
+    ).bind(context.adminUserId),
+    courseStatement(database, context.courseId),
+    database.prepare(
+      `select id, course_id, name, normalized_name, details, state
+         from groups where course_id = ? and id = ?`,
+    ).bind(context.courseId, context.groupId),
+  ]);
+
+  if (adminResult.results.length === 0) return { outcome: "admin-not-active" };
+  if (courseResult.results.length === 0) return { outcome: "parent-not-found" };
+  if (groupResult.results.length === 0) return { outcome: "item-not-found" };
+
+  return {
+    outcome: "found",
+    context: mapCourse(courseResult.results[0]),
+    item: mapGroup(groupResult.results[0]),
   };
 }
 

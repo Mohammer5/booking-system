@@ -15,7 +15,7 @@ test("edits, archives, and reactivates one retained Group identity", async ({
     details: "Raum Bestand",
   });
 
-  await page.goto(`/admin/courses/${course.id}`);
+  await page.goto(`/admin/courses/${course.id}/groups/${group.id}`);
   let card = groupCard(page, group.id);
   const nameInput = card.getByLabel("Gruppenname bearbeiten");
   const save = card.getByRole("button", { name: "Gruppenänderungen speichern" });
@@ -130,7 +130,7 @@ test("explains an exact archival blocker and retains historical Group details", 
   expect(selection.status()).toBe(201);
 
   await ensureActiveAdmin(page);
-  await page.goto(`/admin/courses/${course.id}`);
+  await page.goto(`/admin/courses/${course.id}/groups/${group.id}`);
   const card = groupCard(page, group.id);
   await card.getByRole("button", { name: "Gruppe archivieren" }).click();
   let dialog = page.getByRole("dialog", { name: "Gruppe archivieren?" });
@@ -164,7 +164,9 @@ test("explains an exact archival blocker and retains historical Group details", 
 
   await page.route(
     `**/api/admin/courses/${course.id}/groups/${group.id}`,
-    (route) => fulfillJson(route, 409, { outcome: "course-not-active" }),
+    (route) => route.request().method() === "PUT"
+      ? fulfillJson(route, 409, { outcome: "course-not-active" })
+      : route.continue(),
   );
   await card.getByLabel("Gruppendetails bearbeiten").fill("Nicht gespeichert");
   await card

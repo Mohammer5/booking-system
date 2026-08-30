@@ -148,7 +148,8 @@ implemented:
   `/admin/participants`, `/admin/courses`,
   `/admin/users/:adminUserId`,
   `/admin/participants/:participantId`, `/admin/courses/new`,
-  `/admin/courses/:courseId`, its Course Participant collection/detail,
+  `/admin/courses/:courseId`, its Course Participant collection/detail and
+  Course Group collection/create/detail,
   Participant `/profile`, and Participant
   `/courses/:courseId` are direct/refresh-safe German MUI contexts within one
   responsive shell; one principal/session can reach distinct Participant and
@@ -352,6 +353,7 @@ gives them a concrete responsibility.
 normalization. The convention, Admin navigation layout, and Worker collection
 contracts plus four top-level browser collections have landed. Course
 Participant collection/detail navigation, compatibility redirects, bounded
-Participant pickers, and broad-overview retirement have also landed. Group and
-Module management remain the dependency-ordered transitional Course-detail
-surfaces until their extraction tasks land.
+Participant pickers, and broad-overview retirement have also landed. Course
+Group collection/create/detail navigation and embedded-management removal have
+landed. Module management remains the dependency-ordered transitional Course-
+detail surface until its extraction task lands.

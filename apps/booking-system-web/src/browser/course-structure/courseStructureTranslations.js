@@ -108,10 +108,35 @@ export const courseStructureTranslations = {
     },
     group: {
       title: "Gruppen",
+      description:
+        "Durchsuchen und verwalten Sie die beibehaltenen Gruppen dieses Kurses.",
+      summary: "{{count}} Gruppen",
       empty: "Für diesen Kurs wurden noch keine Gruppen angelegt.",
+      collectionLoading: "Gruppen des Kurses werden geladen …",
+      search: "Gruppen dieses Kurses nach Name oder Details durchsuchen",
+      tableLabel: "Gruppensammlung dieses Kurses",
       listLabel: "Gruppen des Kurses",
+      open: "Gruppe öffnen",
+      fields: {
+        name: "Name",
+        details: "Details",
+        state: "Status",
+        action: "Aktion",
+      },
+      filters: {
+        state: "Gruppenstatus",
+      },
       noDetails: "Keine weiteren Angaben",
+      createAction: "Gruppe anlegen",
       createTitle: "Gruppe anlegen",
+      createDescription:
+        "Legen Sie den Namen und optionale freie Details der kursweiten Gruppe fest.",
+      toCollection: "Zur Gruppensammlung",
+      detailTitle: "Gruppendetails",
+      detailLoading: "Gruppe wird geladen …",
+      notFound: "Die angeforderte Gruppe wurde nicht gefunden.",
+      archivedReadOnly:
+        "Dieser Kurs ist archiviert. Gruppen bleiben sichtbar, können aber nicht angelegt, bearbeitet, reaktiviert, archiviert oder gelöscht werden.",
       nameLabel: "Gruppenname",
       nameRequired: "Bitte geben Sie einen Gruppennamen ein.",
       nameConflict:

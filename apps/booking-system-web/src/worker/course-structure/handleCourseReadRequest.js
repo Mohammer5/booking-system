@@ -121,22 +121,27 @@ async function handleNestedCollectionRequest(
   }, 200);
 }
 
-/** @returns {Promise<Response>} One same-Course Group read. */
-async function handleGroupDetailRequest(context, operations) {
-  const [course, group] = await Promise.all([
-    operations.coursePersistence.findCourseById(context.route.courseId),
-    operations.groupPersistence.findGroupById(
-      context.route.courseId,
-      context.route.groupId,
-    ),
-  ]);
+/** @returns {Promise<Response>} One guarded same-Course Group read. */
+async function handleGroupDetailRequest(context, operations, staleResponse) {
+  const result = await operations.groupPersistence.findGroupForAdmin(
+    context.adminUser.id,
+    context.route.courseId,
+    context.route.groupId,
+  );
 
-  if (course === null) return jsonResponse({ outcome: "course-not-found" }, 404);
-  if (group === null) return jsonResponse({ outcome: "group-not-found" }, 404);
+  if (result.outcome === "admin-not-active") {
+    return staleResponse(context.request, operations);
+  }
+  if (result.outcome === "parent-not-found") {
+    return jsonResponse({ outcome: "course-not-found" }, 404);
+  }
+  if (result.outcome === "item-not-found") {
+    return jsonResponse({ outcome: "group-not-found" }, 404);
+  }
 
   return jsonResponse({
-    course: toCourseResponse(course),
-    group: toGroupResponse(group),
+    course: toCourseResponse(result.context),
+    group: toGroupResponse(result.item),
   }, 200);
 }
 

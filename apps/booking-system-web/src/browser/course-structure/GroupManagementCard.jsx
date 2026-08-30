@@ -23,6 +23,7 @@ import { useGroupManagement } from "./useGroupManagement.js";
 export function GroupManagementCard({
   courseId,
   group,
+  headingComponent = "h3",
   isReadOnly,
   onDeleted,
   translate,
@@ -31,6 +32,7 @@ export function GroupManagementCard({
   const deletion = useGroupDeletion(courseId, group, onDeleted);
   const titleId = `group-${group.id}-title`;
   const editTitleId = `group-${group.id}-edit-title`;
+  const editHeadingComponent = headingComponent === "h1" ? "h2" : "h4";
 
   return (
     <Card
@@ -41,10 +43,12 @@ export function GroupManagementCard({
     >
       <CardContent>
         <Stack spacing={2}>
-          <GroupIdentity group={group} titleId={titleId} translate={translate} />
+          <GroupIdentity group={group} headingComponent={headingComponent}
+            titleId={titleId} translate={translate} />
           {isReadOnly ? null : (
             <>
-              <Typography component="h4" id={editTitleId} variant="h4">
+              <Typography component={editHeadingComponent} id={editTitleId}
+                variant="h4">
                 {translate("courseStructure.group.editTitle")}
               </Typography>
               <GroupEditForm
@@ -129,7 +133,7 @@ function GroupManagementDialogs({ deletion, group, state, translate }) {
 }
 
 /** @returns {import("react").ReactElement} Stable identity, state, and details. */
-function GroupIdentity({ group, titleId, translate }) {
+function GroupIdentity({ group, headingComponent, titleId, translate }) {
   return (
     <Stack spacing={1}>
       <Stack
@@ -137,7 +141,7 @@ function GroupIdentity({ group, titleId, translate }) {
         spacing={1}
         sx={{ alignItems: { sm: "center" }, justifyContent: "space-between" }}
       >
-        <Typography component="h3" id={titleId} variant="h3">
+        <Typography component={headingComponent} id={titleId} variant="h3">
           {group.name}
         </Typography>
         <Chip

@@ -21,7 +21,7 @@ beforeEach(async () => {
 });
 
 describe("non-production Admin collection fixture", () => {
-  it("seeds twelve deterministic rows per top-level resource", async () => {
+  it("seeds deterministic top-level and nested collection rows", async () => {
     const handleFixture = createAdminCollectionFixture(env.DB);
     const response = await handleFixture(new Request(
       "http://localhost/api/_fixtures/admin-collections",
@@ -33,6 +33,7 @@ describe("non-production Admin collection fixture", () => {
       courses: 12,
       participants: 12,
       course_assignments: 12,
+      groups: 12,
       admin_users: 12,
       admin_invites: 12,
     });
@@ -58,6 +59,7 @@ async function collectionCounts() {
        (select count(*) from courses) as courses,
        (select count(*) from participants) as participants,
        (select count(*) from course_assignments) as course_assignments,
+       (select count(*) from groups) as groups,
        (select count(*) from admin_users) as admin_users,
        (select count(*) from admin_invites) as admin_invites`,
   ).first();

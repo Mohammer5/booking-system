@@ -1,7 +1,7 @@
 ---
 id: PLAN-urack
 title: Implementation plan for Extract Course Group collection, create, and detail routes
-status: draft
+status: done
 implements:
 - TASK-g9tdt
 related: []
@@ -46,16 +46,16 @@ No Group top-level navigation or lifecycle changes.
 
 ### Phase 1: Collection and create
 
-- [ ] Add routes, breadcrumbs, paginated collection, and Active-only create action.
-- [ ] Extract creation form into `/groups/new` and navigate to created detail.
+- [x] Add routes, breadcrumbs, paginated collection, and Active-only create action.
+- [x] Extract creation form into `/groups/new` and navigate to created detail.
 
 **Checkpoint**: Group discovery and creation have stable nested routes.
 
 ### Phase 2: Detail and behavior preservation
 
-- [ ] Move edit/lifecycle/delete ownership to item detail.
-- [ ] Enforce Archived read-only UI/direct-request handling.
-- [ ] Update invalidation and full focused Worker/Playwright/axe evidence.
+- [x] Move edit/lifecycle/delete ownership to item detail.
+- [x] Enforce Archived read-only UI/direct-request handling.
+- [x] Update invalidation and full focused Worker/Playwright/axe evidence.
 
 **Checkpoint**: Group detail preserves every lifecycle/focus rule without duplication.
 

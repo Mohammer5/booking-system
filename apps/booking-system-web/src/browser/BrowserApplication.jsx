@@ -21,6 +21,9 @@ import {
   CourseCreatePage,
   CourseDetailPage,
   CourseIndexPage,
+  GroupCollectionPage,
+  GroupCreatePage,
+  GroupDetailPage,
 } from "./course-structure/index.js";
 import {
   ParticipantEntryPage,
@@ -90,6 +93,18 @@ function administrationRoute() {
       />
       <Route path="courses" element={<CourseIndexPage />} />
       <Route path="courses/new" element={<CourseCreatePage />} />
+      <Route
+        path="courses/:courseId/groups"
+        element={<GroupCollectionPage />}
+      />
+      <Route
+        path="courses/:courseId/groups/new"
+        element={<GroupCreatePage />}
+      />
+      <Route
+        path="courses/:courseId/groups/:groupId"
+        element={<GroupDetailPage />}
+      />
       <Route
         path="courses/:courseId/participants"
         element={<CourseParticipantCollectionPage />}

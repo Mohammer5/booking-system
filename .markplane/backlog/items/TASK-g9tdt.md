@@ -1,7 +1,7 @@
 ---
 id: TASK-g9tdt
 title: Extract Course Group collection, create, and detail routes
-status: draft
+status: done
 priority: high
 type: feature
 effort: large
@@ -12,7 +12,7 @@ depends_on:
 blocks:
 - TASK-qwrut
 related: []
-assignee: null
+assignee: gerkules
 tags:
 - browser
 - worker
@@ -37,18 +37,18 @@ and focused regression tests.
 
 ## Acceptance Criteria
 
-- [ ] Group collection implements the full URL/list contract and displays name,
+- [x] Group collection implements the full URL/list contract and displays name,
       truncated optional details, state, and explicit detail actions.
-- [ ] `/groups/new` owns creation and navigates on success to a stable result
+- [x] `/groups/new` owns creation and navigates on success to a stable result
       retaining the created Group identity.
-- [ ] Group detail owns complete fields, edit/archive/reactivate/delete,
+- [x] Group detail owns complete fields, edit/archive/reactivate/delete,
       refusals, parent Course context, breadcrumbs, and predictable focus.
-- [ ] Archived Course collection/detail remain visible and read-only; direct
+- [x] Archived Course collection/detail remain visible and read-only; direct
       create and mutations are unavailable or authoritatively refused.
-- [ ] Same-Course item lookup privacy and query invalidation of item, collection
+- [x] Same-Course item lookup privacy and query invalidation of item, collection
       prefixes, Course counts, Participant Course reads, and participation reads
       are verified.
-- [ ] No duplicate embedded Group management remains on Course detail.
+- [x] No duplicate embedded Group management remains on Course detail.
 
 ## Testing Requirements
 

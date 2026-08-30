@@ -393,6 +393,35 @@ describe("Group and Module HTTP creation", () => {
 });
 
 describe("Group and Module authoritative write acceptance", () => {
+  it("re-resolves a stale Disabled actor before returning a Group item", async () => {
+    await seedDirectAdminAndCourse();
+    const groupPersistence = createGroupPersistence(env.DB);
+    await env.DB.prepare(
+      `insert into groups
+         (id, course_id, name, normalized_name, details, state)
+       values ('group-item', 'course-1', 'Item', 'item', null, 'active')`,
+    ).run();
+    const handler = createDirectHandler({
+      groupPersistence: {
+        ...groupPersistence,
+        async findGroupForAdmin(...parameters) {
+          await env.DB.prepare(
+            "update admin_users set state = 'disabled' where id = 'admin-1'",
+          ).run();
+          return groupPersistence.findGroupForAdmin(...parameters);
+        },
+      },
+    });
+    const response = await handler(new Request(
+      "http://localhost/api/admin/courses/course-1/groups/group-item",
+    ));
+
+    expect(response.status).toBe(403);
+    await expect(response.json()).resolves.toEqual({
+      outcome: "disabled-admin",
+    });
+  });
+
   it("re-resolves a stale Disabled actor and creates no Group", async () => {
     await seedDirectAdminAndCourse();
     const groupPersistence = createGroupPersistence(env.DB);

@@ -151,8 +151,8 @@
   `/admin/participants`, stable
   `/admin/participants/:participantId` detail/edit, and nested
   `/admin/courses`, `/admin/courses/new`, `/admin/courses/:courseId`,
-  `/admin/courses/:courseId/participants`, and stable Course Participant
-  detail views. Legacy browser participation paths replace-redirect to those
+  Course Participant collection/detail, and Course Group collection/create/
+  detail views. Legacy browser participation paths replace-redirect to the
   Participant paths.
   An authoritatively resolved Active Admin now receives a replace redirect from
   `/admin` to `/admin/courses` and an authenticated layout whose named sticky
@@ -181,11 +181,10 @@
   maintenance plus the one current Disable/Re-enable action for Active and
   Disabled targets. The Participant gate presents a freshly Disabled target
   with safe sign-out and mounts no private Participant view. Stable Course
-  detail owns complete Course editing, its permanent timezone lock, Group
-  creation/edit/lifecycle/deletion, Module create/edit/reschedule/cancel/delete
-  interactions, and terminal Course archival without incidental routes while
-  the remaining nested-structure extraction is in progress. Course membership
-  is independently navigable: the URL-owned Course Participant collection
+  detail owns complete Course editing, its permanent timezone lock, Module
+  create/edit/reschedule/cancel/delete interactions, and terminal Course
+  archival while the remaining Module extraction is in progress. Course
+  membership is independently navigable: the URL-owned Course Participant collection
   renders one server page of retained Assignment/Participant rows as a semantic
   table or narrow card list with exact search, filters, sorting, and pagination.
   Its stable Participant detail owns Assignment lifecycle and presents
@@ -194,6 +193,13 @@
   a bounded server-search picker, and Archived Courses remain historical and
   read-only except for accepted Active-Assignment revocation. The former broad
   all-Course participation overview and its Worker batch read are retired.
+  Course Groups are likewise independently navigable through a URL-owned,
+  server-paginated collection plus stable create and detail routes. Group detail
+  owns complete fields, editing, archival, reactivation, deletion, exact
+  retained-reference/name-conflict refusals, and focus. Guarded item reads
+  enforce same-Course ownership and fresh Active-Admin state; Archived Course
+  Group collection/detail remain visible and read-only, while direct creation
+  presents the same restriction without mounting its form.
   Active Course detail additionally owns the one-current shared Invite URL,
   copy and lifecycle controls. The public Invite route captures a token from a
   URL fragment, removes it from the address bar, replaces it after recognition
@@ -371,5 +377,6 @@ The accepted Admin collection/detail normalization is tracked by
 Worker collection contracts, and four top-level browser collections are
 implemented. Course Participant collection/detail navigation, compatibility
 redirects, bounded Participant pickers, and broad-overview retirement are also
-implemented. Group and Module management remain the next transitional embedded
-Course-detail surfaces until their dependency-ordered extraction tasks land.
+implemented. Course Group collection/create/detail navigation and embedded-
+management removal have also landed. Module management remains the final
+transitional embedded Course-detail surface until its extraction task lands.
