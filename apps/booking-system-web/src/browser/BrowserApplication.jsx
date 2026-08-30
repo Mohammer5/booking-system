@@ -24,6 +24,9 @@ import {
   GroupCollectionPage,
   GroupCreatePage,
   GroupDetailPage,
+  ModuleCollectionPage,
+  ModuleCreatePage,
+  ModuleDetailPage,
 } from "./course-structure/index.js";
 import {
   ParticipantEntryPage,
@@ -91,6 +94,15 @@ function administrationRoute() {
         path="participants/:participantId"
         element={<AdminParticipantDetailPage />}
       />
+      {courseAdministrationRoutes()}
+    </Route>
+  );
+}
+
+/** @returns {import("react").ReactElement} Course-owned Admin routes. */
+function courseAdministrationRoutes() {
+  return (
+    <>
       <Route path="courses" element={<CourseIndexPage />} />
       <Route path="courses/new" element={<CourseCreatePage />} />
       <Route
@@ -104,6 +116,18 @@ function administrationRoute() {
       <Route
         path="courses/:courseId/groups/:groupId"
         element={<GroupDetailPage />}
+      />
+      <Route
+        path="courses/:courseId/modules"
+        element={<ModuleCollectionPage />}
+      />
+      <Route
+        path="courses/:courseId/modules/new"
+        element={<ModuleCreatePage />}
+      />
+      <Route
+        path="courses/:courseId/modules/:moduleId"
+        element={<ModuleDetailPage />}
       />
       <Route
         path="courses/:courseId/participants"
@@ -122,7 +146,7 @@ function administrationRoute() {
         element={<ParticipationCompatibilityRedirect detail />}
       />
       <Route path="courses/:courseId" element={<CourseDetailPage />} />
-    </Route>
+    </>
   );
 }
 

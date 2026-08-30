@@ -163,6 +163,40 @@ describe("Course Module collection persistence", () => {
       pagination: { totalItems: 12 },
     });
   });
+
+  it("guards one same-Course Module item with fresh Admin and parent state", async () => {
+    await insertModuleFixtures();
+    const persistence = createModulePersistence(env.DB);
+
+    await expect(persistence.findModuleForAdmin(
+      "admin-a",
+      "course-a",
+      "module-00",
+    )).resolves.toMatchObject({
+      outcome: "found",
+      context: { id: "course-a" },
+      item: { id: "module-00", courseId: "course-a" },
+    });
+    await expect(persistence.findModuleForAdmin(
+      "admin-a",
+      "course-a",
+      "module-other",
+    )).resolves.toEqual({ outcome: "item-not-found" });
+    await expect(persistence.findModuleForAdmin(
+      "admin-a",
+      "missing",
+      "module-00",
+    )).resolves.toEqual({ outcome: "parent-not-found" });
+
+    await env.DB.prepare(
+      "update admin_users set state = 'disabled' where id = 'admin-a'",
+    ).run();
+    await expect(persistence.findModuleForAdmin(
+      "admin-a",
+      "course-a",
+      "module-00",
+    )).resolves.toEqual({ outcome: "admin-not-active" });
+  });
 });
 
 /** @returns {object} One normalized collection query. */

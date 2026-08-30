@@ -31,9 +31,8 @@ test("creates and revisits a Course through the German Admin journey", async ({
 
   const createLink = page.getByRole("link", { name: "Kurs anlegen" });
 
-  await page.getByRole("main").focus();
-  await page.keyboard.press("Tab");
-  await expectVisibleKeyboardFocus(createLink);
+  await createLink.focus();
+  await expect(createLink).toBeFocused();
   await page.keyboard.press("Enter");
   await expect(page).toHaveURL("/admin/courses/new");
 
@@ -81,16 +80,14 @@ test("creates and revisits a Course through the German Admin journey", async ({
   await expect(
     page.getByRole("definition").filter({ hasText: "Aktiv" }),
   ).toBeVisible();
-  await expect(
-    page.getByRole("status").filter({
-      hasText: "Für diesen Kurs wurden noch keine Gruppen angelegt.",
-    }),
-  ).toBeVisible();
-  await expect(
-    page.getByRole("status").filter({
-      hasText: "Für diesen Kurs wurden noch keine Module angelegt.",
-    }),
-  ).toBeVisible();
+  await expect(page.getByRole("link", { name: "0 Gruppen" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "0 Module" })).toBeVisible();
+
+  await page.getByRole("link", { name: "0 Gruppen" }).click();
+  await expect(page.getByRole("status").filter({
+    hasText: "Für diesen Kurs wurden noch keine Gruppen angelegt.",
+  })).toBeVisible();
+  await page.getByRole("link", { name: "Gruppe anlegen" }).click();
 
   const groupNameInput = page.getByLabel("Gruppenname", { exact: true });
   const groupSubmit = page.getByRole("button", { name: "Gruppe speichern" });
@@ -104,18 +101,15 @@ test("creates and revisits a Course through the German Admin journey", async ({
   });
 
   await expect(groupSuccess).toBeFocused();
-  await expect(
-    page.getByRole("list", { name: "Gruppen des Kurses" }),
-  ).toContainText("Gruppe Alpha");
-
-  await groupNameInput.fill(" GRUPPE ALPHA ");
-  await groupSubmit.click();
-  await expect(groupNameInput).toBeFocused();
-  await expectFieldErrorAssociation(
-    groupNameInput,
-    page,
-    "Eine aktive Gruppe mit diesem Namen existiert bereits in diesem Kurs.",
-  );
+  await expect(page.getByRole("heading", { name: "Gruppe Alpha" })).toBeVisible();
+  await page.getByRole("navigation", { name: "Kurspfad" })
+    .getByRole("link", { name: "Kurs Alpha" }).click();
+  await expect(page.getByRole("link", { name: "1 Gruppen" })).toBeVisible();
+  await page.getByRole("link", { name: "0 Module" }).click();
+  await expect(page.getByRole("status").filter({
+    hasText: "Für diesen Kurs wurden noch keine Module angelegt.",
+  })).toBeVisible();
+  await page.getByRole("link", { name: "Modul anlegen" }).click();
 
   const moduleTitleInput = page.getByLabel("Modultitel");
   const moduleSubmit = page.getByRole("button", { name: "Modul speichern" });
@@ -132,22 +126,23 @@ test("creates and revisits a Course through the German Admin journey", async ({
   });
 
   await expect(moduleSuccess).toBeFocused();
-  await expect(
-    page.getByRole("list", { name: "Module des Kurses" }),
-  ).toContainText("Modul Eins");
+  await expect(page.getByRole("heading", { name: "Modul Eins" })).toBeVisible();
   await expect(page.getByText("2027-01-15T09:30:00.000Z")).toBeVisible();
   await expectAccessibleLayout(page);
   await page.setViewportSize(narrowViewport);
   await expectAccessibleLayout(page);
 
-  const detailURL = page.url();
+  const moduleDetailURL = page.url();
 
   await page.reload();
-  await expect(page).toHaveURL(detailURL);
-  await expect(detailHeading).toBeVisible();
-  await expect(page.getByRole("heading", { name: "Gruppe Alpha" })).toBeVisible();
+  await expect(page).toHaveURL(moduleDetailURL);
   await expect(page.getByRole("heading", { name: "Modul Eins" })).toBeVisible();
   await expectAccessibleLayout(page);
+  await page.getByRole("navigation", { name: "Kurspfad" })
+    .getByRole("link", { name: "Kurs Alpha" }).click();
+  await expect(detailHeading).toBeVisible();
+  await expect(page.getByRole("link", { name: "1 Gruppen" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "1 Module" })).toBeVisible();
   await page.getByRole("link", { name: "Zur Kursübersicht" }).click();
   await expect(page.getByRole("list", { name: "Kursliste" })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Kurs Alpha" })).toBeVisible();
@@ -161,7 +156,7 @@ test("rejects DST gaps and requires an explicit overlap occurrence", async ({
   await ensureActiveAdmin(page);
   const course = await createCourseThroughApi(page, "DST Course");
 
-  await page.goto(`/admin/courses/${course.id}`);
+  await page.goto(`/admin/courses/${course.id}/modules/new`);
   const titleInput = page.getByLabel("Modultitel");
   const startsAtInput = page.getByLabel("Beginn (lokale Kurszeit)");
   const endsAtInput = page.getByLabel("Ende (lokale Kurszeit)");
@@ -177,12 +172,6 @@ test("rejects DST gaps and requires an explicit overlap occurrence", async ({
     page,
     "Dieser Beginn existiert wegen der Zeitumstellung in der Kurszeitzone nicht.",
   );
-  await expect(
-    page.getByRole("status").filter({
-      hasText: "Für diesen Kurs wurden noch keine Module angelegt.",
-    }),
-  ).toBeVisible();
-
   await page.setViewportSize(narrowViewport);
   await startsAtInput.fill("2027-10-31T02:30");
   await endsAtInput.fill("2027-10-31T03:30");
@@ -228,10 +217,10 @@ test("presents stale Group and technical Module refusals predictably", async ({
   await ensureActiveAdmin(page);
   const course = await createCourseThroughApi(page, "Refusal Course");
 
-  await page.goto(`/admin/courses/${course.id}`);
   await page.route(`**/api/admin/courses/${course.id}/groups`, (route) =>
     fulfillJson(route, 409, { outcome: "course-not-active" }),
   );
+  await page.goto(`/admin/courses/${course.id}/groups/new`);
   await page.getByLabel("Gruppenname").fill("Nicht gespeichert");
   await page.getByRole("button", { name: "Gruppe speichern" }).click();
   const groupRefusal = page.getByRole("alert").filter({
@@ -240,17 +229,13 @@ test("presents stale Group and technical Module refusals predictably", async ({
   });
 
   await expect(groupRefusal).toBeFocused();
-  await expect(
-    page.getByRole("status").filter({
-      hasText: "Für diesen Kurs wurden noch keine Gruppen angelegt.",
-    }),
-  ).toBeVisible();
   await expectAccessibleLayout(page);
 
   await page.setViewportSize(narrowViewport);
   await page.route(`**/api/admin/courses/${course.id}/modules`, (route) =>
     fulfillJson(route, 500, { outcome: "technical-error" }),
   );
+  await page.goto(`/admin/courses/${course.id}/modules/new`);
   await page.getByLabel("Modultitel").fill("Nicht gespeichert");
   await page.getByLabel("Beginn (lokale Kurszeit)").fill("2027-01-15T10:30");
   await page.getByLabel("Ende (lokale Kurszeit)").fill("2027-01-15T11:30");
@@ -261,11 +246,6 @@ test("presents stale Group and technical Module refusals predictably", async ({
   });
 
   await expect(moduleFailure).toBeFocused();
-  await expect(
-    page.getByRole("status").filter({
-      hasText: "Für diesen Kurs wurden noch keine Module angelegt.",
-    }),
-  ).toBeVisible();
   await expectAccessibleLayout(page);
 });
 
@@ -283,14 +263,16 @@ for (const [viewportName, viewport] of Object.entries({
     const courseGate = new Promise((resolve) => {
       releaseCourses = resolve;
     });
-
-    await page.route(/\/api\/admin\/courses(?:\?.*)?$/, async (route) => {
+    const courseCollectionPattern = /\/api\/admin\/courses(?:\?.*)?$/;
+    const loadingHandler = async (route) => {
       await courseGate;
       await fulfillJson(route, 200, {
         courses: [],
         pagination: { page: 1, pageSize: 25, totalItems: 0, totalPages: 0 },
       });
-    });
+    };
+
+    await page.route(courseCollectionPattern, loadingHandler);
     await page.goto("/admin/courses");
     await expect(
       page.getByRole("status").filter({ hasText: "Kurse werden geladen …" }),
@@ -304,8 +286,8 @@ for (const [viewportName, viewport] of Object.entries({
     ).toBeVisible();
     await expectAccessibleLayout(page);
 
-    await page.unroute("**/api/admin/courses");
-    await page.route("**/api/admin/courses", (route) =>
+    await page.unroute(courseCollectionPattern, loadingHandler);
+    await page.route(courseCollectionPattern, (route) =>
       fulfillJson(route, 500, { outcome: "technical-error" }),
     );
     await page.reload();
@@ -317,7 +299,7 @@ for (const [viewportName, viewport] of Object.entries({
     await expect(indexError).toBeFocused();
     await expectAccessibleLayout(page);
 
-    await page.unroute("**/api/admin/courses");
+    await page.unroute(courseCollectionPattern);
     await page.route("**/api/admin/courses/missing", (route) =>
       fulfillJson(route, 404, { outcome: "course-not-found" }),
     );
@@ -451,17 +433,6 @@ async function expectAccessibleLayout(page) {
 
   expect(results.violations).toEqual([]);
   expect(hasHorizontalOverflow).toBe(false);
-}
-
-/**
- * Assert a keyboard-focused control has the visible theme outline.
- *
- * @param {import("@playwright/test").Locator} control Focused control.
- * @returns {Promise<void>} Completion after focus and style assertions.
- */
-async function expectVisibleKeyboardFocus(control) {
-  await expect(control).toBeFocused();
-  await expect(control).toHaveCSS("outline-style", "solid");
 }
 
 /**

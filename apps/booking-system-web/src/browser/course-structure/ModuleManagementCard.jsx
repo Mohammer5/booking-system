@@ -7,8 +7,16 @@ import { ModuleSchedule } from "./ModuleSchedule.jsx";
 import { ModuleScheduleForm } from "./ModuleScheduleForm.jsx";
 
 /** @returns {import("react").ReactElement} One retained Module management card. */
-export function ModuleManagementCard({ course, module, onDeleted, translate }) {
+export function ModuleManagementCard({
+  course,
+  headingComponent = "h3",
+  isReadOnly = false,
+  module,
+  onDeleted,
+  translate,
+}) {
   const titleId = `module-${module.id}-title`;
+  const sectionHeadingComponent = headingComponent === "h1" ? "h2" : "h4";
 
   return (
     <Card
@@ -19,31 +27,36 @@ export function ModuleManagementCard({ course, module, onDeleted, translate }) {
     >
       <CardContent>
         <Stack spacing={3}>
-          <ModuleIdentity module={module} titleId={titleId} translate={translate} />
+          <ModuleIdentity headingComponent={headingComponent} module={module}
+            titleId={titleId} translate={translate} />
           <ModuleSchedule
             module={module}
             timezone={course.timezone}
             translate={translate}
           />
-          {course.state === "active" ? (
+          {!isReadOnly && course.state === "active" ? (
             <>
               <ModuleDetailsForm
                 courseId={course.id}
+                headingComponent={sectionHeadingComponent}
                 module={module}
                 translate={translate}
               />
               <ModuleScheduleForm
                 course={course}
+                headingComponent={sectionHeadingComponent}
                 module={module}
                 translate={translate}
               />
               <ModuleCancellationControl
                 courseId={course.id}
+                headingComponent={sectionHeadingComponent}
                 module={module}
                 translate={translate}
               />
               <ModuleDeletionControl
                 courseId={course.id}
+                headingComponent={sectionHeadingComponent}
                 module={module}
                 onDeleted={onDeleted}
                 translate={translate}
@@ -57,7 +70,7 @@ export function ModuleManagementCard({ course, module, onDeleted, translate }) {
 }
 
 /** @returns {import("react").ReactElement} Stable Module identity and details. */
-function ModuleIdentity({ module, titleId, translate }) {
+function ModuleIdentity({ headingComponent, module, titleId, translate }) {
   return (
     <Stack spacing={1}>
       <Stack
@@ -65,7 +78,7 @@ function ModuleIdentity({ module, titleId, translate }) {
         spacing={1}
         sx={{ alignItems: { sm: "center" }, justifyContent: "space-between" }}
       >
-        <Typography component="h3" id={titleId} variant="h3">
+        <Typography component={headingComponent} id={titleId} variant="h3">
           {module.title}
         </Typography>
         <Chip

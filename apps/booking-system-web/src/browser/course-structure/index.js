@@ -4,5 +4,8 @@ export { CourseIndexPage } from "./CourseIndexPage.jsx";
 export { GroupCollectionPage } from "./GroupCollectionPage.jsx";
 export { GroupCreatePage } from "./GroupCreatePage.jsx";
 export { GroupDetailPage } from "./GroupDetailPage.jsx";
+export { ModuleCollectionPage } from "./ModuleCollectionPage.jsx";
+export { ModuleCreatePage } from "./ModuleCreatePage.jsx";
+export { ModuleDetailPage } from "./ModuleDetailPage.jsx";
 export { courseStructureTranslations } from "./courseStructureTranslations.js";
 export { AdminCourseBreadcrumbs } from "./AdminCourseBreadcrumbs.jsx";

@@ -1,7 +1,7 @@
 ---
 id: PLAN-xgvdk
 title: Implementation plan for Extract Course Module collection, create, and detail routes
-status: draft
+status: done
 implements:
 - TASK-qwrut
 related: []
@@ -47,16 +47,16 @@ No Module top-level navigation, MUI X dependency, or scheduling-policy change.
 
 ### Phase 1: Collection and create
 
-- [ ] Add routes/breadcrumbs and paginated responsive Module collection.
-- [ ] Move creation to `/modules/new` and navigate to stable detail.
+- [x] Add routes/breadcrumbs and paginated responsive Module collection.
+- [x] Move creation to `/modules/new` and navigate to stable detail.
 
 **Checkpoint**: Module discovery and creation have stable nested routes.
 
 ### Phase 2: Detail and lifecycle preservation
 
-- [ ] Move content edit/reschedule/cancel/delete to item detail.
-- [ ] Preserve exact-start/elapsed/Cancelled/Archived presentation and focus.
-- [ ] Update invalidation and focused Worker/Playwright/axe coverage.
+- [x] Move content edit/reschedule/cancel/delete to item detail.
+- [x] Preserve exact-start/elapsed/Cancelled/Archived presentation and focus.
+- [x] Update invalidation and focused Worker/Playwright/axe coverage.
 
 **Checkpoint**: Module detail preserves scheduling/lifecycle/focus rules.
 

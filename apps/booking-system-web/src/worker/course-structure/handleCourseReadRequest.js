@@ -145,21 +145,26 @@ async function handleGroupDetailRequest(context, operations, staleResponse) {
   }, 200);
 }
 
-/** @returns {Promise<Response>} One same-Course Module read. */
-async function handleModuleDetailRequest(context, operations) {
-  const [course, module] = await Promise.all([
-    operations.coursePersistence.findCourseById(context.route.courseId),
-    operations.modulePersistence.findModuleById(
-      context.route.courseId,
-      context.route.moduleId,
-    ),
-  ]);
+/** @returns {Promise<Response>} One guarded same-Course Module read. */
+async function handleModuleDetailRequest(context, operations, staleResponse) {
+  const result = await operations.modulePersistence.findModuleForAdmin(
+    context.adminUser.id,
+    context.route.courseId,
+    context.route.moduleId,
+  );
 
-  if (course === null) return jsonResponse({ outcome: "course-not-found" }, 404);
-  if (module === null) return jsonResponse({ outcome: "module-not-found" }, 404);
+  if (result.outcome === "admin-not-active") {
+    return staleResponse(context.request, operations);
+  }
+  if (result.outcome === "parent-not-found") {
+    return jsonResponse({ outcome: "course-not-found" }, 404);
+  }
+  if (result.outcome === "item-not-found") {
+    return jsonResponse({ outcome: "module-not-found" }, 404);
+  }
 
   return jsonResponse({
-    course: toCourseResponse(course),
-    module: toModuleResponse(module, operations.now()),
+    course: toCourseResponse(result.context),
+    module: toModuleResponse(result.item, operations.now()),
   }, 200);
 }

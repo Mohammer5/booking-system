@@ -1,7 +1,7 @@
 ---
 id: TASK-qwrut
 title: Extract Course Module collection, create, and detail routes
-status: draft
+status: done
 priority: high
 type: feature
 effort: large
@@ -12,7 +12,7 @@ depends_on:
 blocks:
 - TASK-x8dax
 related: []
-assignee: null
+assignee: gerkules
 tags:
 - browser
 - worker
@@ -38,18 +38,18 @@ focused regression tests.
 
 ## Acceptance Criteria
 
-- [ ] Module collection implements the URL/list contract and displays title,
+- [x] Module collection implements the URL/list contract and displays title,
       Course-timezone start/end semantic times, state, and explicit detail.
-- [ ] `/modules/new` owns future Module creation with DST gap/overlap behavior
+- [x] `/modules/new` owns future Module creation with DST gap/overlap behavior
       and navigates to a stable identity-preserving outcome.
-- [ ] Module detail owns complete descriptive fields, schedule/rescheduling,
+- [x] Module detail owns complete descriptive fields, schedule/rescheduling,
       cancellation/deletion, lifecycle capability/read-only presentation,
       breadcrumbs, and predictable focus.
-- [ ] Archived Course collection/detail remain visible and read-only with
+- [x] Archived Course collection/detail remain visible and read-only with
       retained selections/history intact.
-- [ ] Same-Course item privacy and invalidation of item, collection prefixes,
+- [x] Same-Course item privacy and invalidation of item, collection prefixes,
       Course counts, Participant Course and participation reads are verified.
-- [ ] No duplicate embedded Module management remains on Course detail.
+- [x] No duplicate embedded Module management remains on Course detail.
 
 ## Testing Requirements
 

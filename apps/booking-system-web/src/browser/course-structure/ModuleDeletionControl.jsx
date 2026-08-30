@@ -14,7 +14,8 @@ export function ModuleDeletionControl(props) {
 
   return (
     <Stack aria-labelledby={titleId} spacing={2}>
-      <Typography component="h4" id={titleId} variant="h4">
+      <Typography component={props.headingComponent ?? "h4"} id={titleId}
+        variant="h4">
         {props.translate("courseStructure.module.deletionTitle")}
       </Typography>
       <Button

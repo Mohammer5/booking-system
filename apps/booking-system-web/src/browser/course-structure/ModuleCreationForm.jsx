@@ -14,7 +14,7 @@ import {
   isModuleFieldOutcome,
   moduleErrorMessage,
 } from "./moduleCreationOutcomes.js";
-import { useCreateModule } from "./useCourses.js";
+import { useCreateModule } from "./useModules.js";
 
 const moduleFormDefaults = {
   title: "",
@@ -30,8 +30,13 @@ const moduleFormDefaults = {
  * @param {object} props Module form properties.
  * @returns {import("react").ReactElement} Module creation form.
  */
-export function ModuleCreationForm({ course, translate }) {
-  const state = useModuleCreation(course, translate);
+export function ModuleCreationForm({
+  course,
+  headingComponent = "h3",
+  onSuccess,
+  translate,
+}) {
+  const state = useModuleCreation(course, onSuccess, translate);
 
   return (
     <Stack
@@ -40,7 +45,7 @@ export function ModuleCreationForm({ course, translate }) {
       onSubmit={state.submit}
       spacing={2}
     >
-      <Typography component="h3" id="create-module-title" variant="h3">
+      <Typography component={headingComponent} id="create-module-title" variant="h3">
         {translate("courseStructure.module.createTitle")}
       </Typography>
       <Typography>
@@ -218,7 +223,7 @@ function ScheduleResolution({ state, translate }) {
  * @param {(key: string, options?: object) => string} translate Translation function.
  * @returns {object} Module form state.
  */
-function useModuleCreation(course, translate) {
+function useModuleCreation(course, onSuccess, translate) {
   const creation = useCreateModule(course.id);
   const errorRef = useRef(null);
   const successRef = useRef(null);
@@ -234,6 +239,7 @@ function useModuleCreation(course, translate) {
       occurrences,
       setDisambiguation,
       setOccurrences,
+      onSuccess,
       translate,
     }),
   );
@@ -287,10 +293,13 @@ async function submitModule(state) {
   state.form.clearErrors();
 
   try {
-    await state.creation.mutateAsync(moduleRequest(state.values, state.occurrences));
+    const module = await state.creation.mutateAsync(
+      moduleRequest(state.values, state.occurrences),
+    );
     state.form.reset();
     state.setDisambiguation(null);
     state.setOccurrences({});
+    state.onSuccess?.(module);
   } catch (error) {
     if (error.outcome === "schedule-disambiguation-required") {
       state.setDisambiguation(error.body.schedule);

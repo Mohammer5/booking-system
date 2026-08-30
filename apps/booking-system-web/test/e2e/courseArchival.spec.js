@@ -49,8 +49,9 @@ test("archives after cancellation and preserves private history until revocation
     `/api/admin/courses/${course.id}/modules/${module.id}/cancellation`,
   );
   expect(cancellation.status()).toBe(200);
-  await page.reload();
+  await page.goto(`/admin/courses/${course.id}/modules/${module.id}`);
   await expect(moduleCard(page, module.id)).toContainText("Abgesagt");
+  await page.goto(`/admin/courses/${course.id}`);
 
   await page.getByRole("button", { name: "Kurs archivieren" }).click();
   dialog = page.getByRole("dialog", { name: "Kurs endgültig archivieren?" });
@@ -188,8 +189,6 @@ test("presents exact-end eligibility plus stale and technical archive refusals",
   });
   await page.goto(`/admin/courses/${course.id}`);
 
-  await expect(moduleCard(page, "exact-end")).toContainText("Exaktes Ende");
-  await expect(moduleCard(page, "cancelled-future")).toContainText("Abgesagt");
   let action = page.getByRole("button", { name: "Kurs archivieren" });
 
   await action.focus();
@@ -247,10 +246,7 @@ async function expectArchivedAdminActions(page) {
 
 /** @returns {import("@playwright/test").Locator} One Course list item. */
 function courseListItem(page, courseName) {
-  return page
-    .getByRole("list", { name: /Kursliste|Zugeordnete Kurse/ })
-    .getByRole("listitem")
-    .filter({ hasText: courseName });
+  return page.locator("tr, main li").filter({ hasText: courseName });
 }
 
 /** @returns {import("@playwright/test").Locator} Stable Admin Module article. */
@@ -360,6 +356,7 @@ function boundedCourse(course) {
     state: "active",
     isArchivalAvailable: true,
     isTimezoneEditable: false,
+    counts: { participants: 0, groups: 0, modules: 2 },
     groups: [],
     modules: [
       { ...base, id: "exact-end", title: "Exaktes Ende" },

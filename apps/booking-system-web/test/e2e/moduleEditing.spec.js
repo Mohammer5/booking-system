@@ -12,7 +12,7 @@ test("edits Module details and reschedules an overlap explicitly", async ({
   const course = await createCourse(page, "Modulbearbeitung");
   const module = await createModule(page, course.id);
 
-  await page.goto(`/admin/courses/${course.id}`);
+  await page.goto(`/admin/courses/${course.id}/modules/${module.id}`);
   let card = moduleCard(page, module.id);
   const title = card.getByLabel("Modultitel bearbeiten");
   const saveDetails = card.getByRole("button", {
@@ -111,8 +111,12 @@ test("keeps details editable while locking elapsed and Cancelled schedules", asy
     const request = route.request();
     const path = new URL(request.url()).pathname;
 
-    if (request.method() === "GET" && path === `/api/admin/courses/${course.id}`) {
-      await fulfillJson(route, 200, { ...course, modules });
+    if (request.method() === "GET" && path.includes("/modules/")) {
+      const moduleId = path.split("/").at(-1);
+      await fulfillJson(route, 200, {
+        course,
+        module: modules.find((item) => item.id === moduleId),
+      });
       return;
     }
 
@@ -138,14 +142,13 @@ test("keeps details editable while locking elapsed and Cancelled schedules", asy
 
     await route.continue();
   });
-  await page.goto(`/admin/courses/${course.id}`);
-
   for (const moduleId of [
     "exact-module",
     "in-progress-module",
     "ended-module",
     "cancelled-module",
   ]) {
+    await page.goto(`/admin/courses/${course.id}/modules/${moduleId}`);
     const card = moduleCard(page, moduleId);
 
     await expect(card.getByText(/Der Modulzeitraum ist gesperrt/)).toBeVisible();
@@ -165,6 +168,7 @@ test("keeps details editable while locking elapsed and Cancelled schedules", asy
   ).toBeFocused();
   await expect(cancelled.getByRole("heading", { name: "Abgesagt und bearbeitet" })).toBeVisible();
 
+  await page.goto(`/admin/courses/${course.id}/modules/upcoming-module`);
   const upcoming = moduleCard(page, "upcoming-module");
   await upcoming.getByLabel("Neuer Beginn (lokale Kurszeit)").fill("2027-12-01T10:00");
   await upcoming.getByLabel("Neues Ende (lokale Kurszeit)").fill("2027-12-01T11:00");
@@ -177,6 +181,7 @@ test("keeps details editable while locking elapsed and Cancelled schedules", asy
   await expect(upcoming).not.toContainText("private-module-version");
   await expectAccessibleLayout(page);
 
+  await page.goto(`/admin/courses/${course.id}/modules/cancelled-module`);
   await page.reload();
   cancelled = moduleCard(page, "cancelled-module");
   await expect(cancelled.getByLabel("Modultitel bearbeiten")).toHaveValue(

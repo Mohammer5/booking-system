@@ -5,7 +5,7 @@ import {
   applyModuleFieldOutcome,
   isModuleFieldOutcome,
 } from "./moduleCreationOutcomes.js";
-import { useUpdateModuleDetails } from "./useCourses.js";
+import { useUpdateModuleDetails } from "./useModules.js";
 
 /** @returns {object} Complete Module descriptive form and result state. */
 export function useModuleDetailsEditing(courseId, module, translate) {

@@ -44,11 +44,7 @@ export function useCreateCourse() {
 
   return useMutation({
     mutationFn: createCourse,
-    async onSuccess(course) {
-      queryClient.setQueryData(
-        ["course-structure", "course", course.id],
-        course,
-      );
+    async onSuccess() {
       await queryClient.invalidateQueries({ queryKey: courseIndexQueryKey });
     },
   });
@@ -84,6 +80,12 @@ export function useUpdateCourse(courseId) {
         }),
         queryClient.invalidateQueries({
           queryKey: ["course-structure", "group", courseId],
+        }),
+        queryClient.invalidateQueries({
+          queryKey: ["course-structure", "modules", courseId],
+        }),
+        queryClient.invalidateQueries({
+          queryKey: ["course-structure", "module", courseId],
         }),
       ]);
     },
@@ -122,6 +124,12 @@ export function useArchiveCourse(courseId, onArchived) {
           queryKey: ["course-structure", "group", courseId],
         }),
         queryClient.invalidateQueries({
+          queryKey: ["course-structure", "modules", courseId],
+        }),
+        queryClient.invalidateQueries({
+          queryKey: ["course-structure", "module", courseId],
+        }),
+        queryClient.invalidateQueries({
           queryKey: ["course-access", "assignments", courseId],
         }),
         queryClient.invalidateQueries({
@@ -138,143 +146,6 @@ export function useArchiveCourse(courseId, onArchived) {
         }),
       ]);
       onArchived(result);
-    },
-    async onError(error) {
-      if (error.status === 409) {
-        await queryClient.invalidateQueries({ queryKey: detailQueryKey });
-      }
-    },
-  });
-}
-
-/**
- * Create a future Scheduled Module and refresh its parent Course detail.
- *
- * @param {string} courseId Parent Course identity.
- * @returns {object} TanStack Module-creation mutation state.
- */
-export function useCreateModule(courseId) {
-  return useCourseStructureMutation(courseId, "modules");
-}
-
-/**
- * Update complete descriptive fields for one retained Module.
- *
- * @param {string} courseId Parent Course identity.
- * @param {string} moduleId Stable Module identity.
- * @returns {object} TanStack Module-detail mutation state.
- */
-export function useUpdateModuleDetails(courseId, moduleId) {
-  return useModuleManagementMutation({
-    courseId,
-    path: `/api/admin/courses/${courseId}/modules/${moduleId}`,
-  });
-}
-
-/**
- * Replace the future schedule of one editable Scheduled Module.
- *
- * @param {string} courseId Parent Course identity.
- * @param {string} moduleId Stable Module identity.
- * @returns {object} TanStack Module-schedule mutation state.
- */
-export function useRescheduleModule(courseId, moduleId) {
-  return useModuleManagementMutation({
-    courseId,
-    path: `/api/admin/courses/${courseId}/modules/${moduleId}/schedule`,
-  });
-}
-
-/**
- * Terminally cancel one eligible Scheduled Module.
- *
- * @param {string} courseId Parent Course identity.
- * @param {string} moduleId Stable Module identity.
- * @returns {object} TanStack Module cancellation mutation state.
- */
-export function useCancelModule(courseId, moduleId) {
-  return useModuleManagementMutation({
-    courseId,
-    method: "POST",
-    path: `/api/admin/courses/${courseId}/modules/${moduleId}/cancellation`,
-  });
-}
-
-/**
- * Permanently delete one unreferenced Module.
- *
- * @param {string} courseId Parent Course identity.
- * @param {string} moduleId Stable Module identity.
- * @param {(result: object) => void} onDeleted Parent-owned success callback.
- * @returns {object} TanStack Module deletion mutation state.
- */
-export function useDeleteModule(courseId, moduleId, onDeleted) {
-  return useModuleManagementMutation({
-    courseId,
-    method: "DELETE",
-    onDeleted,
-    path: `/api/admin/courses/${courseId}/modules/${moduleId}`,
-  });
-}
-
-/**
- * Create one nested Course-structure mutation with detail reconciliation.
- *
- * @param {string} courseId Parent Course identity.
- * @param {"groups" | "modules"} resource Nested resource name.
- * @returns {object} TanStack mutation state.
- */
-function useCourseStructureMutation(courseId, resource) {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: (input) =>
-      requestJson(`/api/admin/courses/${courseId}/${resource}`, {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify(input),
-      }),
-    async onSuccess() {
-      await queryClient.invalidateQueries({
-        queryKey: ["course-structure", "course", courseId],
-      });
-    },
-    async onError(error) {
-      if (error.status === 409) {
-        await queryClient.invalidateQueries({
-          queryKey: ["course-structure", "course", courseId],
-        });
-      }
-    },
-  });
-}
-
-/**
- * Mutate one Module and reconcile Admin and Participant Course views.
- *
- * @param {object} input Module request properties.
- * @returns {object} TanStack Module management mutation state.
- */
-function useModuleManagementMutation(input) {
-  const method = input.method ?? "PUT";
-  const queryClient = useQueryClient();
-  const detailQueryKey = ["course-structure", "course", input.courseId];
-
-  return useMutation({
-    mutationFn: (body) =>
-      requestJson(input.path, {
-        method,
-        headers: body === undefined ? {} : { "content-type": "application/json" },
-        body: body === undefined ? undefined : JSON.stringify(body),
-      }),
-    async onSuccess(result) {
-      await Promise.all([
-        queryClient.invalidateQueries({ queryKey: detailQueryKey }),
-        queryClient.invalidateQueries({
-          queryKey: ["course-access", "participant-course", input.courseId],
-        }),
-      ]);
-      input.onDeleted?.(result);
     },
     async onError(error) {
       if (error.status === 409) {

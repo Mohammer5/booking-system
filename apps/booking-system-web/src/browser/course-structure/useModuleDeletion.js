@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 
-import { useDeleteModule } from "./useCourses.js";
+import { useDeleteModule } from "./useModules.js";
 
 /** @returns {object} Module deletion mutation, Dialog, and focus state. */
 export function useModuleDeletion(courseId, module, onDeleted) {

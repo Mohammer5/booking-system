@@ -23,7 +23,7 @@ test("cancels a selected Module and retains Participant history", async ({
   expect(selection.status()).toBe(201);
 
   await ensureActiveAdmin(page);
-  await page.goto(`/admin/courses/${course.id}`);
+  await page.goto(`/admin/courses/${course.id}/modules/${module.id}`);
   let card = moduleCard(page, module.id);
   const cancelAction = card.getByRole("button", { name: "Modul absagen" });
 
@@ -98,8 +98,12 @@ test("handles in-progress, exact-end, terminal, and technical states", async ({
     const request = route.request();
     const path = new URL(request.url()).pathname;
 
-    if (request.method() === "GET" && path === `/api/admin/courses/${course.id}`) {
-      await fulfillJson(route, 200, { ...course, modules });
+    if (request.method() === "GET" && path.includes("/modules/")) {
+      const moduleId = path.split("/").at(-1);
+      await fulfillJson(route, 200, {
+        course,
+        module: modules.find((item) => item.id === moduleId),
+      });
       return;
     }
 
@@ -132,7 +136,7 @@ test("handles in-progress, exact-end, terminal, and technical states", async ({
 
     await route.continue();
   });
-  await page.goto(`/admin/courses/${course.id}`);
+  await page.goto(`/admin/courses/${course.id}/modules/in-progress`);
 
   let inProgress = moduleCard(page, "in-progress");
   await inProgress.getByRole("button", { name: "Modul absagen" }).click();
@@ -145,6 +149,7 @@ test("handles in-progress, exact-end, terminal, and technical states", async ({
   ).toBeFocused();
   await expect(inProgress.locator(".MuiChip-label")).toHaveText("Abgesagt");
 
+  await page.goto(`/admin/courses/${course.id}/modules/exact-end`);
   const exactEnd = moduleCard(page, "exact-end");
   await exactEnd.getByRole("button", { name: "Modul absagen" }).click();
   let dialog = page.getByRole("dialog", { name: "Modul endgültig absagen?" });
@@ -156,13 +161,15 @@ test("handles in-progress, exact-end, terminal, and technical states", async ({
   await expect(exactEnd).toContainText("Die Absagefrist ist abgelaufen");
 
   for (const moduleId of ["ended", "cancelled"]) {
+    await page.goto(`/admin/courses/${course.id}/modules/${moduleId}`);
     const card = moduleCard(page, moduleId);
     await expect(card.getByRole("button", { name: "Modul absagen" })).toHaveCount(0);
+    if (moduleId === "cancelled") {
+      await expect(card).toContainText("Das Modul ist endgültig abgesagt");
+    }
   }
-  await expect(moduleCard(page, "cancelled")).toContainText(
-    "Das Modul ist endgültig abgesagt",
-  );
 
+  await page.goto(`/admin/courses/${course.id}/modules/technical`);
   const technical = moduleCard(page, "technical");
   const technicalAction = technical.getByRole("button", { name: "Modul absagen" });
   await technicalAction.focus();
@@ -176,6 +183,7 @@ test("handles in-progress, exact-end, terminal, and technical states", async ({
   await expectVisibleKeyboardFocus(technicalAction);
   await expectAccessibleLayout(page);
 
+  await page.goto(`/admin/courses/${course.id}/modules/in-progress`);
   await page.reload();
   inProgress = moduleCard(page, "in-progress");
   await expect(inProgress.locator(".MuiChip-label")).toHaveText("Abgesagt");

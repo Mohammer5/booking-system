@@ -3,7 +3,12 @@ import { Alert, Button, Stack, TextField, Typography } from "@mui/material";
 import { useModuleDetailsEditing } from "./useModuleDetailsEditing.js";
 
 /** @returns {import("react").ReactElement} Complete Module descriptive form. */
-export function ModuleDetailsForm({ courseId, module, translate }) {
+export function ModuleDetailsForm({
+  courseId,
+  headingComponent = "h4",
+  module,
+  translate,
+}) {
   const state = useModuleDetailsEditing(courseId, module, translate);
   const errors = state.form.formState.errors;
   const titleId = `module-${module.id}-details-title`;
@@ -17,7 +22,7 @@ export function ModuleDetailsForm({ courseId, module, translate }) {
       onSubmit={state.submit}
       spacing={2}
     >
-      <Typography component="h4" id={titleId} variant="h4">
+      <Typography component={headingComponent} id={titleId} variant="h4">
         {translate("courseStructure.module.editDetailsTitle")}
       </Typography>
       <TextField

@@ -21,8 +21,8 @@ import {
 import { CourseInviteSection } from "../course-access/index.js";
 import { CourseArchivalControl } from "./CourseArchivalControl.jsx";
 import { CourseEditSection } from "./CourseEditSection.jsx";
+import { CourseRelationshipLinks } from "./CourseRelationshipLinks.jsx";
 import { useCourseDetail } from "./useCourses.js";
-import { ModuleCreationSection } from "./ModuleCreationSection.jsx";
 
 /**
  * Present one refresh-safe Course detail route.
@@ -224,35 +224,6 @@ function CourseDetails(props) {
           {translate("courseStructure.archival.readOnly")}
         </Alert>
       )}
-      <ModuleCreationSection course={course} />
-    </Stack>
-  );
-}
-
-/** @returns {import("react").ReactElement} Linked child-resource counts. */
-function CourseRelationshipLinks({ course, translate }) {
-  return (
-    <Stack direction={{ xs: "column", sm: "row" }} spacing={1.5}>
-      <Button
-        component={RouterLink}
-        sx={{ alignSelf: "flex-start" }}
-        to={`/admin/courses/${course.id}/participants`}
-        variant="outlined"
-      >
-        {translate("courseAccess.courseParticipants.summary", {
-          count: course.counts.participants,
-        })}
-      </Button>
-      <Button
-        component={RouterLink}
-        sx={{ alignSelf: "flex-start" }}
-        to={`/admin/courses/${course.id}/groups`}
-        variant="outlined"
-      >
-        {translate("courseStructure.group.summary", {
-          count: course.counts.groups,
-        })}
-      </Button>
     </Stack>
   );
 }

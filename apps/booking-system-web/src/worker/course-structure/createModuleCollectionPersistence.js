@@ -7,8 +7,35 @@ import {
 /** @returns {object} Guarded Course Module collection persistence. */
 export function createModuleCollectionPersistence(database) {
   return {
+    findModuleForAdmin: (adminUserId, courseId, moduleId) =>
+      findModuleForAdmin(database, { adminUserId, courseId, moduleId }),
     listModulePage: (adminUserId, courseId, query) =>
       listModulePage(database, { adminUserId, courseId, query }),
+  };
+}
+
+/** @returns {Promise<object>} One atomic guarded parent and Module item read. */
+async function findModuleForAdmin(database, context) {
+  const [adminResult, courseResult, moduleResult] = await database.batch([
+    database.prepare(
+      "select id from admin_users where id = ? and state = 'active'",
+    ).bind(context.adminUserId),
+    courseStatement(database, context.courseId),
+    database.prepare(
+      `select id, course_id, title, description, instructions,
+              starts_at, ends_at, state
+         from modules where course_id = ? and id = ?`,
+    ).bind(context.courseId, context.moduleId),
+  ]);
+
+  if (adminResult.results.length === 0) return { outcome: "admin-not-active" };
+  if (courseResult.results.length === 0) return { outcome: "parent-not-found" };
+  if (moduleResult.results.length === 0) return { outcome: "item-not-found" };
+
+  return {
+    outcome: "found",
+    context: mapCourse(courseResult.results[0]),
+    item: mapModule(moduleResult.results[0]),
   };
 }
 

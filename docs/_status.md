@@ -94,9 +94,10 @@ implemented:
   React `/` Participant Google entry/onboarding/home, `/admin` administration
   flow, Participant directory, nested Course index/create/detail/update routes,
   Participant lifecycle, Course membership and Assignment interaction, and
-  Course editing plus Group/Module creation forms, Group edit/lifecycle/delete
-  cards, separate Module descriptive/schedule forms plus cancellation and
-  deletion Dialogs, terminal Course archival and Archived read-only detail,
+  Course editing plus nested Group and Module collection/create/detail routes,
+  Group edit/lifecycle/delete cards, separate Module descriptive/schedule forms
+  plus cancellation and deletion Dialogs, terminal Course archival and
+  Archived read-only detail,
   and retained selected-Group history, plus the Participant
   `/courses/:courseId`
   detail, explicit Module
@@ -265,18 +266,18 @@ implemented:
   session, and permits later return only through a new Invite/new ordinary
   identity. Historical bootstrap/Admin-Invite attribution, all booking rows,
   and any same-principal Participant remain unchanged;
-- the stable Course detail lists and creates Course-wide Groups with unique
-  normalized Active names and future Scheduled Modules, resolves local minute
-  input through the Course IANA timezone, rejects DST gaps, requires an
-  explicit overlap occurrence, displays definite instants, and creates no
-  Module Selection. It also edits the Course's complete name, description, and
-  timezone, presenting the timezone as permanently read-only after the first
-  successful Module even when no Module remains;
-- the same stable Course detail edits Active or Archived Group name/details,
-  archives only without a future Scheduled-Module Selection, reactivates the
-  retained identity subject to authoritative Active-name uniqueness, and
-  permanently deletes either state only when no retained Selection references
-  it; deletion uses no invented past-reference audit and mutates no related row;
+- stable nested Group and Module collection/create/detail routes own discovery
+  and management. Group detail edits Active or Archived name/details, archives
+  only without a future Scheduled-Module Selection, reactivates subject to
+  authoritative Active-name uniqueness, and permanently deletes only without a
+  retained Selection. Module create resolves local minute input through the
+  Course IANA timezone, rejects DST gaps, requires explicit overlap choices,
+  displays definite instants, and creates no Module Selection; Module detail
+  owns descriptive editing, pre-start rescheduling, cancellation, and guarded
+  deletion;
+- focused Course detail owns Course fields, permanent first-Module timezone
+  lock, lifecycle/Invite actions, and linked retained Participant, Group, and
+  Module counts without loading complete child collections;
 - free MUI Core and Emotion are pinned for browser use; one application theme
   and `CssBaseline` now style the complete `/admin` flow with responsive,
   visible-focus, semantic-status, and non-color-only presentation;
@@ -354,6 +355,6 @@ normalization. The convention, Admin navigation layout, and Worker collection
 contracts plus four top-level browser collections have landed. Course
 Participant collection/detail navigation, compatibility redirects, bounded
 Participant pickers, and broad-overview retirement have also landed. Course
-Group collection/create/detail navigation and embedded-management removal have
-landed. Module management remains the dependency-ordered transitional Course-
-detail surface until its extraction task lands.
+Participant, Group, and Module collection/create/detail navigation, responsive
+URL-owned collections, and embedded-management removal have landed. Focused
+Course-detail consolidation is the next dependency-ready slice.

@@ -4,14 +4,19 @@ import { ModuleScheduleChoice } from "./ModuleScheduleChoice.jsx";
 import { useModuleRescheduling } from "./useModuleRescheduling.js";
 
 /** @returns {import("react").ReactElement} Editable or explicitly locked schedule. */
-export function ModuleScheduleForm({ course, module, translate }) {
+export function ModuleScheduleForm({
+  course,
+  headingComponent = "h4",
+  module,
+  translate,
+}) {
   const state = useModuleRescheduling(course, module, translate);
   const titleId = `module-${module.id}-schedule-title`;
 
   if (!module.isScheduleEditable) {
     return (
       <Stack aria-labelledby={titleId} spacing={2}>
-        <Typography component="h4" id={titleId} variant="h4">
+        <Typography component={headingComponent} id={titleId} variant="h4">
           {translate("courseStructure.module.editScheduleTitle")}
         </Typography>
         <Alert role="status" severity="info">
@@ -24,6 +29,7 @@ export function ModuleScheduleForm({ course, module, translate }) {
   return (
     <ScheduleForm
       course={course}
+      headingComponent={headingComponent}
       module={module}
       state={state}
       titleId={titleId}
@@ -33,7 +39,14 @@ export function ModuleScheduleForm({ course, module, translate }) {
 }
 
 /** @returns {import("react").ReactElement} Future Module schedule form. */
-function ScheduleForm({ course, module, state, titleId, translate }) {
+function ScheduleForm({
+  course,
+  headingComponent,
+  module,
+  state,
+  titleId,
+  translate,
+}) {
   const errors = state.form.formState.errors;
 
   return (
@@ -45,7 +58,7 @@ function ScheduleForm({ course, module, state, titleId, translate }) {
       onSubmit={state.submit}
       spacing={2}
     >
-      <Typography component="h4" id={titleId} variant="h4">
+      <Typography component={headingComponent} id={titleId} variant="h4">
         {translate("courseStructure.module.editScheduleTitle")}
       </Typography>
       <Typography>

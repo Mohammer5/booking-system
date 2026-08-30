@@ -5,7 +5,7 @@ import {
   applyModuleFieldOutcome,
   isModuleFieldOutcome,
 } from "./moduleCreationOutcomes.js";
-import { useRescheduleModule } from "./useCourses.js";
+import { useRescheduleModule } from "./useModules.js";
 
 /** @returns {object} Module schedule form, resolution, and focus state. */
 export function useModuleRescheduling(course, module, translate) {

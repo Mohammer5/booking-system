@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 
-import { useCancelModule } from "./useCourses.js";
+import { useCancelModule } from "./useModules.js";
 
 /** @returns {object} Module cancellation mutation, Dialog, and focus state. */
 export function useModuleCancellation(courseId, moduleId) {

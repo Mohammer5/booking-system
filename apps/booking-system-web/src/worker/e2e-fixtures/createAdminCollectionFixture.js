@@ -27,6 +27,8 @@ export function createAdminCollectionFixture(database) {
       ...Array.from({ length: fixtureCount }, (_, index) =>
         groupStatement(database, index)),
       ...Array.from({ length: fixtureCount }, (_, index) =>
+        moduleStatement(database, index)),
+      ...Array.from({ length: fixtureCount }, (_, index) =>
         adminUserStatement(database, index)),
       ...Array.from({ length: fixtureCount }, (_, index) =>
         inviteStatement(database, index)),
@@ -34,6 +36,27 @@ export function createAdminCollectionFixture(database) {
 
     return new Response(null, { status: 204 });
   };
+}
+
+/** @returns {object} One retained Module on the first seeded Course. */
+function moduleStatement(database, index) {
+  const suffix = fixtureSuffix(index);
+  const startsAt = Date.parse(`2026-08-${String(index + 1).padStart(2, "0")}T08:00:00Z`);
+
+  return database.prepare(
+    `insert into modules
+       (id, course_id, title, description, instructions,
+        starts_at, ends_at, state)
+     values (?, 'collection-course-00', ?, ?, ?, ?, ?, ?)`,
+  ).bind(
+    `collection-module-${suffix}`,
+    `Collection Module ${suffix}`,
+    index === 11 ? "Literal collection module description" : null,
+    index === 10 ? "Collection module instructions" : null,
+    startsAt,
+    startsAt + 3_600_000,
+    index === 11 ? "cancelled" : "scheduled",
+  );
 }
 
 /** @returns {object} One Group on the first seeded Course. */
@@ -95,13 +118,14 @@ function courseStatement(database, index) {
   return database.prepare(
     `insert into courses
        (id, name, description, timezone, state, has_ever_had_module)
-     values (?, ?, ?, ?, ?, 0)`,
+     values (?, ?, ?, ?, ?, ?)`,
   ).bind(
     `collection-course-${suffix}`,
     `Collection Course ${suffix}`,
     index === 11 ? "Literal collection destination" : null,
     index % 2 === 0 ? "Europe/Berlin" : "UTC",
     index === 11 ? "archived" : "active",
+    index === 0 ? 1 : 0,
   );
 }
 

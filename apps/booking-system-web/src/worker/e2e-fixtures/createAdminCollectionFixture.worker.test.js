@@ -34,6 +34,7 @@ describe("non-production Admin collection fixture", () => {
       participants: 12,
       course_assignments: 12,
       groups: 12,
+      modules: 12,
       admin_users: 12,
       admin_invites: 12,
     });
@@ -60,6 +61,7 @@ async function collectionCounts() {
        (select count(*) from participants) as participants,
        (select count(*) from course_assignments) as course_assignments,
        (select count(*) from groups) as groups,
+       (select count(*) from modules) as modules,
        (select count(*) from admin_users) as admin_users,
        (select count(*) from admin_invites) as admin_invites`,
   ).first();

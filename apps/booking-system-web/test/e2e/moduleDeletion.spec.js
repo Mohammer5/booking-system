@@ -31,7 +31,7 @@ test("deletes future and Cancelled Modules while preserving timezone history", a
     `/api/admin/courses/${course.id}/modules/${cancelled.id}/cancellation`,
   );
   expect(cancellation.status()).toBe(200);
-  await page.goto(`/admin/courses/${course.id}`);
+  await page.goto(`/admin/courses/${course.id}/modules/${future.id}`);
 
   let card = moduleCard(page, future.id);
   const futureDelete = card.getByRole("button", { name: "Modul löschen" });
@@ -51,9 +51,10 @@ test("deletes future and Cancelled Modules while preserving timezone history", a
   await dialog.getByRole("button", { name: "Modul endgültig löschen" }).click();
   await expect(deletionSuccess(page, future.title)).toBeFocused();
   await expect(card).toBeHidden();
-  await expect(moduleCard(page, cancelled.id)).toContainText("Abgesagt");
 
+  await page.goto(`/admin/courses/${course.id}/modules/${cancelled.id}`);
   card = moduleCard(page, cancelled.id);
+  await expect(card).toContainText("Abgesagt");
   await card.getByRole("button", { name: "Modul löschen" }).click();
   dialog = page.getByRole("dialog", { name: "Modul endgültig löschen?" });
   await dialog.getByRole("button", { name: "Modul endgültig löschen" }).click();
@@ -64,6 +65,7 @@ test("deletes future and Cancelled Modules while preserving timezone history", a
       hasText: "Für diesen Kurs wurden noch keine Module angelegt.",
     }),
   ).toBeVisible();
+  await page.goto(`/admin/courses/${course.id}`);
   await expect(
     page.getByText(/Kurszeitzone Europe\/Berlin ist dauerhaft gesperrt/),
   ).toBeVisible();
@@ -103,8 +105,18 @@ test("handles ended eligibility and private blocker, stale, and error states", a
     const request = route.request();
     const path = new URL(request.url()).pathname;
 
-    if (request.method() === "GET" && path === `/api/admin/courses/${course.id}`) {
-      await fulfillJson(route, 200, { ...course, modules });
+    if (request.method() === "GET" && path.includes("/modules/")) {
+      const moduleId = path.split("/").at(-1);
+      const module = modules.find((item) => item.id === moduleId);
+
+      if (module === undefined) {
+        await fulfillJson(route, 404, { outcome: "module-not-found" });
+        return;
+      }
+      await fulfillJson(route, 200, {
+        course,
+        module,
+      });
       return;
     }
 
@@ -133,7 +145,7 @@ test("handles ended eligibility and private blocker, stale, and error states", a
 
     await fulfillJson(route, 500, { outcome: "technical-error" });
   });
-  await page.goto(`/admin/courses/${course.id}`);
+  await page.goto(`/admin/courses/${course.id}/modules/ended`);
 
   const ended = moduleCard(page, "ended");
   await expect(ended).toContainText("Der Modulzeitraum ist gesperrt");
@@ -144,6 +156,7 @@ test("handles ended eligibility and private blocker, stale, and error states", a
   await expect(ended).toBeHidden();
 
   for (const moduleId of ["historical", "cancelled-reference"]) {
+    await page.goto(`/admin/courses/${course.id}/modules/${moduleId}`);
     const blocked = moduleCard(page, moduleId);
     const action = blocked.getByRole("button", { name: "Modul löschen" });
     await action.focus();
@@ -161,17 +174,22 @@ test("handles ended eligibility and private blocker, stale, and error states", a
     await expectVisibleKeyboardFocus(action);
   }
 
-  await assertDeletionFailure(page, "stale", "aktuellen Kursstatus");
-  await assertDeletionFailure(page, "technical", "Kursdaten konnten nicht geladen");
+  await assertDeletionFailure(page, course.id, "stale", "aktuellen Kursstatus");
+  await assertDeletionFailure(
+    page,
+    course.id,
+    "technical",
+    "Kursdaten konnten nicht geladen",
+  );
   await expectAccessibleLayout(page);
   await page.reload();
-  await expect(moduleCard(page, "ended")).toHaveCount(0);
   await page.setViewportSize(narrowViewport);
   await expectAccessibleLayout(page);
 });
 
 /** @returns {Promise<void>} Confirm and assert one focused deletion failure. */
-async function assertDeletionFailure(page, moduleId, message) {
+async function assertDeletionFailure(page, courseId, moduleId, message) {
+  await page.goto(`/admin/courses/${courseId}/modules/${moduleId}`);
   const card = moduleCard(page, moduleId);
   await card.getByRole("button", { name: "Modul löschen" }).click();
   const dialog = page.getByRole("dialog", { name: "Modul endgültig löschen?" });

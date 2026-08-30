@@ -181,9 +181,10 @@
   maintenance plus the one current Disable/Re-enable action for Active and
   Disabled targets. The Participant gate presents a freshly Disabled target
   with safe sign-out and mounts no private Participant view. Stable Course
-  detail owns complete Course editing, its permanent timezone lock, Module
-  create/edit/reschedule/cancel/delete interactions, and terminal Course
-  archival while the remaining Module extraction is in progress. Course
+  detail owns complete Course editing, its permanent timezone lock, linked
+  child-resource counts, and terminal Course archival. Stable nested Module
+  collection/create/detail routes own create/edit/reschedule/cancel/delete
+  interactions and retained read-only history. Course
   membership is independently navigable: the URL-owned Course Participant collection
   renders one server page of retained Assignment/Participant rows as a semantic
   table or narrow card list with exact search, filters, sorting, and pagination.
@@ -377,6 +378,7 @@ The accepted Admin collection/detail normalization is tracked by
 Worker collection contracts, and four top-level browser collections are
 implemented. Course Participant collection/detail navigation, compatibility
 redirects, bounded Participant pickers, and broad-overview retirement are also
-implemented. Course Group collection/create/detail navigation and embedded-
-management removal have also landed. Module management remains the final
-transitional embedded Course-detail surface until its extraction task lands.
+implemented. Course Participant, Group, and Module collection/create/detail
+navigation, their responsive URL-owned collections, and all embedded-
+management removal have landed. Focused Course-detail consolidation is the
+next dependency-ready slice.
