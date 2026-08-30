@@ -1,7 +1,7 @@
 ---
 id: PLAN-jataz
 title: Implementation plan for Reduce Course detail to data and relationship summaries
-status: draft
+status: done
 implements:
 - TASK-x8dax
 related: []
@@ -46,16 +46,16 @@ No product/domain lifecycle or Participant-facing detail changes.
 
 ### Phase 1: Focused representation
 
-- [ ] Finalize Course detail response counts/capability.
-- [ ] Render Course fields/lifecycle/invite plus linked summaries/breadcrumbs.
+- [x] Finalize Course detail response counts/capability.
+- [x] Render Course fields/lifecycle/invite plus linked summaries/breadcrumbs.
 
 **Checkpoint**: Course detail transfers and renders only parent-owned data/counts.
 
 ### Phase 2: Cleanup and equality evidence
 
-- [ ] Remove embedded Assignment/Group/Module/broad overview ownership.
-- [ ] Remove dead code/translations/hooks while retaining nested-route reuse.
-- [ ] Prove lifecycle-inclusive counts and unfiltered total equality.
+- [x] Remove embedded Assignment/Group/Module/broad overview ownership.
+- [x] Remove dead code/translations/hooks while retaining nested-route reuse.
+- [x] Prove lifecycle-inclusive counts and unfiltered total equality.
 
 **Checkpoint**: count equality passes and no embedded child management remains.
 

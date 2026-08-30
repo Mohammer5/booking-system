@@ -1,7 +1,7 @@
 ---
 id: TASK-x8dax
 title: Reduce Course detail to data and relationship summaries
-status: draft
+status: done
 priority: high
 type: enhancement
 effort: large
@@ -12,7 +12,7 @@ depends_on:
 blocks:
 - TASK-pi3jc
 related: []
-assignee: null
+assignee: gerkules
 tags:
 - browser
 - worker
@@ -38,18 +38,18 @@ components/imports, and focused Worker/browser tests.
 
 ## Acceptance Criteria
 
-- [ ] Course detail returns `counts.participants/groups/modules` with all
+- [x] Course detail returns `counts.participants/groups/modules` with all
       required retained lifecycle states and authoritative archival availability,
       but no Group or Module arrays.
-- [ ] Browser Course detail owns only Course data/edit/lifecycle, timezone lock,
+- [x] Browser Course detail owns only Course data/edit/lifecycle, timezone lock,
       current Invite, and three accessible linked count summaries.
-- [ ] Each unfiltered nested collection total equals its Course-detail count,
+- [x] Each unfiltered nested collection total equals its Course-detail count,
       including Archived Courses.
-- [ ] Assignment collections, Group/Module lists and mutations, and the broad
+- [x] Assignment collections, Group/Module lists and mutations, and the broad
       participation overview are absent from Course detail.
-- [ ] Course mutations invalidate every affected Course collection page and
+- [x] Course mutations invalidate every affected Course collection page and
       detail; nested mutations refresh the corresponding count.
-- [ ] Dead imports/components/hooks/endpoints/translations are removed when no
+- [x] Dead imports/components/hooks/endpoints/translations are removed when no
       longer owned anywhere, without removing reusable forms/dialogs.
 
 ## Testing Requirements

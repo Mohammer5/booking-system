@@ -357,4 +357,6 @@ Participant collection/detail navigation, compatibility redirects, bounded
 Participant pickers, and broad-overview retirement have also landed. Course
 Participant, Group, and Module collection/create/detail navigation, responsive
 URL-owned collections, and embedded-management removal have landed. Focused
-Course-detail consolidation is the next dependency-ready slice.
+Course detail now owns only Course data/lifecycle/Invite actions, a semantic
+breadcrumb, and three linked retained counts whose unfiltered totals are
+verified equal.

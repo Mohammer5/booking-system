@@ -143,7 +143,8 @@ test("creates and revisits a Course through the German Admin journey", async ({
   await expect(detailHeading).toBeVisible();
   await expect(page.getByRole("link", { name: "1 Gruppen" })).toBeVisible();
   await expect(page.getByRole("link", { name: "1 Module" })).toBeVisible();
-  await page.getByRole("link", { name: "Zur Kursübersicht" }).click();
+  await page.getByRole("navigation", { name: "Kurspfad" })
+    .getByRole("link", { name: "Kurse" }).click();
   await expect(page.getByRole("list", { name: "Kursliste" })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Kurs Alpha" })).toBeVisible();
   await expectAccessibleLayout(page);

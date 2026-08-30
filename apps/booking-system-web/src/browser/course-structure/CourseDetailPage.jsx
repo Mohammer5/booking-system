@@ -1,7 +1,6 @@
 import {
   Alert,
   Box,
-  Button,
   Chip,
   CircularProgress,
   Paper,
@@ -12,13 +11,13 @@ import {
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
-  Link as RouterLink,
   useLocation,
   useNavigate,
   useParams,
 } from "react-router";
 
 import { CourseInviteSection } from "../course-access/index.js";
+import { AdminCourseBreadcrumbs } from "./AdminCourseBreadcrumbs.jsx";
 import { CourseArchivalControl } from "./CourseArchivalControl.jsx";
 import { CourseEditSection } from "./CourseEditSection.jsx";
 import { CourseRelationshipLinks } from "./CourseRelationshipLinks.jsx";
@@ -109,13 +108,6 @@ function CourseDetailSurface(props) {
       }}
     >
       <Stack component="section" spacing={3}>
-        <Button
-          component={RouterLink}
-          sx={{ alignSelf: "flex-start" }}
-          to="/admin/courses"
-        >
-          {props.translate("courseStructure.navigation.toIndex")}
-        </Button>
         <CourseDetailState {...props} />
       </Stack>
     </Paper>
@@ -192,6 +184,7 @@ function CourseDetails(props) {
       component="article"
       spacing={3}
     >
+      <AdminCourseBreadcrumbs course={course} />
       <CourseHeading
         course={course}
         headingRef={headingRef}
