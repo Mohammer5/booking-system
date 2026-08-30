@@ -1,5 +1,9 @@
 export const courseStructureTranslations = {
   courseStructure: {
+    breadcrumbs: {
+      label: "Kurspfad",
+      courses: "Kurse",
+    },
     navigation: {
       toAdministration: "Zur Administration",
       toIndex: "Zur Kursübersicht",

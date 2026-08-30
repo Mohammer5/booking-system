@@ -12,10 +12,6 @@ export function matchAdministrativeParticipationRoute(pathname) {
     return null;
   }
 
-  if (segments.length === 2) {
-    return { kind: "overview", courseId: segments[0] };
-  }
-
   if (segments.length === 3 && segments[2].length > 0) {
     return {
       kind: "participant",
@@ -36,16 +32,6 @@ export function matchAdministrativeParticipationRoute(pathname) {
         moduleId: segments[4],
       }
     : null;
-}
-
-/** @returns {object} Narrow Admin Course-participation response. */
-export function toAdministrativeParticipationResponse(result) {
-  return {
-    course: toCourseResponse(result.course),
-    groups: result.groups.map(toGroupResponse),
-    modules: result.modules.map(toModuleResponse),
-    participations: result.participations.map(toParticipationResponse),
-  };
 }
 
 /** @returns {object} Narrow target Participant participation response. */

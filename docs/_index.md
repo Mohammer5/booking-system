@@ -26,7 +26,7 @@ This repository uses an indexed global documentation system.
   registration/profile/lifecycle/Assignment-lifecycle/assigned-Course-access/
   Module-Selection/shared-Course-Invite-management/Join/Admin-Invite-
   administration/onboarding/Admin-User-directory/name-maintenance/promotion/
-  lifecycle/administrative-Course-participation-inspection
+  lifecycle/Course-Participant-collection-and-detail
   slices, responsive MUI
   Admin/Participant experience, Google authentication, live tooling, and
   intentionally deferred release surfaces.

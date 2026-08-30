@@ -9,7 +9,7 @@ import {
 } from "@mui/material";
 
 import { AdminAssistedModuleSelectionControl } from "./AdminAssistedModuleSelectionControl.jsx";
-import { InstantValue } from "./AdministrativeCourseStructure.jsx";
+import { InstantValue } from "../course-structure/ModuleSchedule.jsx";
 
 /** @returns {import("react").ReactElement} Module state, Selection, and control. */
 export function AdminParticipationModuleCard(props) {

@@ -192,7 +192,7 @@ test("mounts the four-resource Admin layout only for an Active Admin", async ({
   ).toBeVisible();
   await expectResourceSelection(
     page,
-    "/admin/courses/course-id/participation/participant-id",
+    "/admin/courses/course-id/participants/participant-id",
     "Kurse verwalten",
   );
   await expectResourceSelection(

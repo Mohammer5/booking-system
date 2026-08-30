@@ -4,16 +4,6 @@ import { toAdminCollectionRequestSearch } from "../admin-collections/index.js";
 
 const participantDirectoryQueryKey = ["course-access", "participants"];
 
-/** @returns {object} One freshly authorized Admin Course-participation query. */
-export function useAdministrativeCourseParticipation(courseId) {
-  return useQuery({
-    queryKey: ["course-access", "administrative-participation", courseId],
-    queryFn: () =>
-      requestJson(`/api/admin/courses/${courseId}/participation`),
-    retry: false,
-  });
-}
-
 /** @returns {object} One Admin-targeted Participant participation query. */
 export function useAdministrativeParticipantParticipation(
   courseId,
@@ -78,10 +68,13 @@ function useAdministrativeSelectionMutation(options) {
           ),
         }),
         queryClient.invalidateQueries({
-          queryKey: ["course-access", "administrative-participation", courseId],
+          queryKey: ["course-access", "assignments", courseId],
         }),
         queryClient.invalidateQueries({
-          queryKey: ["course-access", "assignments", courseId],
+          queryKey: ["course-access", "participant-options", courseId],
+        }),
+        queryClient.invalidateQueries({
+          queryKey: ["course-structure", "course", courseId],
         }),
         queryClient.invalidateQueries({
           queryKey: ["course-access", "participant-courses"],
@@ -98,7 +91,7 @@ function useAdministrativeSelectionMutation(options) {
 function administrativeParticipantParticipationKey(courseId, participantId) {
   return [
     "course-access",
-    "administrative-participation",
+    "course-participant",
     courseId,
     participantId,
   ];
@@ -109,7 +102,7 @@ function administrativeParticipantParticipationKey(courseId, participantId) {
  *
  * @returns {object} TanStack Participant-directory query state.
  */
-export function useParticipantDirectory(collectionState = defaultParticipantState) {
+export function useParticipantDirectory(collectionState) {
   return useQuery({
     queryKey: [...participantDirectoryQueryKey, collectionState],
     queryFn: () => requestJson(
@@ -120,14 +113,20 @@ export function useParticipantDirectory(collectionState = defaultParticipantStat
   });
 }
 
-const defaultParticipantState = Object.freeze({
-  page: 1,
-  pageSize: 25,
-  sortField: "name",
-  sortDirection: "asc",
-  q: undefined,
-  filters: Object.freeze({ state: undefined }),
-});
+/** @returns {object} Bounded server-searched Course Participant options. */
+export function useCourseParticipantOptions(courseId, q) {
+  const search = new URLSearchParams();
+
+  if (q !== undefined) search.set("q", q);
+
+  return useQuery({
+    queryKey: ["course-access", "participant-options", courseId, q],
+    queryFn: () => requestJson(
+      `/api/admin/courses/${courseId}/participant-options?${search}`,
+    ),
+    retry: false,
+  });
+}
 
 /** @returns {object} One freshly authorized Admin Participant detail query. */
 export function useParticipantDetail(participantId) {
@@ -165,6 +164,15 @@ export function useUpdateParticipantProfileAsAdmin(participantId) {
         queryClient.invalidateQueries({
           queryKey: ["course-access", "participant", participantId],
         }),
+        queryClient.invalidateQueries({
+          queryKey: ["course-access", "assignments"],
+        }),
+        queryClient.invalidateQueries({
+          queryKey: ["course-access", "course-participant"],
+        }),
+        queryClient.invalidateQueries({
+          queryKey: ["course-access", "participant-options"],
+        }),
       ]);
     },
   });
@@ -200,6 +208,12 @@ function useParticipantLifecycleMutation(participantId, action) {
           queryKey: ["course-access", "assignments"],
         }),
         queryClient.invalidateQueries({
+          queryKey: ["course-access", "course-participant"],
+        }),
+        queryClient.invalidateQueries({
+          queryKey: ["course-access", "participant-options"],
+        }),
+        queryClient.invalidateQueries({
           queryKey: ["course-access", "current-participant"],
         }),
         queryClient.invalidateQueries({
@@ -219,11 +233,15 @@ function useParticipantLifecycleMutation(participantId, action) {
  * @param {string} courseId Stable Course identity.
  * @returns {object} TanStack Course-membership query state.
  */
-export function useCourseAssignments(courseId) {
+export function useCourseAssignments(courseId, collectionState) {
   return useQuery({
-    queryKey: ["course-access", "assignments", courseId],
-    queryFn: () =>
-      requestJson(`/api/admin/courses/${courseId}/assignments`),
+    queryKey: ["course-access", "assignments", courseId, collectionState],
+    queryFn: () => requestJson(
+      `/api/admin/courses/${courseId}/assignments?${
+        toAdminCollectionRequestSearch(collectionState)
+      }`,
+    ),
+    placeholderData: (previousData) => previousData,
     retry: false,
   });
 }
@@ -239,8 +257,8 @@ export function useAssignParticipant(courseId) {
 
   return useMutation({
     mutationFn: (participantId) => assignParticipant(courseId, participantId),
-    async onSuccess() {
-      await invalidateMembershipQueries(queryClient, courseId);
+    async onSuccess(_result, participantId) {
+      await invalidateMembershipQueries(queryClient, courseId, participantId);
     },
   });
 }
@@ -287,10 +305,21 @@ async function assignParticipant(courseId, participantId) {
 }
 
 /** @returns {Promise<void>} Refresh membership and any same-session private reads. */
-async function invalidateMembershipQueries(queryClient, courseId) {
+async function invalidateMembershipQueries(queryClient, courseId, participantId) {
   await Promise.all([
     queryClient.invalidateQueries({
       queryKey: ["course-access", "assignments", courseId],
+    }),
+    queryClient.invalidateQueries({
+      queryKey: ["course-access", "participant-options", courseId],
+    }),
+    queryClient.invalidateQueries({
+      queryKey: participantId === undefined
+        ? ["course-access", "course-participant", courseId]
+        : administrativeParticipantParticipationKey(courseId, participantId),
+    }),
+    queryClient.invalidateQueries({
+      queryKey: ["course-structure", "course", courseId],
     }),
     queryClient.invalidateQueries({
       queryKey: ["course-access", "participant-courses"],

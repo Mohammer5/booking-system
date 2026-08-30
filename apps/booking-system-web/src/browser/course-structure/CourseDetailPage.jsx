@@ -18,10 +18,7 @@ import {
   useParams,
 } from "react-router";
 
-import {
-  CourseInviteSection,
-  CourseMembershipSection,
-} from "../course-access/index.js";
+import { CourseInviteSection } from "../course-access/index.js";
 import { CourseArchivalControl } from "./CourseArchivalControl.jsx";
 import { CourseEditSection } from "./CourseEditSection.jsx";
 import { useCourseDetail } from "./useCourses.js";
@@ -205,10 +202,12 @@ function CourseDetails(props) {
       <Button
         component={RouterLink}
         sx={{ alignSelf: "flex-start" }}
-        to={`/admin/courses/${course.id}/participation`}
+        to={`/admin/courses/${course.id}/participants`}
         variant="outlined"
       >
-        {translate("courseAccess.adminParticipation.open")}
+        {translate("courseAccess.courseParticipants.summary", {
+          count: course.counts.participants,
+        })}
       </Button>
       {props.archivalResult?.course.id === course.id ? (
         <Alert
@@ -235,7 +234,6 @@ function CourseDetails(props) {
           {translate("courseStructure.archival.readOnly")}
         </Alert>
       )}
-      <CourseMembershipSection course={course} />
       <GroupCreationSection course={course} />
       <ModuleCreationSection course={course} />
     </Stack>

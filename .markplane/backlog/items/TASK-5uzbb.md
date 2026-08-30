@@ -1,7 +1,7 @@
 ---
 id: TASK-5uzbb
 title: Extract Course Participant collection and detail navigation
-status: draft
+status: done
 priority: high
 type: feature
 effort: large
@@ -12,7 +12,7 @@ depends_on:
 blocks:
 - TASK-g9tdt
 related: []
-assignee: null
+assignee: gerkules
 tags:
 - browser
 - worker
@@ -38,21 +38,21 @@ invalidation, compatibility redirects, and Worker/Playwright tests.
 
 ## Acceptance Criteria
 
-- [ ] `/admin/courses/:courseId/participants` paginates retained Active/Revoked
+- [x] `/admin/courses/:courseId/participants` paginates retained Active/Revoked
       Assignments with Participant/global and Assignment state, exact filters,
       sorting, actions, parent context, and Active/Archived rules.
-- [ ] Course Participant detail consolidates identity/email/global state,
+- [x] Course Participant detail consolidates identity/email/global state,
       Assignment state/absence and lifecycle actions, historical selections,
       and Admin-assisted Selection with server-derived availability/refusals.
-- [ ] Active Course assignment/reactivation/revocation and Archived Course
+- [x] Active Course assignment/reactivation/revocation and Archived Course
       revocation-only rules remain authoritative; Archived Selection mutation is
       absent.
-- [ ] Direct Assignment and assisted-target dialogs use an accessible bounded
+- [x] Direct Assignment and assisted-target dialogs use an accessible bounded
       server-searched picker and can discover Participants beyond the first
       global-directory page.
-- [ ] Old `/participation` browser URLs redirect with replace navigation; no API
+- [x] Old `/participation` browser URLs redirect with replace navigation; no API
       alias is added solely for browser naming.
-- [ ] The broad overview no longer transfers complete unrelated Course Groups
+- [x] The broad overview no longer transfers complete unrelated Course Groups
       and Modules for the collection route.
 
 ## Testing Requirements

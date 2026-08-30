@@ -4,21 +4,17 @@ import { expect, test } from "@playwright/test";
 const desktopViewport = { width: 1280, height: 900 };
 const narrowViewport = { width: 360, height: 800 };
 
-test("opens, refreshes, archives, and safely refuses a real Course participation view", async ({
+test("refreshes, archives, and safely refuses a real Course Participant collection", async ({
   page,
 }) => {
   await page.setViewportSize(desktopViewport);
   await ensureActiveAdmin(page);
   const course = await createCourse(page, "Leere Kursteilnahme");
 
-  await page.goto(`/admin/courses/${course.id}`);
-  const open = page.getByRole("link", { name: "Kursteilnahme ansehen" });
-
-  await open.focus();
-  await expectVisibleKeyboardFocus(open);
-  await page.keyboard.press("Enter");
-  await expect(page).toHaveURL(`/admin/courses/${course.id}/participation`);
-  await expect(page.getByRole("heading", { level: 1, name: course.name })).toBeVisible();
+  await page.goto(`/admin/courses/${course.id}/participants`);
+  await expect(page).toHaveURL(`/admin/courses/${course.id}/participants`);
+  await expect(page.getByRole("heading", { level: 1, name: "Teilnehmende" }))
+    .toBeVisible();
   await expectEmptyParticipation(page);
   await expectAccessibleLayout(page);
 
@@ -28,7 +24,9 @@ test("opens, refreshes, archives, and safely refuses a real Course participation
   await expect(page).toHaveURL(stableURL);
   await expectEmptyParticipation(page);
 
-  const path = `**/api/admin/courses/${course.id}/participation`;
+  const path = new RegExp(
+    `/api/admin/courses/${course.id}/assignments(?:\\?.*)?$`,
+  );
 
   await page.route(path, (route) =>
     fulfillJson(route, 500, { outcome: "technical-error" }),
@@ -36,19 +34,18 @@ test("opens, refreshes, archives, and safely refuses a real Course participation
   await page.reload();
   await expect(
     page.getByRole("alert").filter({
-      hasText: "Die Kursteilnahme konnte nicht geladen werden.",
+      hasText: "Die Teilnahmedaten konnten nicht geladen oder gespeichert werden.",
     }),
   ).toBeFocused();
-  await expect(page.getByRole("link", { name: "Zurück zum Kurs" })).toBeVisible();
 
   await page.unroute(path);
   await page.route(path, (route) =>
-    fulfillJson(route, 404, { outcome: "participation-unavailable" }),
+    fulfillJson(route, 404, { outcome: "course-not-found" }),
   );
   await page.reload();
   await expect(
     page.getByRole("alert").filter({
-      hasText: "Die Kursteilnahme ist für dieses Administrationskonto",
+      hasText: "Die Teilnahmeverwaltung ist für dieses Administrationskonto",
     }),
   ).toBeFocused();
   await page.unroute(path);
@@ -59,8 +56,8 @@ test("opens, refreshes, archives, and safely refuses a real Course participation
 
   expect(archive.status()).toBe(200);
   await page.reload();
-  await expect(page.getByText(/Dieser Kurs ist archiviert/)).toBeVisible();
-  await expect(page.getByText("Archiviert", { exact: true })).toBeVisible();
+  await expect(page.getByText(/Der archivierte Kurs ist schreibgeschützt/))
+    .toBeVisible();
   await expectEmptyParticipation(page);
   await page.setViewportSize(narrowViewport);
   await expectAccessibleLayout(page);
@@ -88,7 +85,7 @@ test("manages a real assisted Selection across membership and lifecycle states",
   );
   const crossGroup = await crossGroupResponse.json();
   const detailPath =
-    `/admin/courses/${setup.course.id}/participation/${participant.id}`;
+    `/admin/courses/${setup.course.id}/participants/${participant.id}`;
   const selectionApi =
     `/api/admin/courses/${setup.course.id}/participation/${participant.id}/modules/${setup.module.id}/selection`;
 
@@ -105,7 +102,7 @@ test("manages a real assisted Selection across membership and lifecycle states",
   expect(afterCrossRefusal.participation.assignment).toBeNull();
   expect(afterCrossRefusal.participation.selections).toEqual([]);
 
-  await page.goto(`/admin/courses/${setup.course.id}/participation`);
+  await page.goto(`/admin/courses/${setup.course.id}/participants`);
   const manageButton = page.getByRole("button", {
     name: "Modulauswahl stellvertretend verwalten",
   });
@@ -115,9 +112,11 @@ test("manages a real assisted Selection across membership and lifecycle states",
   const targetDialog = page.getByRole("dialog", {
     name: "Teilnahmeprofil für Modulauswahl öffnen",
   });
-  const cancelTarget = targetDialog.getByRole("button", { name: "Abbrechen" });
+  const targetSearch = targetDialog.getByLabel(
+    "Teilnahmeprofile nach Name oder E-Mail durchsuchen",
+  );
 
-  await expect(cancelTarget).toBeFocused();
+  await expect(targetSearch).toBeFocused();
   await page.keyboard.press("Escape");
   await expect(targetDialog).toBeHidden();
   await expectVisibleKeyboardFocus(manageButton);
@@ -273,7 +272,7 @@ test("presents exact-deadline locks and focused stale and technical refusals", a
     );
   });
   await page.goto(
-    "/admin/courses/course-assisted-bounded/participation/participant-assisted-bounded",
+    "/admin/courses/course-assisted-bounded/participants/participant-assisted-bounded",
   );
 
   const exactModule = moduleItem(page, "Modul am exakten Beginn");
@@ -336,21 +335,24 @@ test("presents every lifecycle in responsive overview and direct Participant det
   await page.setViewportSize(desktopViewport);
   await ensureActiveAdmin(page);
   const model = lifecycleModel();
-  const path = `**/api/admin/courses/${model.course.id}/participation`;
+  const collectionPath = new RegExp(
+    `/api/admin/courses/${model.course.id}/assignments(?:\\?.*)?$`,
+  );
+  const detailApi = `**/api/admin/courses/${model.course.id}/participation`;
   let releaseRead;
   const readGate = new Promise((resolve) => {
     releaseRead = resolve;
   });
   let isFirstRead = true;
 
-  await page.route(path, async (route) => {
+  await page.route(collectionPath, async (route) => {
     if (isFirstRead) {
       isFirstRead = false;
       await readGate;
     }
-    await fulfillJson(route, 200, model);
+    await fulfillJson(route, 200, assignmentCollectionModel(model));
   });
-  await page.route(`${path}/*`, async (route) => {
+  await page.route(`${detailApi}/*`, async (route) => {
     const participantId = new URL(route.request().url()).pathname.split("/").at(-1);
     const detail = participantDetailModel(model, participantId);
 
@@ -361,38 +363,34 @@ test("presents every lifecycle in responsive overview and direct Participant det
     );
   });
   const navigation = page.goto(
-    `/admin/courses/${model.course.id}/participation`,
+    `/admin/courses/${model.course.id}/participants`,
   );
   await expect(
-    page.getByRole("status").filter({ hasText: "Kursteilnahme wird geladen" }),
+    page.getByRole("status").filter({
+      hasText: "Teilnehmende des Kurses werden geladen",
+    }),
   ).toBeVisible();
   releaseRead();
   await navigation;
 
   const table = page.getByRole("table", {
-    name: "Kursteilnahme dieses Kurses",
+    name: "Teilnehmende und Kurszuordnungen dieses Kurses",
   });
 
   await expect(table).toBeVisible();
   await expect(table.getByRole("row")).toHaveCount(4);
   await expect(table).toContainText("Teilnahmeprofil: Deaktiviert");
   await expect(table).toContainText("Kurszuordnung: Widerrufen");
-  await expect(page.getByRole("heading", { name: "Aktive Gruppe" })).toBeVisible();
-  await expect(page.getByRole("heading", { name: "Archivierte Gruppe" })).toBeVisible();
-  await expect(page.getByText("Gruppenstatus: Archiviert")).toBeVisible();
-  await expect(page.getByRole("heading", { name: "Abgesagtes Modul" })).toBeVisible();
-  await expect(page.getByText("Modulstatus: Abgesagt")).toBeVisible();
-  await expect(page.getByRole("button", { name: /zuordnen|auswahl speichern/i })).toHaveCount(0);
   await expectAccessibleLayout(page);
 
   const activeRow = table.getByRole("row").filter({ hasText: "Aktive Person" });
-  const detailLink = activeRow.getByRole("link", { name: "Teilnahme ansehen" });
+  const detailLink = activeRow.getByRole("link", { name: "Teilnahme öffnen" });
 
   await detailLink.focus();
   await expectVisibleKeyboardFocus(detailLink);
   await page.keyboard.press("Enter");
   await expect(page).toHaveURL(
-    `/admin/courses/${model.course.id}/participation/participant-active`,
+    `/admin/courses/${model.course.id}/participants/participant-active`,
   );
   await expect(page.getByRole("heading", { name: "Teilnahme von Aktive Person" })).toBeVisible();
   await expect(moduleItem(page, "Beendetes Modul")).toContainText(
@@ -418,14 +416,14 @@ test("presents every lifecycle in responsive overview and direct Participant det
   await expect(page.getByRole("heading", { name: "Teilnahme von Aktive Person" })).toBeVisible();
 
   await page.goto(
-    `/admin/courses/${model.course.id}/participation/participant-disabled`,
+    `/admin/courses/${model.course.id}/participants/participant-disabled`,
   );
   await expect(page.getByText("Teilnahmeprofil: Deaktiviert")).toBeVisible();
   await expect(moduleItem(page, "Laufendes Modul")).toContainText(
     "Auswahlstatus: Historische Teilnahme",
   );
   await page.goto(
-    `/admin/courses/${model.course.id}/participation/participant-revoked`,
+    `/admin/courses/${model.course.id}/participants/participant-revoked`,
   );
   await expect(page.getByText("Kurszuordnung: Widerrufen")).toBeVisible();
   await expect(moduleItem(page, "Laufendes Modul")).toContainText(
@@ -433,9 +431,12 @@ test("presents every lifecycle in responsive overview and direct Participant det
   );
 
   await page.setViewportSize(narrowViewport);
-  await page.goto(`/admin/courses/${model.course.id}/participation`);
-  await expect(page.getByRole("table", { name: "Kursteilnahme dieses Kurses" })).toBeHidden();
-  await expect(page.getByRole("list", { name: "Kursteilnahme dieses Kurses" })).toBeVisible();
+  await page.goto(`/admin/courses/${model.course.id}/participants`);
+  await expect(page.getByRole("table", {
+    name: "Teilnehmende und Kurszuordnungen dieses Kurses",
+  })).toHaveCount(0);
+  await expect(page.getByRole("list", { name: "Teilnehmende dieses Kurses" }))
+    .toBeVisible();
   await expectAccessibleLayout(page);
 
   model.course.state = "archived";
@@ -446,7 +447,7 @@ test("presents every lifecycle in responsive overview and direct Participant det
     }
   }
   await page.goto(
-    `/admin/courses/${model.course.id}/participation/participant-active`,
+    `/admin/courses/${model.course.id}/participants/participant-active`,
   );
   await expect(page.getByText(/Dieser Kurs ist archiviert/)).toBeVisible();
   await expect(moduleItem(page, "Laufendes Modul")).toContainText(
@@ -455,7 +456,7 @@ test("presents every lifecycle in responsive overview and direct Participant det
   await expectAccessibleLayout(page);
 
   await page.goto(
-    `/admin/courses/${model.course.id}/participation/participant-private`,
+    `/admin/courses/${model.course.id}/participants/participant-private`,
   );
   await expect(
     page.getByRole("alert").filter({
@@ -473,15 +474,11 @@ function moduleItem(page, title) {
     .filter({ has: page.getByRole("heading", { name: title }) });
 }
 
-/** @returns {Promise<void>} Assert all three successful empty regions. */
+/** @returns {Promise<void>} Assert the successful empty Assignment collection. */
 async function expectEmptyParticipation(page) {
-  for (const copy of [
-    "Diesem Kurs wurden noch keine Teilnehmenden zugeordnet.",
-    "Für diesen Kurs sind keine Module vorhanden.",
-    "Für diesen Kurs sind keine Gruppen vorhanden.",
-  ]) {
-    await expect(page.getByRole("status").filter({ hasText: copy })).toBeVisible();
-  }
+  await expect(page.getByRole("status").filter({
+    hasText: "Diesem Kurs wurden noch keine Teilnehmenden zugeordnet.",
+  })).toBeVisible();
 }
 
 /** @returns {Promise<object>} Ensure one fixed Active assisted target. */
@@ -595,6 +592,23 @@ function lifecycleModel() {
         selection("current", "active", "historical", "historical", "revoked"),
       ]),
     ],
+  };
+}
+
+/** @returns {object} Paginated Assignment join for the collection route. */
+function assignmentCollectionModel(model) {
+  return {
+    course: model.course,
+    assignments: model.participations.map(({ assignment, participant }) => ({
+      ...assignment,
+      participant,
+    })),
+    pagination: {
+      page: 1,
+      pageSize: 25,
+      totalItems: model.participations.length,
+      totalPages: 1,
+    },
   };
 }
 

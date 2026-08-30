@@ -151,8 +151,9 @@
   `/admin/participants`, stable
   `/admin/participants/:participantId` detail/edit, and nested
   `/admin/courses`, `/admin/courses/new`, `/admin/courses/:courseId`,
-  `/admin/courses/:courseId/participation`, and stable Course-scoped
-  participation Participant-detail views.
+  `/admin/courses/:courseId/participants`, and stable Course Participant
+  detail views. Legacy browser participation paths replace-redirect to those
+  Participant paths.
   An authoritatively resolved Active Admin now receives a replace redirect from
   `/admin` to `/admin/courses` and an authenticated layout whose named sticky
   desktop navigation contains exactly Courses, Participants, Admin Users, and
@@ -180,16 +181,19 @@
   maintenance plus the one current Disable/Re-enable action for Active and
   Disabled targets. The Participant gate presents a freshly Disabled target
   with safe sign-out and mounts no private Participant view. Stable Course
-  detail owns complete Course editing, its permanent timezone lock, Course
-  membership creation/lifecycle, Group creation/edit/lifecycle/deletion, and
-  Module create/edit/reschedule/cancel/delete interactions and terminal Course
-  archival without incidental routes. Archived detail retains inspection,
-  removes structural/booking controls, and keeps only Active-Assignment
-  revocation actionable.
-  The Admin participation overview composes every retained Assignment/
-  Participant with all Modules and Groups in responsive table/card form; its
-  stable Participant detail presents no/live/historical per-Module Selections
-  and retained Archived selected-Group details without mutation controls.
+  detail owns complete Course editing, its permanent timezone lock, Group
+  creation/edit/lifecycle/deletion, Module create/edit/reschedule/cancel/delete
+  interactions, and terminal Course archival without incidental routes while
+  the remaining nested-structure extraction is in progress. Course membership
+  is independently navigable: the URL-owned Course Participant collection
+  renders one server page of retained Assignment/Participant rows as a semantic
+  table or narrow card list with exact search, filters, sorting, and pagination.
+  Its stable Participant detail owns Assignment lifecycle and presents
+  no/live/historical per-Module Selections with retained Archived selected-
+  Group details. Direct Assignment and assisted Selection target dialogs share
+  a bounded server-search picker, and Archived Courses remain historical and
+  read-only except for accepted Active-Assignment revocation. The former broad
+  all-Course participation overview and its Worker batch read are retired.
   Active Course detail additionally owns the one-current shared Invite URL,
   copy and lifecycle controls. The public Invite route captures a token from a
   URL fragment, removes it from the address bar, replaces it after recognition
@@ -365,7 +369,7 @@ first production release.
 The accepted Admin collection/detail normalization is tracked by
 `EPIC-ruijc`. Its canonical convention, authenticated Admin navigation layout,
 Worker collection contracts, and four top-level browser collections are
-implemented. The current browser inventory above still describes the pre-
-normalization embedded Course detail and broad participation overview until
-the dependent browser tasks replace those surfaces; this is active planned
-work rather than an alternative accepted convention.
+implemented. Course Participant collection/detail navigation, compatibility
+redirects, bounded Participant pickers, and broad-overview retirement are also
+implemented. Group and Module management remain the next transitional embedded
+Course-detail surfaces until their dependency-ordered extraction tasks land.

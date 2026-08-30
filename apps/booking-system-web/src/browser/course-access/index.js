@@ -1,9 +1,8 @@
-export { AdminCourseParticipationDetailPage } from "./AdminCourseParticipationDetailPage.jsx";
-export { AdminCourseParticipationPage } from "./AdminCourseParticipationPage.jsx";
 export { AdminParticipantDetailPage } from "./AdminParticipantDetailPage.jsx";
+export { CourseParticipantCollectionPage } from "./CourseParticipantCollectionPage.jsx";
+export { CourseParticipantDetailPage } from "./CourseParticipantDetailPage.jsx";
 export { CourseInvitePage } from "./CourseInvitePage.jsx";
 export { CourseInviteSection } from "./CourseInviteSection.jsx";
-export { CourseMembershipSection } from "./CourseMembershipSection.jsx";
 export { ParticipantCourseDetailPage } from "./ParticipantCourseDetailPage.jsx";
 export { ParticipantCourseList } from "./ParticipantCourseList.jsx";
 export { ParticipantDirectoryPage } from "./ParticipantDirectoryPage.jsx";

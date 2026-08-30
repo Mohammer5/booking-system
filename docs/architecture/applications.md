@@ -391,12 +391,12 @@ and target scope. Selection `meaning`/`phase` is derived from one captured
 instant rather than stored, and a retained selected Group includes its identity,
 details, and state even when Archived.
 
-The broad overview that transferred every Assignment, Participant, Group,
-Module, and Selection together is not a collection contract. The paginated
-Assignment collection owns Course Participant discovery, while the target
-detail owns one Participant's Assignment lifecycle and Module Selection
-interactions. The separate Participant-facing persistence, routes, and
-representations remain roster- and peer-private.
+The former broad overview that transferred every Assignment, Participant,
+Group, Module, and Selection together is retired. The paginated Assignment
+collection owns Course Participant discovery, while the target detail owns one
+Participant's Assignment lifecycle and Module Selection interactions. The
+separate Participant-facing persistence, routes, and representations remain
+roster- and peer-private.
 
 ### Shared Course Invite HTTP Surface
 

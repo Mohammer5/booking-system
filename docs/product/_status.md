@@ -113,15 +113,16 @@ default. Unknown, inactive, unassigned, Revoked, stale, and cross-Participant
 Course identifiers reveal no Course data. An Active Participant may edit their
 own required name/email, while an Active Admin User may edit an Active or
 Disabled Participant from a stable detail; both preserve identity, lifecycle,
-relationships, provider data, and any same-principal Admin User. Admin-assisted
-Module Selection mutation remains deferred, but an Active Admin User can now
-open a stable
-Course participation overview for an Active or Archived Course and inspect all
-retained Assignments and Participants, Modules, Groups, and retained
-Selections. A stable Course-scoped Participant detail presents no/live/
+relationships, provider data, and any same-principal Admin User. An Active
+Admin User can inspect retained Course Assignments as Course Participants for
+an Active or Archived Course and open one stable Course-scoped Participant
+detail. That detail presents identity, Assignment lifecycle, and no/live/
 historical Selection meaning from the current lifecycle and definite instant,
-including Archived selected-Group details, while the Participant API and
-browser remain roster- and peer-private. An Active Admin User can now create,
+including Archived selected-Group details. For an eligible Active target, the
+Admin may set, change, or remove a Module Selection; the operation may establish
+or reactivate the ordinary Assignment atomically. Bounded private target
+discovery may include an Active Participant without an Assignment, while the
+Participant experience remains roster- and peer-private. An Active Admin User can now create,
 retrieve, copy, disable, re-enable, or permanently replace the one current
 shared Course Invite while its Course is Active. Recognized current and
 predecessor links reveal only Course name plus available/unavailable meaning;

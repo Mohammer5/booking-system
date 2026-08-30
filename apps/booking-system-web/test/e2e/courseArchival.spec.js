@@ -67,7 +67,7 @@ test("archives after cancellation and preserves private history until revocation
   ).toBeFocused();
   await expect(page.getByText("Archiviert", { exact: true }).first()).toBeVisible();
   await expect(page.getByText(/Dieser Kurs ist endgültig archiviert/)).toBeVisible();
-  await expectArchivedAdminActions(page, participant.name);
+  await expectArchivedAdminActions(page);
 
   const staleCourseEdit = await page.request.put(
     `/api/admin/courses/${course.id}`,
@@ -123,11 +123,8 @@ test("archives after cancellation and preserves private history until revocation
 
   await page.context().clearCookies();
   await ensureActiveAdmin(page);
-  await page.goto(`/admin/courses/${course.id}`);
-  const member = membershipCard(page, participant.name);
-  await member
-    .getByRole("button", { name: "Kurszuordnung widerrufen" })
-    .click();
+  await page.goto(`/admin/courses/${course.id}/participants/${participant.id}`);
+  await page.getByRole("button", { name: "Kurszuordnung widerrufen" }).click();
   await page
     .getByRole("dialog", { name: "Kurszuordnung widerrufen?" })
     .getByRole("button", { name: "Zuordnung endgültig widerrufen" })
@@ -137,9 +134,9 @@ test("archives after cancellation and preserves private history until revocation
       hasText: "Die Kurszuordnung wurde widerrufen",
     }),
   ).toBeFocused();
-  await expect(member).toContainText(
-    "Eine widerrufene Zuordnung kann in einem archivierten Kurs nicht reaktiviert werden.",
-  );
+  await expect(page.getByText(
+    "Diese Kurszuordnung ist im archivierten Kurs schreibgeschützt.",
+  )).toBeVisible();
 
   await page.context().clearCookies();
   await establishFixture(page, "selection-participant");
@@ -234,10 +231,9 @@ test("presents exact-end eligibility plus stale and technical archive refusals",
 });
 
 /** @returns {Promise<void>} Assert only Archived Admin actions remain. */
-async function expectArchivedAdminActions(page, participantName) {
+async function expectArchivedAdminActions(page) {
   await expect(page.getByRole("heading", { name: "Kurs bearbeiten" })).toHaveCount(0);
   await expect(page.getByRole("button", { name: "Kurs archivieren" })).toHaveCount(0);
-  await expect(page.getByRole("button", { name: "Teilnehmende zuordnen" })).toHaveCount(0);
   await expect(page.getByRole("heading", { name: "Gruppe anlegen" })).toHaveCount(0);
   await expect(page.getByRole("heading", { name: "Gruppe bearbeiten" })).toHaveCount(0);
   await expect(page.getByRole("button", {
@@ -247,9 +243,6 @@ async function expectArchivedAdminActions(page, participantName) {
   await expect(page.getByRole("heading", { name: "Modulinhalt bearbeiten" })).toHaveCount(0);
   await expect(page.getByRole("heading", { name: "Modulzeitraum bearbeiten" })).toHaveCount(0);
   await expect(page.getByRole("button", { name: /Modul (absagen|löschen)/ })).toHaveCount(0);
-  await expect(membershipCard(page, participantName).getByRole("button", {
-    name: "Kurszuordnung widerrufen",
-  })).toBeVisible();
 }
 
 /** @returns {import("@playwright/test").Locator} One Course list item. */
@@ -258,14 +251,6 @@ function courseListItem(page, courseName) {
     .getByRole("list", { name: /Kursliste|Zugeordnete Kurse/ })
     .getByRole("listitem")
     .filter({ hasText: courseName });
-}
-
-/** @returns {import("@playwright/test").Locator} One membership card. */
-function membershipCard(page, participantName) {
-  return page
-    .getByRole("list", { name: "Teilnehmende dieses Kurses" })
-    .getByRole("listitem")
-    .filter({ has: page.getByRole("heading", { name: participantName }) });
 }
 
 /** @returns {import("@playwright/test").Locator} Stable Admin Module article. */

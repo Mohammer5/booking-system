@@ -1,4 +1,8 @@
 import { adminParticipationTranslations } from "./adminParticipationTranslations.js";
+import {
+  courseParticipantLifecycleTranslations,
+  courseParticipantTranslations,
+} from "./courseParticipantTranslations.js";
 
 export const courseAccessTranslations = {
   courseAccess: {
@@ -110,10 +114,7 @@ export const courseAccessTranslations = {
       unavailable:
         "Der Teilnahmestatus kann wegen eines geänderten Administrations- oder Profilstatus nicht bearbeitet werden.",
     },
-    assignmentState: {
-      active: "Kurszuordnung: Aktiv",
-      revoked: "Kurszuordnung: Widerrufen",
-    },
+    ...courseParticipantTranslations,
     directory: {
       title: "Teilnehmende",
       description:
@@ -182,6 +183,7 @@ export const courseAccessTranslations = {
         "Der archivierte Kurs ist schreibgeschützt. Aktive Kurszuordnungen können nur noch widerrufen werden; neue oder widerrufene Zuordnungen können nicht hinzugefügt oder reaktiviert werden.",
     },
     lifecycle: {
+      ...courseParticipantLifecycleTranslations,
       revokeAction: "Kurszuordnung widerrufen",
       reactivateAction: "Kurszuordnung reaktivieren",
       revokeTitle: "Kurszuordnung widerrufen?",

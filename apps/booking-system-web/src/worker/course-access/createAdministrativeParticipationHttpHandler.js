@@ -10,7 +10,6 @@ import {
   administrativeParticipationJsonResponse,
   matchAdministrativeParticipationRoute,
   toAdministrativeParticipantParticipationResponse,
-  toAdministrativeParticipationResponse,
 } from "./administrativeParticipationHttpContract.js";
 
 /**
@@ -43,14 +42,6 @@ export function createAdministrativeParticipationHttpHandler(capabilities) {
 
       if (authorization.response !== undefined) {
         return authorization.response;
-      }
-
-      if (route.kind === "overview") {
-        return await inspectCourseParticipation(
-          route.courseId,
-          authorization.adminUser,
-          capabilities,
-        );
       }
 
       if (route.kind === "participant") {
@@ -116,22 +107,6 @@ async function authorizeAdmin(request, authenticate, resolveAdminContext) {
   return context.outcome === "active-admin"
     ? { adminUser: context.adminUser }
     : { response: response(context, 403) };
-}
-
-/** @returns {Promise<Response>} Complete derived Course participation. */
-async function inspectCourseParticipation(courseId, adminUser, capabilities) {
-  const result = await capabilities.persistence.findCourseParticipation(
-    adminUser.id,
-    courseId,
-  );
-
-  if (result === null) {
-    return response({ outcome: "participation-unavailable" }, 404);
-  }
-
-  const presented = presentSelections(result, capabilities.now());
-
-  return response(toAdministrativeParticipationResponse(presented), 200);
 }
 
 /** @returns {Promise<Response>} One target including no-Assignment state. */
@@ -235,30 +210,6 @@ async function readJsonObject(request) {
   } catch {
     return {};
   }
-}
-
-/** @returns {object} Read model with authoritative derived Selection meaning. */
-function presentSelections(result, now) {
-  const modulesById = new Map(
-    result.modules.map((module) => [module.id, module]),
-  );
-
-  return {
-    ...result,
-    participations: result.participations.map((participation) => ({
-      ...participation,
-      selections: participation.selections.map((selection) =>
-        deriveModuleSelectionPresentation({
-          selection,
-          participant: participation.participant,
-          assignment: participation.assignment,
-          course: result.course,
-          module: modulesById.get(selection.moduleId),
-          now,
-        }),
-      ),
-    })),
-  };
 }
 
 /** @returns {object} Target read with derived meaning and mutation availability. */

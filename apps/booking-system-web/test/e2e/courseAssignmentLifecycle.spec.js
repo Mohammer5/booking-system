@@ -21,9 +21,11 @@ test("revokes and reactivates one Course without restoring its future Selection"
 
   await page.context().clearCookies();
   await ensureActiveAdmin(page);
-  await page.goto(`/admin/courses/${setup.courseA.id}`);
-  let memberCard = membershipCard(page, participant.name);
-  const revokeButton = memberCard.getByRole("button", {
+  const participantDetailPath =
+    `/admin/courses/${setup.courseA.id}/participants/${participant.id}`;
+
+  await page.goto(participantDetailPath);
+  const revokeButton = page.getByRole("button", {
     name: "Kurszuordnung widerrufen",
   });
 
@@ -49,8 +51,7 @@ test("revokes and reactivates one Course without restoring its future Selection"
       hasText: "Die Kurszuordnung wurde widerrufen und der Kurszugriff entfernt.",
     }),
   ).toBeFocused();
-  memberCard = membershipCard(page, participant.name);
-  await expect(memberCard).toContainText("Kurszuordnung: Widerrufen");
+  await expect(page.getByText("Kurszuordnung: Widerrufen")).toBeVisible();
 
   const repeated = await page.request.post(
     `/api/admin/courses/${setup.courseA.id}/assignments/${setup.assignmentA.id}/revocation`,
@@ -77,9 +78,8 @@ test("revokes and reactivates one Course without restoring its future Selection"
 
   await page.context().clearCookies();
   await ensureActiveAdmin(page);
-  await page.goto(`/admin/courses/${setup.courseA.id}`);
-  memberCard = membershipCard(page, participant.name);
-  const reactivateButton = memberCard.getByRole("button", {
+  await page.goto(participantDetailPath);
+  const reactivateButton = page.getByRole("button", {
     name: "Kurszuordnung reaktivieren",
   });
 
@@ -157,18 +157,15 @@ test("presents Archived, repeated, stale, and technical lifecycle states safely"
   };
   let mutationMode = "stale";
 
-  await page.route(`**/api/admin/courses/${course.id}`, (route) =>
-    fulfillJson(route, 200, {
-      ...course,
-      state: "archived",
-      groups: [],
-      modules: [],
-    }),
-  );
-  await page.route(
-    `**/api/admin/courses/${course.id}/assignments`,
-    (route) => fulfillJson(route, 200, { assignments: [assignment] }),
-  );
+  const detailApi =
+    `**/api/admin/courses/${course.id}/participation/${participant.id}`;
+
+  await page.route(detailApi, (route) => fulfillJson(route, 200, {
+    course: { ...course, state: "archived" },
+    groups: [],
+    modules: [],
+    participation: { participant, assignment, selections: [] },
+  }));
   await page.route(
     `**/api/admin/courses/${course.id}/assignments/${assignment.id}/revocation`,
     async (route) => {
@@ -191,13 +188,12 @@ test("presents Archived, repeated, stale, and technical lifecycle states safely"
     },
   );
 
-  await page.goto(`/admin/courses/${course.id}`);
-  const card = membershipCard(page, participant.name);
+  await page.goto(`/admin/courses/${course.id}/participants/${participant.id}`);
 
   await expect(
-    page.getByRole("button", { name: "Teilnehmende zuordnen" }),
+    page.getByRole("button", { name: "Kurszuordnung anlegen" }),
   ).toHaveCount(0);
-  await card.getByRole("button", { name: "Kurszuordnung widerrufen" }).click();
+  await page.getByRole("button", { name: "Kurszuordnung widerrufen" }).click();
   const dialog = page.getByRole("dialog", { name: "Kurszuordnung widerrufen?" });
   const confirm = dialog.getByRole("button", {
     name: "Zuordnung endgültig widerrufen",
@@ -223,18 +219,14 @@ test("presents Archived, repeated, stale, and technical lifecycle states safely"
       hasText: "Die Kurszuordnung war bereits widerrufen",
     }),
   ).toBeFocused();
-  await expect(membershipCard(page, participant.name)).toContainText(
-    "Eine widerrufene Zuordnung kann in einem archivierten Kurs nicht reaktiviert werden.",
-  );
+  await expect(page.getByText(
+    "Diese Kurszuordnung ist im archivierten Kurs schreibgeschützt.",
+  )).toBeVisible();
   await expect(
-    membershipCard(page, participant.name).getByRole("button", {
-      name: "Kurszuordnung reaktivieren",
-    }),
+    page.getByRole("button", { name: "Kurszuordnung reaktivieren" }),
   ).toHaveCount(0);
   await page.reload();
-  await expect(membershipCard(page, participant.name)).toContainText(
-    "Kurszuordnung: Widerrufen",
-  );
+  await expect(page.getByText("Kurszuordnung: Widerrufen")).toBeVisible();
   await page.setViewportSize(narrowViewport);
   await expectAccessibleLayout(page);
 });
@@ -322,14 +314,6 @@ async function establishFixture(page, fixture) {
   const response = await page.request.post(`/api/_fixtures/session/${fixture}`);
 
   expect(response.status()).toBe(204);
-}
-
-/** @returns {object} One Admin membership card by Participant heading. */
-function membershipCard(page, participantName) {
-  return page
-    .getByRole("list", { name: "Teilnehmende dieses Kurses" })
-    .getByRole("listitem")
-    .filter({ has: page.getByRole("heading", { name: participantName }) });
 }
 
 /** @returns {object} One Participant Course list item. */

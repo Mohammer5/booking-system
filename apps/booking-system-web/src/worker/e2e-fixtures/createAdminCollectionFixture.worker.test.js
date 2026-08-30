@@ -32,6 +32,7 @@ describe("non-production Admin collection fixture", () => {
     await expect(collectionCounts()).resolves.toEqual({
       courses: 12,
       participants: 12,
+      course_assignments: 12,
       admin_users: 12,
       admin_invites: 12,
     });
@@ -56,6 +57,7 @@ async function collectionCounts() {
     `select
        (select count(*) from courses) as courses,
        (select count(*) from participants) as participants,
+       (select count(*) from course_assignments) as course_assignments,
        (select count(*) from admin_users) as admin_users,
        (select count(*) from admin_invites) as admin_invites`,
   ).first();

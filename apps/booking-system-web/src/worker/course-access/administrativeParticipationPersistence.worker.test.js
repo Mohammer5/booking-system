@@ -21,80 +21,6 @@ beforeEach(async () => {
 });
 
 describe("administrative participation persistence", () => {
-  it("composes every retained Course participation row in deterministic order", async () => {
-    await seedAdmin("active");
-    await seedCourse("a", "Archived Course", "archived");
-    await seedCourse("other", "Other Course", "active");
-    await seedParticipant("bravo", "Bravo", "active");
-    await seedParticipant("alpha", "alpha", "disabled");
-    await seedAssignment("bravo", "bravo", "a", "active");
-    await seedAssignment("alpha", "alpha", "a", "revoked");
-    await seedGroup("archived", "a", "Archived Group", "archived");
-    await seedGroup("active", "a", "Active Group", "active");
-    await seedGroup("other", "other", "Other Group", "active");
-    await seedModule("later", "a", "Later", 1_800_000_000_000, "cancelled");
-    await seedModule("earlier", "a", "Earlier", 1_700_000_000_000, "scheduled");
-    await seedModule("other", "other", "Other", 1_700_000_000_000, "scheduled");
-    await seedSelection("alpha", "alpha", "a", "earlier", "archived");
-    const persistence = createAdministrativeParticipationPersistence(env.DB);
-
-    const result = await persistence.findCourseParticipation(
-      "admin-a",
-      "course-a",
-    );
-
-    expect(result).toEqual({
-      course: {
-        id: "course-a",
-        name: "Archived Course",
-        description: "Description Archived Course",
-        timezone: "Europe/Berlin",
-        state: "archived",
-      },
-      groups: [
-        groupResult("active", "Active Group", "active"),
-        groupResult("archived", "Archived Group", "archived"),
-      ],
-      modules: [
-        moduleResult("earlier", "Earlier", 1_700_000_000_000, "scheduled"),
-        moduleResult("later", "Later", 1_800_000_000_000, "cancelled"),
-      ],
-      participations: [
-        {
-          participant: participantResult("alpha", "alpha", "disabled"),
-          assignment: assignmentResult("alpha", "alpha", "revoked"),
-          selections: [selectionResult()],
-        },
-        {
-          participant: participantResult("bravo", "Bravo", "active"),
-          assignment: assignmentResult("bravo", "bravo", "active"),
-          selections: [],
-        },
-      ],
-    });
-  });
-
-  it("returns an empty normalized model for a zero-participation Active Course", async () => {
-    await seedAdmin("active");
-    await seedCourse("a", "Empty Course", "active");
-    const persistence = createAdministrativeParticipationPersistence(env.DB);
-
-    await expect(
-      persistence.findCourseParticipation("admin-a", "course-a"),
-    ).resolves.toEqual({
-      course: {
-        id: "course-a",
-        name: "Empty Course",
-        description: "Description Empty Course",
-        timezone: "Europe/Berlin",
-        state: "active",
-      },
-      groups: [],
-      modules: [],
-      participations: [],
-    });
-  });
-
   it("reads one fully registered target with nullable retained Assignment", async () => {
     await seedAdmin("active");
     await seedCourse("a", "Target Course", "active");
@@ -137,32 +63,24 @@ describe("administrative participation persistence", () => {
   });
 
   it.each([
-    ["missing target", "admin-a", "participant-missing"],
-    ["missing Admin", "admin-missing", "participant-target"],
-  ])("returns no target data for %s", async (_case, adminId, participantId) => {
-    await seedAdmin("active");
+    ["missing target", "active", "admin-a", "course-a", "participant-missing"],
+    ["missing Admin", "active", "admin-missing", "course-a", "participant-target"],
+    ["Disabled Admin", "disabled", "admin-a", "course-a", "participant-target"],
+    ["missing Course", "active", "admin-a", "course-missing", "participant-target"],
+  ])("returns no target data for %s", async (
+    _case,
+    adminState,
+    adminId,
+    courseId,
+    participantId,
+  ) => {
+    await seedAdmin(adminState);
     await seedCourse("a", "Target Course", "active");
     await seedParticipant("target", "Target", "active");
     const persistence = createAdministrativeParticipationPersistence(env.DB);
 
     await expect(
-      persistence.findParticipantParticipation(adminId, "course-a", participantId),
-    ).resolves.toBeNull();
-  });
-
-  it.each([
-    ["missing Admin", null, "course-a"],
-    ["Disabled Admin", "disabled", "course-a"],
-    ["missing Course", "active", "course-missing"],
-  ])("returns no data for %s", async (_case, adminState, courseId) => {
-    if (adminState !== null) await seedAdmin(adminState);
-    await seedCourse("a", "Private Course", "active");
-    await seedParticipant("private", "Private", "active");
-    await seedAssignment("private", "private", "a", "active");
-    const persistence = createAdministrativeParticipationPersistence(env.DB);
-
-    await expect(
-      persistence.findCourseParticipation("admin-a", courseId),
+      persistence.findParticipantParticipation(adminId, courseId, participantId),
     ).resolves.toBeNull();
   });
 });
@@ -278,31 +196,6 @@ async function seedSelection(suffix, participant, course, module, group) {
     .run();
 }
 
-/** @returns {object} Expected Group data. */
-function groupResult(suffix, name, state) {
-  return {
-    id: `group-${suffix}`,
-    courseId: "course-a",
-    name,
-    details: `Details ${suffix}`,
-    state,
-  };
-}
-
-/** @returns {object} Expected Module data. */
-function moduleResult(suffix, title, startsAt, state) {
-  return {
-    id: `module-${suffix}`,
-    courseId: "course-a",
-    title,
-    description: `Description ${suffix}`,
-    instructions: `Instructions ${suffix}`,
-    startsAt: new Date(startsAt).toISOString(),
-    endsAt: new Date(startsAt + 3_600_000).toISOString(),
-    state,
-  };
-}
-
 /** @returns {object} Expected Participant data. */
 function participantResult(suffix, name, state) {
   return {
@@ -320,22 +213,5 @@ function assignmentResult(suffix, participantSuffix, state) {
     participantId: `participant-${participantSuffix}`,
     courseId: "course-a",
     state,
-  };
-}
-
-/** @returns {object} Expected retained Selection data. */
-function selectionResult() {
-  return {
-    id: "selection-alpha",
-    participantId: "participant-alpha",
-    courseId: "course-a",
-    moduleId: "module-earlier",
-    groupId: "group-archived",
-    group: {
-      id: "group-archived",
-      name: "Archived Group",
-      details: "Details archived",
-      state: "archived",
-    },
   };
 }

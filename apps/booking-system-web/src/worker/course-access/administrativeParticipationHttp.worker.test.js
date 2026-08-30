@@ -31,12 +31,13 @@ beforeEach(async () => {
 });
 
 describe("administrative participation authorization and contract", () => {
-  it("accepts only the exact GET route in both Worker compositions", async () => {
+  it("accepts only target-detail routes and retires the broad overview", async () => {
     const cookie = await activeAdminCookie();
     await seedCourse("active");
 
     for (const [method, path] of [
       ["POST", "/api/admin/courses/course-a/participation"],
+      ["GET", "/api/admin/courses/course-a/participation"],
       ["GET", "/api/admin/courses/course-a/participation/"],
     ]) {
       await expectOutcome(await request(path, cookie, { method }), 404, "not-found");
@@ -52,7 +53,9 @@ describe("administrative participation authorization and contract", () => {
     );
 
     const production = await productionWorker.fetch(
-      new Request("http://localhost/api/admin/courses/course-a/participation"),
+      new Request(
+        "http://localhost/api/admin/courses/course-a/participation/participant-a",
+      ),
       env,
     );
 
@@ -61,20 +64,23 @@ describe("administrative participation authorization and contract", () => {
 
   it("returns no data to unauthenticated, missing, Disabled, or stale Admins", async () => {
     await seedCourse("active");
+    await seedParticipant("target", "active");
+    const path =
+      "/api/admin/courses/course-a/participation/participant-target";
     const unauthenticated = await get(
-      "/api/admin/courses/course-a/participation",
+      path,
       null,
     );
     const cookie = await establishFixture("first-admin");
     const missing = await get(
-      "/api/admin/courses/course-a/participation",
+      path,
       cookie,
     );
 
     await bootstrapAdmin(cookie);
     await env.DB.prepare("update admin_users set state = 'disabled'").run();
     const disabled = await get(
-      "/api/admin/courses/course-a/participation",
+      path,
       cookie,
     );
 
@@ -104,7 +110,7 @@ describe("administrative participation authorization and contract", () => {
       persistence,
     });
     const stale = await handler(
-      new Request("http://localhost/api/admin/courses/course-a/participation"),
+      new Request(`http://localhost${path}`),
     );
 
     await expectOutcome(stale, 404, "participation-unavailable");
@@ -113,7 +119,7 @@ describe("administrative participation authorization and contract", () => {
   it("uses the same safe outcome for missing Course and sanitizes failures", async () => {
     const cookie = await activeAdminCookie();
     const missing = await get(
-      "/api/admin/courses/missing/participation",
+      "/api/admin/courses/missing/participation/participant-target",
       cookie,
     );
     const handler = createAdministrativeParticipationHttpHandler({
@@ -129,13 +135,15 @@ describe("administrative participation authorization and contract", () => {
         }),
       },
       persistence: {
-        findCourseParticipation: async () => {
+        findParticipantParticipation: async () => {
           throw new Error("private-person@example.com");
         },
       },
     });
     const failed = await handler(
-      new Request("http://localhost/api/admin/courses/private/participation"),
+      new Request(
+        "http://localhost/api/admin/courses/private/participation/participant-target",
+      ),
     );
 
     await expectOutcome(missing, 404, "participation-unavailable");
@@ -149,10 +157,18 @@ describe("administrative participation lifecycle presentation", () => {
     const cookie = await activeAdminCookie();
     await seedCompleteLifecycleCourse();
     const response = await get(
-      "/api/admin/courses/course-a/participation",
+      "/api/admin/courses/course-a/participation/participant-active",
       cookie,
     );
     const body = await response.json();
+    const disabled = await (await get(
+      "/api/admin/courses/course-a/participation/participant-disabled",
+      cookie,
+    )).json();
+    const revoked = await (await get(
+      "/api/admin/courses/course-a/participation/participant-revoked",
+      cookie,
+    )).json();
 
     expect(response.status).toBe(200);
     expect(response.headers.get("cache-control")).toBe("no-store");
@@ -167,7 +183,7 @@ describe("administrative participation lifecycle presentation", () => {
       { id: "module-cancelled", state: "cancelled" },
       { id: "module-future", state: "scheduled" },
     ]);
-    expect(participation(body, "participant-active")).toMatchObject({
+    expect(body.participation).toMatchObject({
       participant: { email: "active@example.com", state: "active" },
       assignment: { state: "active" },
       selections: [
@@ -187,12 +203,12 @@ describe("administrative participation lifecycle presentation", () => {
         { moduleId: "module-future", meaning: "live", phase: "upcoming" },
       ],
     });
-    expect(participation(body, "participant-disabled")).toMatchObject({
+    expect(disabled.participation).toMatchObject({
       participant: { state: "disabled" },
       assignment: { state: "active" },
       selections: [{ meaning: "historical", phase: "historical" }],
     });
-    expect(participation(body, "participant-revoked")).toMatchObject({
+    expect(revoked.participation).toMatchObject({
       participant: { state: "active" },
       assignment: { state: "revoked" },
       selections: [{ meaning: "historical", phase: "historical" }],
@@ -202,14 +218,15 @@ describe("administrative participation lifecycle presentation", () => {
   it("shows Course archival and exact endsAt as historical, then valid return to live", async () => {
     const cookie = await activeAdminCookie();
     await seedCompleteLifecycleCourse();
-    const path = "/api/admin/courses/course-a/participation";
+    const path =
+      "/api/admin/courses/course-a/participation/participant-active";
 
     await env.DB.prepare("update courses set state = 'archived'").run();
     const archived = await (await get(path, cookie)).json();
 
     expect(archived.course.state).toBe("archived");
     expect(
-      participation(archived, "participant-active").selections.every(
+      archived.participation.selections.every(
         ({ meaning }) => meaning === "historical",
       ),
     ).toBe(true);
@@ -221,16 +238,24 @@ describe("administrative participation lifecycle presentation", () => {
     await env.DB.prepare(
       "update course_assignments set state = 'active' where id = 'assignment-revoked'",
     ).run();
-    const restored = await (await get(path, cookie)).json();
+    const restoredActive = await (await get(path, cookie)).json();
+    const restoredDisabled = await (await get(
+      "/api/admin/courses/course-a/participation/participant-disabled",
+      cookie,
+    )).json();
+    const restoredRevoked = await (await get(
+      "/api/admin/courses/course-a/participation/participant-revoked",
+      cookie,
+    )).json();
 
     expect(
-      participation(restored, "participant-disabled").selections[0],
+      restoredDisabled.participation.selections[0],
     ).toMatchObject({ meaning: "live", phase: "in-progress" });
     expect(
-      participation(restored, "participant-revoked").selections[0],
+      restoredRevoked.participation.selections[0],
     ).toMatchObject({ meaning: "live", phase: "in-progress" });
     expect(
-      participation(restored, "participant-active").selections.find(
+      restoredActive.participation.selections.find(
         ({ moduleId }) => moduleId === "module-ended",
       ),
     ).toMatchObject({ meaning: "historical", phase: "historical" });
@@ -245,7 +270,10 @@ describe("administrative participation lifecycle presentation", () => {
         where id = 'participant-active'`,
     ).run();
     const adminBody = await (
-      await get("/api/admin/courses/course-a/participation", adminCookie)
+      await get(
+        "/api/admin/courses/course-a/participation/participant-active",
+        adminCookie,
+      )
     ).json();
     const participantResponse = await get(
       "/api/participant/courses/course-a",
@@ -253,7 +281,8 @@ describe("administrative participation lifecycle presentation", () => {
     );
     const participantBody = await participantResponse.json();
 
-    expect(adminBody.participations).toHaveLength(3);
+    expect(adminBody).not.toHaveProperty("participations");
+    expect(adminBody.participation.participant.id).toBe("participant-active");
     expect(participantResponse.status).toBe(200);
     expect(participantBody).not.toHaveProperty("participations");
     const serialized = JSON.stringify(participantBody);
@@ -473,13 +502,6 @@ describe("Admin-assisted Module Selection HTTP", () => {
     ).resolves.toMatchObject({ count: 0 });
   });
 });
-
-/** @returns {object} One Participation by stable Participant ID. */
-function participation(body, participantId) {
-  return body.participations.find(
-    ({ participant }) => participant.id === participantId,
-  );
-}
 
 /** @returns {Promise<string>} Establish and bootstrap one Active Admin. */
 async function activeAdminCookie() {

@@ -37,8 +37,8 @@ test("discovers and assigns a zero-membership Participant through the German Adm
   await expect(page).toHaveURL("/admin/participants");
   await expect(page.getByRole("heading", { name: "Teilnehmende" })).toBeVisible();
   const participantEntry = page
-    .getByRole("list", { name: "Verzeichnis der Teilnehmenden" })
-    .getByRole("listitem")
+    .getByRole("table", { name: "Globale Teilnehmendensammlung" })
+    .getByRole("row")
     .filter({ hasText: "Zero Membership Participant" });
 
   await expect(participantEntry).toContainText("zero-membership@example.com");
@@ -47,7 +47,7 @@ test("discovers and assigns a zero-membership Participant through the German Adm
   await page.reload();
   await expect(participantEntry).toBeVisible();
 
-  await page.goto(`/admin/courses/${course.id}`);
+  await page.goto(`/admin/courses/${course.id}/participants`);
   await expect(
     page.getByRole("status").filter({
       hasText: "Diesem Kurs wurden noch keine Teilnehmenden zugeordnet.",
@@ -65,31 +65,32 @@ test("discovers and assigns a zero-membership Participant through the German Adm
   const participantRadio = dialog.getByRole("radio", {
     name: /Zero Membership Participant/,
   });
-  const firstParticipantRadio = dialog.getByRole("radio").first();
+  const search = dialog.getByLabel(
+    "Teilnahmeprofile nach Name oder E-Mail durchsuchen",
+  );
   const submitButton = dialog.getByRole("button", {
     name: "Kurszuordnung speichern",
   });
 
   await expect(dialog).toBeVisible();
-  await expect(firstParticipantRadio).toBeFocused();
+  await expect(search).toBeFocused();
   await expectAccessibleLayout(page);
-  await page.keyboard.press("Shift+Tab");
-  await expectVisibleKeyboardFocus(submitButton);
-  await page.keyboard.press("Tab");
-  await expectVisibleKeyboardFocus(firstParticipantRadio);
   await page.keyboard.press("Escape");
   await expect(dialog).toBeHidden();
   await expectVisibleKeyboardFocus(assignButton);
 
   await page.keyboard.press("Enter");
-  await expect(firstParticipantRadio).toBeFocused();
+  await expect(search).toBeFocused();
+  await search.fill("zero-membership@example.com");
+  await search.press("Enter");
+  await expect(participantRadio).toBeVisible();
   await submitButton.focus();
   await page.keyboard.press("Enter");
-  await expect(firstParticipantRadio).toBeFocused();
+  await expect(participantRadio).toBeFocused();
   await expectRadioErrorAssociation(
-    dialog.getByRole("radiogroup", { name: "Teilnahmeprofil" }),
+    dialog.getByRole("radiogroup", { name: "Teilnahmeprofil auswählen" }),
     page,
-    "Bitte wählen Sie ein Teilnahmeprofil aus.",
+    "Bitte wählen Sie ein verfügbares Teilnahmeprofil aus.",
   );
   await participantRadio.focus();
   await page.keyboard.press("Space");
@@ -99,14 +100,14 @@ test("discovers and assigns a zero-membership Participant through the German Adm
   const createdStatus = page.getByRole("status").filter({
     hasText: "Die Kurszuordnung wurde erfolgreich angelegt.",
   });
-  const membershipList = page.getByRole("list", {
-    name: "Teilnehmende dieses Kurses",
+  const membershipTable = page.getByRole("table", {
+    name: "Teilnehmende und Kurszuordnungen dieses Kurses",
   });
 
   await expect(createdStatus).toBeFocused();
-  await expect(membershipList).toContainText("Zero Membership Participant");
-  await expect(membershipList).toContainText("Teilnahmeprofil: Aktiv");
-  await expect(membershipList).toContainText("Kurszuordnung: Aktiv");
+  await expect(membershipTable).toContainText("Zero Membership Participant");
+  await expect(membershipTable).toContainText("Teilnahmeprofil: Aktiv");
+  await expect(membershipTable).toContainText("Kurszuordnung: Aktiv");
 
   await assignButton.click();
   await participantRadio.check();
@@ -117,15 +118,18 @@ test("discovers and assigns a zero-membership Participant through the German Adm
         "Die aktive Kurszuordnung bestand bereits und blieb unverändert.",
     }),
   ).toBeFocused();
-  await expect(membershipList.getByRole("listitem")).toHaveCount(1);
+  await expect(membershipTable.getByRole("row")).toHaveCount(2);
 
   const courseURL = page.url();
 
   await page.reload();
   await expect(page).toHaveURL(courseURL);
-  await expect(membershipList).toContainText("Zero Membership Participant");
+  await expect(membershipTable).toContainText("Zero Membership Participant");
   await expectAccessibleLayout(page);
   await page.setViewportSize(narrowViewport);
+  await expect(page.getByRole("list", {
+    name: "Teilnehmende dieses Kurses",
+  })).toContainText("Zero Membership Participant");
   await expectAccessibleLayout(page);
 });
 
@@ -149,17 +153,28 @@ test("presents Disabled assignment plus stale and technical refusals predictably
   let assignments = [];
   let assignmentMode = "created";
 
-  await page.route(/\/api\/admin\/participants(?:\?.*)?$/, (route) =>
-    fulfillJson(route, 200, {
-      participants: [disabledParticipant],
-      pagination: { page: 1, pageSize: 25, totalItems: 1, totalPages: 1 },
-    }),
+  await page.route(
+    new RegExp(`/api/admin/courses/${course.id}/participant-options(?:\\?.*)?$`),
+    (route) =>
+      fulfillJson(route, 200, {
+        course,
+        participants: [{ ...disabledParticipant, assignmentState: null }],
+      }),
   );
   await page.route(
-    `**/api/admin/courses/${course.id}/assignments`,
+    new RegExp(`/api/admin/courses/${course.id}/assignments(?:\\?.*)?$`),
     async (route) => {
       if (route.request().method() === "GET") {
-        await fulfillJson(route, 200, { assignments });
+        await fulfillJson(route, 200, {
+          assignments,
+          course,
+          pagination: {
+            page: 1,
+            pageSize: 25,
+            totalItems: assignments.length,
+            totalPages: assignments.length === 0 ? 0 : 1,
+          },
+        });
         return;
       }
 
@@ -189,7 +204,7 @@ test("presents Disabled assignment plus stale and technical refusals predictably
     },
   );
 
-  await page.goto(`/admin/courses/${course.id}`);
+  await page.goto(`/admin/courses/${course.id}/participants`);
   const assignButton = page.getByRole("button", {
     name: "Teilnehmende zuordnen",
   });
@@ -213,7 +228,9 @@ test("presents Disabled assignment plus stale and technical refusals predictably
     }),
   ).toBeFocused();
   await expect(
-    page.getByRole("list", { name: "Teilnehmende dieses Kurses" }),
+    page.getByRole("table", {
+      name: "Teilnehmende und Kurszuordnungen dieses Kurses",
+    }),
   ).toContainText("Teilnahmeprofil: Deaktiviert");
 
   assignmentMode = "stale";
@@ -226,7 +243,7 @@ test("presents Disabled assignment plus stale and technical refusals predictably
   await submitButton.click();
   const staleAlert = dialog.getByRole("alert").filter({
     hasText:
-      "Die Teilnahmeverwaltung ist für dieses Administrationskonto oder diesen Kurs nicht verfügbar.",
+      "Die Kurszuordnung kann wegen eines geänderten Administrations-, Kurs- oder Zuordnungsstatus nicht bearbeitet werden.",
   });
 
   await expect(staleAlert).toBeFocused();
@@ -262,8 +279,9 @@ for (const [viewportName, viewport] of Object.entries({
     const directoryGate = new Promise((resolve) => {
       releaseDirectory = resolve;
     });
+    const participantCollectionURL = /\/api\/admin\/participants(?:\?.*)?$/;
 
-    await page.route(/\/api\/admin\/participants(?:\?.*)?$/, async (route) => {
+    await page.route(participantCollectionURL, async (route) => {
       await directoryGate;
       await fulfillJson(route, 200, {
         participants: [],
@@ -284,8 +302,8 @@ for (const [viewportName, viewport] of Object.entries({
     ).toBeVisible();
     await expectAccessibleLayout(page);
 
-    await page.unroute("**/api/admin/participants");
-    await page.route("**/api/admin/participants", (route) =>
+    await page.unroute(participantCollectionURL);
+    await page.route(participantCollectionURL, (route) =>
       fulfillJson(route, 403, { outcome: "disabled-admin" }),
     );
     await page.reload();
@@ -296,8 +314,8 @@ for (const [viewportName, viewport] of Object.entries({
       }),
     ).toBeFocused();
 
-    await page.unroute("**/api/admin/participants");
-    await page.route("**/api/admin/participants", (route) =>
+    await page.unroute(participantCollectionURL);
+    await page.route(participantCollectionURL, (route) =>
       fulfillJson(route, 500, { outcome: "technical-error" }),
     );
     await page.reload();
@@ -308,22 +326,28 @@ for (const [viewportName, viewport] of Object.entries({
       }),
     ).toBeFocused();
     await expectAccessibleLayout(page);
-    await page.unroute("**/api/admin/participants");
+    await page.unroute(participantCollectionURL);
 
     let releaseMembership;
     const membershipGate = new Promise((resolve) => {
       releaseMembership = resolve;
     });
-    const membershipPath = `**/api/admin/courses/${course.id}/assignments`;
+    const membershipPath = new RegExp(
+      `/api/admin/courses/${course.id}/assignments(?:\\?.*)?$`,
+    );
 
     await page.route(membershipPath, async (route) => {
       await membershipGate;
-      await fulfillJson(route, 200, { assignments: [] });
+      await fulfillJson(route, 200, {
+        assignments: [],
+        course,
+        pagination: { page: 1, pageSize: 25, totalItems: 0, totalPages: 0 },
+      });
     });
-    await page.goto(`/admin/courses/${course.id}`);
+    await page.goto(`/admin/courses/${course.id}/participants`);
     await expect(
       page.getByRole("status").filter({
-        hasText: "Kurszuordnungen werden geladen …",
+        hasText: "Teilnehmende des Kurses werden geladen …",
       }),
     ).toBeVisible();
     releaseMembership();
@@ -379,7 +403,7 @@ for (const [viewportName, viewport] of Object.entries({
         "Für diese Anmeldung existiert kein Administrationskonto.",
       ),
     ).toBeVisible();
-    await page.goto(`/admin/courses/${course.id}`);
+    await page.goto(`/admin/courses/${course.id}/participants`);
     await expect(
       page.getByText(
         "Für diese Anmeldung existiert kein Administrationskonto.",

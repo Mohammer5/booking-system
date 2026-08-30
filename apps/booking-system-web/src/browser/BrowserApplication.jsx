@@ -1,4 +1,4 @@
-import { Navigate, Route, Routes } from "react-router";
+import { Navigate, Route, Routes, useParams } from "react-router";
 
 import {
   AdminInviteOnboardingPage,
@@ -9,9 +9,9 @@ import {
 import { AdminBootstrapPage } from "./admin-bootstrap/index.js";
 import { ResponsiveApplicationShell } from "./application-shell/index.js";
 import {
-  AdminCourseParticipationDetailPage,
-  AdminCourseParticipationPage,
   AdminParticipantDetailPage,
+  CourseParticipantCollectionPage,
+  CourseParticipantDetailPage,
   CourseInvitePage,
   ParticipantCourseDetailPage,
   ParticipantDirectoryPage,
@@ -91,14 +91,30 @@ function administrationRoute() {
       <Route path="courses" element={<CourseIndexPage />} />
       <Route path="courses/new" element={<CourseCreatePage />} />
       <Route
+        path="courses/:courseId/participants"
+        element={<CourseParticipantCollectionPage />}
+      />
+      <Route
+        path="courses/:courseId/participants/:participantId"
+        element={<CourseParticipantDetailPage />}
+      />
+      <Route
         path="courses/:courseId/participation"
-        element={<AdminCourseParticipationPage />}
+        element={<ParticipationCompatibilityRedirect />}
       />
       <Route
         path="courses/:courseId/participation/:participantId"
-        element={<AdminCourseParticipationDetailPage />}
+        element={<ParticipationCompatibilityRedirect detail />}
       />
       <Route path="courses/:courseId" element={<CourseDetailPage />} />
     </Route>
   );
+}
+
+/** @returns {import("react").ReactElement} Replace one superseded browser URL. */
+function ParticipationCompatibilityRedirect({ detail = false }) {
+  const { courseId, participantId } = useParams();
+  const suffix = detail ? `/${participantId}` : "";
+
+  return <Navigate to={`/admin/courses/${courseId}/participants${suffix}`} replace />;
 }

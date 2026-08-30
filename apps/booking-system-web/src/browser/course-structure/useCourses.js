@@ -113,6 +113,12 @@ export function useArchiveCourse(courseId, onArchived) {
           queryKey: ["course-access", "assignments", courseId],
         }),
         queryClient.invalidateQueries({
+          queryKey: ["course-access", "course-participant", courseId],
+        }),
+        queryClient.invalidateQueries({
+          queryKey: ["course-access", "participant-options", courseId],
+        }),
+        queryClient.invalidateQueries({
           queryKey: ["course-access", "participant-courses"],
         }),
         queryClient.invalidateQueries({

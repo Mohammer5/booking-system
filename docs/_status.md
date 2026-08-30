@@ -64,7 +64,7 @@ Participant registration/profile/lifecycle
 maintenance, Course Assignment creation/lifecycle, assigned Participant
 Course access, shared Course Invite management/recognition/Join, Admin Invite
 administration/onboarding, Admin User directory/name maintenance/promotion/
-lifecycle, administrative Course participation inspection, and
+lifecycle, Course Participant administration, and
 Participant Module Selection slices are now
 implemented:
 
@@ -148,8 +148,8 @@ implemented:
   `/admin/participants`, `/admin/courses`,
   `/admin/users/:adminUserId`,
   `/admin/participants/:participantId`, `/admin/courses/new`,
-  `/admin/courses/:courseId`, its participation overview and Course-scoped
-  Participant detail, Participant `/profile`, and Participant
+  `/admin/courses/:courseId`, its Course Participant collection/detail,
+  Participant `/profile`, and Participant
   `/courses/:courseId` are direct/refresh-safe German MUI contexts within one
   responsive shell; one principal/session can reach distinct Participant and
   Admin User identities without a persisted role;
@@ -189,12 +189,14 @@ implemented:
   including that selected Group's retained details/state when Archived,
   never rosters, peer profiles, emails, counts, Assignments, Admin data, or a
   public catalogue;
-- Admin Course participation reads use a normalized D1 batch whose every
-  statement requires the same current Active Admin and Course scope. They
-  expose retained Active/Revoked Assignments with Active/Disabled Participants,
-  every Module and Group, and derived live/historical Selection meaning with
-  retained Archived selected-Group details. The read is direct/refresh-safe
-  and adds nothing to Participant representations;
+- Admin Course Participant discovery uses the validated server-paginated
+  Assignment collection, including retained Active/Revoked Assignments joined
+  to Active/Disabled Participants. A separate normalized target-detail D1 batch
+  requires the same current Active Admin, Course, and Participant scope and
+  exposes only that target's Modules, Groups, and derived live/historical
+  Selection meaning with retained Archived selected-Group details. The former
+  all-Course participation batch is retired, and Participant representations
+  remain roster- and peer-private;
 - guarded Selection set/change/remove writes recheck the Participant,
   Assignment, Course, Scheduled Module, Active same-Course Group, and exact
   `startsAt` deadline at acceptance; replacement preserves one stable
@@ -336,8 +338,7 @@ implemented:
 - the canonical `pnpm check` now runs repository, domain, Worker/D1, migration,
   build, and Chromium browser evidence.
 
-Apple, Microsoft, and Facebook providers, Admin-assisted Module Selection,
-remote Google credentials and production
+Apple, Microsoft, and Facebook providers, remote Google credentials and production
 callback/domain configuration, remote Cloudflare staging/production resources,
 release
 automation, deployment credentials, and production deployment remain absent.
@@ -349,8 +350,8 @@ gives them a concrete responsibility.
 
 `EPIC-ruijc` tracks implementation of the accepted Admin collection/detail
 normalization. The convention, Admin navigation layout, and Worker collection
-contracts plus four top-level browser collections have landed. Until the
-remaining dependent browser tasks land, the current implementation inventory
-above accurately records the older embedded Course-detail and broad
-participation surfaces; those surfaces are transitional code, not competing
-canonical direction.
+contracts plus four top-level browser collections have landed. Course
+Participant collection/detail navigation, compatibility redirects, bounded
+Participant pickers, and broad-overview retirement have also landed. Group and
+Module management remain the dependency-ordered transitional Course-detail
+surfaces until their extraction tasks land.

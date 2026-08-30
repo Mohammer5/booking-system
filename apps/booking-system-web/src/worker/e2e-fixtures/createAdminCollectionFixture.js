@@ -23,6 +23,8 @@ export function createAdminCollectionFixture(database) {
       ...Array.from({ length: fixtureCount }, (_, index) =>
         participantStatement(database, index)),
       ...Array.from({ length: fixtureCount }, (_, index) =>
+        assignmentStatement(database, index)),
+      ...Array.from({ length: fixtureCount }, (_, index) =>
         adminUserStatement(database, index)),
       ...Array.from({ length: fixtureCount }, (_, index) =>
         inviteStatement(database, index)),
@@ -30,6 +32,20 @@ export function createAdminCollectionFixture(database) {
 
     return new Response(null, { status: 204 });
   };
+}
+
+/** @returns {object} One retained Assignment on the first seeded Course. */
+function assignmentStatement(database, index) {
+  const suffix = fixtureSuffix(index);
+
+  return database.prepare(
+    `insert into course_assignments (id, participant_id, course_id, state)
+     values (?, ?, 'collection-course-00', ?)`,
+  ).bind(
+    `collection-assignment-${suffix}`,
+    `collection-participant-${suffix}`,
+    index === 11 ? "revoked" : "active",
+  );
 }
 
 /** Reset booking-domain data while retaining the fixed authenticated actor. */

@@ -6,51 +6,11 @@
  */
 export function createAdministrativeParticipationPersistence(database) {
   return {
-    findCourseParticipation: (adminUserId, courseId) =>
-      findCourseParticipation(database, adminUserId, courseId),
     findParticipantParticipation: (adminUserId, courseId, participantId) =>
       findParticipantParticipation(
         database,
         { adminUserId, courseId, participantId },
       ),
-  };
-}
-
-/**
- * Read one normalized Course participation model under a current Admin guard.
- *
- * @param {object} database The application D1 binding.
- * @param {string} adminUserId Current Admin identity.
- * @param {string} courseId Requested Course identity.
- * @returns {Promise<object | null>} Complete Course participation or no data.
- */
-async function findCourseParticipation(database, adminUserId, courseId) {
-  const [courseResult, groupResult, moduleResult, assignmentResult, selectionResult] =
-    await database.batch([
-      courseStatement(database, adminUserId, courseId),
-      groupStatement(database, adminUserId, courseId),
-      moduleStatement(database, adminUserId, courseId),
-      assignmentStatement(database, adminUserId, courseId),
-      selectionStatement(database, { adminUserId, courseId }),
-    ]);
-  const courseRow = courseResult.results[0];
-
-  if (courseRow === undefined) {
-    return null;
-  }
-
-  const selectionsByParticipant = groupSelectionsByParticipant(
-    selectionResult.results,
-  );
-
-  return {
-    course: mapCourse(courseRow),
-    groups: groupResult.results.map(mapGroup),
-    modules: moduleResult.results.map(mapModule),
-    participations: assignmentResult.results.map((row) => ({
-      ...mapParticipation(row),
-      selections: selectionsByParticipant.get(row.participant_id) ?? [],
-    })),
   };
 }
 
@@ -136,25 +96,6 @@ function moduleStatement(database, adminUserId, courseId) {
     .bind(courseId, adminUserId);
 }
 
-/** @returns {object} Current-Admin-guarded Assignment/Participant statement. */
-function assignmentStatement(database, adminUserId, courseId) {
-  return database
-    .prepare(
-      `select a.id as assignment_id, a.participant_id, a.course_id,
-              a.state as assignment_state, p.name as participant_name,
-              p.email as participant_email, p.state as participant_state
-         from course_assignments a
-         join participants p on p.id = a.participant_id
-        where a.course_id = ?
-          and exists (
-            select 1 from admin_users
-             where id = ? and state = 'active'
-          )
-        order by p.name collate nocase, p.id`,
-    )
-    .bind(courseId, adminUserId);
-}
-
 /** @returns {object} Current-Admin-guarded target Participant statement. */
 function participantStatement(database, context) {
   const { adminUserId, courseId, participantId } = context;
@@ -179,10 +120,7 @@ function participantStatement(database, context) {
 /** @returns {object} Current-Admin-guarded retained Selection statement. */
 function selectionStatement(database, context) {
   const { adminUserId, courseId, participantId } = context;
-  const participantClause = participantId === undefined
-    ? ""
-    : " and s.participant_id = ?";
-  const statement = database.prepare(
+  return database.prepare(
     `select s.id, s.participant_id, s.course_id, s.module_id, s.group_id,
               g.name as group_name, g.details as group_details,
               g.state as group_state
@@ -194,31 +132,13 @@ function selectionStatement(database, context) {
            on m.id = s.module_id and m.course_id = s.course_id
          join groups g
            on g.id = s.group_id and g.course_id = s.course_id
-        where s.course_id = ? and a.course_id = ?${participantClause}
+        where s.course_id = ? and a.course_id = ? and s.participant_id = ?
           and exists (
             select 1 from admin_users
              where id = ? and state = 'active'
           )
         order by s.participant_id, m.starts_at, s.id`,
-  );
-
-  return participantId === undefined
-    ? statement.bind(courseId, courseId, adminUserId)
-    : statement.bind(courseId, courseId, participantId, adminUserId);
-}
-
-/** @returns {Map<string, Array<object>>} Retained Selections by Participant. */
-function groupSelectionsByParticipant(rows) {
-  const selections = new Map();
-
-  for (const row of rows) {
-    const participantSelections = selections.get(row.participant_id) ?? [];
-
-    participantSelections.push(mapSelection(row));
-    selections.set(row.participant_id, participantSelections);
-  }
-
-  return selections;
+  ).bind(courseId, courseId, participantId, adminUserId);
 }
 
 /** @returns {object} Course plain data. */

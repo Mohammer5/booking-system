@@ -1,7 +1,7 @@
 ---
 id: PLAN-s3gmg
 title: Implementation plan for Extract Course Participant collection and detail navigation
-status: draft
+status: done
 implements:
 - TASK-5uzbb
 related: []
@@ -49,17 +49,17 @@ Global Participant creation and API terminology renames are excluded.
 
 ### Phase 1: Routes and collection
 
-- [ ] Add participant collection/detail routes and replace redirects.
-- [ ] Render paginated Assignment collection with parent breadcrumbs/actions.
-- [ ] Add lifecycle controls and Archived rules on target detail.
+- [x] Add participant collection/detail routes and replace redirects.
+- [x] Render paginated Assignment collection with parent breadcrumbs/actions.
+- [x] Add lifecycle controls and Archived rules on target detail.
 
 **Checkpoint**: nested Participant routes own collection/detail behavior.
 
 ### Phase 2: Picker and cleanup
 
-- [ ] Add bounded search hook/component for Assignment and assisted targeting.
-- [ ] Remove broad overview structure/list and obsolete hook/endpoint ownership.
-- [ ] Update invalidation and Worker/Playwright/axe coverage.
+- [x] Add bounded search hook/component for Assignment and assisted targeting.
+- [x] Remove broad overview structure/list and obsolete hook/endpoint ownership.
+- [x] Update invalidation and Worker/Playwright/axe coverage.
 
 **Checkpoint**: both picker callers use bounded search and old overview is gone.
 

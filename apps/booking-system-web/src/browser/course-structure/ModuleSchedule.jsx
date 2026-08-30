@@ -42,7 +42,7 @@ function ScheduleTerm({ label, children }) {
 }
 
 /** @returns {import("react").ReactElement} Course-local and definite time. */
-function InstantValue({ instant, timezone }) {
+export function InstantValue({ instant, timezone }) {
   const localValue = new Intl.DateTimeFormat("de-DE", {
     dateStyle: "medium",
     timeStyle: "short",
