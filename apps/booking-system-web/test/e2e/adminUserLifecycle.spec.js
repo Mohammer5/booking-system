@@ -41,12 +41,14 @@ test("manages real Admin lifecycles without cascading shared identity", async ({
   await expect(page.getByRole("button", { name: "Löschen" }))
     .toHaveCount(0);
 
-  await page.goto("/admin/users");
+  await page.goto(adminDirectorySearch(ordinaryTarget.name));
   const table = page.getByRole("table", {
     name: "Verzeichnis der Administrationskonten",
   });
   const targetRow = adminRow(table, ordinaryTarget.name);
-  const disableOpener = targetRow.getByRole("button", {
+  await targetRow.getByRole("link", { name: "Namen bearbeiten" }).click();
+  await expect(page).toHaveURL(`/admin/users/${ordinaryTarget.id}`);
+  const disableOpener = page.getByRole("button", {
     name: "Deaktivieren",
   });
 
@@ -75,8 +77,9 @@ test("manages real Admin lifecycles without cascading shared identity", async ({
   await expect(page.getByRole("status").filter({
     hasText: `${ordinaryTarget.name} wurde deaktiviert`,
   })).toBeFocused();
-  await expect(targetRow).toContainText("Deaktiviert");
-  await expect(targetRow.getByRole("button", { name: "Wieder aktivieren" }))
+  await expect(page.getByText("Deaktiviert", { exact: true }))
+    .toBeVisible();
+  await expect(page.getByRole("button", { name: "Wieder aktivieren" }))
     .toBeVisible();
 
   await page.context().addCookies(targetCookies);
@@ -93,7 +96,7 @@ test("manages real Admin lifecycles without cascading shared identity", async ({
   });
 
   await establishFixture(page, "admin-invite-a");
-  await targetRow.getByRole("button", { name: "Wieder aktivieren" }).click();
+  await page.getByRole("button", { name: "Wieder aktivieren" }).click();
   const reenableDialog = page.getByRole("dialog", {
     name: "Administrationskonto wieder aktivieren?",
   });
@@ -116,7 +119,7 @@ test("manages real Admin lifecycles without cascading shared identity", async ({
   });
 
   await establishFixture(page, "admin-invite-a");
-  await targetRow.getByRole("button", { name: "Löschen" }).click();
+  await page.getByRole("button", { name: "Löschen" }).click();
   const deleteDialog = page.getByRole("dialog", {
     name: "Administrationskonto dauerhaft löschen?",
   });
@@ -130,6 +133,7 @@ test("manages real Admin lifecycles without cascading shared identity", async ({
   await expect(page.getByRole("status").filter({
     hasText: `${ordinaryTarget.name} wurde als Administrationskonto gelöscht`,
   })).toBeFocused();
+  await page.goto(adminDirectorySearch(ordinaryTarget.name));
   await expect(adminRow(table, ordinaryTarget.name)).toHaveCount(0);
 
   await page.context().addCookies(targetCookies);
@@ -154,13 +158,14 @@ test("manages real Admin lifecycles without cascading shared identity", async ({
   expect((await page.request.post(
     `/api/admin/users/${ordinaryActor.id}/promotion`,
   )).status()).toBe(200);
-  await page.goto("/admin/users");
+  await page.goto(adminDirectorySearch(ordinaryActor.name));
   const promotedRow = adminRow(table, ordinaryActor.name);
 
   await expect(promotedRow).toContainText("Super Admin");
-  await expect(promotedRow.getByRole("button", { name: "Deaktivieren" }))
+  await promotedRow.getByRole("link", { name: "Namen bearbeiten" }).click();
+  await expect(page.getByRole("button", { name: "Deaktivieren" }))
     .toBeVisible();
-  await expect(promotedRow.getByRole("button", { name: "Löschen" }))
+  await expect(page.getByRole("button", { name: "Löschen" }))
     .toBeVisible();
   await expectAccessibleLayout(page);
 
@@ -371,6 +376,11 @@ async function establishFixture(page, fixtureName) {
 /** @returns {object} Find one semantic desktop row by visible name. */
 function adminRow(table, name) {
   return table.getByRole("row").filter({ hasText: name });
+}
+
+/** @returns {string} Admin User collection URL narrowed to one stable target. */
+function adminDirectorySearch(name) {
+  return `/admin/users?${new URLSearchParams({ q: name })}`;
 }
 
 /** @returns {Promise<void>} Fulfill one bounded JSON response. */

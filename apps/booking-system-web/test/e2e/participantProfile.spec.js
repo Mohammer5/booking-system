@@ -51,12 +51,14 @@ test("self-edits then Admin-edits one stable profile without changing Admin iden
 
   const adminAfterSelfEdit = await getJson(page, "/api/admin/me");
   expect(adminAfterSelfEdit.name).toBe(admin.name);
-  await page.goto("/admin/participants");
-  const targetCard = page
-    .getByRole("list", { name: "Verzeichnis der Teilnehmenden" })
-    .getByRole("listitem")
+  await page.goto(
+    `/admin/participants?${new URLSearchParams({ q: "Self Profile Updated" })}`,
+  );
+  const targetRow = page
+    .getByRole("table", { name: "Globale Teilnehmendensammlung" })
+    .getByRole("row")
     .filter({ hasText: "Self Profile Updated" });
-  await targetCard
+  await targetRow
     .getByRole("link", { name: "Teilnahmeprofil öffnen und bearbeiten" })
     .click();
   await expect(page).toHaveURL(`/admin/participants/${participant.id}`);

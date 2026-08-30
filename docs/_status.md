@@ -150,7 +150,7 @@ implemented:
   `/admin/users/:adminUserId`,
   `/admin/participants/:participantId`, `/admin/courses/new`,
   `/admin/courses/:courseId`, its Course Participant collection/detail and
-  Course Group collection/create/detail,
+  Course Group and Module collection/create/detail,
   Participant `/profile`, and Participant
   `/courses/:courseId` are direct/refresh-safe German MUI contexts within one
   responsive shell; one principal/session can reach distinct Participant and

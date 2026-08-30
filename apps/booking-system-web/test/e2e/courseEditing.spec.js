@@ -62,6 +62,7 @@ test("edits Course fields and permanently locks timezone after scheduling", asyn
   await expect(timezoneInput).toHaveValue("America/New_York");
   await expect(nameInput).toHaveValue("Bearbeiteter Kurs");
 
+  await page.goto(`/admin/courses/${course.id}/modules/new`);
   await page.getByLabel("Modultitel").fill("Timezone lock Module");
   await page.getByLabel("Beginn (lokale Kurszeit)").fill("2027-01-15T10:30");
   await page.getByLabel("Ende (lokale Kurszeit)").fill("2027-01-15T11:30");
@@ -71,6 +72,9 @@ test("edits Course fields and permanently locks timezone after scheduling", asyn
       hasText: "Das Modul wurde erfolgreich angelegt.",
     }),
   ).toBeFocused();
+  const moduleId = new URL(page.url()).pathname.split("/").at(-1);
+
+  await page.goto(`/admin/courses/${course.id}`);
   const lockedCopy = page.getByText(/Kurszeitzone America\/New_York ist dauerhaft gesperrt/);
 
   await expect(lockedCopy).toBeVisible();
@@ -84,13 +88,9 @@ test("edits Course fields and permanently locks timezone after scheduling", asyn
     page.getByRole("heading", { name: "Name bleibt bearbeitbar" }),
   ).toBeVisible();
 
-  await presentLockedCourseWithoutCurrentModules(page, course.id);
+  await deleteCurrentModule(page, course.id, moduleId);
   await page.reload();
-  await expect(
-    page.getByRole("status").filter({
-      hasText: "Für diesen Kurs wurden noch keine Module angelegt.",
-    }),
-  ).toBeVisible();
+  await expect(page.getByRole("link", { name: "0 Module" })).toBeVisible();
   await expect(lockedCopy).toBeVisible();
   await expect(timezoneInput).toHaveCount(0);
   await expectAccessibleLayout(page);
@@ -201,25 +201,16 @@ async function createCourse(page, name) {
 }
 
 /**
- * Present the future post-deletion state without implementing Module deletion.
+ * Delete the unreferenced Module through normal application HTTP.
  *
- * @returns {Promise<void>} Completion after installing one bounded GET route.
+ * @returns {Promise<void>} Completion after the Module is deleted.
  */
-async function presentLockedCourseWithoutCurrentModules(page, courseId) {
-  await page.route(new RegExp(`/api/admin/courses/${courseId}$`), async (route) => {
-    if (route.request().method() !== "GET") {
-      await route.continue();
-      return;
-    }
+async function deleteCurrentModule(page, courseId, moduleId) {
+  const response = await page.request.delete(
+    `/api/admin/courses/${courseId}/modules/${moduleId}`,
+  );
 
-    const response = await route.fetch();
-    const body = await response.json();
-
-    await route.fulfill({
-      response,
-      json: { ...body, isTimezoneEditable: false, modules: [] },
-    });
-  });
+  expect(response.status()).toBe(200);
 }
 
 /** @returns {Promise<void>} Fulfill one intercepted response as JSON. */

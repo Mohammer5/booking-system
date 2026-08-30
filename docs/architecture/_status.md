@@ -152,7 +152,8 @@
   `/admin/participants/:participantId` detail/edit, and nested
   `/admin/courses`, `/admin/courses/new`, `/admin/courses/:courseId`,
   Course Participant collection/detail, and Course Group collection/create/
-  detail views. Legacy browser participation paths replace-redirect to the
+  detail plus Course Module collection/create/detail views. Legacy browser
+  participation paths replace-redirect to the
   Participant paths.
   An authoritatively resolved Active Admin now receives a replace redirect from
   `/admin` to `/admin/courses` and an authenticated layout whose named sticky

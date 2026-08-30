@@ -34,17 +34,15 @@ test("promotes real ordinary Admins and grants fresh Super authority", async ({
   await establishFixture(page, "admin-invite-a");
   const establishedOrdinaryCookies = await page.context().cookies();
   await establishFixture(page, "first-admin");
-  await page.goto("/admin/users");
+  await page.goto(`/admin/users?${new URLSearchParams({ q: "Admina" })}`);
   const table = page.getByRole("table", {
     name: "Verzeichnis der Administrationskonten",
   });
-  const firstSuperRow = adminRow(table, firstSuper.name);
   const targetRow = adminRow(table, ordinaryA.name);
 
-  await expect(firstSuperRow.getByRole("button", {
-    name: "Zum Super Admin befördern",
-  })).toHaveCount(0);
-  const opener = targetRow.getByRole("button", {
+  await targetRow.getByRole("link", { name: "Namen bearbeiten" }).click();
+  await expect(page).toHaveURL(`/admin/users/${ordinaryA.id}`);
+  const opener = page.getByRole("button", {
     name: "Zum Super Admin befördern",
   });
 
@@ -73,14 +71,16 @@ test("promotes real ordinary Admins and grants fresh Super authority", async ({
   });
 
   await expect(success).toBeFocused();
-  await expect(targetRow).toContainText("Super Admin");
-  await expect(targetRow.getByRole("button", {
+  await expect(page.getByRole("button", {
     name: "Zum Super Admin befördern",
   })).toHaveCount(0);
   await expectAccessibleLayout(page);
 
   await page.reload();
-  await expect(adminRow(table, ordinaryA.name)).toContainText("Super Admin");
+  await expect(page.getByRole("heading", { name: ordinaryA.name })).toBeVisible();
+  await expect(page.getByRole("button", {
+    name: "Zum Super Admin befördern",
+  })).toHaveCount(0);
   await expect(page.getByText(/herabstufen/i)).toHaveCount(0);
 
   await page.context().addCookies(establishedOrdinaryCookies);

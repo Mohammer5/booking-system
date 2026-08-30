@@ -1,7 +1,7 @@
 ---
 id: EPIC-ruijc
 title: Normalize Admin collection and detail navigation
-status: now
+status: done
 priority: high
 started: 2026-08-30
 target: null
@@ -23,11 +23,11 @@ invariants.
 
 ## Key Results
 
-- [ ] Every accepted Admin collection/create/detail route is direct-navigation and
+- [x] Every accepted Admin collection/create/detail route is direct-navigation and
       refresh safe behind one Active-Admin-only responsive navigation layout.
-- [ ] All seven collection reads validate, filter, sort, count, and paginate in
+- [x] All seven collection reads validate, filter, sort, count, and paginate in
       D1, and every collection view restores normalized state from its URL.
-- [ ] Course detail transfers linked retained counts rather than complete child
+- [x] Course detail transfers linked retained counts rather than complete child
       collections, while Participant, Group, Module, Admin User, Invite, Course,
       authentication, and lifecycle behavior retains comprehensive regression
       evidence.

@@ -1,7 +1,7 @@
 ---
 id: TASK-pi3jc
 title: Complete Admin navigation integration and verification
-status: draft
+status: done
 priority: high
 type: chore
 effort: large
@@ -11,7 +11,7 @@ depends_on:
 - TASK-x8dax
 blocks: []
 related: []
-assignee: null
+assignee: gerkules
 tags:
 - tests
 - docs
@@ -35,19 +35,19 @@ indexes, Markplane state, and final repository verification.
 
 ## Acceptance Criteria
 
-- [ ] All required routes, seven collection behaviors, redirects, responsive
+- [x] All required routes, seven collection behaviors, redirects, responsive
       navigation/rendering, breadcrumbs, detail/create/lifecycle flows, and
       representative accessibility states have non-duplicated regression
       coverage.
-- [ ] Deterministic browser data exercises more than one page and proves picker
+- [x] Deterministic browser data exercises more than one page and proves picker
       discovery beyond the first page without weakening fixture isolation.
-- [ ] Old embedded-route assertions, obsolete endpoints/hooks/translations, and
+- [x] Old embedded-route assertions, obsolete endpoints/hooks/translations, and
       duplicate management implementations are removed.
-- [ ] Canonical docs/status/index/README route inventories describe actual code,
+- [x] Canonical docs/status/index/README route inventories describe actual code,
       and a dictionary coverage pass is complete.
-- [ ] `markplane sync`, `markplane check`, and `corepack pnpm check` all pass
+- [x] `markplane sync`, `markplane check`, and `corepack pnpm check` all pass
       without skips, suppressions, weakened tests, or ignored failures.
-- [ ] Every epic task is completed only after its acceptance criteria pass and
+- [x] Every epic task is completed only after its acceptance criteria pass and
       has one semantic task-ID commit; the epic is complete and the worktree is
       clean.
 

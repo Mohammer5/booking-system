@@ -1,7 +1,7 @@
 ---
 id: PLAN-p5vch
 title: Implementation plan for Complete Admin navigation integration and verification
-status: draft
+status: done
 implements:
 - TASK-pi3jc
 related: []
@@ -47,17 +47,17 @@ frameworks remain out of scope.
 
 ### Phase 1: Coverage and cleanup audit
 
-- [ ] Map every spec requirement to focused Worker/browser evidence.
-- [ ] Add page-spanning fixtures and missing accessibility/focus/history cases.
-- [ ] Remove obsolete routes/endpoints/components/translations/tests.
+- [x] Map every spec requirement to focused Worker/browser evidence.
+- [x] Add page-spanning fixtures and missing accessibility/focus/history cases.
+- [x] Remove obsolete routes/endpoints/components/translations/tests.
 
 **Checkpoint**: every required behavior has one appropriate non-duplicated owner.
 
 ### Phase 2: Truth reconciliation and full acceptance
 
-- [ ] Update docs status/index/README and dictionary coverage.
-- [ ] Run `markplane sync`, `markplane check`, focused suites, and `pnpm check`.
-- [ ] Complete tasks/epic and verify commit subjects plus clean status.
+- [x] Update docs status/index/README and dictionary coverage.
+- [x] Run `markplane sync`, `markplane check`, focused suites, and `pnpm check`.
+- [x] Complete tasks/epic and verify commit subjects plus clean status.
 
 **Checkpoint**: full verification is green and tracking/history are complete.
 
